@@ -1,0 +1,9 @@
+/**
+@class B::Memory
+
+Utility class for memory management. This class comprises system-independent
+wrappers around common memory handling routines, and also provides an effective
+technique for allocating small objects from the linked list of reusable
+fixed-sized chunks, which offers increase in allocation speed, as well as
+reduces heap fragmentation.
+*/

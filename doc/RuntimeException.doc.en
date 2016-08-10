@@ -1,0 +1,22 @@
+/**
+@class B::RuntimeException RuntimeException.h <B/RuntimeException.h>
+
+The superclass of exceptions resulting from errors that may
+occur during the normal program flow.
+
+@nosubgrouping
+*/
+
+/// @name Overridable
+/// @{
+
+/**
+@fn void B::RuntimeException::GetMessage(B::String& strMessage) const
+
+Returns the detailed description of this error.
+
+@param strMessage placeholder for the message string that describes
+the cause of this exception
+*/
+
+/// @}
