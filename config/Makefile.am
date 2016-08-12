@@ -22,7 +22,6 @@ MAINTAINERCLEANFILES = \
 	depcomp \
 	install-sh \
 	ltconfig \
-	ltmain.sh \
 	mkinstalldirs \
 	test-driver \
 	Makefile.in
