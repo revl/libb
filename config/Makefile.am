@@ -23,7 +23,6 @@ MAINTAINERCLEANFILES = \
 	install-sh \
 	ltconfig \
 	ltmain.sh \
-	missing \
 	mkinstalldirs \
 	test-driver \
 	Makefile.in
