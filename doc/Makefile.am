@@ -16,63 +16,38 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+.PHONY: doc
+
 if DOXYGEN
-.PHONY: doc doc_en
-
-doc: timestamp_en
-	@if test -f only_en; then \
-		rm -f only_en timestamp; \
-	fi
-
-doc_en: timestamp_en
-	test -f only_en || rm -f timestamp && touch only_en
+doc: timestamp
 
 if DOXYCONFIG
-timestamp_en: $(DOXYCONFIG) $(top_srcdir)/include/B/*.h \
-	$(top_srcdir)/doc/*.doc.en $(srcdir)/Doxyfile.en
-	rm -rf en
-	'$(DOXYCONFIG)' '$(srcdir)/Doxyfile.en' $(PACKAGE) en | \
+timestamp: $(DOXYCONFIG) $(top_srcdir)/include/B/*.h \
+	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
+	rm -rf html
+	'$(DOXYCONFIG)' '$(srcdir)/Doxyfile' $(PACKAGE) | \
 		VERSION='$(VERSION)' \
 		top_srcdir='$(top_srcdir)' \
 		HAVE_DOT='$(HAVE_DOT)' \
 		$(DOXYGEN) -
-	touch timestamp_en
+	touch timestamp
 else
-timestamp_en: $(top_srcdir)/include/B/*.h \
-	$(top_srcdir)/doc/*.doc.en $(srcdir)/Doxyfile.en
-	rm -rf en
+timestamp: $(top_srcdir)/include/B/*.h \
+	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
+	rm -rf html
 	VERSION='$(VERSION)' \
 	top_srcdir='$(top_srcdir)' \
 	HAVE_DOT='$(HAVE_DOT)' \
-	$(DOXYGEN) '$(srcdir)/Doxyfile.en'
-	touch timestamp_en
+	$(DOXYGEN) '$(srcdir)/Doxyfile'
+	touch timestamp
 endif
 
 install-data-local: install-timestamp
 
-timestamp:
-	if test -f only_en; then \
-		$(MAKE) $(AM_MAKEFLAGS) timestamp_en; \
-	else \
-		$(MAKE) $(AM_MAKEFLAGS) timestamp_en; \
-	fi
-	touch timestamp
-
 install-timestamp: timestamp
-	if test -f only_en; then \
-		if test -d en/html; then \
-			$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)/html; \
-			$(INSTALL_DATA) en/html/* $(DESTDIR)$(pkgdocdir)/html; \
-		fi; \
-	else \
-		for l in en; do \
-			if test -d $$l/html; then \
-				$(mkinstalldirs) \
-					$(DESTDIR)$(pkgdocdir)/html/$$l; \
-				$(INSTALL_DATA) $$l/html/* \
-					$(DESTDIR)$(pkgdocdir)/html/$$l; \
-			fi; \
-		done; \
+	if test -d html; then \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)/html; \
+		$(INSTALL_DATA) html/* $(DESTDIR)$(pkgdocdir)/html; \
 	fi
 	touch install-timestamp
 
@@ -81,20 +56,24 @@ uninstall-local:
 	rmdir $(DESTDIR)$(pkgdocdir) || true
 
 clean-local:
-	rm -rf en timestamp{,_en} install-timestamp
+	rm -rf html timestamp install-timestamp
+else
+doc:
+	@echo Doxygen was not found by the configure script >&2
+	@exit 1
 endif
 
 EXTRA_DIST = \
-	Doxyfile.en \
-	html_footer.en \
+	Doxyfile \
+	html_footer \
 	main.css \
-	CustomException.doc.en \
-	Exception.doc.en \
-	Memory.doc.en \
-	Memory-Exception.doc.en \
-	Object.doc.en \
-	RefCount.doc.en \
-	RuntimeException.doc.en \
-	SystemException.doc.en
+	CustomException.doc \
+	Exception.doc \
+	Memory.doc \
+	Memory-Exception.doc \
+	Object.doc \
+	RefCount.doc \
+	RuntimeException.doc \
+	SystemException.doc
 
 MAINTAINERCLEANFILES = Makefile.in

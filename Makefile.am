@@ -18,16 +18,12 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-if DOXYGEN
-.PHONY: doc doc_en
+.PHONY: doc
 
-doc doc_en:
+doc:
 	@cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
 
-MAYBE_DOC = doc
-endif
-
-SUBDIRS = . config m4 include src tests $(MAYBE_DOC)
+SUBDIRS = . config m4 include src tests doc
 
 plaindocdir = $(pkgdocdir)
 plaindoc_DATA = ChangeLog NEWS README
