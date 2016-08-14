@@ -39,12 +39,6 @@ class DescListNode : public TestElementListNode
 
 static int object_count = 0;
 
-#if defined(__WATCOM_CPLUSPLUS__) && !defined(B_STATIC)
-// Disable W728: class modifiers for 'B::AscListNode'
-// conflict with class modifiers for 'B::Object'
-#pragma warning 728 10
-#endif
-
 class TestElement : public Object, public AscListNode, public DescListNode
 {
 // Construction

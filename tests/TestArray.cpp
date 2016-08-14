@@ -40,16 +40,8 @@ struct TestClass
 	}
 };
 
-#if !defined(__WATCOM_CPLUSPLUS__) || defined(B_NO_NAMESPACE)
 typedef B::Array<TestClass> TestArray;
 template class B::Array<TestClass>;
-#else
-namespace B
-{
-	typedef Array<TestClass> TestArrayX;
-}
-typedef B::TestArrayX TestArray;
-#endif // __WATCOM_CPLUSPLUS__
 
 B::Array<B::Array<TestClass> > test2d;
 

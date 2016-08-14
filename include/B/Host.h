@@ -42,13 +42,7 @@
 #else
 
 #define B_BEGIN_NAMESPACE namespace B {
-
-#if !defined(__WATCOM_CPLUSPLUS__) || __WATCOM_CPLUSPLUS__ >= 1220
 #define B_END_NAMESPACE }
-#else
-// Get rid of the WATCOM C++ parser error
-#define B_END_NAMESPACE extern int unused; }
-#endif // __WATCOM_CPLUSPLUS__
 
 #endif // B_NO_NAMESPACE
 

@@ -282,51 +282,45 @@ inline void ReverseCopy(TYPE* dest, const TYPE* source, int count)
 
 // Template specializations
 
-#ifndef __WATCOM_CPLUSPLUS__
-#define B_TEMPLATE_SPECIALIZATION template <>
-#else
-#define B_TEMPLATE_SPECIALIZATION
-#endif // __WATCOM_CPLUSPLUS__
-
 // int
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline int Compare(const int& n1, const int& n2)
 {
 	return n1 - n2;
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(int* dest, int count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(int* dest, const int& value, int count)
 {
 	while (--count >= 0)
 		*dest++ = value;
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(int* dest, const int* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Destroy(int*, int)
 {
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(int* dest, const int* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void ReverseCopy(int* dest, const int* source, int count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
@@ -334,43 +328,43 @@ inline void ReverseCopy(int* dest, const int* source, int count)
 
 // long
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline int Compare(const long& l1, const long& l2)
 {
 	return int(l1 - l2);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(long* dest, int count)
 {
 	Memory::Zero(dest, count * sizeof(long));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(long* dest, const long& value, int count)
 {
 	while (--count >= 0)
 		*dest++ = value;
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(long* dest, const long* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Destroy(long*, int)
 {
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(long* dest, const long* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void ReverseCopy(long* dest, const long* source, int count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
@@ -378,54 +372,54 @@ inline void ReverseCopy(long* dest, const long* source, int count)
 
 // char
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline int Compare(const char& c1, const char& c2)
 {
 	return int(c1) - int(c2);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline int Compare(const char* buffer1, const char* buffer2, int count)
 {
 	return Memory::Compare(buffer1, buffer2, count);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(char* dest, int count)
 {
 	Memory::Zero(dest, count * sizeof(char));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(char* dest, const char& value, int count)
 {
 	Memory::Fill(dest, count, value);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(char* dest, const char* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Destroy(char*, int)
 {
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(char* dest, const char* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(char* dest, const char& value, int count)
 {
 	Memory::Fill(dest, count, value);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void ReverseCopy(char* dest, const char* source, int count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
@@ -433,43 +427,43 @@ inline void ReverseCopy(char* dest, const char* source, int count)
 
 // wchar_t
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline int Compare(const wchar_t& c1, const wchar_t& c2)
 {
 	return int(c1) - int(c2);
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(wchar_t* dest, int count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Construct(wchar_t* dest, const wchar_t* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Destroy(wchar_t*, int)
 {
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(wchar_t* dest, const wchar_t* source, int count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void Copy(wchar_t* dest, const wchar_t& value, int count)
 {
 	while (--count >= 0)
 		*dest++ = value;
 }
 
-B_TEMPLATE_SPECIALIZATION
+template <>
 inline void ReverseCopy(wchar_t* dest, const wchar_t* source, int count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
