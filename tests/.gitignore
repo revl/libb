@@ -1,0 +1,12 @@
+*.log
+*.o
+*.trs
+TestArray
+TestHelpers
+TestLevenshteinDistance
+TestLists
+TestMakePath
+TestMemory
+TestObject
+TestRandom
+TestString
