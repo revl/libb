@@ -36,7 +36,7 @@ B_BEGIN_NAMESPACE
 #pragma warning (disable: 4251)
 #endif // _MSC_VER
 
-class B_API Pathname
+class Pathname
 {
 // Types
 public:

@@ -27,16 +27,16 @@
 B_BEGIN_NAMESPACE
 
 // Operations on the file system directory structure
-B_API bool IsDirectory(const String& directory)
+bool IsDirectory(const String& directory)
 	throw ();
 
-B_API void MakeDirectory(const String& directory)
+void MakeDirectory(const String& directory)
 	throw (SystemException);
 
-B_API void MakePath(const String& path)
+void MakePath(const String& path)
 	throw (SystemException);
 
-B_API void RemoveDirectory(const String& directory)
+void RemoveDirectory(const String& directory)
 	throw (SystemException);
 
 // Template functions and helpers
@@ -199,24 +199,23 @@ inline int FormatString(wchar_t*, const wchar_t*, va_list)
 
 // Wildcard pattern matching.
 
-B_API bool MatchPatternZZ(
+bool MatchPatternZZ(
 	const B_CHAR* string,
 	const B_CHAR* pattern);
 
-B_API bool MatchPatternZR(
+bool MatchPatternZR(
 	const B_CHAR* string,
 	const B_CHAR* pattern, const B_CHAR* pattern_end);
 
-B_API bool MatchPatternRZ(
+bool MatchPatternRZ(
 	const B_CHAR* string, const B_CHAR* string_end,
 	const B_CHAR* pattern);
 
-B_API bool MatchPatternRR(
+bool MatchPatternRR(
 	const B_CHAR* string, const B_CHAR* string_end,
 	const B_CHAR* pattern, const B_CHAR* pattern_end);
 
 // Compares two version strings.
-B_API
 int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.

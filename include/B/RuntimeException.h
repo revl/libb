@@ -31,7 +31,7 @@ B_BEGIN_NAMESPACE
 
 // The superclass of exceptions resulting from errors that may
 // occur during the normal program flow.
-class B_API RuntimeException : public Exception
+class RuntimeException : public Exception
 {
 // Overridable
 public:

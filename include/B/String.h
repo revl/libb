@@ -31,7 +31,7 @@
 B_BEGIN_NAMESPACE
 
 // String class template
-class B_API String
+class String
 {
 // Construction
 public:
@@ -691,10 +691,10 @@ inline bool operator >=(const Char* left_side, const String& right_side)
 }
 
 // Finds the first occurrence of character <c> in <string>.
-B_API Char* FindCharInString(const Char* string, Char c);
+Char* FindCharInString(const Char* string, Char c);
 
 // Finds the last occurrence of character <c> in <string>.
-B_API Char* FindLastCharInString(const Char* string, Char c);
+Char* FindLastCharInString(const Char* string, Char c);
 
 B_END_NAMESPACE
 

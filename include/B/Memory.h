@@ -35,13 +35,13 @@ B_BEGIN_NAMESPACE
 // allocating small objects from the linked list of reusable
 // fixed-sized chunks, which offers increase in allocation
 // speed, as well as reduces heap fragmentation.
-class B_API Memory
+class Memory
 {
 public:
 	// Insufficient memory condition. An exception of this type
 	// is thrown as a result of any memory allocation failure
 	// in the library.
-	class B_API Exception : public SystemException
+	class Exception : public SystemException
 	{
 #ifdef B_DUMB_MALLOC
 	// Construction

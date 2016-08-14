@@ -185,18 +185,10 @@
 #define B_PATH_SEPARATOR_SZ B_TEXT("\\")
 #endif // !B_WIN32
 
-#if defined(__WATCOM_CPLUSPLUS__)
-#include "CompilerFeaturesW.h"
-#elif defined(_MSC_VER)
-#include "CompilerFeaturesM.h"
-#else
-#define B_API
-#endif
-
 B_BEGIN_NAMESPACE
 
-class B_API StringW;
-class B_API StringA;
+class StringW;
+class StringA;
 
 #ifdef B_UNICODE
 typedef StringW String;

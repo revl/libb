@@ -31,7 +31,7 @@ B_BEGIN_NAMESPACE
 
 // System error condition. An exception of this class indicates
 // abnormal termination of an essential system call.
-class B_API SystemException : public RuntimeException
+class SystemException : public RuntimeException
 {
 // Types
 public:

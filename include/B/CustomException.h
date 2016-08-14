@@ -30,7 +30,7 @@
 B_BEGIN_NAMESPACE
 
 // Customizable error exception class.
-class B_API CustomException : public RuntimeException
+class CustomException : public RuntimeException
 {
 // Constructors
 public:

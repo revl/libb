@@ -30,7 +30,7 @@
 B_BEGIN_NAMESPACE
 
 // The base class for all exceptions.
-class B_API Exception
+class Exception
 #ifdef B_USE_STL
 	: public std::exception
 #endif // B_USE_STL
