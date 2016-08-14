@@ -61,11 +61,6 @@ using namespace __gnu_cxx;
 #define B_REFCOUNT_INC(counter) __ATOMIC_INCREMENT_LONG(&counter)
 #define B_REFCOUNT_DEC(counter) return __ATOMIC_DECREMENT_LONG(&counter) != 1
 
-#elif defined(B_USE_WIN32_API)
-#define B_REFCOUNT_TYPE LONG
-#define B_REFCOUNT_INC(counter) ::InterlockedIncrement(&counter)
-#define B_REFCOUNT_DEC(counter) return ::InterlockedDecrement(&counter) != 0
-
 #else
 #error arithmetic on atomic data has to be implemented for this platform
 #endif

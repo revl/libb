@@ -18,48 +18,24 @@
  *
  */
 
-#include <B/Host.h>
-
-#ifdef B_USE_PRECOMPILED_HEADER
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/Helpers.h>
 
-#ifndef B_USE_WIN32_API
 #include <unistd.h>
-#endif
 
 B_BEGIN_NAMESPACE
 
 bool IsDirectory(const String& directory)
 	throw ()
 {
-#if defined(B_USE_WIN32_API)
-	DWORD attributes = ::GetFileAttributes(directory);
-
-	return attributes != 0xFFFFFFFF &&
-		attributes & FILE_ATTRIBUTE_DIRECTORY;
-#else
 	struct stat stat_struct;
 
 	return ::stat(directory, &stat_struct) != -1 &&
 		S_ISDIR(stat_struct.st_mode);
-#endif // B_USE_WIN32_API
 }
 
 void MakeDirectory(const String& directory)
 	throw (SystemException)
 {
-#if defined(B_USE_WIN32_API)
-	if (!directory.IsEmpty() && !::CreateDirectory(directory, NULL))
-	{
-		DWORD error = ::GetLastError();
-
-		if (error != 0 && !IsDirectory(directory))
-			throw SystemException(error);
-	}
-#else
 	if (!directory.IsEmpty() && mkdir(directory,
 		S_IRUSR | S_IWUSR | S_IXUSR |
 		S_IRGRP | S_IWGRP | S_IXGRP |
@@ -70,7 +46,6 @@ void MakeDirectory(const String& directory)
 		if (error != EEXIST || !IsDirectory(directory))
 			throw SystemException(error);
 	}
-#endif // B_USE_WIN32_API
 }
 
 void MakePath(const String& path)
@@ -98,13 +73,7 @@ void MakePath(const String& path)
 void RemoveDirectory(const String& directory)
 	throw (SystemException)
 {
-	if (!directory.IsEmpty() &&
-#if defined(B_USE_WIN32_API)
-		!::RemoveDirectory(directory)
-#else
-		rmdir(directory) == -1
-#endif // B_USE_WIN32_API
-		)
+	if (!directory.IsEmpty() && rmdir(directory) == -1)
 		throw SystemException();
 }
 
@@ -335,11 +304,3 @@ int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2)
 }
 
 B_END_NAMESPACE
-
-#if defined(B_USE_WIN32_API) && defined(B_DLL_BUILD)
-BOOL WINAPI DllMain(HINSTANCE /*hInstance*/,
-	DWORD /*dwReason*/, LPVOID /*pvReserved*/)
-{
-	return TRUE;
-}
-#endif // B_USE_WIN32_API && B_DLL_BUILD

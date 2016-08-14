@@ -18,12 +18,6 @@
  *
  */
 
-#include <B/Host.h>
-
-#ifdef B_USE_PRECOMPILED_HEADER
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #ifdef __GNUG__
 #pragma implementation "B/Exception.h"
 #pragma implementation "B/RuntimeException.h"
@@ -39,34 +33,6 @@ B_BEGIN_NAMESPACE
 void SystemException::GetMessage(String& target) const
 	throw ()
 {
-#ifdef B_USE_WIN32_API
-	PTSTR message_buffer;
-	DWORD length;
-
-	try
-	{
-		if ((length = ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM, NULL, code,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-			(PTSTR) &message_buffer, 0, NULL)) > 0)
-		{
-			const B_CHAR* end_of_message = message_buffer + length;
-
-			while (*--end_of_message == '\r' ||
-				*end_of_message == '\n')
-				--length;
-
-			target.Assign(message_buffer, (int) length);
-		}
-	}
-	catch (Memory::Exception&)
-	{
-		::LocalFree((HLOCAL) message_buffer);
-	}
-	::LocalFree((HLOCAL) message_buffer);
-
-#else
-
 	try
 	{
 #ifdef B_UNICODE
@@ -79,31 +45,17 @@ void SystemException::GetMessage(String& target) const
 	catch (Memory::Exception&)
 	{
 	}
-#endif // B_USE_WIN32_API
 }
 
 #ifdef B_USE_STL
 const char* SystemException::what() const
 	throw ()
 {
-#ifdef B_USE_WIN32_API
-	PTSTR message_buffer;
-
-	// FIXME: Memory allocated for message is not freed
-	return ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM, NULL, code,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(PTSTR) &message_buffer, 0, NULL) > 0 ? message_buffer :
-		"Unknown system error";
-#else
-
 #ifdef B_UNICODE
 	return wcserror(code);
 #else
 	return strerror(code);
 #endif // B_UNICODE
-
-#endif // B_USE_WIN32_API
 }
 #endif // B_USE_STL
 

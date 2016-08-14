@@ -107,47 +107,27 @@ inline Memory::Exception::Exception() : SystemException(ENOMEM)
 
 inline void Memory::Free(void* block)
 {
-#ifdef B_USE_WIN32_API
-	::HeapFree(::GetProcessHeap(), 0, block);
-#else
 	free(block);
-#endif // B_USE_WIN32_API
 }
 
 inline void Memory::Fill(void* block, int length, char filler)
 {
-#ifdef B_USE_WIN32_API
-	::FillMemory(block, length, (BYTE) filler);
-#else
 	memset(block, filler, length);
-#endif // B_USE_WIN32_API
 }
 
 inline void Memory::Zero(void* block, int length)
 {
-#ifdef B_USE_WIN32_API
-	::ZeroMemory(block, length);
-#else
 	memset(block, 0, length);
-#endif // B_USE_WIN32_API
 }
 
 inline void Memory::Copy(void* destination, const void* source, int length)
 {
-#ifdef B_USE_WIN32_API
-	::CopyMemory(destination, source, length);
-#else
 	memcpy(destination, source, length);
-#endif // B_USE_WIN32_API
 }
 
 inline void Memory::Move(void* destination, const void* source, int length)
 {
-#ifdef B_USE_WIN32_API
-	::MoveMemory(destination, source, length);
-#else
 	memmove(destination, source, length);
-#endif // B_USE_WIN32_API
 }
 
 inline int Memory::Compare(const void* block1,

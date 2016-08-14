@@ -18,12 +18,6 @@
  *
  */
 
-#include <B/Host.h>
-
-#ifdef B_USE_PRECOMPILED_HEADER
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/Pathname.h>
 
 B_BEGIN_NAMESPACE

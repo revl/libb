@@ -18,12 +18,6 @@
  *
  */
 
-#include <B/Host.h>
-
-#ifdef B_USE_PRECOMPILED_HEADER
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/Memory.h>
 
 B_BEGIN_NAMESPACE
@@ -33,17 +27,8 @@ void* Memory::Alloc(int size)
 {
 	register void* block;
 
-#ifdef B_USE_WIN32_API
-
-	if ((block = ::HeapAlloc(::GetProcessHeap(), 0, size)) == NULL)
-		throw Memory::Exception();
-
-#else
-
 	if ((block = malloc(size)) == NULL)
 		throw Memory::Exception();
-
-#endif // B_USE_WIN32_API
 
 	return block;
 }

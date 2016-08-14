@@ -57,12 +57,7 @@ private:
 	int seed;
 };
 
-inline Random::Random() :
-#ifdef B_USE_WIN32_API
-	seed(::GetTickCount())
-#else
-	seed(::time(NULL))
-#endif // B_USE_WIN32_API
+inline Random::Random() : seed(::time(NULL))
 {
 }
 
@@ -77,11 +72,7 @@ inline void Random::SetSeed(int new_seed)
 
 inline void Random::Randomize()
 {
-#ifdef B_USE_WIN32_API
-	seed = ::GetTickCount();
-#else
 	seed = ::time(NULL);
-#endif // B_USE_WIN32_API
 }
 
 inline int Random::GetNext()

@@ -120,21 +120,13 @@ inline int Compare(const TYPE* buffer1, const TYPE* buffer2, int count)
 // Computes the length of null-terminated strings.
 inline int CalcLength(const char* string)
 {
-#ifdef B_USE_WIN32_API
-	return ::lstrlenA(string);
-#else
 	return ::strlen(string);
-#endif // B_USE_WIN32_API
 }
 
 // Computes the length of null-terminated strings (Unicode version).
 inline int CalcLength(const wchar_t* string)
 {
-#ifdef B_USE_WIN32_API
-	return ::lstrlenW(string);
-#else
 	return ::wcslen(string);
-#endif // B_USE_WIN32_API
 }
 
 // Computes the length of strings limited either by the
@@ -158,21 +150,13 @@ inline int CalcLength(const wchar_t* string, int limit)
 // Compares two strings.
 inline int CompareStrings(const char* string1, const char* string2)
 {
-#ifdef B_USE_WIN32_API
-	return ::lstrcmpA(string1, string2);
-#else
 	return ::strcmp(string1, string2);
-#endif // B_USE_WIN32_API
 }
 
 // Compares two strings.
 inline int CompareStrings(const wchar_t* string1, const wchar_t* string2)
 {
-#ifdef B_USE_WIN32_API
-	return ::lstrcmpW(string1, string2);
-#else
 	return ::wcscmp(string1, string2);
-#endif // B_USE_WIN32_API
 }
 
 // Formats a string as vsprintf does.
@@ -182,20 +166,12 @@ inline int FormatString(char* buffer, const char* format, va_list arguments)
 }
 
 // Formats a string as vswprintf does.
-#if defined(B_WIN32) && !defined(__WATCOM_CPLUSPLUS__)
-inline int FormatString(wchar_t* buffer,
-	const wchar_t* format, va_list arguments)
-{
-	return vswprintf(buffer, format, arguments);
-}
-#else
 inline int FormatString(wchar_t*, const wchar_t*, va_list)
 {
 	B_ASSERT(0);
 
 	return 0;
 }
-#endif
 
 // Wildcard pattern matching.
 
@@ -221,24 +197,14 @@ int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2);
 // Converts sequence of wide characters to sequence of multibyte characters.
 inline void Copy(char* result, const wchar_t* source, int length)
 {
-#ifdef B_USE_WIN32_API
-	::WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK | WC_SEPCHARS,
-		source, length, result, length, NULL, NULL);
-#else
 	::wcstombs(result, source, reinterpret_cast<size_t&>(length));
-#endif // B_USE_WIN32_API
 }
 
 // Converts a sequence of multibyte characters to a sequence of wide
 // characters.
 inline void Copy(wchar_t* result, const char* source, int length)
 {
-#ifdef B_USE_WIN32_API
-	::MultiByteToWideChar(CP_ACP, MB_COMPOSITE,
-		source, length, result, length);
-#else
 	::mbstowcs(result, source, reinterpret_cast<size_t&>(length));
-#endif // B_USE_WIN32_API
 }
 
 // Template functions for construction, destruction,

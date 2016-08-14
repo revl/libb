@@ -52,14 +52,6 @@
 
 #endif // B_NO_NAMESPACE
 
-#if (defined(WIN32) || defined(_WIN32)) && !defined(B_WIN32)
-#define B_WIN32
-#endif
-
-#if defined(B_WIN32) && !defined(__GNUG__) && !defined(B_USE_WIN32_API)
-#define B_USE_WIN32_API
-#endif
-
 // Most compilers support placement form of operator delete.
 #if !defined(USE_PLACEMENT_DELETE)
 #if defined(__GNUG__)
@@ -82,30 +74,6 @@
 // 981: operands are evaluated in unspecified order
 #pragma warning (disable: 530 981)
 #endif
-
-#ifdef B_USE_WIN32_API
-
-#if (defined(UNICODE) || defined(_UNICODE)) && !defined(B_UNICODE)
-#define B_UNICODE 1
-#elif defined(B_UNICODE) && !defined(UNICODE)
-#define UNICODE
-#endif // B_UNICODE
-
-#ifndef STRICT
-#define STRICT 1
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
-
-#include <Windows.h>
-
-#include <stdio.h>
-#include <stdarg.h>
-#include <wchar.h>
-
-#else
 
 #ifdef B_UNINSTALLED
 #include <B/config.h>
@@ -138,8 +106,6 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-
-#endif // B_USE_WIN32_API
 
 #include <stddef.h>
 #include <new>
@@ -177,13 +143,8 @@
 #endif // B_UNICODE
 #endif // B_CHAR
 
-#ifndef B_WIN32
 #define B_PATH_SEPARATOR B_TEXT('/')
 #define B_PATH_SEPARATOR_SZ B_TEXT("/")
-#else
-#define B_PATH_SEPARATOR B_TEXT('\\')
-#define B_PATH_SEPARATOR_SZ B_TEXT("\\")
-#endif // !B_WIN32
 
 B_BEGIN_NAMESPACE
 

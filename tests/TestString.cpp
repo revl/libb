@@ -18,12 +18,6 @@
  *
  */
 
-#ifdef B_USE_PRECOMPILED_HEADER
-#include <B/Host.h>
-
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/String.h>
 
 B_DEFINE_STATIC_STRING(hello, "hello");

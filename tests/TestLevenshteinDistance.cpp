@@ -18,12 +18,6 @@
  *
  */
 
-#ifdef B_USE_PRECOMPILED_HEADER
-#include <B/Host.h>
-
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/LevenshteinDistance.h>
 
 #define TEST_DIST(s1, s2, d) \

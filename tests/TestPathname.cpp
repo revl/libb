@@ -18,12 +18,6 @@
  *
  */
 
-#ifdef B_USE_PRECOMPILED_HEADER
-#include <B/Host.h>
-
-#pragma hdrstop
-#endif // B_USE_PRECOMPILED_HEADER
-
 #include <B/Pathname.h>
 
 int main()
@@ -32,20 +26,7 @@ int main()
 
 	current_dir.AllocExactly(MAX_PATH);
 
-#ifdef B_USE_WIN32_API
-	DWORD chars_written;
-
-	while ((chars_written = ::GetCurrentDirectory(
-		current_dir.GetCapacity(), current_dir.LockBuffer())) >
-		(DWORD) current_dir.GetCapacity())
-	{
-		current_dir.UnlockBuffer();
-
-		current_dir.AllocExactly(chars_written);
-	}
-#else
 	getcwd(current_dir.LockBuffer(), current_dir.GetCapacity());
-#endif // B_USE_WIN32_API
 
 	current_dir.UnlockBuffer(chars_written);
 

@@ -36,22 +36,13 @@ class SystemException : public RuntimeException
 // Types
 public:
 	// System-specific typedef for the system error number.
-#ifndef B_USE_WIN32_API
 	typedef int Code;
-#else
-	typedef DWORD Code;
-#endif // B_USE_WIN32_API
 
 	// Enumeration of system-specific error codes.
 	enum
 	{
-#ifndef B_USE_WIN32_API
 		FileNotFound = ENOENT,
 		PathNotFound = ENOENT
-#else
-		FileNotFound = ERROR_FILE_NOT_FOUND,
-		PathNotFound = ERROR_PATH_NOT_FOUND
-#endif // B_USE_WIN32_API
 	};
 
 // Utility Method
@@ -81,7 +72,7 @@ public:
 	virtual void GetMessage(String& target) const
 		throw ();
 
-#if !defined(B_USE_WIN32_API) && defined(B_USE_STL)
+#if defined(B_USE_STL)
 	virtual const char* what() const
 		throw ();
 #endif // B_USE_STL
@@ -93,11 +84,7 @@ private:
 
 inline SystemException::Code SystemException::GetLastErrorCode()
 {
-#ifdef B_USE_WIN32_API
-	return ::GetLastError();
-#else
 	return errno;
-#endif // B_USE_WIN32_API
 }
 
 inline SystemException::SystemException() : code(GetLastErrorCode())
