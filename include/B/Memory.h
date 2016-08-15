@@ -43,11 +43,9 @@ public:
 	// in the library.
 	class Exception : public SystemException
 	{
-#ifdef B_DUMB_MALLOC
 	// Construction
 	public:
 		Exception();
-#endif // B_DUMB_MALLOC
 	};
 
 	// Allocates <size> number of bytes and returns a pointer to
@@ -99,11 +97,9 @@ public:
 	static void* Align(void* value, size_t alignment);
 };
 
-#ifdef B_SET_MALLOC_ERROR
 inline Memory::Exception::Exception() : SystemException(ENOMEM)
 {
 }
-#endif // B_SET_MALLOC_ERROR
 
 inline void Memory::Free(void* block)
 {
