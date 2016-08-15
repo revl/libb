@@ -21,17 +21,28 @@
 #include <B/LevenshteinDistance.h>
 
 #define TEST_DIST(s1, s2, d) \
-	(CalculateDistance(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1) == d)
+	if (CalculateDistance(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1) != d) \
+		++retval;
 
 int main()
 {
 	B::LevenshteinDistance<const char*> CalculateDistance;
 
-	return !(TEST_DIST("QWERTY", "WER", 3) &&
-		TEST_DIST("[pskdfbvjcv", "osdkfj", 8) &&
-		TEST_DIST("jksefuyrthber", "uwufuyvghseyfa", 10) &&
-		TEST_DIST("ASDF", "ASCDF", 1) &&
-		TEST_DIST("1234", "", 4) &&
-		TEST_DIST("", "1234", 4) &&
-		TEST_DIST("string", "string", 0));
+	int retval = 0;
+
+	TEST_DIST("QWERTY", "WER", 3);
+
+	TEST_DIST("[pskdfbvjcv", "osdkfj", 8);
+
+	TEST_DIST("jksefuyrthber", "uwufuyvghseyfa", 10);
+
+	TEST_DIST("ASDF", "ASCDF", 1);
+
+	TEST_DIST("1234", "", 4);
+
+	TEST_DIST("", "1234", 4);
+
+	TEST_DIST("string", "string", 0);
+
+	return retval;
 }

@@ -88,7 +88,9 @@ size_t LevenshteinDistance<Iter>::operator ()(Iter string1,
 		// Boundary conditions
 		upper = row.begin();
 
-		*upper++ = distance = (diagonal = *upper) + 1;
+		diagonal = *upper;
+
+		*upper++ = distance = diagonal + 1;
 
 		current_char = string2;
 
