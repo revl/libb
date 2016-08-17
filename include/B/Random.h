@@ -30,16 +30,18 @@ class Random
 {
 // Construction
 public:
+	typedef unsigned value_type;
+
 	// Initializes this instance with the system time.
 	Random();
 
 	// Initializes this instance with the <seed> value.
-	Random(int seed);
+	Random(value_type seed);
 
 // Attributes
 public:
 	// Sets the seed of this generator to the <seed> value.
-	void SetSeed(int seed);
+	void SetSeed(value_type seed);
 
 // Operations
 public:
@@ -47,40 +49,41 @@ public:
 	void Randomize();
 
 	// Returns a pseudo-random number in range 0 to 0x7FFF.
-	int GetNext();
+	value_type GetNext();
 
 	// Returns a pseudo-random number in range 0 to <limit>.
-	int GetNext(int limit);
+	value_type GetNext(value_type limit);
 
 // Implementation
 private:
-	int seed;
+	value_type seed;
 };
 
-inline Random::Random() : seed(::time(NULL))
+inline Random::Random() :
+	seed((Random::value_type) ::time(NULL))
 {
 }
 
-inline Random::Random(int initial_seed) : seed(initial_seed)
+inline Random::Random(value_type initial_seed) : seed(initial_seed)
 {
 }
 
-inline void Random::SetSeed(int new_seed)
+inline void Random::SetSeed(value_type new_seed)
 {
 	seed = new_seed;
 }
 
 inline void Random::Randomize()
 {
-	seed = ::time(NULL);
+	seed = (value_type) ::time(NULL);
 }
 
-inline int Random::GetNext()
+inline Random::value_type Random::GetNext()
 {
 	return ((seed = seed * 0x41C64E6D + 0x3039) >> 0x10) & 0x7FFF;
 }
 
-inline int Random::GetNext(int limit)
+inline Random::value_type Random::GetNext(Random::value_type limit)
 {
 	return (GetNext() * limit) / 0x7FFF;
 }

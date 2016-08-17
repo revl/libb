@@ -32,8 +32,8 @@ struct MatchPatternTestCase
 
 bool MatchPatternTestCase::Test() const
 {
-	int string_length = B::CalcLength(string);
-	int pattern_length = B::CalcLength(pattern);
+	size_t string_length = B::CalcLength(string);
+	size_t pattern_length = B::CalcLength(pattern);
 
 	return Assert("MatchPatternZZ", B::MatchPatternZZ(string,
 			pattern)) &&
@@ -155,13 +155,13 @@ static const PtrAlignmentTestCase ptr_alignment_test_cases[] =
 
 int main()
 {
-	int index = sizeof(match_pattern_test_cases) /
+	size_t index = sizeof(match_pattern_test_cases) /
 		sizeof(*match_pattern_test_cases);
 
 	const MatchPatternTestCase* match_pattern_test_case =
 		match_pattern_test_cases;
 
-	while (--index >= 0)
+	while (index-- > 0)
 		if (!match_pattern_test_case++->Test())
 			return 1;
 
@@ -171,7 +171,7 @@ int main()
 	const VersionComparisonTestCase* version_comparison_test_case =
 		version_comparison_test_cases;
 
-	while (--index >= 0)
+	while (index-- > 0)
 		if (!version_comparison_test_case++->Test())
 			return 2;
 
@@ -181,7 +181,7 @@ int main()
 	const SignedCharAlignmentTestCase* signed_char_alignment_test_case =
 		signed_char_alignment_test_cases;
 
-	while (--index >= 0)
+	while (index-- > 0)
 		if (!signed_char_alignment_test_case++->Test())
 			return 3;
 
@@ -191,7 +191,7 @@ int main()
 	const PtrAlignmentTestCase* ptr_alignment_test_case =
 		ptr_alignment_test_cases;
 
-	while (--index >= 0)
+	while (index-- > 0)
 		if (!ptr_alignment_test_case++->Test())
 			return 4;
 

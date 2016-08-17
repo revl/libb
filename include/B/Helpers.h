@@ -44,10 +44,10 @@ void RemoveDirectory(const String& directory)
 // Determines the lowest position before which <value> can be inserted in
 // the ordered sequence of <count> elements preserving the ordering.
 template <class Iterator, class Type>
-Iterator FindLowerBound(Iterator first, int count, const Type& value)
+Iterator FindLowerBound(Iterator first, size_t count, const Type& value)
 {
 	Iterator middle;
-	int prev_count;
+	size_t prev_count;
 
 	while (count > 0)
 	{
@@ -86,9 +86,9 @@ inline void Swap(TYPE& object1, TYPE& object2)
 
 // Shuffles the sequence of objects using the pseudo-random number generator.
 template <class TYPE>
-inline void Shuffle(TYPE* objects, int count)
+inline void Shuffle(TYPE* objects, size_t count)
 {
-	int i;
+	size_t i;
 
 	for (i = 1; i < count; i++)
 		Swap(objects[i], objects[Random(i)]);
@@ -104,11 +104,11 @@ inline int Compare(const TYPE& object1, const TYPE& object2)
 
 // Compares two object sequences of the same length.
 template <class TYPE>
-inline int Compare(const TYPE* buffer1, const TYPE* buffer2, int count)
+inline int Compare(const TYPE* buffer1, const TYPE* buffer2, size_t count)
 {
 	register int cmp_res;
 
-	while (--count >= 0)
+	while (count-- > 0)
 		if ((cmp_res = Compare(*buffer1++, *buffer2++)) != 0)
 			return cmp_res;
 
@@ -118,20 +118,20 @@ inline int Compare(const TYPE* buffer1, const TYPE* buffer2, int count)
 // String helpers
 
 // Computes the length of null-terminated strings.
-inline int CalcLength(const char* string)
+inline size_t CalcLength(const char* string)
 {
 	return ::strlen(string);
 }
 
 // Computes the length of null-terminated strings (Unicode version).
-inline int CalcLength(const wchar_t* string)
+inline size_t CalcLength(const wchar_t* string)
 {
 	return ::wcslen(string);
 }
 
 // Computes the length of strings limited either by the
 // terminating null character or the <limit> parameter.
-inline int CalcLength(const char* string, int limit)
+inline size_t CalcLength(const char* string, size_t limit)
 {
 	const char* null_char_ptr = (const char*) memchr(string, 0, limit);
 
@@ -140,7 +140,7 @@ inline int CalcLength(const char* string, int limit)
 
 // Computes the length of strings limited either by the
 // terminating null character or the limit parameter (Unicode version).
-inline int CalcLength(const wchar_t* string, int limit)
+inline size_t CalcLength(const wchar_t* string, size_t limit)
 {
 	const wchar_t* null_char_ptr = wmemchr(string, L'\0', limit);
 
@@ -195,14 +195,14 @@ bool MatchPatternRR(
 int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.
-inline void Copy(char* result, const wchar_t* source, int length)
+inline void Copy(char* result, const wchar_t* source, size_t length)
 {
 	::wcstombs(result, source, reinterpret_cast<size_t&>(length));
 }
 
 // Converts a sequence of multibyte characters to a sequence of wide
 // characters.
-inline void Copy(wchar_t* result, const char* source, int length)
+inline void Copy(wchar_t* result, const char* source, size_t length)
 {
 	::mbstowcs(result, source, reinterpret_cast<size_t&>(length));
 }
@@ -212,27 +212,27 @@ inline void Copy(wchar_t* result, const char* source, int length)
 
 // Calls TYPE default constructor.
 template <class TYPE>
-inline void Construct(TYPE* objects, int count)
+inline void Construct(TYPE* objects, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		new (objects++) TYPE;
 }
 
 // Calls TYPE copy constructor (sequence initialization
 // with a single value).
 template <class TYPE>
-inline void Construct(TYPE* dest, const TYPE& value, int count)
+inline void Construct(TYPE* dest, const TYPE& value, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		new (dest++) TYPE(value);
 }
 
 // Calls TYPE copy constructor (initialization with objects
 // from the same-sized array).
 template <class TYPE>
-inline void Construct(TYPE* dest, const TYPE* source, int count)
+inline void Construct(TYPE* dest, const TYPE* source, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		new (dest++) TYPE(*source++);
 }
 
@@ -244,9 +244,9 @@ inline void Construct(TYPE* dest, const TYPE* source, int count)
 
 // Calls TYPE destructors.
 template <class TYPE>
-inline void Destroy(TYPE* objects, int count)
+inline void Destroy(TYPE* objects, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		(objects++)->~TYPE();
 }
 
@@ -256,27 +256,27 @@ inline void Destroy(TYPE* objects, int count)
 
 // Calls TYPE assignment operator (element-based array assignment).
 template <class TYPE>
-inline void Copy(TYPE* dest, const TYPE* source, int count)
+inline void Copy(TYPE* dest, const TYPE* source, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		*dest++ = *source++;
 }
 
 // Calls TYPE assignment operator (assignment of a single value
 // to each element of the array pointed to by <dest>).
 template <class TYPE>
-inline void Copy(TYPE* dest, const TYPE& value, int count)
+inline void Copy(TYPE* dest, const TYPE& value, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		*dest++ = value;
 }
 
 // Repeated calls of TYPE assignment operator (element-based
 // overlapping array assignment).
 template <class TYPE>
-inline void ReverseCopy(TYPE* dest, const TYPE* source, int count)
+inline void ReverseCopy(TYPE* dest, const TYPE* source, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		dest[count] = source[count];
 }
 
@@ -291,37 +291,37 @@ inline int Compare(const int& n1, const int& n2)
 }
 
 template <>
-inline void Construct(int* dest, int count)
+inline void Construct(int* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }
 
 template <>
-inline void Construct(int* dest, const int& value, int count)
+inline void Construct(int* dest, const int& value, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		*dest++ = value;
 }
 
 template <>
-inline void Construct(int* dest, const int* source, int count)
+inline void Construct(int* dest, const int* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(int*, int)
+inline void Destroy(int*, size_t)
 {
 }
 
 template <>
-inline void Copy(int* dest, const int* source, int count)
+inline void Copy(int* dest, const int* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void ReverseCopy(int* dest, const int* source, int count)
+inline void ReverseCopy(int* dest, const int* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -335,37 +335,37 @@ inline int Compare(const long& l1, const long& l2)
 }
 
 template <>
-inline void Construct(long* dest, int count)
+inline void Construct(long* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(long));
 }
 
 template <>
-inline void Construct(long* dest, const long& value, int count)
+inline void Construct(long* dest, const long& value, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		*dest++ = value;
 }
 
 template <>
-inline void Construct(long* dest, const long* source, int count)
+inline void Construct(long* dest, const long* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(long*, int)
+inline void Destroy(long*, size_t)
 {
 }
 
 template <>
-inline void Copy(long* dest, const long* source, int count)
+inline void Copy(long* dest, const long* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void ReverseCopy(long* dest, const long* source, int count)
+inline void ReverseCopy(long* dest, const long* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -379,48 +379,48 @@ inline int Compare(const char& c1, const char& c2)
 }
 
 template <>
-inline int Compare(const char* buffer1, const char* buffer2, int count)
+inline int Compare(const char* buffer1, const char* buffer2, size_t count)
 {
 	return Memory::Compare(buffer1, buffer2, count);
 }
 
 template <>
-inline void Construct(char* dest, int count)
+inline void Construct(char* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(char));
 }
 
 template <>
-inline void Construct(char* dest, const char& value, int count)
+inline void Construct(char* dest, const char& value, size_t count)
 {
 	Memory::Fill(dest, count, value);
 }
 
 template <>
-inline void Construct(char* dest, const char* source, int count)
+inline void Construct(char* dest, const char* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(char*, int)
+inline void Destroy(char*, size_t)
 {
 }
 
 template <>
-inline void Copy(char* dest, const char* source, int count)
+inline void Copy(char* dest, const char* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Copy(char* dest, const char& value, int count)
+inline void Copy(char* dest, const char& value, size_t count)
 {
 	Memory::Fill(dest, count, value);
 }
 
 template <>
-inline void ReverseCopy(char* dest, const char* source, int count)
+inline void ReverseCopy(char* dest, const char* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -434,37 +434,37 @@ inline int Compare(const wchar_t& c1, const wchar_t& c2)
 }
 
 template <>
-inline void Construct(wchar_t* dest, int count)
+inline void Construct(wchar_t* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }
 
 template <>
-inline void Construct(wchar_t* dest, const wchar_t* source, int count)
+inline void Construct(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(wchar_t*, int)
+inline void Destroy(wchar_t*, size_t)
 {
 }
 
 template <>
-inline void Copy(wchar_t* dest, const wchar_t* source, int count)
+inline void Copy(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Copy(wchar_t* dest, const wchar_t& value, int count)
+inline void Copy(wchar_t* dest, const wchar_t& value, size_t count)
 {
-	while (--count >= 0)
+	while (count-- > 0)
 		*dest++ = value;
 }
 
 template <>
-inline void ReverseCopy(wchar_t* dest, const wchar_t* source, int count)
+inline void ReverseCopy(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }

@@ -42,18 +42,18 @@ public:
 	String(const String& source);
 
 	// Constructs a string from a linear character array.
-	String(const Char* source, int count);
+	String(const Char* source, size_t count);
 
 	// Creates a string of <count> copies of source.
-	explicit String(Char source, int count = 1);
+	explicit String(Char source, size_t count = 1);
 
 // String Length
 public:
 	// Returns the size (in characters) of the allocated buffer.
-	int GetCapacity() const;
+	size_t GetCapacity() const;
 
 	// Returns the string length in characters.
-	int GetLength() const;
+	size_t GetLength() const;
 
 	// Returns true if the string is empty.
 	bool IsEmpty() const;
@@ -67,23 +67,23 @@ public:
 public:
 	// Discards the string contents and allocates the exact
 	// amount of memory for the buffer.
-	void AllocExactly(int capacity);
+	void AllocExactly(size_t capacity);
 
 	// Reallocates the buffer preserving the string contents.
-	void ReallocExactly(int capacity);
+	void ReallocExactly(size_t capacity);
 
 	// Does the same as AllocExactly(), but also allocates some
 	// extra characters for future string expansion.
-	void Alloc(int capacity);
+	void Alloc(size_t capacity);
 
 	// The same as ReallocExactly(), but also allocates some
 	// extra characters for future string expansion.
-	void Realloc(int capacity);
+	void Realloc(size_t capacity);
 
 	// Allocates enough memory to store <capacity> characters.
 	// In case if the buffer gets reallocated, the contents is
 	// not preserved.
-	void Reserve(int capacity);
+	void Reserve(size_t capacity);
 
 	// Frees memory that is not used by the string.
 	void FreeExtra();
@@ -103,21 +103,21 @@ public:
 	void UnlockBuffer();
 
 	// Unlocks the buffer and sets the new string length.
-	void UnlockBuffer(int new_length);
+	void UnlockBuffer(size_t new_length);
 
 // Single Character Access
 public:
 	// Returns the character with the specified index.
-	Char GetAt(int index) const;
+	Char GetAt(size_t index) const;
 
 	// Returns the character with the specified index.
-	Char operator [](int index) const;
+	Char operator [](size_t index) const;
 
 	// Overwrites character in position specified by <index>.
-	void SetAt(int index, Char value);
+	void SetAt(size_t index, Char value);
 
 	// Returns a reference to the specified character.
-	Char& operator [](int index);
+	Char& operator [](size_t index);
 
 	// Returns the first character of the string.
 	Char GetHead() const;
@@ -137,10 +137,10 @@ public:
 	void Assign(const String& source);
 
 	// Replaces the string contents with a copy of character array.
-	void Assign(const Char* source, int count);
+	void Assign(const Char* source, size_t count);
 
 	// Replaces the string contents with <count> copies of <source>.
-	void Assign(Char source, int count = 1);
+	void Assign(Char source, size_t count = 1);
 
 	// Assigns the contents of one string object to another.
 	String& operator =(const String& source);
@@ -151,32 +151,32 @@ public:
 // Replacement
 public:
 	// Replaces a part of this string with a character sequence.
-	void Replace(int index, const Char* source, int count);
+	void Replace(size_t index, const Char* source, size_t count);
 
 	// Replaces a part of this string with a fill character.
-	void Replace(int index, Char source, int count = 1);
+	void Replace(size_t index, Char source, size_t count = 1);
 
 // Insertion
 public:
 	// Inserts a character array into this string.
-	void Insert(int index, const Char* source, int count);
+	void Insert(size_t index, const Char* source, size_t count);
 
 	// Inserts the contents of <source> into this string.
-	void Insert(int index, const String& source);
+	void Insert(size_t index, const String& source);
 
 	// Inserts <count> copies of <source> into this string.
-	void Insert(int index, Char source, int count = 1);
+	void Insert(size_t index, Char source, size_t count = 1);
 
 // Concatenation
 public:
 	// Appends characters from <source> to this string.
-	void Append(const Char* source, int count);
+	void Append(const Char* source, size_t count);
 
 	// Appends the contents of <source> at the end of this string.
 	void Append(const String& source);
 
 	// Appends <count> copies of <source> to this string.
-	void Append(Char source, int count = 1);
+	void Append(Char source, size_t count = 1);
 
 	// Operator version of Append(source).
 	String& operator +=(const String& source);
@@ -195,7 +195,7 @@ public:
 // Deletion
 public:
 	// Deletes a range of characters.
-	void Delete(int index, int count = 1);
+	void Delete(size_t index, size_t count = 1);
 
 	// Empties the string.
 	void Empty();
@@ -258,10 +258,10 @@ public:
 // Searching
 public:
 	// Finds a character in this string.
-	int Find(Char c) const;
+	size_t Find(Char c) const;
 
 	// Finds the last occurrence of a character in this string.
-	int ReverseFind(Char c) const;
+	size_t ReverseFind(Char c) const;
 
 // Character Removal Operations
 public:
@@ -281,22 +281,22 @@ protected:
 	struct Data
 	{
 		RefCount refs;
-		int capacity;
-		int length;
+		size_t capacity;
+		size_t length;
 		Char buffer[1];
 	};
 
 	Char* buffer;
 
-	static int Inc(int length);
+	static size_t Inc(size_t length);
 
 	bool IsShared() const;
 
 	static Char* GetEmptyBuffer();
 
-	static Char* AllocBufferExactly(int capacity);
+	static Char* AllocBufferExactly(size_t capacity);
 
-	static Char* AllocBuffer(int length);
+	static Char* AllocBuffer(size_t length);
 
 	static Data* GetData(const Char* buffer);
 	Data* GetData() const;
@@ -319,12 +319,13 @@ inline String::String(const String& source) : buffer(GetEmptyBuffer())
 	Assign(source);
 }
 
-inline String::String(const Char* source, int count) : buffer(GetEmptyBuffer())
+inline String::String(const Char* source, size_t count) :
+	buffer(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
 
-inline String::String(Char source, int count) : buffer(GetEmptyBuffer())
+inline String::String(Char source, size_t count) : buffer(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
@@ -344,12 +345,12 @@ inline bool String::IsLocked() const
 	return GetData()->refs <= 0;
 }
 
-inline int String::GetCapacity() const
+inline size_t String::GetCapacity() const
 {
 	return GetData()->capacity;
 }
 
-inline int String::GetLength() const
+inline size_t String::GetLength() const
 {
 	return GetData()->length;
 }
@@ -359,22 +360,20 @@ inline bool String::IsEmpty() const
 	return GetLength() == 0;
 }
 
-inline int String::Inc(int length)
+inline size_t String::Inc(size_t length)
 {
-	B_ASSERT(length >= 0);
-
-	int increment;
+	size_t increment;
 
 	return length + ((increment = length >> 3) > 0x4 ?
 		(increment <= 0x400 ? increment : 0x400) : 0x4);
 }
 
-inline void String::Alloc(int capacity)
+inline void String::Alloc(size_t capacity)
 {
 	AllocExactly(Inc(capacity));
 }
 
-inline void String::Realloc(int capacity)
+inline void String::Realloc(size_t capacity)
 {
 	ReallocExactly(Inc(capacity));
 }
@@ -384,7 +383,7 @@ inline bool String::IsShared() const
 	return GetData()->refs > 1;
 }
 
-inline void String::Reserve(int capacity)
+inline void String::Reserve(size_t capacity)
 {
 	if (GetCapacity() < capacity || IsShared())
 		Realloc(capacity);
@@ -392,7 +391,7 @@ inline void String::Reserve(int capacity)
 
 inline void String::FreeExtra()
 {
-	int length = GetLength();
+	size_t length = GetLength();
 
 	if (!IsShared() && length != GetCapacity())
 	{
@@ -414,7 +413,7 @@ inline String::operator const Char*() const
 	return buffer;
 }
 
-inline Char* String::AllocBuffer(int length)
+inline Char* String::AllocBuffer(size_t length)
 {
 	Char* new_buffer = AllocBufferExactly(Inc(length));
 	new_buffer[GetData(new_buffer)->length = length] = 0;
@@ -450,7 +449,7 @@ inline void String::UnlockBuffer()
 	++GetData()->refs;
 }
 
-inline void String::UnlockBuffer(int new_length)
+inline void String::UnlockBuffer(size_t new_length)
 {
 	B_ASSERT(IsLocked() && new_length <= GetCapacity());
 
@@ -458,35 +457,31 @@ inline void String::UnlockBuffer(int new_length)
 	++GetData()->refs;
 }
 
-inline Char String::GetAt(int index) const
+inline Char String::GetAt(size_t index) const
 {
-	B_ASSERT(index >= 0 &&
-		index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	return buffer[index];
 }
 
-inline Char String::operator [](int index) const
+inline Char String::operator [](size_t index) const
 {
-	B_ASSERT(index >= 0 &&
-		index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	return buffer[index];
 }
 
-inline void String::SetAt(int index, Char value)
+inline void String::SetAt(size_t index, Char value)
 {
-	B_ASSERT(index >= 0 &&
-		index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	CopyBeforeWrite();
 	buffer[index] = value;
 }
 
-inline Char& String::operator [](int index)
+inline Char& String::operator [](size_t index)
 {
-	B_ASSERT(index >= 0 &&
-		index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	CopyBeforeWrite();
 	return buffer[index];
@@ -534,7 +529,7 @@ inline String& String::operator =(Char source)
 	return *this;
 }
 
-inline void String::Insert(int index, const String& source)
+inline void String::Insert(size_t index, const String& source)
 {
 	Insert(index, source.GetBuffer(), source.GetLength());
 }
@@ -648,7 +643,7 @@ inline void String::Trim(const Char* samples)
 inline String operator +(Char left_side, const String& right_side)
 {
 	String result;
-	int length = right_side.GetLength();
+	size_t length = right_side.GetLength();
 
 	result.Alloc(length + 1);
 	Char* buffer = result.LockBuffer();
@@ -718,8 +713,8 @@ B_END_NAMESPACE
 	static struct \
 	{ \
 		B::RefCount refs; \
-		int capacity; \
-		int length; \
+		size_t capacity; \
+		size_t length; \
 		B_CHAR buffer[sizeof(value)]; \
 	} \
 	const name##Data = \

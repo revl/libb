@@ -22,7 +22,7 @@
 
 B_BEGIN_NAMESPACE
 
-void* Memory::Alloc(int size)
+void* Memory::Alloc(size_t size)
 	throw (Memory::Exception)
 {
 	register void* block;
@@ -33,13 +33,13 @@ void* Memory::Alloc(int size)
 	return block;
 }
 
-void* Memory::FixedAlloc(int size)
+void* Memory::FixedAlloc(size_t size)
 	throw (Memory::Exception)
 {
 	return Alloc(size);
 }
 
-void Memory::FixedFree(void* chunk, int /*size*/)
+void Memory::FixedFree(void* chunk, size_t /*size*/)
 {
 	Free(chunk);
 }

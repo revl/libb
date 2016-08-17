@@ -93,14 +93,14 @@ int main()
 	if (!(str1 == str2))
 		return 5;
 
-	int position = str3.ReverseFind(B_TEXT('b'));
+	size_t position = str3.ReverseFind(B_TEXT('b'));
 	if (position != 1)
 		return 6;
 
 	if (str3[position] != B_TEXT('b'))
 		return 7;
 
-	if (str4.ReverseFind(B_TEXT('b')) != -1)
+	if (str4.ReverseFind(B_TEXT('b')) != (size_t) -1)
 		return 8;
 
 	str3.Format(B_TEXT("abc%s"), B_TEXT("xxx"));

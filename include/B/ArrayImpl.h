@@ -28,7 +28,7 @@
 B_BEGIN_NAMESPACE
 
 template <class TYPE>
-void Array<TYPE>::AllocExactly(int capacity)
+void Array<TYPE>::AllocExactly(size_t capacity)
 {
 	B_ASSERT(capacity >= 0);
 	B_ASSERT(!IsLocked());
@@ -52,7 +52,7 @@ void Array<TYPE>::AllocExactly(int capacity)
 }
 
 template <class TYPE>
-void Array<TYPE>::ReallocExactly(int capacity)
+void Array<TYPE>::ReallocExactly(size_t capacity)
 {
 	B_ASSERT(capacity >= 0);
 	B_ASSERT(!IsLocked());
@@ -61,7 +61,7 @@ void Array<TYPE>::ReallocExactly(int capacity)
 	// if the buffer is shared, it must be reallocated.
 	if (GetCapacity() != capacity || IsShared())
 	{
-		int size = GetSize() < capacity ? GetSize() : capacity;
+		size_t size = GetSize() < capacity ? GetSize() : capacity;
 
 		if (capacity > 0)
 		{
@@ -93,7 +93,7 @@ void Array<TYPE>::Assign(const Array<TYPE>& source)
 }
 
 template <class TYPE>
-void Array<TYPE>::Assign(const TYPE* source, int count)
+void Array<TYPE>::Assign(const TYPE* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -126,7 +126,7 @@ void Array<TYPE>::Assign(const TYPE* source, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::Assign(const TYPE& element, int count)
+void Array<TYPE>::Assign(const TYPE& element, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -158,7 +158,7 @@ void Array<TYPE>::Assign(const TYPE& element, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::SetAt(int index, const TYPE* source, int count)
+void Array<TYPE>::SetAt(size_t index, const TYPE* source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
 	// The source buffer cannot be a part of this array
@@ -167,9 +167,10 @@ void Array<TYPE>::SetAt(int index, const TYPE* source, int count)
 
 	if (count > 0)
 	{
-		int tail_index = index + count;
+		size_t tail_index = index + count;
 
 		if (!IsShared())
+		{
 			if (tail_index <= GetSize())
 			{
 				// This is the most frequent case,
@@ -192,6 +193,7 @@ void Array<TYPE>::SetAt(int index, const TYPE* source, int count)
 
 					return;
 				}
+		}
 
 		// Either the buffer is shared among instances or
 		// index of the last element exceeds array boundaries.
@@ -225,15 +227,16 @@ void Array<TYPE>::SetAt(int index, const TYPE* source, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::SetAt(int index, const TYPE& element, int count)
+void Array<TYPE>::SetAt(size_t index, const TYPE& element, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
 
 	if (count > 0)
 	{
-		int tail_index = index + count;
+		size_t tail_index = index + count;
 
 		if (!IsShared())
+		{
 			if (tail_index <= GetSize())
 			{
 				Copy(buffer + index, element, count);
@@ -253,6 +256,7 @@ void Array<TYPE>::SetAt(int index, const TYPE& element, int count)
 
 					return;
 				}
+		}
 
 		B_ASSERT(!IsLocked());
 
@@ -281,7 +285,7 @@ void Array<TYPE>::SetAt(int index, const TYPE& element, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::InsertAt(int index, const TYPE* source, int count)
+void Array<TYPE>::InsertAt(size_t index, const TYPE* source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
 	// <source> must not be a part of this array
@@ -291,8 +295,8 @@ void Array<TYPE>::InsertAt(int index, const TYPE* source, int count)
 	if (count > 0)
 	{
 		TYPE* tail = buffer + index;
-		int tail_size = GetSize() - index;
-		int new_size = GetSize() + count;
+		size_t tail_size = GetSize() - index;
+		size_t new_size = GetSize() + count;
 
 		if (new_size > GetCapacity() || IsShared())
 		{
@@ -331,15 +335,15 @@ void Array<TYPE>::InsertAt(int index, const TYPE* source, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::InsertAt(int index, const TYPE& element, int count)
+void Array<TYPE>::InsertAt(size_t index, const TYPE& element, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
 
 	if (count > 0)
 	{
 		TYPE* tail = buffer + index;
-		int tail_size = GetSize() - index;
-		int new_size = GetSize() + count;
+		size_t tail_size = GetSize() - index;
+		size_t new_size = GetSize() + count;
 
 		if (new_size > GetCapacity() || IsShared())
 		{
@@ -377,7 +381,7 @@ void Array<TYPE>::InsertAt(int index, const TYPE& element, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::Append(const TYPE* source, int count)
+void Array<TYPE>::Append(const TYPE* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -392,7 +396,7 @@ void Array<TYPE>::Append(const TYPE* source, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::Append(const TYPE& element, int count)
+void Array<TYPE>::Append(const TYPE& element, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -407,7 +411,7 @@ void Array<TYPE>::Append(const TYPE& element, int count)
 }
 
 template <class TYPE>
-void Array<TYPE>::RemoveAt(int index, int count)
+void Array<TYPE>::RemoveAt(size_t index, size_t count)
 {
 	B_ASSERT(index >= 0 && count >= 0);
 
@@ -416,7 +420,7 @@ void Array<TYPE>::RemoveAt(int index, int count)
 
 	if (count > 0)
 	{
-		int new_size = GetSize() - count;
+		size_t new_size = GetSize() - count;
 
 		if (!IsShared())
 		{
@@ -467,13 +471,14 @@ TYPE* Array<TYPE>::GetEmptyBuffer()
 }
 
 template <class TYPE>
-TYPE* Array<TYPE>::AllocBufferExactly(int capacity)
+TYPE* Array<TYPE>::AllocBufferExactly(size_t capacity)
 {
 	Buffer* new_buffer = (Buffer*) Memory::Alloc((size_t)
 		&((Buffer*) (sizeof(TYPE) * capacity))->first);
 
+	new_buffer->refs = 0;
 	new_buffer->capacity = capacity;
-	new_buffer->refs = new_buffer->size = 0;
+	new_buffer->size = 0;
 
 	return &new_buffer->first;
 }

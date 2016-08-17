@@ -51,7 +51,7 @@ public:
 	// Allocates <size> number of bytes and returns a pointer to
 	// the allocated memory block.
 	// Throws Memory::Exception if an out-of-memory condition occurs.
-	static void* Alloc(int size)
+	static void* Alloc(size_t size)
 		throw (Exception);
 
 	// Frees a memory block allocated by a previous call to
@@ -62,31 +62,31 @@ public:
 	// from the internal list of free chunks. If no such chunk
 	// is found, the method allocates a new one from the heap.
 	// Throws Memory::Exception if an out-of-memory condition occurs.
-	static void* FixedAlloc(int size)
+	static void* FixedAlloc(size_t size)
 		throw (Exception);
 
 	// Places a chunk of memory allocated by a previous call
 	// to the FixedAlloc() method back to the list of free chunks.
-	static void FixedFree(void* chunk, int size);
+	static void FixedFree(void* chunk, size_t size);
 
 	// Fills <length> bytes of memory pointed to by <block> with the
 	// specified byte value.
-	static void Fill(void* block, int length, char filler);
+	static void Fill(void* block, size_t length, char filler);
 
 	// Fills a block of memory with zeros.
-	static void Zero(void* block, int length);
+	static void Zero(void* block, size_t length);
 
 	// Copies a block of memory from one location to another.
 	// If the source and destination blocks overlap, the result is
 	// undefined. For overlapped blocks, use Move().
-	static void Copy(void* destination, const void* source, int length);
+	static void Copy(void* destination, const void* source, size_t length);
 
 	// Moves a block of memory from one location to another.
 	// The source and destination blocks may overlap.
-	static void Move(void* destination, const void* source, int length);
+	static void Move(void* destination, const void* source, size_t length);
 
 	// Compares two same-sized memory blocks.
-	static int Compare(const void* block1, const void* block2, int length);
+	static int Compare(const void* p1, const void* p2, size_t length);
 
 	// Aligns an integer value on the <alignment> boundary.
 	// The boundary must be given as a power of two.
@@ -106,30 +106,29 @@ inline void Memory::Free(void* block)
 	free(block);
 }
 
-inline void Memory::Fill(void* block, int length, char filler)
+inline void Memory::Fill(void* block, size_t length, char filler)
 {
 	memset(block, filler, length);
 }
 
-inline void Memory::Zero(void* block, int length)
+inline void Memory::Zero(void* block, size_t length)
 {
 	memset(block, 0, length);
 }
 
-inline void Memory::Copy(void* destination, const void* source, int length)
+inline void Memory::Copy(void* destination, const void* source, size_t length)
 {
 	memcpy(destination, source, length);
 }
 
-inline void Memory::Move(void* destination, const void* source, int length)
+inline void Memory::Move(void* destination, const void* source, size_t length)
 {
 	memmove(destination, source, length);
 }
 
-inline int Memory::Compare(const void* block1,
-	const void* block2, int length)
+inline int Memory::Compare(const void* p1, const void* p2, size_t length)
 {
-	return memcmp(block1, block2, length);
+	return memcmp(p1, p2, length);
 }
 
 inline size_t Memory::Align(size_t value, size_t alignment)

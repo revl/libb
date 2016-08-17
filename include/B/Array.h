@@ -39,19 +39,19 @@ public:
 	Array(const Array<TYPE>& source);
 
 	// Constructs an array from a sequence of objects.
-	Array(const TYPE* source, int count);
+	Array(const TYPE* source, size_t count);
 
 	// Creates an array of <count> copies of <element>.
-	Array(const TYPE& element, int count = 1);
+	Array(const TYPE& element, size_t count = 1);
 
 // Array Length
 public:
 	// Returns the number of elements for which memory has
 	// been allocated.
-	int GetCapacity() const;
+	size_t GetCapacity() const;
 
 	// Returns the number of elements in the array.
-	int GetSize() const;
+	size_t GetSize() const;
 
 	// Checks if the array is empty.
 	bool IsEmpty() const;
@@ -64,16 +64,16 @@ public:
 // Memory Management
 public:
 	// Allocates the exact amount of memory for the buffer.
-	void AllocExactly(int capacity);
+	void AllocExactly(size_t capacity);
 
 	// Reallocates the buffer preserving its contents.
-	void ReallocExactly(int capacity);
+	void ReallocExactly(size_t capacity);
 
 	// Allocates enough memory to store <capacity> elements.
-	void Alloc(int capacity);
+	void Alloc(size_t capacity);
 
 	// Reallocates the buffer preserving its contents.
-	void Realloc(int capacity);
+	void Realloc(size_t capacity);
 
 	// Frees memory that is not used by the elements.
 	void FreeExtra();
@@ -95,34 +95,16 @@ public:
 // Element Access
 public:
 	// Returns a constant reference to an element.
-	const TYPE& GetAt(int index) const;
+	const TYPE& GetAt(size_t index) const;
 
 	// Does the same thing as GetAt().
-	const TYPE& operator [](int index) const;
-
-	// Does the same thing as GetAt().
-	const TYPE& operator [](long index) const;
-
-	// Does the same thing as GetAt().
-	const TYPE& operator [](unsigned int index) const;
-
-	// Does the same thing as GetAt().
-	const TYPE& operator [](unsigned long index) const;
+	const TYPE& operator [](size_t index) const;
 
 	// Returns a modifiable reference to an element.
-	TYPE& GetAt(int index);
+	TYPE& GetAt(size_t index);
 
 	// Does the same thing as GetAt().
-	TYPE& operator [](int index);
-
-	// Does the same thing as GetAt().
-	TYPE& operator [](long index);
-
-	// Does the same thing as GetAt().
-	TYPE& operator [](unsigned int index);
-
-	// Does the same thing as GetAt().
-	TYPE& operator [](unsigned long index);
+	TYPE& operator [](size_t index);
 
 	// Returns a constant reference to the first array element.
 	const TYPE& GetHead() const;
@@ -142,10 +124,10 @@ public:
 	void Assign(const Array<TYPE>& source);
 
 	// Assigns a sequence of elements to this object.
-	void Assign(const TYPE* source, int count);
+	void Assign(const TYPE* source, size_t count);
 
 	// Creates an array with <count> copies of <element>.
-	void Assign(const TYPE& element, int count = 1);
+	void Assign(const TYPE& element, size_t count = 1);
 
 	// A shorter version of Assign(source).
 	Array<TYPE>& operator =(const Array<TYPE>& source);
@@ -154,26 +136,26 @@ public:
 	Array<TYPE>& operator =(const TYPE& element);
 
 	// Overwrites array range with the contents of <source>.
-	void SetAt(int index, const Array<TYPE>& source);
+	void SetAt(size_t index, const Array<TYPE>& source);
 
 	// Overwrites array range with copies of elements
 	// pointed to by <source>.
-	void SetAt(int index, const TYPE* source, int count);
+	void SetAt(size_t index, const TYPE* source, size_t count);
 
 	// Overwrites array range with <count> copies of <element>.
-	void SetAt(int index, const TYPE& element, int count = 1);
+	void SetAt(size_t index, const TYPE& element, size_t count = 1);
 
 // Insertion
 public:
 	// Inserts the entire contents of <source> into this array
 	// at the specified position.
-	void InsertAt(int index, const Array<TYPE>& source);
+	void InsertAt(size_t index, const Array<TYPE>& source);
 
 	// Inserts elements pointed to by <source> at the specified position.
-	void InsertAt(int index, const TYPE* source, int count);
+	void InsertAt(size_t index, const TYPE* source, size_t count);
 
 	// Inserts <count> copies of <element> at the specified position.
-	void InsertAt(int index, const TYPE& element, int count = 1);
+	void InsertAt(size_t index, const TYPE& element, size_t count = 1);
 
 // Appending
 public:
@@ -181,10 +163,10 @@ public:
 	void Append(const Array<TYPE>& source);
 
 	// Appends this array with elements from <source>.
-	void Append(const TYPE* source, int count);
+	void Append(const TYPE* source, size_t count);
 
 	// Appends this array with <count> copies of <element>.
-	void Append(const TYPE& element, int count = 1);
+	void Append(const TYPE& element, size_t count = 1);
 
 	// The same as Append(source).
 	Array<TYPE>& operator +=(const Array<TYPE>& source);
@@ -203,7 +185,7 @@ public:
 // Removal
 public:
 	// Removes a number of elements at the specified position.
-	void RemoveAt(int index, int count = 1);
+	void RemoveAt(size_t index, size_t count = 1);
 
 	// Empties the array.
 	void RemoveAll();
@@ -213,8 +195,8 @@ private:
 	struct MetaData
 	{
 		RefCount refs;
-		int capacity;
-		int size;
+		size_t capacity;
+		size_t size;
 	};
 
 	struct Wrapper
@@ -237,15 +219,15 @@ private:
 
 	TYPE* buffer;
 
-	static int Inc(int size);
+	static size_t Inc(size_t size);
 
 	bool IsShared() const;
 
 	static TYPE* GetEmptyBuffer();
 
-	static TYPE* AllocBufferExactly(int capacity);
+	static TYPE* AllocBufferExactly(size_t capacity);
 
-	static TYPE* AllocBuffer(int capacity);
+	static TYPE* AllocBuffer(size_t capacity);
 
 	static MetaData* GetMetaData(const TYPE* buffer);
 	MetaData* GetMetaData() const;
@@ -275,27 +257,27 @@ inline Array<TYPE>::Array(const Array<TYPE>& source)
 }
 
 template <class TYPE>
-inline Array<TYPE>::Array(const TYPE* source, int count)
+inline Array<TYPE>::Array(const TYPE* source, size_t count)
 	: buffer(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
 
 template <class TYPE>
-inline Array<TYPE>::Array(const TYPE& element, int count)
+inline Array<TYPE>::Array(const TYPE& element, size_t count)
 	: buffer(GetEmptyBuffer())
 {
 	Assign(element, count);
 }
 
 template <class TYPE>
-inline int Array<TYPE>::GetCapacity() const
+inline size_t Array<TYPE>::GetCapacity() const
 {
 	return GetMetaData()->capacity;
 }
 
 template <class TYPE>
-inline int Array<TYPE>::GetSize() const
+inline size_t Array<TYPE>::GetSize() const
 {
 	return GetMetaData()->size;
 }
@@ -313,13 +295,13 @@ inline bool Array<TYPE>::IsLocked() const
 }
 
 template <class TYPE>
-inline void Array<TYPE>::Alloc(int capacity)
+inline void Array<TYPE>::Alloc(size_t capacity)
 {
 	AllocExactly(Inc(capacity));
 }
 
 template <class TYPE>
-inline void Array<TYPE>::Realloc(int capacity)
+inline void Array<TYPE>::Realloc(size_t capacity)
 {
 	ReallocExactly(Inc(capacity));
 }
@@ -361,7 +343,7 @@ inline void Array<TYPE>::UnlockBuffer()
 }
 
 template <class TYPE>
-inline const TYPE& Array<TYPE>::GetAt(int index) const
+inline const TYPE& Array<TYPE>::GetAt(size_t index) const
 {
 	B_ASSERT(index >= 0 && index < GetSize());
 
@@ -369,7 +351,7 @@ inline const TYPE& Array<TYPE>::GetAt(int index) const
 }
 
 template <class TYPE>
-inline const TYPE& Array<TYPE>::operator [](int index) const
+inline const TYPE& Array<TYPE>::operator [](size_t index) const
 {
 	B_ASSERT(index >= 0 && index < GetSize());
 
@@ -377,31 +359,7 @@ inline const TYPE& Array<TYPE>::operator [](int index) const
 }
 
 template <class TYPE>
-inline const TYPE& Array<TYPE>::operator [](long index) const
-{
-	B_ASSERT(index >= 0 && index < GetSize());
-
-	return buffer[index];
-}
-
-template <class TYPE>
-inline const TYPE& Array<TYPE>::operator [](unsigned int index) const
-{
-	B_ASSERT(index < (unsigned int) GetSize());
-
-	return buffer[index];
-}
-
-template <class TYPE>
-inline const TYPE& Array<TYPE>::operator [](unsigned long index) const
-{
-	B_ASSERT(index < (unsigned long) GetSize());
-
-	return buffer[index];
-}
-
-template <class TYPE>
-inline TYPE& Array<TYPE>::GetAt(int index)
+inline TYPE& Array<TYPE>::GetAt(size_t index)
 {
 	B_ASSERT(index >= 0 && index < GetSize());
 
@@ -410,36 +368,9 @@ inline TYPE& Array<TYPE>::GetAt(int index)
 }
 
 template <class TYPE>
-inline TYPE& Array<TYPE>::operator [](int index)
+inline TYPE& Array<TYPE>::operator [](size_t index)
 {
 	B_ASSERT(index >= 0 && index < GetSize());
-
-	CopyBeforeWrite();
-	return buffer[index];
-}
-
-template <class TYPE>
-inline TYPE& Array<TYPE>::operator [](long index)
-{
-	B_ASSERT(index >= 0 && index < (long) GetSize());
-
-	CopyBeforeWrite();
-	return buffer[index];
-}
-
-template <class TYPE>
-inline TYPE& Array<TYPE>::operator [](unsigned int index)
-{
-	B_ASSERT(index < (unsigned int) GetSize());
-
-	CopyBeforeWrite();
-	return buffer[index];
-}
-
-template <class TYPE>
-inline TYPE& Array<TYPE>::operator [](unsigned long index)
-{
-	B_ASSERT(index < (unsigned long) GetSize());
 
 	CopyBeforeWrite();
 	return buffer[index];
@@ -494,13 +425,13 @@ inline Array<TYPE>& Array<TYPE>::operator =(const TYPE& element)
 }
 
 template <class TYPE>
-void Array<TYPE>::SetAt(int index, const Array<TYPE>& source)
+void Array<TYPE>::SetAt(size_t index, const Array<TYPE>& source)
 {
 	SetAt(index, source.GetBuffer(), source.GetSize());
 }
 
 template <class TYPE>
-inline void Array<TYPE>::InsertAt(int index, const Array<TYPE>& source)
+inline void Array<TYPE>::InsertAt(size_t index, const Array<TYPE>& source)
 {
 	InsertAt(index, source.GetBuffer(), source.GetSize());
 }
@@ -541,11 +472,11 @@ inline Array<TYPE> Array<TYPE>::operator +(const TYPE& element) const
 }
 
 template <class TYPE>
-inline int Array<TYPE>::Inc(int size)
+inline size_t Array<TYPE>::Inc(size_t size)
 {
 	B_ASSERT(size >= 0);
 
-	int increment;
+	size_t increment;
 
 	return size + ((increment = size >> 3) > 0x4 ?
 		(increment <= 0x400 ? increment : 0x400) : 0x4);
@@ -558,7 +489,7 @@ inline bool Array<TYPE>::IsShared() const
 }
 
 template <class TYPE>
-inline TYPE* Array<TYPE>::AllocBuffer(int capacity)
+inline TYPE* Array<TYPE>::AllocBuffer(size_t capacity)
 {
 	return AllocBufferExactly(Inc(capacity));
 }

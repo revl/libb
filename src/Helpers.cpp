@@ -60,7 +60,7 @@ void MakePath(const String& path)
 		if (e.GetErrorCode() != SystemException::PathNotFound)
 			throw;
 
-		int slash_pos;
+		size_t slash_pos;
 
 		if ((slash_pos = path.ReverseFind(B_PATH_SEPARATOR)) > 0)
 		{
@@ -84,7 +84,7 @@ bool MatchPatternZZ(const B_CHAR* string, const B_CHAR* pattern)
 		if (*pattern == '\0')
 			return *string == '\0';
 
-		if (*string == '\0' || *string != *pattern && *pattern != '?')
+		if (*string == '\0' || (*string != *pattern && *pattern != '?'))
 			return false;
 
 		++string;
@@ -138,7 +138,7 @@ bool MatchPatternZR(const B_CHAR* string,
 		if (*pattern == '*')
 			break;
 
-		if (*string == '\0' || *string != *pattern && *pattern != '?')
+		if (*string == '\0' || (*string != *pattern && *pattern != '?'))
 			return false;
 
 		++string;
@@ -189,7 +189,7 @@ bool MatchPatternRZ(const B_CHAR* string, const B_CHAR* string_end,
 			return string == string_end;
 
 		if (string == string_end ||
-			*string != *pattern && *pattern != '?')
+			(*string != *pattern && *pattern != '?'))
 			return false;
 
 		++string;
@@ -244,7 +244,7 @@ bool MatchPatternRR(const B_CHAR* string, const B_CHAR* string_end,
 			break;
 
 		if (string == string_end ||
-			*string != *pattern && *pattern != '?')
+			(*string != *pattern && *pattern != '?'))
 			return false;
 
 		++string;
