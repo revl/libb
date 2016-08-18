@@ -111,7 +111,7 @@ if test "$enable_threads" = yes; then
 	configsuffix="${configsuffix}_r"
 	CONFIG_PARAMS=" --multithreaded$CONFIG_PARAMS"
 
-	ACX_PTHREAD(,[AC_MSG_ERROR(
+	AX_PTHREAD(,[AC_MSG_ERROR(
 		[no pthreads support; consider --disable-threads])])
 
 	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
