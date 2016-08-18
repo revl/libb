@@ -22,7 +22,7 @@
 
 int main()
 {
-	B::Random r1(1), r2(1), r3;
+	b::Random r1(1), r2(1), r3;
 
 	bool test = r1.GetNext() == r2.GetNext();
 

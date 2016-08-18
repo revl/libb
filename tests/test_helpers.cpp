@@ -32,16 +32,16 @@ struct MatchPatternTestCase
 
 bool MatchPatternTestCase::Test() const
 {
-	size_t string_length = B::CalcLength(string);
-	size_t pattern_length = B::CalcLength(pattern);
+	size_t string_length = b::CalcLength(string);
+	size_t pattern_length = b::CalcLength(pattern);
 
-	return Assert("MatchPatternZZ", B::MatchPatternZZ(string,
+	return Assert("MatchPatternZZ", b::MatchPatternZZ(string,
 			pattern)) &&
-		Assert("MatchPatternZR", B::MatchPatternZR(string,
+		Assert("MatchPatternZR", b::MatchPatternZR(string,
 			pattern, pattern + pattern_length)) &&
-		Assert("MatchPatternRZ", B::MatchPatternRZ(string,
+		Assert("MatchPatternRZ", b::MatchPatternRZ(string,
 			string + string_length, pattern)) &&
-		Assert("MatchPatternRR", B::MatchPatternRR(string,
+		Assert("MatchPatternRR", b::MatchPatternRR(string,
 			string + string_length, pattern,
 			pattern + pattern_length));
 }
@@ -90,7 +90,7 @@ struct VersionComparisonTestCase
 
 bool VersionComparisonTestCase::Test() const
 {
-	int diff = B::CompareVersionStrings(version1, version2);
+	int diff = b::CompareVersionStrings(version1, version2);
 
 	if (expected_result == 1)
 		return diff > 0;
@@ -121,7 +121,7 @@ struct SignedCharAlignmentTestCase
 
 inline bool SignedCharAlignmentTestCase::Test() const
 {
-	return B::Align(value, alignment) == expected_result;
+	return b::Align(value, alignment) == expected_result;
 }
 
 static const SignedCharAlignmentTestCase signed_char_alignment_test_cases[] =
@@ -143,7 +143,7 @@ struct PtrAlignmentTestCase
 
 inline bool PtrAlignmentTestCase::Test() const
 {
-	return B::Align(value, alignment) == expected_result;
+	return b::Align(value, alignment) == expected_result;
 }
 
 static const PtrAlignmentTestCase ptr_alignment_test_cases[] =

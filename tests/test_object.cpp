@@ -146,5 +146,5 @@ B_END_NAMESPACE
 
 int main()
 {
-	return B::TestObject();
+	return b::TestObject();
 }

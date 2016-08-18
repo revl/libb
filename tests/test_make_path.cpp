@@ -33,58 +33,58 @@ int main()
 
 	try
 	{
-		B::MakeDirectory(B_STATIC_STRING(test_dir));
+		b::MakeDirectory(B_STATIC_STRING(test_dir));
 
 		++test_number;
 
 		// Make sure the directory is created.
-		if (!B::IsDirectory(B_STATIC_STRING(test_dir)))
+		if (!b::IsDirectory(B_STATIC_STRING(test_dir)))
 			return test_number;
 
 		++test_number;
 
 		// Creation of existing directories must succeed.
-		B::MakeDirectory(B_STATIC_STRING(test_dir));
+		b::MakeDirectory(B_STATIC_STRING(test_dir));
 
 		++test_number;
 
-		B::MakeDirectory(B_STATIC_STRING(dot_dir));
+		b::MakeDirectory(B_STATIC_STRING(dot_dir));
 
 		++test_number;
 
 		// Empty parameter is allowed.
-		B::MakeDirectory(B::String());
+		b::MakeDirectory(b::String());
 
 		++test_number;
 
 		// MakeDirectory() should not create intermediate
 		// directories.
-		if (!B::IsDirectory(B_STATIC_STRING(new_dir)))
+		if (!b::IsDirectory(B_STATIC_STRING(new_dir)))
 			try
 			{
-				B::MakeDirectory(B_STATIC_STRING(new_dir));
+				b::MakeDirectory(B_STATIC_STRING(new_dir));
 				return test_number;
 			}
-			catch (B::SystemException&)
+			catch (b::SystemException&)
 			{
 			}
 
 		++test_number;
 
 		// And MakePath() should.
-		B::MakePath(B_STATIC_STRING(new_dir));
+		b::MakePath(B_STATIC_STRING(new_dir));
 
-		B::RemoveDirectory(B_STATIC_STRING(new_dir));
-
-		++test_number;
-
-		B::RemoveDirectory(B_STATIC_STRING(intermediate));
+		b::RemoveDirectory(B_STATIC_STRING(new_dir));
 
 		++test_number;
 
-		B::RemoveDirectory(B_STATIC_STRING(test_dir));
+		b::RemoveDirectory(B_STATIC_STRING(intermediate));
+
+		++test_number;
+
+		b::RemoveDirectory(B_STATIC_STRING(test_dir));
 	}
-	catch (B::SystemException&)
+	catch (b::SystemException&)
 	{
 		return test_number;
 	}

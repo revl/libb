@@ -40,10 +40,10 @@ struct TestClass
 	}
 };
 
-typedef B::Array<TestClass> TestArray;
-template class B::Array<TestClass>;
+typedef b::Array<TestClass> TestArray;
+template class b::Array<TestClass>;
 
-B::Array<B::Array<TestClass> > test2d;
+b::Array<b::Array<TestClass> > test2d;
 
 int main(int /*argc*/, char* /*argv*/[])
 {

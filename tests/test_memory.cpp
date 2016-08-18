@@ -31,7 +31,7 @@ struct SizeAlignmentTestCase
 
 inline bool SizeAlignmentTestCase::Test() const
 {
-	return B::Memory::Align(value, alignment) == expected_result;
+	return b::Memory::Align(value, alignment) == expected_result;
 }
 
 static const SizeAlignmentTestCase size_alignment_test_cases[] =
@@ -53,7 +53,7 @@ struct PtrAlignmentTestCase
 
 inline bool PtrAlignmentTestCase::Test() const
 {
-	return B::Memory::Align(value, alignment) == expected_result;
+	return b::Memory::Align(value, alignment) == expected_result;
 }
 
 static const PtrAlignmentTestCase ptr_alignment_test_cases[] =

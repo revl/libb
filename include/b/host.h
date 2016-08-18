@@ -33,15 +33,15 @@
 
 #ifdef B_NO_NAMESPACE
 
-#undef B
-#define B
+#undef b
+#define b
 
 #define B_BEGIN_NAMESPACE
 #define B_END_NAMESPACE
 
 #else
 
-#define B_BEGIN_NAMESPACE namespace B {
+#define B_BEGIN_NAMESPACE namespace b {
 #define B_END_NAMESPACE }
 
 #endif // B_NO_NAMESPACE

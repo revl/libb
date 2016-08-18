@@ -1,5 +1,5 @@
 /**
-@class B::Memory
+@class b::Memory
 
 Utility class for memory management. This class comprises system-independent
 wrappers around common memory handling routines, and also provides an effective

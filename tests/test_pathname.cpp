@@ -22,7 +22,7 @@
 
 int main()
 {
-	B::String current_dir;
+	b::String current_dir;
 
 	current_dir.AllocExactly(MAX_PATH);
 
@@ -36,15 +36,15 @@ int main()
 
 	while (fgets(buffer, sizeof(buffer), stdin))
 	{
-		B::Pathname path(current_dir, current_dir.GetLength());
+		b::Pathname path(current_dir, current_dir.GetLength());
 
-		int buffer_length = B::CalcLength(buffer);
+		int buffer_length = b::CalcLength(buffer);
 
 		path.ChDir(buffer, buffer_length > 0 &&
 			buffer[buffer_length - 1] == '\n' ?
 			buffer_length - 1: buffer_length);
 
-		B::String new_dir;
+		b::String new_dir;
 		path.AppendPathnameTo(new_dir);
 
 		current_dir = new_dir;

@@ -1,5 +1,5 @@
 /**
-@class B::Array Array.h <B/Array.h>
+@class b::Array Array.h <b/Array.h>
 
 Linear array template class.
 
@@ -11,7 +11,7 @@ Linear array template class.
 /// @{
 
 /**
-@fn int B::Array::GetCapacity() const
+@fn int b::Array::GetCapacity() const
 
 Returns the number of elements for which memory has been allocated.
 The returned value is always greater or equal to the value returned by
@@ -19,7 +19,7 @@ the GetSize() method.
 */
 
 /**
-@fn int B::Array::GetSize() const
+@fn int b::Array::GetSize() const
 
 Returns the number of elements for which memory has been allocated.
 The returned value is always greater or equal to the value returned by

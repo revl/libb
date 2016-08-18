@@ -1,5 +1,5 @@
 /**
-@class B::Exception
+@class b::Exception
 
 The base class for all exception classes. This class contains neither data nor
 methods. However, the size of objects of this class is equal to the size of

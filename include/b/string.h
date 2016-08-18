@@ -712,7 +712,7 @@ B_END_NAMESPACE
 #define B_DEFINE_STATIC_STRING_T(name, value) \
 	static struct \
 	{ \
-		B::RefCount refs; \
+		b::RefCount refs; \
 		size_t capacity; \
 		size_t length; \
 		B_CHAR buffer[sizeof(value)]; \
@@ -729,7 +729,7 @@ B_END_NAMESPACE
 #define B_DEFINE_STATIC_STRING(name, value) \
 	B_DEFINE_STATIC_STRING_T(name, B_TEXT(value))
 
-#define B_STATIC_STRING(name) (*(const B::String*) &name##Buffer)
+#define B_STATIC_STRING(name) (*(const b::String*) &name##Buffer)
 
 #define B_STRING_H
 

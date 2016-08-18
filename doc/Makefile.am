@@ -22,7 +22,7 @@ if DOXYGEN
 doc: timestamp
 
 if DOXYCONFIG
-timestamp: $(DOXYCONFIG) $(top_srcdir)/include/B/*.h \
+timestamp: $(DOXYCONFIG) $(top_srcdir)/include/b/*.h \
 	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
 	rm -rf html
 	'$(DOXYCONFIG)' '$(srcdir)/Doxyfile' $(PACKAGE) | \
@@ -32,7 +32,7 @@ timestamp: $(DOXYCONFIG) $(top_srcdir)/include/B/*.h \
 		$(DOXYGEN) -
 	touch timestamp
 else
-timestamp: $(top_srcdir)/include/B/*.h \
+timestamp: $(top_srcdir)/include/b/*.h \
 	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
 	rm -rf html
 	VERSION='$(VERSION)' \

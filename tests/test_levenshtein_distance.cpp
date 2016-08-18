@@ -26,7 +26,7 @@
 
 int main()
 {
-	B::LevenshteinDistance<const char*> CalculateDistance;
+	b::LevenshteinDistance<const char*> CalculateDistance;
 
 	int retval = 0;
 

@@ -1,5 +1,5 @@
 /**
-@class B::CustomException CustomException.h <B/CustomException.h>
+@class b::CustomException CustomException.h <b/CustomException.h>
 
 Customizable error exception class. Objects of this class are
 constructed with a preformed error message string.
@@ -15,7 +15,7 @@ GetMessage() method.
 /// @{
 
 /**
-@fn B::CustomException::CustomException()
+@fn b::CustomException::CustomException()
 
 Constructs a new object with an empty description. Use
 one of the SetMessage() methods to set the description
@@ -23,7 +23,7 @@ to the appropriate message string.
 */
 
 /**
-@fn B::CustomException::CustomException(const String& strMessage)
+@fn b::CustomException::CustomException(const String& strMessage)
 
 Initializes this object with a preformed error message.
 
@@ -31,7 +31,7 @@ Initializes this object with a preformed error message.
 */
 
 /**
-@fn B::CustomException::CustomException(const B_CHAR* pszMessageFormat, va_list pArgList)
+@fn b::CustomException::CustomException(const B_CHAR* pszMessageFormat, va_list pArgList)
 
 Initializes this object with an error description.
 
@@ -43,7 +43,7 @@ in place of the format parameters.
 */
 
 /**
-@fn B::CustomException::CustomException(const B_CHAR* pszMessageFormat, ...)
+@fn b::CustomException::CustomException(const B_CHAR* pszMessageFormat, ...)
 
 Initializes this object with an error description.
 */
@@ -54,7 +54,7 @@ Initializes this object with an error description.
 /// @{
 
 /**
-@fn void B::CustomException::SetMessage(const String& strMessage)
+@fn void b::CustomException::SetMessage(const String& strMessage)
 
 Sets the description message.
 
@@ -62,7 +62,7 @@ Sets the description message.
 */
 
 /**
-@fn void B::CustomException::SetMessage(const B_CHAR* pszMessageFormat, va_list pArgList)
+@fn void b::CustomException::SetMessage(const B_CHAR* pszMessageFormat, va_list pArgList)
 
 Builds an error description from a printf-like format string
 
@@ -72,7 +72,7 @@ Builds an error description from a printf-like format string
 */
 
 /**
-@fn void B::CustomException::SetMessage(const B_CHAR* pszMessageFormat, ...)
+@fn void b::CustomException::SetMessage(const B_CHAR* pszMessageFormat, ...)
 
 Builds an error description from a printf-like format string
 

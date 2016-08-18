@@ -169,10 +169,10 @@ B_END_NAMESPACE
 
 int main()
 {
-	int result = B::TestObjectLists();
+	int result = b::TestObjectLists();
 
 	if (result != 0)
 		return result;
 
-	return B::TestIntegerList();
+	return b::TestIntegerList();
 }

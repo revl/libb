@@ -21,7 +21,7 @@
 #include <b/heap.h>
 
 // My heap
-static B::IntHeap my_heap;
+static b::IntHeap my_heap;
 
 // stl heap
 static std::vector<int> stl_heap;
@@ -38,11 +38,11 @@ int main(int /*argc*/, char* /*argv*/[])
 	int i;
 	int n;
 
-	B::randomize();
+	b::randomize();
 
 	for (i = 0; i < 100; i++)
 	{
-		n = B::rand();
+		n = b::rand();
 
 		my_heap.Push(n);
 
@@ -71,11 +71,11 @@ int main(int /*argc*/, char* /*argv*/[])
 #define COUNT (sizeof(data) / sizeof(*data))
 
 	for (i = 0; i < COUNT; i++)
-		printf("%d\t", data[i] = B::rand());
+		printf("%d\t", data[i] = b::rand());
 	printf("\n");
 
 	printf("Testing my HeapSort...\n");
-	B::IntHeap::Sort(data, COUNT);
+	b::IntHeap::Sort(data, COUNT);
 
 	for (i = 0; i < COUNT; i++)
 		printf("%d\t", data[i]);

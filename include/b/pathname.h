@@ -29,8 +29,8 @@
 B_BEGIN_NAMESPACE
 
 // Disable MS C++ warning C4251: 'components' : class
-// 'B::Array<class B::Pathname::Component>' needs to have
-// dll-interface to be used by clients of class 'B::Pathname'
+// 'b::Array<class b::Pathname::Component>' needs to have
+// dll-interface to be used by clients of class 'b::Pathname'
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4251)

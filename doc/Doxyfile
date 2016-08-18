@@ -62,7 +62,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = "$(top_srcdir)/doc" "$(top_srcdir)/include/B"
+INPUT                  = "$(top_srcdir)/doc" "$(top_srcdir)/include/b"
 FILE_PATTERNS          = *.doc *.h
 RECURSIVE              = NO
 EXCLUDE                = 
@@ -168,7 +168,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = "B_BEGIN_NAMESPACE=namespace B {" \
+PREDEFINED             = "B_BEGIN_NAMESPACE=namespace b {" \
                          B_END_NAMESPACE=} \
                          B_API=
 EXPAND_AS_DEFINED      = 

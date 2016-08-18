@@ -1,5 +1,5 @@
 /**
-@class B::RefCount
+@class b::RefCount
 
 Portable thread-safe reference count class. This class encapsulates
 system-dependent implementation details.
@@ -11,7 +11,7 @@ system-dependent implementation details.
 /// @{
 
 /**
-@fn B::RefCount::operator int() const
+@fn b::RefCount::operator int() const
 
 Returns the value of the counter as an integer.
 
@@ -24,7 +24,7 @@ Returns the value of the counter as an integer.
 /// @{
 
 /**
-@fn void B::RefCount::operator =(int value)
+@fn void b::RefCount::operator =(int value)
 
 Sets a new value for the counter.
 
@@ -32,13 +32,13 @@ Sets a new value for the counter.
 */
 
 /**
-@fn void B::RefCount::operator ++()
+@fn void b::RefCount::operator ++()
 
 Increases the counter by 1.
 */
 
 /**
-@fn bool B::RefCount::operator --()
+@fn bool b::RefCount::operator --()
 
 Decreases the counter by 1 and compares the result against 0.
 */
