@@ -19,43 +19,43 @@
 LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 
 TESTS = \
-	TestHelpers \
-	TestString \
-	TestArray \
-	TestLevenshteinDistance \
-	TestLists \
-	TestMemory \
-	TestObject \
-	TestRandom \
-	TestMakePath
+	test_helpers \
+	test_string \
+	test_array \
+	test_levenshtein_distance \
+	test_lists \
+	test_memory \
+	test_object \
+	test_random \
+	test_make_path
 
 check_PROGRAMS = \
-	TestHelpers \
-	TestString \
-	TestArray \
-	TestLevenshteinDistance \
-	TestLists \
-	TestMemory \
-	TestObject \
-	TestRandom \
-	TestMakePath
+	test_helpers \
+	test_string \
+	test_array \
+	test_levenshtein_distance \
+	test_lists \
+	test_memory \
+	test_object \
+	test_random \
+	test_make_path
 
-TestHelpers_SOURCES = TestHelpers.cpp
+test_helpers_SOURCES = test_helpers.cpp
 
-TestString_SOURCES = TestString.cpp
+test_string_SOURCES = test_string.cpp
 
-TestArray_SOURCES = TestArray.cpp
+test_array_SOURCES = test_array.cpp
 
-TestLevenshteinDistance_SOURCES = TestLevenshteinDistance.cpp
+test_levenshtein_distance_SOURCES = test_levenshtein_distance.cpp
 
-TestLists_SOURCES = TestLists.cpp
+test_lists_SOURCES = test_lists.cpp
 
-TestMemory_SOURCES = TestMemory.cpp
+test_memory_SOURCES = test_memory.cpp
 
-TestObject_SOURCES = TestObject.cpp
+test_object_SOURCES = test_object.cpp
 
-TestRandom_SOURCES = TestRandom.cpp
+test_random_SOURCES = test_random.cpp
 
-TestMakePath_SOURCES = TestMakePath.cpp
+test_make_path_SOURCES = test_make_path.cpp
 
 MAINTAINERCLEANFILES = Makefile.in

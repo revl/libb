@@ -31,11 +31,11 @@ endif
 endif
 
 sources = \
-	Exceptions.cpp \
-	Helpers.cpp \
-	Memory.cpp \
-	String.cpp \
-	StringImpl.h
+	exceptions.cpp \
+	helpers.cpp \
+	memory.cpp \
+	string.cpp \
+	string_impl.h
 
 libbd_r_la_SOURCES = $(sources)
 libb_r_la_SOURCES = $(sources)
