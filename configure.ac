@@ -147,59 +147,7 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 
 if test "$enable_threads" = yes; then
-	AC_CACHE_CHECK([for the __gnu_cxx:: atomic ops in bits/atomicity.h],
-	b_cv_header_bits_atomicity_namespace,
-	[AC_TRY_COMPILE([#include <bits/atomicity.h>],
-	[
-	using namespace __gnu_cxx;
-	_Atomic_word Atomic = 0;
-	__atomic_add(&Atomic, 1);
-	__exchange_and_add(&Atomic, -1);
-	],
-	[b_cv_header_bits_atomicity_namespace=yes],
-	[b_cv_header_bits_atomicity_namespace=no])])
-
-	if test "$b_cv_header_bits_atomicity_namespace" != yes; then
-		AC_CACHE_CHECK([for the global atomic ops in bits/atomicity.h],
-		b_cv_header_bits_atomicity_global,
-		[AC_TRY_COMPILE([#include <bits/atomicity.h>],
-		[
-		_Atomic_word Atomic = 0;
-		__atomic_add(&Atomic, 1);
-		__exchange_and_add(&Atomic, -1);
-		],
-		[b_cv_header_bits_atomicity_global=yes],
-		[b_cv_header_bits_atomicity_global=no])])
-	fi
-
-	if test "$b_cv_header_bits_atomicity_namespace" = yes -o \
-		"$b_cv_header_bits_atomicity_global" = yes; then
-		AC_DEFINE([HAVE_BITS_ATOMICITY_H], 1,
-		[Define to 1 if you have the <bits/atomicity.h> header file.])
-
-		if test "$b_cv_header_bits_atomicity_namespace" = yes; then
-			AC_DEFINE([ATOMICITY_GNU_CXX], 1,
-			[Define to 1 if atomic ops are
-			declared in namespace __gnu_cxx.])
-		fi
-	fi
-
-	AC_CACHE_CHECK([if asm/atomic.h defines all the required functions],
-	b_cv_header_asm_atomic,
-	[AC_TRY_COMPILE([#include <asm/atomic.h>],
-	[
-	atomic_t Atomic = ATOMIC_INIT(0);
-	atomic_set(&Atomic, atomic_read(&Atomic));
-	atomic_inc(&Atomic);
-	atomic_dec_and_test(&Atomic);
-	],
-	[b_cv_header_asm_atomic=yes],
-	[b_cv_header_asm_atomic=no])])
-
-	if test "$b_cv_header_asm_atomic" = yes; then
-		AC_DEFINE([HAVE_ASM_ATOMIC_H], 1,
-		[Define to 1 if you have the <asm/atomic.h> header file.])
-	fi
+	AX_ATOMIC()
 fi
 
 dnl Checks for library functions.

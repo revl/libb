@@ -24,11 +24,13 @@
 #include "host.h"
 
 #if !defined(B_MT)
+
 #define B_REFCOUNT_TYPE int
 #define B_REFCOUNT_INC(counter) ++counter
 #define B_REFCOUNT_DEC(counter) return --counter != 0
 
 #elif defined(__GNUG__) && defined(__i386__)
+
 #define B_REFCOUNT_TYPE volatile int
 #define B_REFCOUNT_INC(counter) \
 	__asm__ __volatile__("lock; incl %0" :"=m" (counter) :"m" (counter));
@@ -37,16 +39,20 @@
 	:"=m" (counter), "=qm" (zero) :"m" (counter) : "memory"); \
 	return zero;
 
-#elif defined(B_HAVE_BITS_ATOMICITY_H)
+#elif defined(B_HAVE_EXT_ATOMICITY_H) || defined(B_HAVE_BITS_ATOMICITY_H)
+
+#if defined(B_HAVE_EXT_ATOMICITY_H)
+#include <ext/atomicity.h>
+#else
 #include <bits/atomicity.h>
-#if defined(B_ATOMICITY_GNU_CXX)
-using namespace __gnu_cxx;
 #endif
 #define B_REFCOUNT_TYPE volatile _Atomic_word
-#define B_REFCOUNT_INC(counter) __atomic_add(&counter, 1)
-#define B_REFCOUNT_DEC(counter) return __exchange_and_add(&counter, -1) != 1
+#define B_REFCOUNT_INC(counter) __gnu_cxx::__atomic_add(&counter, 1)
+#define B_REFCOUNT_DEC(counter) \
+	return __gnu_cxx::__exchange_and_add(&counter, -1) != 1
 
 #elif defined(B_HAVE_ASM_ATOMIC_H)
+
 #include <asm/atomic.h>
 #define B_REFCOUNT_TYPE atomic_t
 #define B_REFCOUNT_GET(counter) return atomic_read(&counter)
@@ -56,6 +62,7 @@ using namespace __gnu_cxx;
 #define B_REFCOUNT_STATIC_INIT(i) {ATOMIC_INIT(i)}
 
 #elif defined(__DECCXX_VER) && defined(__ALPHA)
+
 #include <machine/builtins.h>
 #define B_REFCOUNT_TYPE __int32
 #define B_REFCOUNT_INC(counter) __ATOMIC_INCREMENT_LONG(&counter)
@@ -88,33 +95,33 @@ public:
 
 // Operations
 public:
-	void operator =(int value);
+	void operator =(int new_value);
 	void operator ++();
 	bool operator --();
 
 // Implementation
 public:
-	B_REFCOUNT_TYPE counter;
+	B_REFCOUNT_TYPE value;
 };
 
 inline RefCount::operator int() const
 {
-	B_REFCOUNT_GET(counter);
+	B_REFCOUNT_GET(value);
 }
 
-inline void RefCount::operator =(int value)
+inline void RefCount::operator =(int new_value)
 {
-	B_REFCOUNT_SET(counter, value);
+	B_REFCOUNT_SET(value, new_value);
 }
 
 inline void RefCount::operator ++()
 {
-	B_REFCOUNT_INC(counter);
+	B_REFCOUNT_INC(value);
 }
 
 inline bool RefCount::operator --()
 {
-	B_REFCOUNT_DEC(counter);
+	B_REFCOUNT_DEC(value);
 }
 
 B_END_NAMESPACE
