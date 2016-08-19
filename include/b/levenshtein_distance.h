@@ -27,24 +27,24 @@
 
 B_BEGIN_NAMESPACE
 
-template <typename Iter>
-class LevenshteinDistance
+class levenshtein_distance
 {
 // Operations
 public:
+	template <typename Iter>
 	size_t operator ()(Iter string1, size_t length1,
 		Iter string2, size_t length2);
 
 // Implementation
 private:
 	// A row of the dynamic programming matrix
-	typedef std::vector<size_t> Row;
+	typedef std::vector<size_t> row_t;
 
-	Row row;
+	row_t row;
 };
 
 template <typename Iter>
-size_t LevenshteinDistance<Iter>::operator ()(Iter string1,
+size_t levenshtein_distance::operator ()(Iter string1,
 	size_t length1, Iter string2, size_t length2)
 {
 	// Since we allocate a buffer of size length2 reverse
@@ -75,7 +75,7 @@ size_t LevenshteinDistance<Iter>::operator ()(Iter string1,
 
 	// Pointer to the matrix element over that
 	// being calculated now
-	Row::iterator upper = row.begin() + j;
+	row_t::iterator upper = row.begin() + j;
 
 	// Boundary conditions
 	while ((*upper = j) > 0)

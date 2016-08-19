@@ -21,12 +21,12 @@
 #include <b/levenshtein_distance.h>
 
 #define TEST_DIST(s1, s2, d) \
-	if (CalculateDistance(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1) != d) \
+	if (ld(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1) != d) \
 		++retval;
 
 int main()
 {
-	b::LevenshteinDistance<const char*> CalculateDistance;
+	b::levenshtein_distance ld;
 
 	int retval = 0;
 
