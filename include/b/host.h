@@ -143,13 +143,7 @@
 B_BEGIN_NAMESPACE
 
 class StringW;
-class StringA;
-
-#ifdef B_UNICODE
-typedef StringW String;
-#else
-typedef StringA String;
-#endif // B_UNICODE
+class String;
 
 B_END_NAMESPACE
 

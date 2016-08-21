@@ -27,7 +27,5 @@
 #undef Char
 
 #define Char char
-#define String StringA
 #include "string_impl.h"
-#undef String
 #undef Char

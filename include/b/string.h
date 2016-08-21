@@ -704,9 +704,7 @@ B_END_NAMESPACE
 #undef Char
 
 #define Char char
-#define String StringA
 #include "string.h"
-#undef String
 #undef Char
 
 #define B_DEFINE_STATIC_STRING_T(name, value) \
