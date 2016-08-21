@@ -30,7 +30,7 @@
 B_BEGIN_NAMESPACE
 
 // System error condition. An exception of this class indicates
-// abnormal termination of an essential system call.
+// abnormal termination of a system call.
 class SystemException : public RuntimeException
 {
 // Types
