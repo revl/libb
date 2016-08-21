@@ -20,42 +20,86 @@
 
 #include <b/array.h>
 
-static int counter = 0;
+#define CHECK(condition, message) \
+	if (!(condition)) { \
+		fprintf(stderr, message); \
+		return false; \
+	}
 
-struct TestClass
+static bool test_shrink_to_fit()
+{
+	static const size_t initial_size = 100;
+
+	b::array<int> a1(1, initial_size);
+
+	size_t initial_capacity = a1.capacity();
+
+	CHECK(initial_capacity > initial_size,
+		"Capacity must be greater than the initial size\n");
+
+	b::array<int> a2(a1);
+
+	a1.shrink_to_fit();
+
+	CHECK(a1.data() != a2.data(),
+		"shrink_to_fit() must cause reallocation");
+
+	printf("Exiting\n");
+
+	return true;
+}
+
+static int element_counter = 0;
+
+struct test_element
 {
 	int value;
 
-	TestClass(int initial_value) : value(initial_value)
+	test_element(int initial_value) : value(initial_value)
 	{
-		++counter;
+		++element_counter;
 	}
-	TestClass(const TestClass& Source) : value(Source.value)
+	test_element(const test_element& source) : value(source.value)
 	{
-		++counter;
+		++element_counter;
 	}
-	~TestClass()
+	~test_element()
 	{
-		--counter;
+		--element_counter;
 	}
 };
 
-typedef b::Array<TestClass> TestArray;
-template class b::Array<TestClass>;
+typedef b::array<test_element> test_array;
+template class b::array<test_element>;
 
-b::Array<b::Array<TestClass> > test2d;
+static bool test_copying()
+{
+	{
+		test_array test(test_element(123));
+		test_array test1(test);
+		test_array test2;
+		test2 = test1;
+
+		if (test2.size() != 1) {
+			fprintf(stderr, "Number of elements "
+				"must not change in a copy.\n");
+			return false;
+		}
+	}
+
+	if (element_counter != 0)
+	{
+		fprintf(stderr, "All elements must be destructed.\n");
+		return false;
+	}
+
+	return true;
+}
+
+b::array<b::array<test_element> > test2d;
 
 int main(int /*argc*/, char* /*argv*/[])
 {
-	{
-		TestArray test(TestClass(666));
-		TestArray test1(test);
-		TestArray test2;
-		test2 = test1;
-
-		if (test2.GetSize() != 1)
-			return 1;
-	}
-
-	return counter != 0 ? 3 : 0;
+	return !test_shrink_to_fit() +
+		!test_copying();
 }

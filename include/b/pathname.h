@@ -29,7 +29,7 @@
 B_BEGIN_NAMESPACE
 
 // Disable MS C++ warning C4251: 'components' : class
-// 'b::Array<class b::Pathname::Component>' needs to have
+// 'b::array<class b::Pathname::Component>' needs to have
 // dll-interface to be used by clients of class 'b::Pathname'
 #ifdef _MSC_VER
 #pragma warning (push)
@@ -71,7 +71,7 @@ public:
 		const B_CHAR* end;
 	};
 
-	typedef Array<Component> ComponentArray;
+	typedef array<Component> ComponentArray;
 
 // Construction
 public:

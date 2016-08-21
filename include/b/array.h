@@ -27,31 +27,31 @@
 B_BEGIN_NAMESPACE
 
 // Linear array template class.
-template <class TYPE>
-class Array
+template <class T>
+class array
 {
 // Construction
 public:
 	// Creates an empty array.
-	Array();
+	array();
 
 	// Constructs a copy of an existing array object.
-	Array(const Array<TYPE>& source);
+	array(const array<T>& source);
 
 	// Constructs an array from a sequence of objects.
-	Array(const TYPE* source, size_t count);
+	array(const T* source, size_t count);
 
 	// Creates an array of <count> copies of <element>.
-	Array(const TYPE& element, size_t count = 1);
+	array(const T& element, size_t count = 1);
 
 // Array Length
 public:
 	// Returns the number of elements for which memory has
 	// been allocated.
-	size_t GetCapacity() const;
+	size_t capacity() const;
 
 	// Returns the number of elements in the array.
-	size_t GetSize() const;
+	size_t size() const;
 
 	// Checks if the array is empty.
 	bool IsEmpty() const;
@@ -64,30 +64,30 @@ public:
 // Memory Management
 public:
 	// Allocates the exact amount of memory for the buffer.
-	void AllocExactly(size_t capacity);
+	void AllocExactly(size_t new_capacity);
 
 	// Reallocates the buffer preserving its contents.
-	void ReallocExactly(size_t capacity);
+	void ReallocExactly(size_t new_capacity);
 
 	// Allocates enough memory to store <capacity> elements.
-	void Alloc(size_t capacity);
+	void Alloc(size_t new_capacity);
 
 	// Reallocates the buffer preserving its contents.
-	void Realloc(size_t capacity);
+	void Realloc(size_t new_capacity);
 
 	// Frees memory that is not used by the elements.
-	void FreeExtra();
+	void shrink_to_fit();
 
 // Buffer Access
 public:
 	// Returns a constant pointer to the elements.
-	const TYPE* GetBuffer() const;
+	const T* data() const;
 
-	// Returns the same as GetBuffer().
-	operator const TYPE*() const;
+	// Returns the same as data().
+	operator const T*() const;
 
 	// Fixes the buffer in memory and returns a modifiable pointer to it.
-	TYPE* LockBuffer();
+	T* LockBuffer();
 
 	// Gives control over the buffer back to this object.
 	void UnlockBuffer();
@@ -95,92 +95,89 @@ public:
 // Element Access
 public:
 	// Returns a constant reference to an element.
-	const TYPE& GetAt(size_t index) const;
+	const T& GetAt(size_t index) const;
 
 	// Does the same thing as GetAt().
-	const TYPE& operator [](size_t index) const;
+	const T& operator [](size_t index) const;
 
 	// Returns a modifiable reference to an element.
-	TYPE& GetAt(size_t index);
+	T& GetAt(size_t index);
 
 	// Does the same thing as GetAt().
-	TYPE& operator [](size_t index);
+	T& operator [](size_t index);
 
 	// Returns a constant reference to the first array element.
-	const TYPE& GetHead() const;
+	const T& GetHead() const;
 
 	// Returns a modifiable reference to the first array element.
-	TYPE& GetHead();
+	T& GetHead();
 
 	// Returns a constant reference to the last array element.
-	const TYPE& GetTail() const;
+	const T& GetTail() const;
 
 	// Returns a modifiable reference to the last array element.
-	TYPE& GetTail();
+	T& GetTail();
 
 // Assignment
 public:
 	// Assigns the contents of <source> to this object.
-	void Assign(const Array<TYPE>& source);
+	void Assign(const array<T>& source);
 
 	// Assigns a sequence of elements to this object.
-	void Assign(const TYPE* source, size_t count);
+	void Assign(const T* source, size_t count);
 
 	// Creates an array with <count> copies of <element>.
-	void Assign(const TYPE& element, size_t count = 1);
+	void Assign(const T& element, size_t count);
 
 	// A shorter version of Assign(source).
-	Array<TYPE>& operator =(const Array<TYPE>& source);
-
-	// A shorter version of Assign(element, 1).
-	Array<TYPE>& operator =(const TYPE& element);
+	array<T>& operator =(const array<T>& source);
 
 	// Overwrites array range with the contents of <source>.
-	void SetAt(size_t index, const Array<TYPE>& source);
+	void SetAt(size_t index, const array<T>& source);
 
 	// Overwrites array range with copies of elements
 	// pointed to by <source>.
-	void SetAt(size_t index, const TYPE* source, size_t count);
+	void SetAt(size_t index, const T* source, size_t count);
 
 	// Overwrites array range with <count> copies of <element>.
-	void SetAt(size_t index, const TYPE& element, size_t count = 1);
+	void SetAt(size_t index, const T& element, size_t count = 1);
 
 // Insertion
 public:
 	// Inserts the entire contents of <source> into this array
 	// at the specified position.
-	void InsertAt(size_t index, const Array<TYPE>& source);
+	void InsertAt(size_t index, const array<T>& source);
 
 	// Inserts elements pointed to by <source> at the specified position.
-	void InsertAt(size_t index, const TYPE* source, size_t count);
+	void InsertAt(size_t index, const T* source, size_t count);
 
 	// Inserts <count> copies of <element> at the specified position.
-	void InsertAt(size_t index, const TYPE& element, size_t count = 1);
+	void InsertAt(size_t index, const T& element, size_t count = 1);
 
 // Appending
 public:
 	// Appends this array with copies of elements from <source>.
-	void Append(const Array<TYPE>& source);
+	void Append(const array<T>& source);
 
 	// Appends this array with elements from <source>.
-	void Append(const TYPE* source, size_t count);
+	void Append(const T* source, size_t count);
 
 	// Appends this array with <count> copies of <element>.
-	void Append(const TYPE& element, size_t count = 1);
+	void Append(const T& element, size_t count = 1);
 
 	// The same as Append(source).
-	Array<TYPE>& operator +=(const Array<TYPE>& source);
+	array<T>& operator +=(const array<T>& source);
 
 	// The same as Append(element, 1).
-	Array<TYPE>& operator +=(const TYPE& element);
+	array<T>& operator +=(const T& element);
 
 	// Concatenates this array with <source> and returns the
 	// result as a new array object.
-	Array<TYPE> operator +(const Array<TYPE>& source) const;
+	array<T> operator +(const array<T>& source) const;
 
 	// Appends <element> to the contents of this array and returns
 	// the result as a new array object.
-	Array<TYPE> operator +(const TYPE& element) const;
+	array<T> operator +(const T& element) const;
 
 // Removal
 public:
@@ -192,339 +189,330 @@ public:
 
 // Implementation
 private:
-	struct MetaData
+	struct metadata
 	{
 		RefCount refs;
 		size_t capacity;
 		size_t size;
 	};
 
-	struct Wrapper
+	struct first_element_wrapper
 	{
-		TYPE first;
+		T first;
 
-		// Unused dummy constructor.
-		explicit Wrapper(const TYPE& value) : first(value)
+		// The constructor is never used, because this structure
+		// is never constructed explicitly.
+		explicit first_element_wrapper(const T& value) : first(value)
 		{
 		}
 	};
 
-	struct Buffer : public MetaData, public Wrapper
+	struct buffer : public metadata, public first_element_wrapper
 	{
-		// Unused dummy constructor.
-		explicit Buffer(const TYPE& value) : Wrapper(value)
+		// The constructor is never used, because this structure
+		// is never constructed explicitly.
+		explicit buffer(const T& value) : first_element_wrapper(value)
 		{
 		}
 	};
 
-	TYPE* buffer;
+	T* data_ptr;
 
 	static size_t Inc(size_t size);
 
 	bool IsShared() const;
 
-	static TYPE* GetEmptyBuffer();
+	static T* GetEmptyBuffer();
 
-	static TYPE* AllocBufferExactly(size_t capacity);
+	static T* AllocBufferExactly(size_t capacity);
 
-	static TYPE* AllocBuffer(size_t capacity);
+	static T* AllocBuffer(size_t capacity);
 
-	static MetaData* GetMetaData(const TYPE* buffer);
-	MetaData* GetMetaData() const;
+	static metadata* GetMetaData(const T* data_ptr);
+	metadata* GetMetaData() const;
 
 	void Release();
 
-	void ReplaceBuffer(TYPE* new_buffer);
+	void ReplaceBuffer(T* new_data);
 
 	void CopyBeforeWrite();
 
 public:
-	~Array()
+	~array()
 		throw ();
 };
 
-template <class TYPE>
-inline Array<TYPE>::Array()
-	: buffer(GetEmptyBuffer())
+template <class T>
+inline array<T>::array() : data_ptr(GetEmptyBuffer())
 {
 }
 
-template <class TYPE>
-inline Array<TYPE>::Array(const Array<TYPE>& source)
-	: buffer(GetEmptyBuffer())
+template <class T>
+inline array<T>::array(const array<T>& source) : data_ptr(GetEmptyBuffer())
 {
 	Assign(source);
 }
 
-template <class TYPE>
-inline Array<TYPE>::Array(const TYPE* source, size_t count)
-	: buffer(GetEmptyBuffer())
+template <class T>
+inline array<T>::array(const T* source, size_t count) :
+	data_ptr(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
 
-template <class TYPE>
-inline Array<TYPE>::Array(const TYPE& element, size_t count)
-	: buffer(GetEmptyBuffer())
+template <class T>
+inline array<T>::array(const T& element, size_t count) :
+	data_ptr(GetEmptyBuffer())
 {
 	Assign(element, count);
 }
 
-template <class TYPE>
-inline size_t Array<TYPE>::GetCapacity() const
+template <class T>
+inline size_t array<T>::capacity() const
 {
 	return GetMetaData()->capacity;
 }
 
-template <class TYPE>
-inline size_t Array<TYPE>::GetSize() const
+template <class T>
+inline size_t array<T>::size() const
 {
 	return GetMetaData()->size;
 }
 
-template <class TYPE>
-inline bool Array<TYPE>::IsEmpty() const
+template <class T>
+inline bool array<T>::IsEmpty() const
 {
-	return GetSize() == 0;
+	return size() == 0;
 }
 
-template <class TYPE>
-inline bool Array<TYPE>::IsLocked() const
+template <class T>
+inline bool array<T>::IsLocked() const
 {
 	return GetMetaData()->refs < 0;
 }
 
-template <class TYPE>
-inline void Array<TYPE>::Alloc(size_t capacity)
+template <class T>
+inline void array<T>::Alloc(size_t capacity)
 {
 	AllocExactly(Inc(capacity));
 }
 
-template <class TYPE>
-inline void Array<TYPE>::Realloc(size_t capacity)
+template <class T>
+inline void array<T>::Realloc(size_t capacity)
 {
 	ReallocExactly(Inc(capacity));
 }
 
-template <class TYPE>
-inline void Array<TYPE>::FreeExtra()
+template <class T>
+inline void array<T>::shrink_to_fit()
 {
-	ReallocExactly(GetSize());
+	ReallocExactly(size());
 }
 
-template <class TYPE>
-inline const TYPE* Array<TYPE>::GetBuffer() const
+template <class T>
+inline const T* array<T>::data() const
 {
-	return buffer;
+	return data_ptr;
 }
 
-template <class TYPE>
-inline Array<TYPE>::operator const TYPE*() const
+template <class T>
+inline array<T>::operator const T*() const
 {
-	return buffer;
+	return data_ptr;
 }
 
-template <class TYPE>
-inline TYPE* Array<TYPE>::LockBuffer()
+template <class T>
+inline T* array<T>::LockBuffer()
 {
 	CopyBeforeWrite();
 
 	--GetMetaData()->refs;
 
-	return buffer;
+	return data_ptr;
 }
 
-template <class TYPE>
-inline void Array<TYPE>::UnlockBuffer()
+template <class T>
+inline void array<T>::UnlockBuffer()
 {
 	B_ASSERT(IsLocked());
 
 	++GetMetaData()->refs;
 }
 
-template <class TYPE>
-inline const TYPE& Array<TYPE>::GetAt(size_t index) const
+template <class T>
+inline const T& array<T>::GetAt(size_t index) const
 {
-	B_ASSERT(index >= 0 && index < GetSize());
+	B_ASSERT(index < size());
 
-	return buffer[index];
+	return data_ptr[index];
 }
 
-template <class TYPE>
-inline const TYPE& Array<TYPE>::operator [](size_t index) const
+template <class T>
+inline const T& array<T>::operator [](size_t index) const
 {
-	B_ASSERT(index >= 0 && index < GetSize());
+	B_ASSERT(index < size());
 
-	return buffer[index];
+	return data_ptr[index];
 }
 
-template <class TYPE>
-inline TYPE& Array<TYPE>::GetAt(size_t index)
+template <class T>
+inline T& array<T>::GetAt(size_t index)
 {
-	B_ASSERT(index >= 0 && index < GetSize());
+	B_ASSERT(index < size());
 
 	CopyBeforeWrite();
-	return buffer[index];
+	return data_ptr[index];
 }
 
-template <class TYPE>
-inline TYPE& Array<TYPE>::operator [](size_t index)
+template <class T>
+inline T& array<T>::operator [](size_t index)
 {
-	B_ASSERT(index >= 0 && index < GetSize());
+	B_ASSERT(index < size());
 
 	CopyBeforeWrite();
-	return buffer[index];
+	return data_ptr[index];
 }
 
-template <class TYPE>
-inline const TYPE& Array<TYPE>::GetHead() const
+template <class T>
+inline const T& array<T>::GetHead() const
 {
 	B_ASSERT(!IsEmpty());
 
-	return *buffer;
+	return *data_ptr;
 }
 
-template <class TYPE>
-inline TYPE& Array<TYPE>::GetHead()
-{
-	B_ASSERT(!IsEmpty());
-
-	CopyBeforeWrite();
-	return *buffer;
-}
-
-template <class TYPE>
-inline const TYPE& Array<TYPE>::GetTail() const
-{
-	B_ASSERT(!IsEmpty());
-
-	return buffer[GetSize() - 1];
-}
-
-template <class TYPE>
-inline TYPE& Array<TYPE>::GetTail()
+template <class T>
+inline T& array<T>::GetHead()
 {
 	B_ASSERT(!IsEmpty());
 
 	CopyBeforeWrite();
-	return buffer[GetSize() - 1];
+	return *data_ptr;
 }
 
-template <class TYPE>
-inline Array<TYPE>& Array<TYPE>::operator =(const Array<TYPE>& source)
+template <class T>
+inline const T& array<T>::GetTail() const
+{
+	B_ASSERT(!IsEmpty());
+
+	return data_ptr[size() - 1];
+}
+
+template <class T>
+inline T& array<T>::GetTail()
+{
+	B_ASSERT(!IsEmpty());
+
+	CopyBeforeWrite();
+	return data_ptr[size() - 1];
+}
+
+template <class T>
+inline array<T>& array<T>::operator =(const array<T>& source)
 {
 	Assign(source);
 	return *this;
 }
 
-template <class TYPE>
-inline Array<TYPE>& Array<TYPE>::operator =(const TYPE& element)
+template <class T>
+void array<T>::SetAt(size_t index, const array<T>& source)
 {
-	Assign(element);
-	return *this;
+	SetAt(index, source.data(), source.size());
 }
 
-template <class TYPE>
-void Array<TYPE>::SetAt(size_t index, const Array<TYPE>& source)
+template <class T>
+inline void array<T>::InsertAt(size_t index, const array<T>& source)
 {
-	SetAt(index, source.GetBuffer(), source.GetSize());
+	InsertAt(index, source.data(), source.size());
 }
 
-template <class TYPE>
-inline void Array<TYPE>::InsertAt(size_t index, const Array<TYPE>& source)
+template <class T>
+inline void array<T>::Append(const array<T>& source)
 {
-	InsertAt(index, source.GetBuffer(), source.GetSize());
+	Append(source.data_ptr, source.size());
 }
 
-template <class TYPE>
-inline void Array<TYPE>::Append(const Array<TYPE>& source)
-{
-	Append(source.buffer, source.GetSize());
-}
-
-template <class TYPE>
-inline Array<TYPE>& Array<TYPE>::operator +=(const Array<TYPE>& source)
+template <class T>
+inline array<T>& array<T>::operator +=(const array<T>& source)
 {
 	Append(source);
 	return *this;
 }
 
-template <class TYPE>
-inline Array<TYPE>& Array<TYPE>::operator +=(const TYPE& element)
+template <class T>
+inline array<T>& array<T>::operator +=(const T& element)
 {
 	Append(element);
 	return *this;
 }
 
-template <class TYPE>
-inline Array<TYPE> Array<TYPE>::
-	operator +(const Array<TYPE>& source) const
+template <class T>
+inline array<T> array<T>::operator +(const array<T>& source) const
 {
-	Array<TYPE> result(*this);
+	array<T> result(*this);
 	return result += source;
 }
 
-template <class TYPE>
-inline Array<TYPE> Array<TYPE>::operator +(const TYPE& element) const
+template <class T>
+inline array<T> array<T>::operator +(const T& element) const
 {
-	Array<TYPE> result(*this);
+	array<T> result(*this);
 	return result += element;
 }
 
-template <class TYPE>
-inline size_t Array<TYPE>::Inc(size_t size)
+template <class T>
+inline size_t array<T>::Inc(size_t size)
 {
-	B_ASSERT(size >= 0);
-
 	size_t increment;
 
 	return size + ((increment = size >> 3) > 0x4 ?
 		(increment <= 0x400 ? increment : 0x400) : 0x4);
 }
 
-template <class TYPE>
-inline bool Array<TYPE>::IsShared() const
+template <class T>
+inline bool array<T>::IsShared() const
 {
 	return GetMetaData()->refs > 0;
 }
 
-template <class TYPE>
-inline TYPE* Array<TYPE>::AllocBuffer(size_t capacity)
+template <class T>
+inline T* array<T>::AllocBuffer(size_t capacity)
 {
 	return AllocBufferExactly(Inc(capacity));
 }
 
-template <class TYPE>
-inline typename Array<TYPE>::MetaData*
-	Array<TYPE>::GetMetaData(const TYPE* buffer)
+template <class T>
+inline typename array<T>::metadata* array<T>::GetMetaData(const T* data)
 {
-	return static_cast<MetaData*>(static_cast<Buffer*>(
-		reinterpret_cast<Wrapper*>(const_cast<TYPE*>(buffer))));
+	return static_cast<metadata*>(
+		static_cast<buffer*>(
+			reinterpret_cast<first_element_wrapper*>(
+				const_cast<T*>(data))));
 }
 
-template <class TYPE>
-inline typename Array<TYPE>::MetaData* Array<TYPE>::GetMetaData() const
+template <class T>
+inline typename array<T>::metadata* array<T>::GetMetaData() const
 {
-	return GetMetaData(buffer);
+	return GetMetaData(data_ptr);
 }
 
-template <class TYPE>
-inline void Array<TYPE>::ReplaceBuffer(TYPE* new_buffer)
+template <class T>
+inline void array<T>::ReplaceBuffer(T* new_data)
 {
 	Release();
 
-	buffer = new_buffer;
+	data_ptr = new_data;
 }
 
-template <class TYPE>
-inline void Array<TYPE>::CopyBeforeWrite()
+template <class T>
+inline void array<T>::CopyBeforeWrite()
 {
 	if (IsShared())
-		Realloc(GetSize());
+		Realloc(size());
 }
 
-template <class TYPE>
-inline Array<TYPE>::~Array()
+template <class T>
+inline array<T>::~array()
 	throw ()
 {
 	Release();

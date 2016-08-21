@@ -27,18 +27,17 @@
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-void Array<TYPE>::AllocExactly(size_t capacity)
+template <class T>
+void array<T>::AllocExactly(size_t new_capacity)
 {
-	B_ASSERT(capacity >= 0);
 	B_ASSERT(!IsLocked());
 
-	if (GetCapacity() != capacity || IsShared())
+	if (capacity() != new_capacity || IsShared())
 	{
 		Release();
 
-		buffer = capacity > 0 ?
-			AllocBufferExactly(capacity) :
+		data_ptr = new_capacity > 0 ?
+			AllocBufferExactly(new_capacity) :
 			GetEmptyBuffer();
 	}
 	else
@@ -46,77 +45,75 @@ void Array<TYPE>::AllocExactly(size_t capacity)
 		// It makes no sense to allocate memory block
 		// of the same size. However, all elements are
 		// destroyed to simulate usual behavior.
-		Destroy(buffer, GetSize());
+		Destroy(data_ptr, size());
 		GetMetaData()->size = 0;
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::ReallocExactly(size_t capacity)
+template <class T>
+void array<T>::ReallocExactly(size_t new_capacity)
 {
-	B_ASSERT(capacity >= 0);
 	B_ASSERT(!IsLocked());
 
 	// Even if the array already has the capacity requested,
 	// if the buffer is shared, it must be reallocated.
-	if (GetCapacity() != capacity || IsShared())
+	if (capacity() != new_capacity || IsShared())
 	{
-		size_t size = GetSize() < capacity ? GetSize() : capacity;
-
-		if (capacity > 0)
+		if (new_capacity > 0)
 		{
-			TYPE* new_buffer = AllocBufferExactly(capacity);
+			T* new_data = AllocBufferExactly(new_capacity);
 
-			Construct(new_buffer, buffer,
-				GetMetaData(new_buffer)->size = size);
+			size_t new_array_size =
+				size() < new_capacity ? size() : new_capacity;
 
-			ReplaceBuffer(new_buffer);
+			Construct(new_data, data_ptr,
+				GetMetaData(new_data)->size = new_array_size);
+
+			ReplaceBuffer(new_data);
 		}
 		else
 			ReplaceBuffer(GetEmptyBuffer());
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::Assign(const Array<TYPE>& source)
+template <class T>
+void array<T>::Assign(const array<T>& source)
 {
 	if (!IsLocked() && !source.IsLocked())
 	{
-		if (source.buffer != GetEmptyBuffer())
+		if (source.data_ptr != GetEmptyBuffer())
 			++source.GetMetaData()->refs;
 
-		ReplaceBuffer(source.buffer);
+		ReplaceBuffer(source.data_ptr);
 	}
 	else
-		if (buffer != source.buffer)
-			Assign(source.GetBuffer(), source.GetSize());
+		if (data_ptr != source.data_ptr)
+			Assign(source.data(), source.size());
 }
 
-template <class TYPE>
-void Array<TYPE>::Assign(const TYPE* source, size_t count)
+template <class T>
+void array<T>::Assign(const T* source, size_t count)
 {
-	B_ASSERT(count >= 0);
-
 	if (count > 0)
 	{
-		if (!IsShared() && count <= GetCapacity())
-			if (count > GetSize())
+		if (!IsShared() && count <= capacity())
+			if (count > size())
 			{
-				Copy(buffer, source, GetSize());
-				Construct(buffer + GetSize(),
-					source + GetSize(),
-					count - GetSize());
+				Copy(data_ptr, source, size());
+				Construct(data_ptr + size(),
+					source + size(),
+					count - size());
 			}
 			else
 			{
-				Copy(buffer, source, count);
-				Destroy(buffer + count,
-					GetSize() - count);
+				Copy(data_ptr, source, count);
+				Destroy(data_ptr + count,
+					size() - count);
 			}
 		else
 		{
 			Alloc(count);
-			Construct(buffer, source, count);
+			Construct(data_ptr, source, count);
 		}
 
 		GetMetaData()->size = count;
@@ -125,30 +122,28 @@ void Array<TYPE>::Assign(const TYPE* source, size_t count)
 		RemoveAll();
 }
 
-template <class TYPE>
-void Array<TYPE>::Assign(const TYPE& element, size_t count)
+template <class T>
+void array<T>::Assign(const T& element, size_t count)
 {
-	B_ASSERT(count >= 0);
-
 	if (count > 0)
 	{
-		if (!IsShared() && count <= GetCapacity())
-			if (count > GetSize())
+		if (!IsShared() && count <= capacity())
+			if (count > size())
 			{
-				Copy(buffer, element, GetSize());
-				Construct(buffer + GetSize(),
-					element, count - GetSize());
+				Copy(data_ptr, element, size());
+				Construct(data_ptr + size(),
+					element, count - size());
 			}
 			else
 			{
-				Copy(buffer, element, count);
-				Destroy(buffer + count,
-					GetSize() - count);
+				Copy(data_ptr, element, count);
+				Destroy(data_ptr + count,
+					size() - count);
 			}
 		else
 		{
 			Alloc(count);
-			Construct(buffer, element, count);
+			Construct(data_ptr, element, count);
 		}
 
 		GetMetaData()->size = count;
@@ -157,13 +152,13 @@ void Array<TYPE>::Assign(const TYPE& element, size_t count)
 		RemoveAll();
 }
 
-template <class TYPE>
-void Array<TYPE>::SetAt(size_t index, const TYPE* source, size_t count)
+template <class T>
+void array<T>::SetAt(size_t index, const T* source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
-	// The source buffer cannot be a part of this array
-	B_ASSERT(source >= buffer + GetCapacity() ||
-		source + count < buffer);
+	B_ASSERT(index <= size());
+	// The source array cannot be a part of this array
+	B_ASSERT(source >= data_ptr + capacity() ||
+		source + count < data_ptr);
 
 	if (count > 0)
 	{
@@ -171,23 +166,23 @@ void Array<TYPE>::SetAt(size_t index, const TYPE* source, size_t count)
 
 		if (!IsShared())
 		{
-			if (tail_index <= GetSize())
+			if (tail_index <= size())
 			{
 				// This is the most frequent case,
 				// that's why it is processed first.
 
-				Copy(buffer + index, source, count);
+				Copy(data_ptr + index, source, count);
 
 				return;
 			}
 			else
-				if (tail_index <= GetCapacity())
+				if (tail_index <= capacity())
 				{
-					Copy(buffer + index, source,
-						GetSize() - index);
-					Construct(buffer + GetSize(),
-						source + GetSize() - index,
-						tail_index - GetSize());
+					Copy(data_ptr + index, source,
+						size() - index);
+					Construct(data_ptr + size(),
+						source + size() - index,
+						tail_index - size());
 
 					GetMetaData()->size = tail_index;
 
@@ -202,34 +197,34 @@ void Array<TYPE>::SetAt(size_t index, const TYPE* source, size_t count)
 		// is to be reallocated.
 		B_ASSERT(!IsLocked());
 
-		TYPE* new_buffer;
+		T* new_data;
 
-		if (tail_index < GetSize())
+		if (tail_index < size())
 		{
-			new_buffer = AllocBuffer(GetSize());
+			new_data = AllocBuffer(size());
 
-			Construct(new_buffer + tail_index, buffer + tail_index,
-				(GetMetaData(new_buffer)->size =
-					GetSize()) - tail_index);
+			Construct(new_data + tail_index, data_ptr + tail_index,
+				(GetMetaData(new_data)->size =
+					size()) - tail_index);
 		}
 		else
 		{
-			new_buffer = AllocBuffer(tail_index);
+			new_data = AllocBuffer(tail_index);
 
-			GetMetaData(new_buffer)->size = tail_index;
+			GetMetaData(new_data)->size = tail_index;
 		}
 
-		Construct(new_buffer, buffer, index);
-		Construct(new_buffer + index, source, count);
+		Construct(new_data, data_ptr, index);
+		Construct(new_data + index, source, count);
 
-		ReplaceBuffer(new_buffer);
+		ReplaceBuffer(new_data);
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::SetAt(size_t index, const TYPE& element, size_t count)
+template <class T>
+void array<T>::SetAt(size_t index, const T& element, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
+	B_ASSERT(index <= size());
 
 	if (count > 0)
 	{
@@ -237,20 +232,20 @@ void Array<TYPE>::SetAt(size_t index, const TYPE& element, size_t count)
 
 		if (!IsShared())
 		{
-			if (tail_index <= GetSize())
+			if (tail_index <= size())
 			{
-				Copy(buffer + index, element, count);
+				Copy(data_ptr + index, element, count);
 
 				return;
 			}
 			else
-				if (tail_index <= GetCapacity())
+				if (tail_index <= capacity())
 				{
-					Copy(buffer + index, element,
-						GetSize() - index);
+					Copy(data_ptr + index, element,
+						size() - index);
 
-					Construct(buffer + GetSize(), element,
-						tail_index - GetSize());
+					Construct(data_ptr + size(), element,
+						tail_index - size());
 
 					GetMetaData()->size = tail_index;
 
@@ -260,54 +255,54 @@ void Array<TYPE>::SetAt(size_t index, const TYPE& element, size_t count)
 
 		B_ASSERT(!IsLocked());
 
-		TYPE* new_buffer;
+		T* new_data;
 
-		if (tail_index < GetSize())
+		if (tail_index < size())
 		{
-			new_buffer = AllocBuffer(GetSize());
+			new_data = AllocBuffer(size());
 
-			Construct(new_buffer + tail_index, buffer + tail_index,
-				(GetMetaData(new_buffer)->size =
-					GetSize()) - tail_index);
+			Construct(new_data + tail_index, data_ptr + tail_index,
+				(GetMetaData(new_data)->size =
+					size()) - tail_index);
 		}
 		else
 		{
-			new_buffer = AllocBuffer(tail_index);
+			new_data = AllocBuffer(tail_index);
 
-			GetMetaData(new_buffer)->size = tail_index;
+			GetMetaData(new_data)->size = tail_index;
 		}
 
-		Construct(new_buffer, buffer, index);
-		Construct(new_buffer + index, element, count);
+		Construct(new_data, data_ptr, index);
+		Construct(new_data + index, element, count);
 
-		ReplaceBuffer(new_buffer);
+		ReplaceBuffer(new_data);
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::InsertAt(size_t index, const TYPE* source, size_t count)
+template <class T>
+void array<T>::InsertAt(size_t index, const T* source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
+	B_ASSERT(index <= size());
 	// <source> must not be a part of this array
-	B_ASSERT(source >= buffer + GetCapacity() ||
-		source + count < buffer);
+	B_ASSERT(source >= data_ptr + capacity() ||
+		source + count < data_ptr);
 
 	if (count > 0)
 	{
-		TYPE* tail = buffer + index;
-		size_t tail_size = GetSize() - index;
-		size_t new_size = GetSize() + count;
+		T* tail = data_ptr + index;
+		size_t tail_size = size() - index;
+		size_t new_size = size() + count;
 
-		if (new_size > GetCapacity() || IsShared())
+		if (new_size > capacity() || IsShared())
 		{
-			TYPE* new_buffer = AllocBuffer(new_size);
+			T* new_data = AllocBuffer(new_size);
 
-			Construct(new_buffer, buffer, index);
-			Construct(new_buffer + index, source, count);
-			Construct(new_buffer + index + count,
+			Construct(new_data, data_ptr, index);
+			Construct(new_data + index, source, count);
+			Construct(new_data + index + count,
 				tail, tail_size);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_data);
 		}
 		else
 			if (count < tail_size)
@@ -334,26 +329,26 @@ void Array<TYPE>::InsertAt(size_t index, const TYPE* source, size_t count)
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::InsertAt(size_t index, const TYPE& element, size_t count)
+template <class T>
+void array<T>::InsertAt(size_t index, const T& element, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetSize() && count >= 0);
+	B_ASSERT(index <= size());
 
 	if (count > 0)
 	{
-		TYPE* tail = buffer + index;
-		size_t tail_size = GetSize() - index;
-		size_t new_size = GetSize() + count;
+		T* tail = data_ptr + index;
+		size_t tail_size = size() - index;
+		size_t new_size = size() + count;
 
-		if (new_size > GetCapacity() || IsShared())
+		if (new_size > capacity() || IsShared())
 		{
-			TYPE* new_buffer = AllocBuffer(new_size);
+			T* new_data = AllocBuffer(new_size);
 
-			Construct(new_buffer, buffer, index);
-			Construct(new_buffer + index, element, count);
-			Construct(new_buffer + index + count, tail, tail_size);
+			Construct(new_data, data_ptr, index);
+			Construct(new_data + index, element, count);
+			Construct(new_data + index + count, tail, tail_size);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_data);
 		}
 		else
 			if (count < tail_size)
@@ -380,101 +375,95 @@ void Array<TYPE>::InsertAt(size_t index, const TYPE& element, size_t count)
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::Append(const TYPE* source, size_t count)
+template <class T>
+void array<T>::Append(const T* source, size_t count)
 {
-	B_ASSERT(count >= 0);
-
 	if (count > 0)
 	{
-		if (IsShared() || GetSize() + count > GetCapacity())
-			Realloc(GetSize() + count);
+		if (IsShared() || size() + count > capacity())
+			Realloc(size() + count);
 
-		Construct(buffer + GetSize(), source, count);
+		Construct(data_ptr + size(), source, count);
 		GetMetaData()->size += count;
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::Append(const TYPE& element, size_t count)
+template <class T>
+void array<T>::Append(const T& element, size_t count)
 {
-	B_ASSERT(count >= 0);
-
 	if (count > 0)
 	{
-		if (IsShared() || GetSize() + count > GetCapacity())
-			Realloc(GetSize() + count);
+		if (IsShared() || size() + count > capacity())
+			Realloc(size() + count);
 
-		Construct(buffer + GetSize(), element, count);
+		Construct(data_ptr + size(), element, count);
 		GetMetaData()->size += count;
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::RemoveAt(size_t index, size_t count)
+template <class T>
+void array<T>::RemoveAt(size_t index, size_t count)
 {
-	B_ASSERT(index >= 0 && count >= 0);
-
-	if (index + count > GetSize())
-		count = GetSize() - index;
+	if (index + count > size())
+		count = size() - index;
 
 	if (count > 0)
 	{
-		size_t new_size = GetSize() - count;
+		size_t new_size = size() - count;
 
 		if (!IsShared())
 		{
-			Copy(buffer + index, buffer + index + count,
+			Copy(data_ptr + index, data_ptr + index + count,
 				new_size - index);
 
-			Destroy(buffer + new_size, count);
+			Destroy(data_ptr + new_size, count);
 		}
 		else
 		{
-			TYPE* new_buffer = AllocBuffer(new_size);
+			T* new_data = AllocBuffer(new_size);
 
-			Construct(new_buffer, buffer, index);
+			Construct(new_data, data_ptr, index);
 
-			Construct(new_buffer + index, buffer + index + count,
+			Construct(new_data + index, data_ptr + index + count,
 				new_size - index);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_data);
 		}
 
 		GetMetaData()->size = new_size;
 	}
 }
 
-template <class TYPE>
-void Array<TYPE>::RemoveAll()
+template <class T>
+void array<T>::RemoveAll()
 {
 	if (!IsShared())
 	{
-		Destroy(buffer, GetSize());
+		Destroy(data_ptr, size());
 		GetMetaData()->size = 0;
 	}
 	else
 		ReplaceBuffer(GetEmptyBuffer());
 }
 
-template <class TYPE>
-TYPE* Array<TYPE>::GetEmptyBuffer()
+template <class T>
+T* array<T>::GetEmptyBuffer()
 {
-	static const MetaData empty =
+	static const metadata empty =
 	{
 		/* refs         */ B_REFCOUNT_STATIC_INIT(2),
 		/* capacity     */ 0,
 		/* size         */ 0
 	};
 
-	return &static_cast<Buffer&>(const_cast<MetaData&>(empty)).first;
+	return &static_cast<buffer&>(const_cast<metadata&>(empty)).first;
 }
 
-template <class TYPE>
-TYPE* Array<TYPE>::AllocBufferExactly(size_t capacity)
+template <class T>
+T* array<T>::AllocBufferExactly(size_t capacity)
 {
-	Buffer* new_buffer = (Buffer*) Memory::Alloc((size_t)
-		&((Buffer*) (sizeof(TYPE) * capacity))->first);
+	buffer* new_buffer = (buffer*) Memory::Alloc((size_t)
+		&((buffer*) (sizeof(T) * capacity))->first);
 
 	new_buffer->refs = 0;
 	new_buffer->capacity = capacity;
@@ -483,14 +472,14 @@ TYPE* Array<TYPE>::AllocBufferExactly(size_t capacity)
 	return &new_buffer->first;
 }
 
-template <class TYPE>
-void Array<TYPE>::Release()
+template <class T>
+void array<T>::Release()
 {
 	B_ASSERT(!IsLocked());
 
-	if (buffer != GetEmptyBuffer() && !--GetMetaData()->refs)
+	if (data_ptr != GetEmptyBuffer() && !--GetMetaData()->refs)
 	{
-		Destroy(buffer, GetSize());
+		Destroy(data_ptr, size());
 		Memory::Free(GetMetaData());
 	}
 }

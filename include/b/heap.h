@@ -44,7 +44,7 @@ public:
 	const TYPE& GetAt(int index) const;
 	const TYPE& operator [](int index) const;
 
-	Array<TYPE> GetData() const;
+	array<TYPE> GetData() const;
 
 // Operations
 public:
@@ -57,7 +57,7 @@ public:
 
 // Implementation
 protected:
-	Array<TYPE> data;
+	array<TYPE> data;
 };
 
 template <class TYPE>
@@ -103,7 +103,7 @@ inline const TYPE& Heap<TYPE>::operator [](int index) const
 }
 
 template <class TYPE>
-inline Array<TYPE> Heap<TYPE>::GetData() const
+inline array<TYPE> Heap<TYPE>::GetData() const
 {
 	return data;
 }
