@@ -80,7 +80,7 @@ public:
 	// extra characters for future string expansion.
 	void Realloc(size_t capacity);
 
-	// Allocates enough memory to store <capacity> characters.
+	// Allocates enough memory to store 'capacity' characters.
 	// In case if the buffer gets reallocated, the contents is
 	// not preserved.
 	void Reserve(size_t capacity);
@@ -549,12 +549,6 @@ inline String& String::operator +=(Char source)
 {
 	Append(source);
 	return *this;
-}
-
-inline String String::operator +(const String& source) const
-{
-	String result(*this);
-	return result += source;
 }
 
 inline String String::operator +(Char source) const

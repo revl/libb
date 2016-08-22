@@ -313,6 +313,12 @@ void String::Append(Char source, size_t count)
 }
 */
 
+String String::operator +(const String& source) const
+{
+	String result(*this);
+	return result += source;
+}
+
 void String::Delete(size_t index, size_t count)
 {
 	if (index + count > GetLength())

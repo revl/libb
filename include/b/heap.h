@@ -61,55 +61,55 @@ protected:
 };
 
 template <class TYPE>
-inline int Heap<TYPE>::GetSize() const
+int Heap<TYPE>::GetSize() const
 {
 	return data.GetSize();
 }
 
 template <class TYPE>
-inline bool Heap<TYPE>::IsEmpty() const
+bool Heap<TYPE>::IsEmpty() const
 {
 	return GetSize() == 0;
 }
 
 template <class TYPE>
-inline int Heap<TYPE>::GetParentIndex(int child)
+int Heap<TYPE>::GetParentIndex(int child)
 {
 	return child >> 1;
 }
 
 template <class TYPE>
-inline int Heap<TYPE>::GetLeftChildIndex(int parent)
+int Heap<TYPE>::GetLeftChildIndex(int parent)
 {
 	return parent << 1;
 }
 
 template <class TYPE>
-inline int Heap<TYPE>::GetRightChildIndex(int parent)
+int Heap<TYPE>::GetRightChildIndex(int parent)
 {
 	return (parent << 1) + 1;
 }
 
 template <class TYPE>
-inline const TYPE& Heap<TYPE>::GetAt(int index) const
+const TYPE& Heap<TYPE>::GetAt(int index) const
 {
 	return data[index];
 }
 
 template <class TYPE>
-inline const TYPE& Heap<TYPE>::operator [](int index) const
+const TYPE& Heap<TYPE>::operator [](int index) const
 {
 	return data[index];
 }
 
 template <class TYPE>
-inline array<TYPE> Heap<TYPE>::GetData() const
+array<TYPE> Heap<TYPE>::GetData() const
 {
 	return data;
 }
 
 template <class TYPE>
-inline void Heap<TYPE>::Push(const TYPE& element)
+void Heap<TYPE>::Push(const TYPE& element)
 {
 	data.Append(element);
 	Push(data.LockBuffer(), data.GetSize());
@@ -117,7 +117,7 @@ inline void Heap<TYPE>::Push(const TYPE& element)
 }
 
 template <class TYPE>
-inline TYPE Heap<TYPE>::Pop()
+TYPE Heap<TYPE>::Pop()
 {
 	int size = data.GetSize();
 

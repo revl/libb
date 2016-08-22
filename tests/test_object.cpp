@@ -52,22 +52,22 @@ private:
 	static int instance_count;
 };
 
-inline Base::Base(int initial_value) : value(initial_value)
+Base::Base(int initial_value) : value(initial_value)
 {
 	++instance_count;
 }
 
-inline Base::Ptr Base::Create(int initial_value)
+Base::Ptr Base::Create(int initial_value)
 {
 	return new Base(initial_value);
 }
 
-inline int Base::GetValue() const
+int Base::GetValue() const
 {
 	return value;
 }
 
-inline int Base::GetInstanceCount()
+int Base::GetInstanceCount()
 {
 	return instance_count;
 }

@@ -243,84 +243,84 @@ public:
 };
 
 template <class T>
-inline array<T>::array() : data_ptr(empty_array())
+array<T>::array() : data_ptr(empty_array())
 {
 }
 
 template <class T>
-inline array<T>::array(const array<T>& source) : data_ptr(empty_array())
+array<T>::array(const array<T>& source) : data_ptr(empty_array())
 {
 	Assign(source);
 }
 
 template <class T>
-inline array<T>::array(const T* source, size_t count) : data_ptr(empty_array())
+array<T>::array(const T* source, size_t count) : data_ptr(empty_array())
 {
 	Assign(source, count);
 }
 
 template <class T>
-inline array<T>::array(const T& element, size_t count) : data_ptr(empty_array())
+array<T>::array(const T& element, size_t count) : data_ptr(empty_array())
 {
 	Assign(element, count);
 }
 
 template <class T>
-inline size_t array<T>::capacity() const
+size_t array<T>::capacity() const
 {
 	return GetMetaData()->capacity;
 }
 
 template <class T>
-inline size_t array<T>::size() const
+size_t array<T>::size() const
 {
 	return GetMetaData()->size;
 }
 
 template <class T>
-inline bool array<T>::IsEmpty() const
+bool array<T>::IsEmpty() const
 {
 	return size() == 0;
 }
 
 template <class T>
-inline bool array<T>::IsLocked() const
+bool array<T>::IsLocked() const
 {
 	return GetMetaData()->refs < 0;
 }
 
 template <class T>
-inline void array<T>::Alloc(size_t capacity)
+void array<T>::Alloc(size_t capacity)
 {
 	AllocExactly(Inc(capacity));
 }
 
 template <class T>
-inline void array<T>::Realloc(size_t capacity)
+void array<T>::Realloc(size_t capacity)
 {
 	ReallocExactly(Inc(capacity));
 }
 
 template <class T>
-inline void array<T>::shrink_to_fit()
+void array<T>::shrink_to_fit()
 {
 	ReallocExactly(size());
 }
 
 template <class T>
-inline const T* array<T>::data() const
+const T* array<T>::data() const
 {
 	return data_ptr;
 }
 
 template <class T>
-inline array<T>::operator const T*() const
+array<T>::operator const T*() const
 {
 	return data_ptr;
 }
 
 template <class T>
-inline T* array<T>::LockBuffer()
+T* array<T>::LockBuffer()
 {
 	CopyBeforeWrite();
 
@@ -330,7 +330,7 @@ inline T* array<T>::LockBuffer()
 }
 
 template <class T>
-inline void array<T>::UnlockBuffer()
+void array<T>::UnlockBuffer()
 {
 	B_ASSERT(IsLocked());
 
@@ -338,7 +338,7 @@ inline void array<T>::UnlockBuffer()
 }
 
 template <class T>
-inline const T& array<T>::GetAt(size_t index) const
+const T& array<T>::GetAt(size_t index) const
 {
 	B_ASSERT(index < size());
 
@@ -346,7 +346,7 @@ inline const T& array<T>::GetAt(size_t index) const
 }
 
 template <class T>
-inline const T& array<T>::operator [](size_t index) const
+const T& array<T>::operator [](size_t index) const
 {
 	B_ASSERT(index < size());
 
@@ -354,16 +354,7 @@ inline const T& array<T>::operator [](size_t index) const
 }
 
 template <class T>
-inline T& array<T>::GetAt(size_t index)
-{
-	B_ASSERT(index < size());
-
-	CopyBeforeWrite();
-	return data_ptr[index];
-}
-
-template <class T>
-inline T& array<T>::operator [](size_t index)
+T& array<T>::GetAt(size_t index)
 {
 	B_ASSERT(index < size());
 
@@ -372,7 +363,16 @@ inline T& array<T>::operator [](size_t index)
 }
 
 template <class T>
-inline const T& array<T>::GetHead() const
+T& array<T>::operator [](size_t index)
+{
+	B_ASSERT(index < size());
+
+	CopyBeforeWrite();
+	return data_ptr[index];
+}
+
+template <class T>
+const T& array<T>::GetHead() const
 {
 	B_ASSERT(!IsEmpty());
 
@@ -380,7 +380,7 @@ inline const T& array<T>::GetHead() const
 }
 
 template <class T>
-inline T& array<T>::GetHead()
+T& array<T>::GetHead()
 {
 	B_ASSERT(!IsEmpty());
 
@@ -389,7 +389,7 @@ inline T& array<T>::GetHead()
 }
 
 template <class T>
-inline const T& array<T>::GetTail() const
+const T& array<T>::GetTail() const
 {
 	B_ASSERT(!IsEmpty());
 
@@ -397,7 +397,7 @@ inline const T& array<T>::GetTail() const
 }
 
 template <class T>
-inline T& array<T>::GetTail()
+T& array<T>::GetTail()
 {
 	B_ASSERT(!IsEmpty());
 
@@ -406,7 +406,7 @@ inline T& array<T>::GetTail()
 }
 
 template <class T>
-inline array<T>& array<T>::operator =(const array<T>& source)
+array<T>& array<T>::operator =(const array<T>& source)
 {
 	Assign(source);
 	return *this;
@@ -419,47 +419,47 @@ void array<T>::SetAt(size_t index, const array<T>& source)
 }
 
 template <class T>
-inline void array<T>::InsertAt(size_t index, const array<T>& source)
+void array<T>::InsertAt(size_t index, const array<T>& source)
 {
 	InsertAt(index, source.data(), source.size());
 }
 
 template <class T>
-inline void array<T>::Append(const array<T>& source)
+void array<T>::Append(const array<T>& source)
 {
 	Append(source.data_ptr, source.size());
 }
 
 template <class T>
-inline array<T>& array<T>::operator +=(const array<T>& source)
+array<T>& array<T>::operator +=(const array<T>& source)
 {
 	Append(source);
 	return *this;
 }
 
 template <class T>
-inline array<T>& array<T>::operator +=(const T& element)
+array<T>& array<T>::operator +=(const T& element)
 {
 	Append(element);
 	return *this;
 }
 
 template <class T>
-inline array<T> array<T>::operator +(const array<T>& source) const
+array<T> array<T>::operator +(const array<T>& source) const
 {
 	array<T> result(*this);
 	return result += source;
 }
 
 template <class T>
-inline array<T> array<T>::operator +(const T& element) const
+array<T> array<T>::operator +(const T& element) const
 {
 	array<T> result(*this);
 	return result += element;
 }
 
 template <class T>
-inline size_t array<T>::Inc(size_t size)
+size_t array<T>::Inc(size_t size)
 {
 	size_t extra = size >> 3;
 
@@ -467,19 +467,19 @@ inline size_t array<T>::Inc(size_t size)
 }
 
 template <class T>
-inline bool array<T>::IsShared() const
+bool array<T>::IsShared() const
 {
 	return GetMetaData()->refs > 0;
 }
 
 template <class T>
-inline T* array<T>::AllocBuffer(size_t capacity)
+T* array<T>::AllocBuffer(size_t capacity)
 {
 	return AllocBufferExactly(Inc(capacity));
 }
 
 template <class T>
-inline typename array<T>::metadata* array<T>::GetMetaData(const T* data)
+typename array<T>::metadata* array<T>::GetMetaData(const T* data)
 {
 	return static_cast<metadata*>(
 		static_cast<buffer*>(
@@ -488,13 +488,13 @@ inline typename array<T>::metadata* array<T>::GetMetaData(const T* data)
 }
 
 template <class T>
-inline typename array<T>::metadata* array<T>::GetMetaData() const
+typename array<T>::metadata* array<T>::GetMetaData() const
 {
 	return GetMetaData(data_ptr);
 }
 
 template <class T>
-inline void array<T>::ReplaceBuffer(T* new_data)
+void array<T>::ReplaceBuffer(T* new_data)
 {
 	Release();
 
@@ -502,14 +502,14 @@ inline void array<T>::ReplaceBuffer(T* new_data)
 }
 
 template <class T>
-inline void array<T>::CopyBeforeWrite()
+void array<T>::CopyBeforeWrite()
 {
 	if (IsShared())
 		Realloc(size());
 }
 
 template <class T>
-inline array<T>::~array()
+array<T>::~array()
 	throw ()
 {
 	Release();
