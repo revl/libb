@@ -185,7 +185,7 @@ public:
 	void RemoveAt(size_t index, size_t count = 1);
 
 	// Empties the array.
-	void RemoveAll();
+	void clear();
 
 // Implementation
 private:
@@ -222,7 +222,7 @@ private:
 
 	bool IsShared() const;
 
-	static T* GetEmptyBuffer();
+	static T* empty_array();
 
 	static T* AllocBufferExactly(size_t capacity);
 
@@ -243,26 +243,24 @@ public:
 };
 
 template <class T>
-inline array<T>::array() : data_ptr(GetEmptyBuffer())
+inline array<T>::array() : data_ptr(empty_array())
 {
 }
 
 template <class T>
-inline array<T>::array(const array<T>& source) : data_ptr(GetEmptyBuffer())
+inline array<T>::array(const array<T>& source) : data_ptr(empty_array())
 {
 	Assign(source);
 }
 
 template <class T>
-inline array<T>::array(const T* source, size_t count) :
-	data_ptr(GetEmptyBuffer())
+inline array<T>::array(const T* source, size_t count) : data_ptr(empty_array())
 {
 	Assign(source, count);
 }
 
 template <class T>
-inline array<T>::array(const T& element, size_t count) :
-	data_ptr(GetEmptyBuffer())
+inline array<T>::array(const T& element, size_t count) : data_ptr(empty_array())
 {
 	Assign(element, count);
 }
@@ -463,10 +461,9 @@ inline array<T> array<T>::operator +(const T& element) const
 template <class T>
 inline size_t array<T>::Inc(size_t size)
 {
-	size_t increment;
+	size_t extra = size >> 3;
 
-	return size + ((increment = size >> 3) > 0x4 ?
-		(increment <= 0x400 ? increment : 0x400) : 0x4);
+	return size + (extra > 4 ?  (extra <= 1024 ? extra : 1024) : 4);
 }
 
 template <class T>

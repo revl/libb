@@ -38,7 +38,7 @@ void array<T>::AllocExactly(size_t new_capacity)
 
 		data_ptr = new_capacity > 0 ?
 			AllocBufferExactly(new_capacity) :
-			GetEmptyBuffer();
+			empty_array();
 	}
 	else
 	{
@@ -72,7 +72,7 @@ void array<T>::ReallocExactly(size_t new_capacity)
 			ReplaceBuffer(new_data);
 		}
 		else
-			ReplaceBuffer(GetEmptyBuffer());
+			ReplaceBuffer(empty_array());
 	}
 }
 
@@ -81,7 +81,7 @@ void array<T>::Assign(const array<T>& source)
 {
 	if (!IsLocked() && !source.IsLocked())
 	{
-		if (source.data_ptr != GetEmptyBuffer())
+		if (source.data_ptr != empty_array())
 			++source.GetMetaData()->refs;
 
 		ReplaceBuffer(source.data_ptr);
@@ -119,7 +119,7 @@ void array<T>::Assign(const T* source, size_t count)
 		GetMetaData()->size = count;
 	}
 	else
-		RemoveAll();
+		clear();
 }
 
 template <class T>
@@ -149,7 +149,7 @@ void array<T>::Assign(const T& element, size_t count)
 		GetMetaData()->size = count;
 	}
 	else
-		RemoveAll();
+		clear();
 }
 
 template <class T>
@@ -435,7 +435,7 @@ void array<T>::RemoveAt(size_t index, size_t count)
 }
 
 template <class T>
-void array<T>::RemoveAll()
+void array<T>::clear()
 {
 	if (!IsShared())
 	{
@@ -443,11 +443,11 @@ void array<T>::RemoveAll()
 		GetMetaData()->size = 0;
 	}
 	else
-		ReplaceBuffer(GetEmptyBuffer());
+		ReplaceBuffer(empty_array());
 }
 
 template <class T>
-T* array<T>::GetEmptyBuffer()
+T* array<T>::empty_array()
 {
 	static const metadata empty =
 	{
@@ -477,7 +477,7 @@ void array<T>::Release()
 {
 	B_ASSERT(!IsLocked());
 
-	if (data_ptr != GetEmptyBuffer() && !--GetMetaData()->refs)
+	if (data_ptr != empty_array() && !--GetMetaData()->refs)
 	{
 		Destroy(data_ptr, size());
 		Memory::Free(GetMetaData());
