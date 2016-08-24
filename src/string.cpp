@@ -20,12 +20,10 @@
 
 #include <b/string.h>
 
-#define Char wchar_t
+#define char wchar_t
 #define String StringW
 #include "string_impl.h"
 #undef String
-#undef Char
+#undef char
 
-#define Char char
 #include "string_impl.h"
-#undef Char
