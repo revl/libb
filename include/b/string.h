@@ -362,10 +362,10 @@ inline bool String::IsEmpty() const
 
 inline size_t String::Inc(size_t length)
 {
-	size_t increment;
+	size_t extra;
 
-	return length + ((increment = length >> 3) > 0x4 ?
-		(increment <= 0x400 ? increment : 0x400) : 0x4);
+	return length + ((extra = length >> 3) > 0x4 ?
+		(extra <= 0x400 ? extra : 0x400) : 0x4);
 }
 
 inline void String::Alloc(size_t capacity)
