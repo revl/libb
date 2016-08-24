@@ -83,10 +83,10 @@ public:
 	// Allocates enough memory to store 'capacity' characters.
 	// In case if the buffer gets reallocated, the contents is
 	// not preserved.
-	void Reserve(size_t capacity);
+	void reserve(size_t capacity);
 
 	// Frees memory that is not used by the string.
-	void FreeExtra();
+	void shrink_to_fit();
 
 // Buffer Access
 public:
@@ -203,7 +203,7 @@ public:
 // Comparison
 public:
 	// Compares this string against <right_side> lexicographically.
-	int Compare(const char* right_side) const;
+	int compare(const char* right_side) const;
 
 	// Returns true if this string and <right_side> are equal.
 	bool operator ==(const string& right_side) const;
@@ -278,30 +278,30 @@ public:
 
 // Implementation
 protected:
-	struct Data
+	struct buffer
 	{
 		RefCount refs;
 		size_t capacity;
 		size_t length;
-		char buffer[1];
+		char first_char[1];
 	};
 
-	char* buffer;
+	char* chars;
 
 	static size_t Inc(size_t length);
 
 	bool IsShared() const;
 
-	static char* GetEmptyBuffer();
+	static char* empty_string();
 
 	static char* AllocBufferExactly(size_t capacity);
 
 	static char* AllocBuffer(size_t length);
 
-	static Data* GetData(const char* buffer);
-	Data* GetData() const;
+	static buffer* metadata(const char* chars);
+	buffer* metadata() const;
 
-	void ReplaceBuffer(char* new_buffer);
+	void ReplaceBuffer(char* new_buffer_chars);
 
 	void CopyBeforeWrite();
 
@@ -310,49 +310,49 @@ public:
 		throw ();
 };
 
-inline string::string() : buffer(GetEmptyBuffer())
+inline string::string() : chars(empty_string())
 {
 }
 
-inline string::string(const string& source) : buffer(GetEmptyBuffer())
+inline string::string(const string& source) : chars(empty_string())
 {
 	Assign(source);
 }
 
 inline string::string(const char* source, size_t count) :
-	buffer(GetEmptyBuffer())
+	chars(empty_string())
 {
 	Assign(source, count);
 }
 
-inline string::string(char source, size_t count) : buffer(GetEmptyBuffer())
+inline string::string(char source, size_t count) : chars(empty_string())
 {
 	Assign(source, count);
 }
 
-inline string::Data* string::GetData(const char* buffer)
+inline string::buffer* string::metadata(const char* chars)
 {
-	return B_OUTERSTRUCT(Data, buffer[0], buffer);
+	return B_OUTERSTRUCT(buffer, first_char[0], chars);
 }
 
-inline string::Data* string::GetData() const
+inline string::buffer* string::metadata() const
 {
-	return GetData(buffer);
+	return metadata(chars);
 }
 
 inline bool string::IsLocked() const
 {
-	return GetData()->refs <= 0;
+	return metadata()->refs <= 0;
 }
 
 inline size_t string::GetCapacity() const
 {
-	return GetData()->capacity;
+	return metadata()->capacity;
 }
 
 inline size_t string::GetLength() const
 {
-	return GetData()->length;
+	return metadata()->length;
 }
 
 inline bool string::IsEmpty() const
@@ -380,56 +380,56 @@ inline void string::Realloc(size_t capacity)
 
 inline bool string::IsShared() const
 {
-	return GetData()->refs > 1;
+	return metadata()->refs > 1;
 }
 
-inline void string::Reserve(size_t capacity)
+inline void string::reserve(size_t capacity)
 {
 	if (GetCapacity() < capacity || IsShared())
 		Realloc(capacity);
 }
 
-inline void string::FreeExtra()
+inline void string::shrink_to_fit()
 {
 	size_t length = GetLength();
 
 	if (!IsShared() && length != GetCapacity())
 	{
-		char* new_buffer = AllocBufferExactly(length);
+		char* new_buffer_chars = AllocBufferExactly(length);
 
-		Copy(new_buffer, buffer, length);
+		Copy(new_buffer_chars, chars, length);
 
-		ReplaceBuffer(new_buffer);
+		ReplaceBuffer(new_buffer_chars);
 	}
 }
 
 inline const char* string::GetBuffer() const
 {
-	return buffer;
+	return chars;
 }
 
 inline string::operator const char*() const
 {
-	return buffer;
+	return chars;
 }
 
 inline char* string::AllocBuffer(size_t length)
 {
-	char* new_buffer = AllocBufferExactly(Inc(length));
-	new_buffer[GetData(new_buffer)->length = length] = 0;
+	char* new_buffer_chars = AllocBufferExactly(Inc(length));
+	new_buffer_chars[metadata(new_buffer_chars)->length = length] = 0;
 
-	return new_buffer;
+	return new_buffer_chars;
 }
 
 inline void string::CopyBeforeWrite()
 {
 	if (IsShared())
 	{
-		char* new_buffer = AllocBuffer(GetLength());
+		char* new_buffer_chars = AllocBuffer(GetLength());
 
-		Copy(new_buffer, buffer, GetLength());
+		Copy(new_buffer_chars, chars, GetLength());
 
-		ReplaceBuffer(new_buffer);
+		ReplaceBuffer(new_buffer_chars);
 	}
 }
 
@@ -437,38 +437,38 @@ inline char* string::LockBuffer()
 {
 	CopyBeforeWrite();
 
-	--GetData()->refs;
+	--metadata()->refs;
 
-	return buffer;
+	return chars;
 }
 
 inline void string::UnlockBuffer()
 {
 	B_ASSERT(IsLocked());
 
-	++GetData()->refs;
+	++metadata()->refs;
 }
 
 inline void string::UnlockBuffer(size_t new_length)
 {
 	B_ASSERT(IsLocked() && new_length <= GetCapacity());
 
-	buffer[GetData()->length = new_length] = 0;
-	++GetData()->refs;
+	chars[metadata()->length = new_length] = 0;
+	++metadata()->refs;
 }
 
 inline char string::GetAt(size_t index) const
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
-	return buffer[index];
+	return chars[index];
 }
 
 inline char string::operator [](size_t index) const
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
-	return buffer[index];
+	return chars[index];
 }
 
 inline void string::SetAt(size_t index, char value)
@@ -476,7 +476,7 @@ inline void string::SetAt(size_t index, char value)
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	CopyBeforeWrite();
-	buffer[index] = value;
+	chars[index] = value;
 }
 
 inline char& string::operator [](size_t index)
@@ -484,14 +484,14 @@ inline char& string::operator [](size_t index)
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	CopyBeforeWrite();
-	return buffer[index];
+	return chars[index];
 }
 
 inline char string::GetHead() const
 {
 	B_ASSERT(!IsEmpty());
 
-	return *buffer;
+	return *chars;
 }
 
 inline char& string::GetHead()
@@ -499,14 +499,14 @@ inline char& string::GetHead()
 	B_ASSERT(!IsEmpty());
 
 	CopyBeforeWrite();
-	return *buffer;
+	return *chars;
 }
 
 inline char string::GetTail() const
 {
 	B_ASSERT(!IsEmpty());
 
-	return buffer[GetLength() - 1];
+	return chars[GetLength() - 1];
 }
 
 inline char& string::GetTail()
@@ -514,7 +514,7 @@ inline char& string::GetTail()
 	B_ASSERT(!IsEmpty());
 
 	CopyBeforeWrite();
-	return buffer[GetLength() - 1];
+	return chars[GetLength() - 1];
 }
 
 inline string& string::operator =(const string& source)
@@ -557,69 +557,69 @@ inline string string::operator +(char source) const
 	return result += source;
 }
 
-inline int string::Compare(const char* right_side) const
+inline int string::compare(const char* right_side) const
 {
-	return CompareStrings(buffer, right_side);
+	return CompareStrings(chars, right_side);
 }
 
 inline bool string::operator ==(const string& right_side) const
 {
-	return Compare(right_side) == 0;
+	return compare(right_side) == 0;
 }
 
 inline bool string::operator ==(const char* right_side) const
 {
-	return Compare(right_side) == 0;
+	return compare(right_side) == 0;
 }
 
 inline bool string::operator !=(const string& right_side) const
 {
-	return Compare(right_side) != 0;
+	return compare(right_side) != 0;
 }
 
 inline bool string::operator !=(const char* right_side) const
 {
-	return Compare(right_side) != 0;
+	return compare(right_side) != 0;
 }
 
 inline bool string::operator <(const string& right_side) const
 {
-	return Compare(right_side) < 0;
+	return compare(right_side) < 0;
 }
 
 inline bool string::operator <(const char* right_side) const
 {
-	return Compare(right_side) < 0;
+	return compare(right_side) < 0;
 }
 
 inline bool string::operator >(const string& right_side) const
 {
-	return Compare(right_side) > 0;
+	return compare(right_side) > 0;
 }
 
 inline bool string::operator >(const char* right_side) const
 {
-	return Compare(right_side) > 0;
+	return compare(right_side) > 0;
 }
 
 inline bool string::operator <=(const string& right_side) const
 {
-	return Compare(right_side) <= 0;
+	return compare(right_side) <= 0;
 }
 
 inline bool string::operator <=(const char* right_side) const
 {
-	return Compare(right_side) <= 0;
+	return compare(right_side) <= 0;
 }
 
 inline bool string::operator >=(const string& right_side) const
 {
-	return Compare(right_side) >= 0;
+	return compare(right_side) >= 0;
 }
 
 inline bool string::operator >=(const char* right_side) const
 {
-	return Compare(right_side) >= 0;
+	return compare(right_side) >= 0;
 }
 
 inline void string::FormatV(const char* format, va_list arguments)
@@ -640,10 +640,10 @@ inline string operator +(char left_side, const string& right_side)
 	size_t length = right_side.GetLength();
 
 	result.Alloc(length + 1);
-	char* buffer = result.LockBuffer();
+	char* chars = result.LockBuffer();
 
-	*buffer = left_side;
-	Copy(buffer + 1, right_side.GetBuffer(), length);
+	*chars = left_side;
+	Copy(chars + 1, right_side.GetBuffer(), length);
 
 	result.UnlockBuffer(length + 1);
 	return result;
@@ -651,32 +651,32 @@ inline string operator +(char left_side, const string& right_side)
 
 inline bool operator ==(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) == 0;
+	return right_side.compare(left_side) == 0;
 }
 
 inline bool operator !=(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) != 0;
+	return right_side.compare(left_side) != 0;
 }
 
 inline bool operator <(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) > 0;
+	return right_side.compare(left_side) > 0;
 }
 
 inline bool operator >(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) < 0;
+	return right_side.compare(left_side) < 0;
 }
 
 inline bool operator <=(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) >= 0;
+	return right_side.compare(left_side) >= 0;
 }
 
 inline bool operator >=(const char* left_side, const string& right_side)
 {
-	return right_side.Compare(left_side) <= 0;
+	return right_side.compare(left_side) <= 0;
 }
 
 // Finds the first occurrence of character <c> in <string>.
@@ -705,16 +705,16 @@ B_END_NAMESPACE
 		b::RefCount refs; \
 		size_t capacity; \
 		size_t length; \
-		B_CHAR buffer[sizeof(value)]; \
+		B_CHAR chars[sizeof(value)]; \
 	} \
-	const name##Data = \
+	const name##buffer = \
 	{ \
 		B_REFCOUNT_STATIC_INIT(-1), \
 		sizeof(value) / sizeof(B_CHAR) - 1, \
 		sizeof(value) / sizeof(B_CHAR) - 1, \
 		value \
 	}; \
-	static const B_CHAR* name##Buffer = name##Data.buffer
+	static const B_CHAR* name##Buffer = name##buffer.chars
 
 #define B_DEFINE_STATIC_STRING(name, value) \
 	B_DEFINE_STATIC_STRING_T(name, B_TEXT(value))

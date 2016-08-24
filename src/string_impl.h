@@ -27,18 +27,18 @@ void string::AllocExactly(size_t capacity)
 	if (GetCapacity() != capacity || IsShared())
 	{
 		// Release previous buffer before allocating a new one.
-		ReplaceBuffer(GetEmptyBuffer());
+		ReplaceBuffer(empty_string());
 
 		if (capacity > 0)
 			// No need to call ReplaceBuffer again:
 			// "ReplaceBuffer(AllocBufferExactly(capacity));"
 			// It does the same thing as the next line:
-			buffer = AllocBufferExactly(capacity);
+			chars = AllocBufferExactly(capacity);
 	}
 	else
 	{
-		GetData()->length = 0;
-		*buffer = 0;
+		metadata()->length = 0;
+		*chars = 0;
 	}
 }
 
@@ -55,15 +55,15 @@ void string::ReallocExactly(size_t capacity)
 
 		if (capacity > 0)
 		{
-			char* new_buffer = AllocBufferExactly(capacity);
+			char* new_buffer_chars = AllocBufferExactly(capacity);
 
-			Copy(new_buffer, buffer, (GetData(
-				new_buffer)->length = length) + 1);
+			Copy(new_buffer_chars, chars, (metadata(
+				new_buffer_chars)->length = length) + 1);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 		}
 		else
-			ReplaceBuffer(GetEmptyBuffer());
+			ReplaceBuffer(empty_string());
 	}
 }
 
@@ -71,13 +71,13 @@ void string::Assign(const string& source)
 {
 	if (!IsLocked() && !source.IsLocked())
 	{
-		if (source.buffer != GetEmptyBuffer())
-			++source.GetData()->refs;
+		if (source.chars != empty_string())
+			++source.metadata()->refs;
 
-		ReplaceBuffer(source.buffer);
+		ReplaceBuffer(source.chars);
 	}
 	else
-		if (buffer != source.buffer)
+		if (chars != source.chars)
 			Assign(source.GetBuffer(), source.GetLength());
 }
 
@@ -89,8 +89,8 @@ void string::Assign(const char* source, size_t count)
 	{
 		if (IsShared() || count > GetCapacity())
 			Alloc(count);
-		Copy(buffer, source, count);
-		buffer[GetData()->length = count] = 0;
+		Copy(chars, source, count);
+		chars[metadata()->length = count] = 0;
 	}
 	else
 		Empty();
@@ -104,8 +104,8 @@ void string::Assign(char source, size_t count)
 	{
 		if (IsShared() || count > GetCapacity())
 			Alloc(count);
-		Copy(buffer, source, count);
-		buffer[GetData()->length = count] = 0;
+		Copy(chars, source, count);
+		chars[metadata()->length = count] = 0;
 	}
 	else
 		Empty();
@@ -167,24 +167,24 @@ void string::Insert(size_t index, const char* source, size_t count)
 {
 	B_ASSERT(index <= GetLength());
 	// source must not be a part of this array
-	B_ASSERT(source >= buffer + GetCapacity() || source + count < buffer);
+	B_ASSERT(source >= chars + GetCapacity() || source + count < chars);
 
 	if (count > 0)
 	{
-		char* tail = buffer + index;
+		char* tail = chars + index;
 		size_t tail_length = GetLength() - index;
 		size_t new_length = GetLength() + count;
 
 		if (new_length > GetCapacity() || IsShared())
 		{
-			char* new_buffer = AllocBuffer(new_length);
+			char* new_buffer_chars = AllocBuffer(new_length);
 
-			Copy(new_buffer, buffer, index);
-			Copy(new_buffer + index, source, count);
-			Copy(new_buffer + index + count,
+			Copy(new_buffer_chars, chars, index);
+			Copy(new_buffer_chars + index, source, count);
+			Copy(new_buffer_chars + index + count,
 				tail, tail_length);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 		}
 		else
 		{
@@ -208,7 +208,7 @@ void string::Insert(size_t index, const char* source, size_t count)
 				Copy(tail, source, tail_length);
 			}
 
-			GetData()->length = new_length;
+			metadata()->length = new_length;
 		}
 	}
 }
@@ -219,20 +219,20 @@ void string::Insert(size_t index, char source, size_t count)
 
 	if (count > 0)
 	{
-		char* tail = buffer + index;
+		char* tail = chars + index;
 		size_t tail_length = GetLength() - index;
 		size_t new_length = GetLength() + count;
 
 		if (new_length > GetCapacity() || IsShared())
 		{
-			char* new_buffer = AllocBuffer(new_length);
+			char* new_buffer_chars = AllocBuffer(new_length);
 
-			Copy(new_buffer, buffer, index);
-			Copy(new_buffer + index, source, count);
-			Copy(new_buffer + index + count,
+			Copy(new_buffer_chars, chars, index);
+			Copy(new_buffer_chars + index, source, count);
+			Copy(new_buffer_chars + index + count,
 				tail, tail_length);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 		}
 		else
 		{
@@ -256,7 +256,7 @@ void string::Insert(size_t index, char source, size_t count)
 				Copy(tail, source, tail_length);
 			}
 
-			GetData()->length = new_length;
+			metadata()->length = new_length;
 		}
 	}
 }
@@ -269,8 +269,8 @@ void string::Append(const char* source, size_t count)
 	{
 		if (IsShared() || count + GetLength() > GetCapacity())
 			Realloc(GetLength() + count);
-		Copy(buffer + GetLength(), source, count);
-		buffer[GetData()->length += count] = 0;
+		Copy(chars + GetLength(), source, count);
+		chars[metadata()->length += count] = 0;
 	}
 }
 
@@ -282,8 +282,8 @@ void string::Append(char source, size_t count)
 	{
 		if (IsShared() || count + GetLength() > GetCapacity())
 			Realloc(GetLength() + count);
-		Copy(buffer + GetLength(), source, count);
-		buffer[GetData()->length += count] = 0;
+		Copy(chars + GetLength(), source, count);
+		chars[metadata()->length += count] = 0;
 	}
 }
 
@@ -295,7 +295,7 @@ void string::Append(const char* source, size_t count)
 	if (count > 0)
 	{
 		Lock(GetLength() + count);
-		Copy(buffer + GetLength(), source, count);
+		Copy(chars + GetLength(), source, count);
 		Unlock();
 	}
 }
@@ -307,7 +307,7 @@ void string::Append(char source, size_t count)
 	if (count > 0)
 	{
 		Lock(GetLength() + count);
-		Copy(buffer + GetLength(), source, count);
+		Copy(chars + GetLength(), source, count);
 		UnlockBuffer();
 	}
 }
@@ -330,21 +330,21 @@ void string::Delete(size_t index, size_t count)
 
 		if (!IsShared())
 		{
-			Copy(buffer + index, buffer + index + count,
+			Copy(chars + index, chars + index + count,
 				new_length - index + 1);
 
-			GetData()->length = new_length;
+			metadata()->length = new_length;
 		}
 		else
 		{
-			char* new_buffer = AllocBuffer(new_length);
+			char* new_buffer_chars = AllocBuffer(new_length);
 
-			Copy(new_buffer, buffer, index);
+			Copy(new_buffer_chars, chars, index);
 
-			Copy(new_buffer + index, buffer + index + count,
+			Copy(new_buffer_chars + index, chars + index + count,
 				new_length - index + 1);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 		}
 	}
 }
@@ -353,18 +353,18 @@ void string::Empty()
 {
 	if (!IsShared())
 	{
-		GetData()->length = 0;
-		*buffer = 0;
+		metadata()->length = 0;
+		*chars = 0;
 	}
 	else
-		ReplaceBuffer(GetEmptyBuffer());
+		ReplaceBuffer(empty_string());
 }
 
 void string::AppendFormatV(const char* format, va_list arguments)
 {
 	ReallocExactly(GetLength() + 8 * 1024);
 
-	GetData()->length += FormatString(buffer + GetLength(),
+	metadata()->length += FormatString(chars + GetLength(),
 		format, arguments);
 }
 
@@ -390,12 +390,12 @@ size_t string::Find(char c) const
 {
 	size_t counter = GetLength();
 
-	const char* pos = buffer;
+	const char* pos = chars;
 
 	while (counter-- > 0)
 	{
 		if (*pos == c)
-			return (size_t) (pos - buffer);
+			return (size_t) (pos - chars);
 
 		++pos;
 	}
@@ -407,24 +407,24 @@ size_t string::ReverseFind(char c) const
 {
 	size_t index = GetLength();
 
-	const char* pos = buffer + index;
+	const char* pos = chars + index;
 
 	while (index-- > 0)
 		if (*--pos == c)
-			return (size_t) (pos - buffer);
+			return (size_t) (pos - chars);
 
 	return (size_t) -1;
 }
 
 void string::TrimRight(const char* samples)
 {
-	char* end = buffer + GetLength();
+	char* end = chars + GetLength();
 
-	while (--end >= buffer &&
+	while (--end >= chars &&
 		FindCharInString(samples, *end) != NULL)
 		;
 
-	size_t new_length = ++end - buffer;
+	size_t new_length = ++end - chars;
 
 	if (new_length < GetLength())
 	{
@@ -432,85 +432,85 @@ void string::TrimRight(const char* samples)
 			*end = 0;
 		else
 		{
-			char* new_buffer = AllocBuffer(new_length);
+			char* new_buffer_chars = AllocBuffer(new_length);
 
-			Copy(new_buffer, buffer, new_length);
+			Copy(new_buffer_chars, chars, new_length);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 
-			new_buffer[new_length] = 0;
+			new_buffer_chars[new_length] = 0;
 		}
 
-		GetData()->length = new_length;
+		metadata()->length = new_length;
 	}
 }
 
 void string::TrimLeft(const char* samples)
 {
-	char* start = buffer;
+	char* start = chars;
 
 	while (*start && FindCharInString(samples, *start) != NULL)
 		++start;
 
-	if (start > buffer)
+	if (start > chars)
 	{
-		size_t new_length = buffer + GetLength() - start;
+		size_t new_length = chars + GetLength() - start;
 
 		if (!IsShared())
-			ReverseCopy(buffer, start, new_length);
+			ReverseCopy(chars, start, new_length);
 		else
 		{
-			char* new_buffer = AllocBuffer(new_length);
+			char* new_buffer_chars = AllocBuffer(new_length);
 
-			Copy(new_buffer, start, new_length);
+			Copy(new_buffer_chars, start, new_length);
 
-			ReplaceBuffer(new_buffer);
+			ReplaceBuffer(new_buffer_chars);
 		}
 
-		buffer[GetData()->length = new_length] = 0;
+		chars[metadata()->length = new_length] = 0;
 	}
 }
 
-char* string::GetEmptyBuffer()
+char* string::empty_string()
 {
-	static const Data empty_data =
+	static const buffer empty_string_buffer =
 	{
 		/* refs         */ B_REFCOUNT_STATIC_INIT(2),
 		/* capacity     */ 0,
 		/* length       */ 0,
-		/* buffer       */ {0}
+		/* first_char   */ {0}
 	};
 
-	return const_cast<char*>(empty_data.buffer);
+	return const_cast<char*>(empty_string_buffer.first_char);
 }
 
 char* string::AllocBufferExactly(size_t capacity)
 {
-	Data* new_data = (Data*) Memory::Alloc(sizeof(Data) +
+	buffer* new_buffer = (buffer*) Memory::Alloc(sizeof(buffer) +
 		capacity * sizeof(char));
 
-	new_data->refs = 1;
-	new_data->capacity = capacity;
-	new_data->length = 0;
+	new_buffer->refs = 1;
+	new_buffer->capacity = capacity;
+	new_buffer->length = 0;
 
-	return new_data->buffer;
+	return new_buffer->first_char;
 }
 
-void string::ReplaceBuffer(char* new_buffer)
+void string::ReplaceBuffer(char* new_buffer_chars)
 {
 	B_ASSERT(!IsLocked());
 
-	if (buffer != GetEmptyBuffer() && !--GetData()->refs)
-		Memory::Free(GetData());
+	if (chars != empty_string() && !--metadata()->refs)
+		Memory::Free(metadata());
 
-	buffer = new_buffer;
+	chars = new_buffer_chars;
 }
 
 string::~string()
 	throw ()
 {
-	if (buffer != GetEmptyBuffer() && (IsLocked() || !--GetData()->refs))
-		Memory::Free(GetData());
+	if (chars != empty_string() && (IsLocked() || !--metadata()->refs))
+		Memory::Free(metadata());
 }
 
 char* FindCharInString(const char* string, char c)

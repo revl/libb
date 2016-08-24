@@ -189,7 +189,7 @@ public:
 
 // Implementation
 private:
-	struct metadata
+	struct array_metadata
 	{
 		RefCount refs;
 		size_t capacity;
@@ -198,16 +198,17 @@ private:
 
 	struct first_element_wrapper
 	{
-		T first;
+		T first_element;
 
 		// The constructor is never used, because this structure
 		// is never constructed explicitly.
-		explicit first_element_wrapper(const T& value) : first(value)
+		explicit first_element_wrapper(const T& value) :
+			first_element(value)
 		{
 		}
 	};
 
-	struct buffer : public metadata, public first_element_wrapper
+	struct buffer : public array_metadata, public first_element_wrapper
 	{
 		// The constructor is never used, because this structure
 		// is never constructed explicitly.
@@ -216,7 +217,7 @@ private:
 		}
 	};
 
-	T* data_ptr;
+	T* elements;
 
 	static size_t Inc(size_t size);
 
@@ -228,12 +229,12 @@ private:
 
 	static T* AllocBuffer(size_t capacity);
 
-	static metadata* GetMetaData(const T* data_ptr);
-	metadata* GetMetaData() const;
+	static array_metadata* metadata(const T* elements);
+	array_metadata* metadata() const;
 
 	void Release();
 
-	void ReplaceBuffer(T* new_data);
+	void ReplaceBuffer(T* new_buffer_elements);
 
 	void CopyBeforeWrite();
 
@@ -243,24 +244,24 @@ public:
 };
 
 template <class T>
-array<T>::array() : data_ptr(empty_array())
+array<T>::array() : elements(empty_array())
 {
 }
 
 template <class T>
-array<T>::array(const array<T>& source) : data_ptr(empty_array())
+array<T>::array(const array<T>& source) : elements(empty_array())
 {
 	Assign(source);
 }
 
 template <class T>
-array<T>::array(const T* source, size_t count) : data_ptr(empty_array())
+array<T>::array(const T* source, size_t count) : elements(empty_array())
 {
 	Assign(source, count);
 }
 
 template <class T>
-array<T>::array(const T& element, size_t count) : data_ptr(empty_array())
+array<T>::array(const T& element, size_t count) : elements(empty_array())
 {
 	Assign(element, count);
 }
@@ -268,13 +269,13 @@ array<T>::array(const T& element, size_t count) : data_ptr(empty_array())
 template <class T>
 size_t array<T>::capacity() const
 {
-	return GetMetaData()->capacity;
+	return metadata()->capacity;
 }
 
 template <class T>
 size_t array<T>::size() const
 {
-	return GetMetaData()->size;
+	return metadata()->size;
 }
 
 template <class T>
@@ -286,7 +287,7 @@ bool array<T>::IsEmpty() const
 template <class T>
 bool array<T>::IsLocked() const
 {
-	return GetMetaData()->refs < 0;
+	return metadata()->refs < 0;
 }
 
 template <class T>
@@ -310,13 +311,13 @@ void array<T>::shrink_to_fit()
 template <class T>
 const T* array<T>::data() const
 {
-	return data_ptr;
+	return elements;
 }
 
 template <class T>
 array<T>::operator const T*() const
 {
-	return data_ptr;
+	return elements;
 }
 
 template <class T>
@@ -324,9 +325,9 @@ T* array<T>::LockBuffer()
 {
 	CopyBeforeWrite();
 
-	--GetMetaData()->refs;
+	--metadata()->refs;
 
-	return data_ptr;
+	return elements;
 }
 
 template <class T>
@@ -334,7 +335,7 @@ void array<T>::UnlockBuffer()
 {
 	B_ASSERT(IsLocked());
 
-	++GetMetaData()->refs;
+	++metadata()->refs;
 }
 
 template <class T>
@@ -342,7 +343,7 @@ const T& array<T>::GetAt(size_t index) const
 {
 	B_ASSERT(index < size());
 
-	return data_ptr[index];
+	return elements[index];
 }
 
 template <class T>
@@ -350,7 +351,7 @@ const T& array<T>::operator [](size_t index) const
 {
 	B_ASSERT(index < size());
 
-	return data_ptr[index];
+	return elements[index];
 }
 
 template <class T>
@@ -359,7 +360,7 @@ T& array<T>::GetAt(size_t index)
 	B_ASSERT(index < size());
 
 	CopyBeforeWrite();
-	return data_ptr[index];
+	return elements[index];
 }
 
 template <class T>
@@ -368,7 +369,7 @@ T& array<T>::operator [](size_t index)
 	B_ASSERT(index < size());
 
 	CopyBeforeWrite();
-	return data_ptr[index];
+	return elements[index];
 }
 
 template <class T>
@@ -376,7 +377,7 @@ const T& array<T>::GetHead() const
 {
 	B_ASSERT(!IsEmpty());
 
-	return *data_ptr;
+	return *elements;
 }
 
 template <class T>
@@ -385,7 +386,7 @@ T& array<T>::GetHead()
 	B_ASSERT(!IsEmpty());
 
 	CopyBeforeWrite();
-	return *data_ptr;
+	return *elements;
 }
 
 template <class T>
@@ -393,7 +394,7 @@ const T& array<T>::GetTail() const
 {
 	B_ASSERT(!IsEmpty());
 
-	return data_ptr[size() - 1];
+	return elements[size() - 1];
 }
 
 template <class T>
@@ -402,7 +403,7 @@ T& array<T>::GetTail()
 	B_ASSERT(!IsEmpty());
 
 	CopyBeforeWrite();
-	return data_ptr[size() - 1];
+	return elements[size() - 1];
 }
 
 template <class T>
@@ -427,7 +428,7 @@ void array<T>::InsertAt(size_t index, const array<T>& source)
 template <class T>
 void array<T>::Append(const array<T>& source)
 {
-	Append(source.data_ptr, source.size());
+	Append(source.elements, source.size());
 }
 
 template <class T>
@@ -469,7 +470,7 @@ size_t array<T>::Inc(size_t size)
 template <class T>
 bool array<T>::IsShared() const
 {
-	return GetMetaData()->refs > 0;
+	return metadata()->refs > 0;
 }
 
 template <class T>
@@ -479,26 +480,26 @@ T* array<T>::AllocBuffer(size_t capacity)
 }
 
 template <class T>
-typename array<T>::metadata* array<T>::GetMetaData(const T* data)
+typename array<T>::array_metadata* array<T>::metadata(const T* data)
 {
-	return static_cast<metadata*>(
+	return static_cast<array_metadata*>(
 		static_cast<buffer*>(
 			reinterpret_cast<first_element_wrapper*>(
 				const_cast<T*>(data))));
 }
 
 template <class T>
-typename array<T>::metadata* array<T>::GetMetaData() const
+typename array<T>::array_metadata* array<T>::metadata() const
 {
-	return GetMetaData(data_ptr);
+	return metadata(elements);
 }
 
 template <class T>
-void array<T>::ReplaceBuffer(T* new_data)
+void array<T>::ReplaceBuffer(T* new_buffer_elements)
 {
 	Release();
 
-	data_ptr = new_data;
+	elements = new_buffer_elements;
 }
 
 template <class T>
