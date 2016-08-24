@@ -42,10 +42,10 @@ public:
 	String(const String& source);
 
 	// Constructs a string from a linear character array.
-	String(const Char* source, size_t count);
+	String(const char* source, size_t count);
 
 	// Creates a string of <count> copies of source.
-	explicit String(Char source, size_t count = 1);
+	explicit String(char source, size_t count = 1);
 
 // String Length
 public:
@@ -91,13 +91,13 @@ public:
 // Buffer Access
 public:
 	// Returns a constant pointer to the array of characters.
-	const Char* GetBuffer() const;
+	const char* GetBuffer() const;
 
 	// Converts to a const char pointer.
-	operator const Char*() const;
+	operator const char*() const;
 
 	// Fixes the buffer in memory disabling the memory reallocation.
-	Char* LockBuffer();
+	char* LockBuffer();
 
 	// Gives control over the buffer back to this object.
 	void UnlockBuffer();
@@ -108,28 +108,28 @@ public:
 // Single Character Access
 public:
 	// Returns the character with the specified index.
-	Char GetAt(size_t index) const;
+	char GetAt(size_t index) const;
 
 	// Returns the character with the specified index.
-	Char operator [](size_t index) const;
+	char operator [](size_t index) const;
 
 	// Overwrites character in position specified by <index>.
-	void SetAt(size_t index, Char value);
+	void SetAt(size_t index, char value);
 
 	// Returns a reference to the specified character.
-	Char& operator [](size_t index);
+	char& operator [](size_t index);
 
 	// Returns the first character of the string.
-	Char GetHead() const;
+	char GetHead() const;
 
 	// Returns a reference to the first character of the string.
-	Char& GetHead();
+	char& GetHead();
 
 	// Returns the last character of the string.
-	Char GetTail() const;
+	char GetTail() const;
 
 	// Returns a reference to the last character of the string.
-	Char& GetTail();
+	char& GetTail();
 
 // Assignment
 public:
@@ -137,52 +137,52 @@ public:
 	void Assign(const String& source);
 
 	// Replaces the string contents with a copy of character array.
-	void Assign(const Char* source, size_t count);
+	void Assign(const char* source, size_t count);
 
 	// Replaces the string contents with <count> copies of <source>.
-	void Assign(Char source, size_t count = 1);
+	void Assign(char source, size_t count = 1);
 
 	// Assigns the contents of one string object to another.
 	String& operator =(const String& source);
 
 	// Replaces the contents of this string with a character.
-	String& operator =(Char source);
+	String& operator =(char source);
 
 // Replacement
 public:
 	// Replaces a part of this string with a character sequence.
-	void Replace(size_t index, const Char* source, size_t count);
+	void Replace(size_t index, const char* source, size_t count);
 
 	// Replaces a part of this string with a fill character.
-	void Replace(size_t index, Char source, size_t count = 1);
+	void Replace(size_t index, char source, size_t count = 1);
 
 // Insertion
 public:
 	// Inserts a character array into this string.
-	void Insert(size_t index, const Char* source, size_t count);
+	void Insert(size_t index, const char* source, size_t count);
 
 	// Inserts the contents of <source> into this string.
 	void Insert(size_t index, const String& source);
 
 	// Inserts <count> copies of <source> into this string.
-	void Insert(size_t index, Char source, size_t count = 1);
+	void Insert(size_t index, char source, size_t count = 1);
 
 // Concatenation
 public:
 	// Appends characters from <source> to this string.
-	void Append(const Char* source, size_t count);
+	void Append(const char* source, size_t count);
 
 	// Appends the contents of <source> at the end of this string.
 	void Append(const String& source);
 
 	// Appends <count> copies of <source> to this string.
-	void Append(Char source, size_t count = 1);
+	void Append(char source, size_t count = 1);
 
 	// Operator version of Append(source).
 	String& operator +=(const String& source);
 
 	// Operator version of Append(source).
-	String& operator +=(Char source);
+	String& operator +=(char source);
 
 	// Constructs a new string from the concatenation of
 	// this one and <source>.
@@ -190,7 +190,7 @@ public:
 
 	// Constructs a new string from the concatenation of
 	// this one and character <source>.
-	String operator +(Char source) const;
+	String operator +(char source) const;
 
 // Deletion
 public:
@@ -203,78 +203,78 @@ public:
 // Comparison
 public:
 	// Compares this string against <right_side> lexicographically.
-	int Compare(const Char* right_side) const;
+	int Compare(const char* right_side) const;
 
 	// Returns true if this string and <right_side> are equal.
 	bool operator ==(const String& right_side) const;
 
 	// Checks this string and result for equality.
-	bool operator ==(const Char* right_side) const;
+	bool operator ==(const char* right_side) const;
 
 	// Returns true if this string and <right_side> differ.
 	bool operator !=(const String& right_side) const;
 
 	// Returns true if this string and <right_side> differ.
-	bool operator !=(const Char* right_side) const;
+	bool operator !=(const char* right_side) const;
 
 	// Returns true if this string is less than <right_side>.
 	bool operator <(const String& right_side) const;
 
 	// Returns true if this string is less than <right_side>.
-	bool operator <(const Char* right_side) const;
+	bool operator <(const char* right_side) const;
 
 	// Returns true if this string is greater than <right_side>.
 	bool operator >(const String& right_side) const;
 
 	// Returns true if this string is greater than <right_side>.
-	bool operator >(const Char* right_side) const;
+	bool operator >(const char* right_side) const;
 
 	// Returns true if this string is less or equal than <right_side>.
 	bool operator <=(const String& right_side) const;
 
 	// Returns true if this string is less or equal than <right_side>.
-	bool operator <=(const Char* right_side) const;
+	bool operator <=(const char* right_side) const;
 
 	// Returns true if this string is greater or equal than <right_side>.
 	bool operator >=(const String& right_side) const;
 
 	// Returns true if this string is greater or equal than <right_side>.
-	bool operator >=(const Char* right_side) const;
+	bool operator >=(const char* right_side) const;
 
 // Formatting
 public:
 	// Appends formatted data to this string.
-	void AppendFormatV(const Char* format, va_list arguments);
+	void AppendFormatV(const char* format, va_list arguments);
 
 	// Formats this string like vsprintf does.
-	void FormatV(const Char* format, va_list arguments);
+	void FormatV(const char* format, va_list arguments);
 
 	// Appends formatted data to this string.
-	void AppendFormat(const Char* format, ...);
+	void AppendFormat(const char* format, ...);
 
 	// Formats this string like sprintf does.
-	void Format(const Char* format, ...);
+	void Format(const char* format, ...);
 
 // Searching
 public:
 	// Finds a character in this string.
-	size_t Find(Char c) const;
+	size_t Find(char c) const;
 
 	// Finds the last occurrence of a character in this string.
-	size_t ReverseFind(Char c) const;
+	size_t ReverseFind(char c) const;
 
 // Character Removal Operations
 public:
 	// Removes all occurrences of characters from <samples>
 	// from the end of this string.
-	void TrimRight(const Char* samples);
+	void TrimRight(const char* samples);
 
 	// Removes all occurrences of characters from <samples>
 	// found at the beginning of this string.
-	void TrimLeft(const Char* samples);
+	void TrimLeft(const char* samples);
 
 	// Removes all characters from <samples> from both ends of this string.
-	void Trim(const Char* samples);
+	void Trim(const char* samples);
 
 // Implementation
 protected:
@@ -283,25 +283,25 @@ protected:
 		RefCount refs;
 		size_t capacity;
 		size_t length;
-		Char buffer[1];
+		char buffer[1];
 	};
 
-	Char* buffer;
+	char* buffer;
 
 	static size_t Inc(size_t length);
 
 	bool IsShared() const;
 
-	static Char* GetEmptyBuffer();
+	static char* GetEmptyBuffer();
 
-	static Char* AllocBufferExactly(size_t capacity);
+	static char* AllocBufferExactly(size_t capacity);
 
-	static Char* AllocBuffer(size_t length);
+	static char* AllocBuffer(size_t length);
 
-	static Data* GetData(const Char* buffer);
+	static Data* GetData(const char* buffer);
 	Data* GetData() const;
 
-	void ReplaceBuffer(Char* new_buffer);
+	void ReplaceBuffer(char* new_buffer);
 
 	void CopyBeforeWrite();
 
@@ -319,18 +319,18 @@ inline String::String(const String& source) : buffer(GetEmptyBuffer())
 	Assign(source);
 }
 
-inline String::String(const Char* source, size_t count) :
+inline String::String(const char* source, size_t count) :
 	buffer(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
 
-inline String::String(Char source, size_t count) : buffer(GetEmptyBuffer())
+inline String::String(char source, size_t count) : buffer(GetEmptyBuffer())
 {
 	Assign(source, count);
 }
 
-inline String::Data* String::GetData(const Char* buffer)
+inline String::Data* String::GetData(const char* buffer)
 {
 	return B_OUTERSTRUCT(Data, buffer[0], buffer);
 }
@@ -395,7 +395,7 @@ inline void String::FreeExtra()
 
 	if (!IsShared() && length != GetCapacity())
 	{
-		Char* new_buffer = AllocBufferExactly(length);
+		char* new_buffer = AllocBufferExactly(length);
 
 		Copy(new_buffer, buffer, length);
 
@@ -403,19 +403,19 @@ inline void String::FreeExtra()
 	}
 }
 
-inline const Char* String::GetBuffer() const
+inline const char* String::GetBuffer() const
 {
 	return buffer;
 }
 
-inline String::operator const Char*() const
+inline String::operator const char*() const
 {
 	return buffer;
 }
 
-inline Char* String::AllocBuffer(size_t length)
+inline char* String::AllocBuffer(size_t length)
 {
-	Char* new_buffer = AllocBufferExactly(Inc(length));
+	char* new_buffer = AllocBufferExactly(Inc(length));
 	new_buffer[GetData(new_buffer)->length = length] = 0;
 
 	return new_buffer;
@@ -425,7 +425,7 @@ inline void String::CopyBeforeWrite()
 {
 	if (IsShared())
 	{
-		Char* new_buffer = AllocBuffer(GetLength());
+		char* new_buffer = AllocBuffer(GetLength());
 
 		Copy(new_buffer, buffer, GetLength());
 
@@ -433,7 +433,7 @@ inline void String::CopyBeforeWrite()
 	}
 }
 
-inline Char* String::LockBuffer()
+inline char* String::LockBuffer()
 {
 	CopyBeforeWrite();
 
@@ -457,21 +457,21 @@ inline void String::UnlockBuffer(size_t new_length)
 	++GetData()->refs;
 }
 
-inline Char String::GetAt(size_t index) const
+inline char String::GetAt(size_t index) const
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	return buffer[index];
 }
 
-inline Char String::operator [](size_t index) const
+inline char String::operator [](size_t index) const
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
 	return buffer[index];
 }
 
-inline void String::SetAt(size_t index, Char value)
+inline void String::SetAt(size_t index, char value)
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
@@ -479,7 +479,7 @@ inline void String::SetAt(size_t index, Char value)
 	buffer[index] = value;
 }
 
-inline Char& String::operator [](size_t index)
+inline char& String::operator [](size_t index)
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
@@ -487,14 +487,14 @@ inline Char& String::operator [](size_t index)
 	return buffer[index];
 }
 
-inline Char String::GetHead() const
+inline char String::GetHead() const
 {
 	B_ASSERT(!IsEmpty());
 
 	return *buffer;
 }
 
-inline Char& String::GetHead()
+inline char& String::GetHead()
 {
 	B_ASSERT(!IsEmpty());
 
@@ -502,14 +502,14 @@ inline Char& String::GetHead()
 	return *buffer;
 }
 
-inline Char String::GetTail() const
+inline char String::GetTail() const
 {
 	B_ASSERT(!IsEmpty());
 
 	return buffer[GetLength() - 1];
 }
 
-inline Char& String::GetTail()
+inline char& String::GetTail()
 {
 	B_ASSERT(!IsEmpty());
 
@@ -523,7 +523,7 @@ inline String& String::operator =(const String& source)
 	return *this;
 }
 
-inline String& String::operator =(Char source)
+inline String& String::operator =(char source)
 {
 	Assign(source);
 	return *this;
@@ -545,19 +545,19 @@ inline String& String::operator +=(const String& source)
 	return *this;
 }
 
-inline String& String::operator +=(Char source)
+inline String& String::operator +=(char source)
 {
 	Append(source);
 	return *this;
 }
 
-inline String String::operator +(Char source) const
+inline String String::operator +(char source) const
 {
 	String result(*this);
 	return result += source;
 }
 
-inline int String::Compare(const Char* right_side) const
+inline int String::Compare(const char* right_side) const
 {
 	return CompareStrings(buffer, right_side);
 }
@@ -567,7 +567,7 @@ inline bool String::operator ==(const String& right_side) const
 	return Compare(right_side) == 0;
 }
 
-inline bool String::operator ==(const Char* right_side) const
+inline bool String::operator ==(const char* right_side) const
 {
 	return Compare(right_side) == 0;
 }
@@ -577,7 +577,7 @@ inline bool String::operator !=(const String& right_side) const
 	return Compare(right_side) != 0;
 }
 
-inline bool String::operator !=(const Char* right_side) const
+inline bool String::operator !=(const char* right_side) const
 {
 	return Compare(right_side) != 0;
 }
@@ -587,7 +587,7 @@ inline bool String::operator <(const String& right_side) const
 	return Compare(right_side) < 0;
 }
 
-inline bool String::operator <(const Char* right_side) const
+inline bool String::operator <(const char* right_side) const
 {
 	return Compare(right_side) < 0;
 }
@@ -597,7 +597,7 @@ inline bool String::operator >(const String& right_side) const
 	return Compare(right_side) > 0;
 }
 
-inline bool String::operator >(const Char* right_side) const
+inline bool String::operator >(const char* right_side) const
 {
 	return Compare(right_side) > 0;
 }
@@ -607,7 +607,7 @@ inline bool String::operator <=(const String& right_side) const
 	return Compare(right_side) <= 0;
 }
 
-inline bool String::operator <=(const Char* right_side) const
+inline bool String::operator <=(const char* right_side) const
 {
 	return Compare(right_side) <= 0;
 }
@@ -617,30 +617,30 @@ inline bool String::operator >=(const String& right_side) const
 	return Compare(right_side) >= 0;
 }
 
-inline bool String::operator >=(const Char* right_side) const
+inline bool String::operator >=(const char* right_side) const
 {
 	return Compare(right_side) >= 0;
 }
 
-inline void String::FormatV(const Char* format, va_list arguments)
+inline void String::FormatV(const char* format, va_list arguments)
 {
 	Empty();
 	AppendFormatV(format, arguments);
 }
 
-inline void String::Trim(const Char* samples)
+inline void String::Trim(const char* samples)
 {
 	TrimRight(samples);
 	TrimLeft(samples);
 }
 
-inline String operator +(Char left_side, const String& right_side)
+inline String operator +(char left_side, const String& right_side)
 {
 	String result;
 	size_t length = right_side.GetLength();
 
 	result.Alloc(length + 1);
-	Char* buffer = result.LockBuffer();
+	char* buffer = result.LockBuffer();
 
 	*buffer = left_side;
 	Copy(buffer + 1, right_side.GetBuffer(), length);
@@ -649,41 +649,41 @@ inline String operator +(Char left_side, const String& right_side)
 	return result;
 }
 
-inline bool operator ==(const Char* left_side, const String& right_side)
+inline bool operator ==(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) == 0;
 }
 
-inline bool operator !=(const Char* left_side, const String& right_side)
+inline bool operator !=(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) != 0;
 }
 
-inline bool operator <(const Char* left_side, const String& right_side)
+inline bool operator <(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) > 0;
 }
 
-inline bool operator >(const Char* left_side, const String& right_side)
+inline bool operator >(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) < 0;
 }
 
-inline bool operator <=(const Char* left_side, const String& right_side)
+inline bool operator <=(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) >= 0;
 }
 
-inline bool operator >=(const Char* left_side, const String& right_side)
+inline bool operator >=(const char* left_side, const String& right_side)
 {
 	return right_side.Compare(left_side) <= 0;
 }
 
 // Finds the first occurrence of character <c> in <string>.
-Char* FindCharInString(const Char* string, Char c);
+char* FindCharInString(const char* string, char c);
 
 // Finds the last occurrence of character <c> in <string>.
-Char* FindLastCharInString(const Char* string, Char c);
+char* FindLastCharInString(const char* string, char c);
 
 B_END_NAMESPACE
 
@@ -691,15 +691,13 @@ B_END_NAMESPACE
 
 #define B_DECLARE_STRING
 
-#define Char wchar_t
+#define char wchar_t
 #define String StringW
 #include "string.h"
 #undef String
-#undef Char
+#undef char
 
-#define Char char
 #include "string.h"
-#undef Char
 
 #define B_DEFINE_STATIC_STRING_T(name, value) \
 	static struct \
