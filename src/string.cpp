@@ -21,9 +21,9 @@
 #include <b/string.h>
 
 #define char wchar_t
-#define String StringW
+#define string wstring
 #include "string_impl.h"
-#undef String
+#undef string
 #undef char
 
 #include "string_impl.h"

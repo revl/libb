@@ -53,7 +53,7 @@ int main()
 		++test_number;
 
 		// Empty parameter is allowed.
-		b::MakeDirectory(b::String());
+		b::MakeDirectory(b::string());
 
 		++test_number;
 

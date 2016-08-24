@@ -27,16 +27,16 @@
 B_BEGIN_NAMESPACE
 
 // Operations on the file system directory structure
-bool IsDirectory(const String& directory)
+bool IsDirectory(const string& directory)
 	throw ();
 
-void MakeDirectory(const String& directory)
+void MakeDirectory(const string& directory)
 	throw (SystemException);
 
-void MakePath(const String& path)
+void MakePath(const string& path)
 	throw (SystemException);
 
-void RemoveDirectory(const String& directory)
+void RemoveDirectory(const string& directory)
 	throw (SystemException);
 
 // Template functions and helpers

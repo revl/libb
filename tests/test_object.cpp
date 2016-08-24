@@ -125,7 +125,7 @@ static int TestObject()
 	}
 	catch (RuntimeException& e)
 	{
-		String message;
+		string message;
 
 		e.GetMessage(message);
 

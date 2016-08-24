@@ -36,7 +36,7 @@ class RuntimeException : public Exception
 // Overridable
 public:
 	// Returns the detailed description of this error.
-	virtual void GetMessage(String& target) const
+	virtual void GetMessage(string& target) const
 		throw () = 0;
 };
 

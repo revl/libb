@@ -38,7 +38,7 @@ public:
 	CustomException();
 
 	// Initializes this object with a preformed error message.
-	CustomException(const String& initial_message);
+	CustomException(const string& initial_message);
 
 	// Initializes this object with a formatted error message.
 	CustomException(const B_CHAR* message_format, va_list arguments);
@@ -49,7 +49,7 @@ public:
 // Attributes
 public:
 	// Sets the description message.
-	void SetMessage(const String& message);
+	void SetMessage(const string& message);
 
 	// Builds an error description from a format string and a va_list.
 	void SetMessage(const B_CHAR* message_format, va_list arguments);
@@ -59,7 +59,7 @@ public:
 
 // Overridden
 public:
-	virtual void GetMessage(String& target) const
+	virtual void GetMessage(string& target) const
 		throw ();
 
 #ifdef B_USE_STL
@@ -78,7 +78,7 @@ private:
 #ifdef B_USE_STL
 	mutable
 #endif // B_USE_STL
-	String message;
+	string message;
 };
 
 inline CustomException::CustomException() :
@@ -86,7 +86,7 @@ inline CustomException::CustomException() :
 {
 }
 
-inline CustomException::CustomException(const String& initial_message) :
+inline CustomException::CustomException(const string& initial_message) :
 	message(initial_message)
 {
 }
@@ -97,7 +97,7 @@ inline CustomException::CustomException(const B_CHAR* message_format,
 	message.FormatV(message_format, arguments);
 }
 
-inline void CustomException::SetMessage(const String& new_message)
+inline void CustomException::SetMessage(const string& new_message)
 {
 	message = new_message;
 }

@@ -24,7 +24,7 @@
 
 B_BEGIN_NAMESPACE
 
-bool IsDirectory(const String& directory)
+bool IsDirectory(const string& directory)
 	throw ()
 {
 	struct stat stat_struct;
@@ -33,7 +33,7 @@ bool IsDirectory(const String& directory)
 		S_ISDIR(stat_struct.st_mode);
 }
 
-void MakeDirectory(const String& directory)
+void MakeDirectory(const string& directory)
 	throw (SystemException)
 {
 	if (!directory.IsEmpty() && mkdir(directory,
@@ -48,7 +48,7 @@ void MakeDirectory(const String& directory)
 	}
 }
 
-void MakePath(const String& path)
+void MakePath(const string& path)
 	throw (SystemException)
 {
 	try
@@ -64,13 +64,13 @@ void MakePath(const String& path)
 
 		if ((slash_pos = path.ReverseFind(B_PATH_SEPARATOR)) > 0)
 		{
-			MakePath(String(path, slash_pos));
+			MakePath(string(path, slash_pos));
 			MakeDirectory(path);
 		}
 	}
 }
 
-void RemoveDirectory(const String& directory)
+void RemoveDirectory(const string& directory)
 	throw (SystemException)
 {
 	if (!directory.IsEmpty() && rmdir(directory) == -1)

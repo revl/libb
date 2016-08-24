@@ -69,7 +69,7 @@ public:
 
 // Overridden
 public:
-	virtual void GetMessage(String& target) const
+	virtual void GetMessage(string& target) const
 		throw ();
 
 #if defined(B_USE_STL)

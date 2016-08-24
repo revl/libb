@@ -142,8 +142,8 @@
 
 B_BEGIN_NAMESPACE
 
-class StringW;
-class String;
+class wstring;
+class string;
 
 B_END_NAMESPACE
 

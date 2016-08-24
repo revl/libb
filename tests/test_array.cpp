@@ -44,8 +44,6 @@ static bool test_shrink_to_fit()
 	CHECK(a1.data() != a2.data(),
 		"shrink_to_fit() must cause reallocation");
 
-	printf("Exiting\n");
-
 	return true;
 }
 

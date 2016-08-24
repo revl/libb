@@ -28,8 +28,8 @@ B_DEFINE_STATIC_STRING(cba, "cba");
 
 int main()
 {
-/*	b::String str1(B_TEXT("012"));
-	b::String str2(B_TEXT("345"));
+/*	b::string str1(B_TEXT("012"));
+	b::string str2(B_TEXT("345"));
 
 	printf("str1 = %s\n", (const char*) str1);
 
@@ -67,16 +67,16 @@ int main()
 
 	printf("str1 = %s\n", (const char*) str1);
 */
-	b::String str1;
+	b::string str1;
 	if (!str1.IsEmpty())
 		return 2;
 
-	b::String str2(B_TEXT("abcd"), 3);
+	b::string str2(B_TEXT("abcd"), 3);
 	if (str2.GetLength() != 3)
 		return 1;
 
-	b::String str3(B_TEXT("cba"), 3);
-	b::String str4(B_TEXT('x'), 3);
+	b::string str3(B_TEXT("cba"), 3);
+	b::string str4(B_TEXT('x'), 3);
 
 	if (str4 < str3)
 		return 3;
@@ -108,12 +108,12 @@ int main()
 	if (str1 != (const B_CHAR*) str3)
 		return 9;
 
-	b::String str5;
+	b::string str5;
 	str5.Format(B_TEXT("init"));
 	if (str5 != B_TEXT("init"))
 		return 10;
 
-	const b::String& hello = B_STATIC_STRING(hello);
+	const b::string& hello = B_STATIC_STRING(hello);
 
 	if (hello.GetLength() != 5 || hello.GetCapacity() != 5 ||
 		hello != hello || hello != B_TEXT("hello"))

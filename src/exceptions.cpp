@@ -30,7 +30,7 @@
 
 B_BEGIN_NAMESPACE
 
-void SystemException::GetMessage(String& target) const
+void SystemException::GetMessage(string& target) const
 	throw ()
 {
 	try
@@ -76,7 +76,7 @@ void CustomException::SetMessage(const B_CHAR* message_format, ...)
 	va_end(arguments);
 }
 
-void CustomException::GetMessage(String& target) const
+void CustomException::GetMessage(string& target) const
 	throw ()
 {
 	target = message;

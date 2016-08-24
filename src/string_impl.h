@@ -20,7 +20,7 @@
 
 B_BEGIN_NAMESPACE
 
-void String::AllocExactly(size_t capacity)
+void string::AllocExactly(size_t capacity)
 {
 	B_ASSERT(!IsLocked());
 
@@ -42,7 +42,7 @@ void String::AllocExactly(size_t capacity)
 	}
 }
 
-void String::ReallocExactly(size_t capacity)
+void string::ReallocExactly(size_t capacity)
 {
 	B_ASSERT(!IsLocked());
 
@@ -67,7 +67,7 @@ void String::ReallocExactly(size_t capacity)
 	}
 }
 
-void String::Assign(const String& source)
+void string::Assign(const string& source)
 {
 	if (!IsLocked() && !source.IsLocked())
 	{
@@ -81,7 +81,7 @@ void String::Assign(const String& source)
 			Assign(source.GetBuffer(), source.GetLength());
 }
 
-void String::Assign(const char* source, size_t count)
+void string::Assign(const char* source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -96,7 +96,7 @@ void String::Assign(const char* source, size_t count)
 		Empty();
 }
 
-void String::Assign(char source, size_t count)
+void string::Assign(char source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -112,7 +112,7 @@ void String::Assign(char source, size_t count)
 }
 
 /*
-void String::Assign(const char* source, size_t count)
+void string::Assign(const char* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -125,7 +125,7 @@ void String::Assign(const char* source, size_t count)
 		Empty();
 }
 
-void String::Assign(char source, size_t count)
+void string::Assign(char source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -138,7 +138,7 @@ void String::Assign(char source, size_t count)
 		Empty();
 }
 
-void String::Replace(size_t index, const char* source, size_t count)
+void string::Replace(size_t index, const char* source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetLength() && count >= 0);
 
@@ -150,7 +150,7 @@ void String::Replace(size_t index, const char* source, size_t count)
 	UnlockBuffer();
 }
 
-void String::Replace(size_t index, char source, size_t count)
+void string::Replace(size_t index, char source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= GetLength() && count >= 0);
 
@@ -163,7 +163,7 @@ void String::Replace(size_t index, char source, size_t count)
 }
 */
 
-void String::Insert(size_t index, const char* source, size_t count)
+void string::Insert(size_t index, const char* source, size_t count)
 {
 	B_ASSERT(index <= GetLength());
 	// source must not be a part of this array
@@ -213,7 +213,7 @@ void String::Insert(size_t index, const char* source, size_t count)
 	}
 }
 
-void String::Insert(size_t index, char source, size_t count)
+void string::Insert(size_t index, char source, size_t count)
 {
 	B_ASSERT(index <= GetLength());
 
@@ -261,7 +261,7 @@ void String::Insert(size_t index, char source, size_t count)
 	}
 }
 
-void String::Append(const char* source, size_t count)
+void string::Append(const char* source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -274,7 +274,7 @@ void String::Append(const char* source, size_t count)
 	}
 }
 
-void String::Append(char source, size_t count)
+void string::Append(char source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -288,7 +288,7 @@ void String::Append(char source, size_t count)
 }
 
 /*
-void String::Append(const char* source, size_t count)
+void string::Append(const char* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -300,7 +300,7 @@ void String::Append(const char* source, size_t count)
 	}
 }
 
-void String::Append(char source, size_t count)
+void string::Append(char source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -313,13 +313,13 @@ void String::Append(char source, size_t count)
 }
 */
 
-String String::operator +(const String& source) const
+string string::operator +(const string& source) const
 {
-	String result(*this);
+	string result(*this);
 	return result += source;
 }
 
-void String::Delete(size_t index, size_t count)
+void string::Delete(size_t index, size_t count)
 {
 	if (index + count > GetLength())
 		count = GetLength() - index;
@@ -349,7 +349,7 @@ void String::Delete(size_t index, size_t count)
 	}
 }
 
-void String::Empty()
+void string::Empty()
 {
 	if (!IsShared())
 	{
@@ -360,7 +360,7 @@ void String::Empty()
 		ReplaceBuffer(GetEmptyBuffer());
 }
 
-void String::AppendFormatV(const char* format, va_list arguments)
+void string::AppendFormatV(const char* format, va_list arguments)
 {
 	ReallocExactly(GetLength() + 8 * 1024);
 
@@ -368,7 +368,7 @@ void String::AppendFormatV(const char* format, va_list arguments)
 		format, arguments);
 }
 
-void String::AppendFormat(const char* format, ...)
+void string::AppendFormat(const char* format, ...)
 {
 	va_list arguments;
 
@@ -377,7 +377,7 @@ void String::AppendFormat(const char* format, ...)
 	va_end(arguments);
 }
 
-void String::Format(const char* format, ...)
+void string::Format(const char* format, ...)
 {
 	va_list arguments;
 
@@ -386,7 +386,7 @@ void String::Format(const char* format, ...)
 	va_end(arguments);
 }
 
-size_t String::Find(char c) const
+size_t string::Find(char c) const
 {
 	size_t counter = GetLength();
 
@@ -403,7 +403,7 @@ size_t String::Find(char c) const
 	return (size_t) -1;
 }
 
-size_t String::ReverseFind(char c) const
+size_t string::ReverseFind(char c) const
 {
 	size_t index = GetLength();
 
@@ -416,7 +416,7 @@ size_t String::ReverseFind(char c) const
 	return (size_t) -1;
 }
 
-void String::TrimRight(const char* samples)
+void string::TrimRight(const char* samples)
 {
 	char* end = buffer + GetLength();
 
@@ -445,7 +445,7 @@ void String::TrimRight(const char* samples)
 	}
 }
 
-void String::TrimLeft(const char* samples)
+void string::TrimLeft(const char* samples)
 {
 	char* start = buffer;
 
@@ -471,7 +471,7 @@ void String::TrimLeft(const char* samples)
 	}
 }
 
-char* String::GetEmptyBuffer()
+char* string::GetEmptyBuffer()
 {
 	static const Data empty_data =
 	{
@@ -484,7 +484,7 @@ char* String::GetEmptyBuffer()
 	return const_cast<char*>(empty_data.buffer);
 }
 
-char* String::AllocBufferExactly(size_t capacity)
+char* string::AllocBufferExactly(size_t capacity)
 {
 	Data* new_data = (Data*) Memory::Alloc(sizeof(Data) +
 		capacity * sizeof(char));
@@ -496,7 +496,7 @@ char* String::AllocBufferExactly(size_t capacity)
 	return new_data->buffer;
 }
 
-void String::ReplaceBuffer(char* new_buffer)
+void string::ReplaceBuffer(char* new_buffer)
 {
 	B_ASSERT(!IsLocked());
 
@@ -506,7 +506,7 @@ void String::ReplaceBuffer(char* new_buffer)
 	buffer = new_buffer;
 }
 
-String::~String()
+string::~string()
 	throw ()
 {
 	if (buffer != GetEmptyBuffer() && (IsLocked() || !--GetData()->refs))
