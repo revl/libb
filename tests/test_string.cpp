@@ -34,36 +34,36 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append str2 to str1
-	str1.Append(str2);
+	str1.append(str2);
 
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append the last 2 items in str2 to str1
 	str2 = B_TEXT("567");
-	str1.Append(str2, 1, 2);    // begin at pos 1, append 2 elements
+	str1.append(str2, 1, 2);    // begin at pos 1, append 2 elements
 
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append the first 2 items from an array of the element type
 	char ach_test[] = {'8', '9', 'A'};
-	str1.Append(ach_test, 2);
+	str1.append(ach_test, 2);
 
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append all of a string literal to str1
 	char test[] = B_TEXT("abc");
-	str1.Append(test);
+	str1.append(test);
 
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append one item of the element type
-	str1.Append(1, 'D');
+	str1.append(1, 'D');
 
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append str2 to str1 using iterators
 	str2 = B_TEXT("EF");
-	str1.Append(str2.begin(), str2.end());
+	str1.append(str2.begin(), str2.end());
 
 	printf("str1 = %s\n", (const char*) str1);
 */
@@ -93,14 +93,14 @@ int main()
 	if (!(str1 == str2))
 		return 5;
 
-	size_t position = str3.ReverseFind(B_TEXT('b'));
+	size_t position = str3.rfind(B_TEXT('b'));
 	if (position != 1)
 		return 6;
 
 	if (str3[position] != B_TEXT('b'))
 		return 7;
 
-	if (str4.ReverseFind(B_TEXT('b')) != (size_t) -1)
+	if (str4.rfind(B_TEXT('b')) != (size_t) -1)
 		return 8;
 
 	str3.format(B_TEXT("abc%s"), B_TEXT("xxx"));

@@ -62,7 +62,7 @@ void MakePath(const string& path)
 
 		size_t slash_pos;
 
-		if ((slash_pos = path.ReverseFind(B_PATH_SEPARATOR)) > 0)
+		if ((slash_pos = path.rfind(B_PATH_SEPARATOR)) > 0)
 		{
 			MakePath(string(path, slash_pos));
 			MakeDirectory(path);

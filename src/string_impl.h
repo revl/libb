@@ -319,7 +319,7 @@ string string::operator +(const string& source) const
 	return result += source;
 }
 
-void string::Delete(size_t index, size_t count)
+void string::erase(size_t index, size_t count)
 {
 	if (index + count > GetLength())
 		count = GetLength() - index;
@@ -386,7 +386,7 @@ void string::format(const char* format, ...)
 	va_end(arguments);
 }
 
-size_t string::Find(char c) const
+size_t string::find(char c) const
 {
 	size_t counter = GetLength();
 
@@ -403,7 +403,7 @@ size_t string::Find(char c) const
 	return (size_t) -1;
 }
 
-size_t string::ReverseFind(char c) const
+size_t string::rfind(char c) const
 {
 	size_t index = GetLength();
 

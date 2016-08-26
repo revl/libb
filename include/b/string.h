@@ -195,7 +195,7 @@ public:
 // Deletion
 public:
 	// Deletes a range of characters.
-	void Delete(size_t index, size_t count = 1);
+	void erase(size_t index, size_t count = 1);
 
 	// Empties the string.
 	void clear();
@@ -258,10 +258,10 @@ public:
 // Searching
 public:
 	// Finds a character in this string.
-	size_t Find(char c) const;
+	size_t find(char c) const;
 
 	// Finds the last occurrence of a character in this string.
-	size_t ReverseFind(char c) const;
+	size_t rfind(char c) const;
 
 // Character Removal Operations
 public:
