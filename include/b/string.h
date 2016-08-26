@@ -67,16 +67,16 @@ public:
 public:
 	// Discards the string contents and allocates the exact
 	// amount of memory for the buffer.
-	void AllocExactly(size_t capacity);
+	void discard_and_alloc(size_t capacity);
 
 	// Reallocates the buffer preserving the string contents.
-	void ReallocExactly(size_t capacity);
+	void alloc_and_copy(size_t capacity);
 
-	// Does the same as AllocExactly(), but also allocates some
+	// Does the same as discard_and_alloc(), but also allocates some
 	// extra characters for future string expansion.
 	void Alloc(size_t capacity);
 
-	// The same as ReallocExactly(), but also allocates some
+	// The same as alloc_and_copy(), but also allocates some
 	// extra characters for future string expansion.
 	void Realloc(size_t capacity);
 
@@ -373,12 +373,12 @@ inline size_t string::Inc(size_t length)
 
 inline void string::Alloc(size_t capacity)
 {
-	AllocExactly(Inc(capacity));
+	discard_and_alloc(Inc(capacity));
 }
 
 inline void string::Realloc(size_t capacity)
 {
-	ReallocExactly(Inc(capacity));
+	alloc_and_copy(Inc(capacity));
 }
 
 inline bool string::IsShared() const

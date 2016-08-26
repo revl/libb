@@ -64,10 +64,10 @@ public:
 // Memory Management
 public:
 	// Allocates the exact amount of memory for the buffer.
-	void AllocExactly(size_t new_capacity);
+	void discard_and_alloc(size_t new_capacity);
 
 	// Reallocates the buffer preserving its contents.
-	void ReallocExactly(size_t new_capacity);
+	void alloc_and_copy(size_t new_capacity);
 
 	// Allocates enough memory to store <capacity> elements.
 	void Alloc(size_t new_capacity);
@@ -75,7 +75,7 @@ public:
 	// Reallocates the buffer preserving its contents.
 	void Realloc(size_t new_capacity);
 
-	// Frees memory that is not used by the elements.
+	// Frees memory that is not occupied by the array elements.
 	void shrink_to_fit();
 
 // Buffer Access
@@ -296,19 +296,19 @@ bool array<T>::IsLocked() const
 template <class T>
 void array<T>::Alloc(size_t capacity)
 {
-	AllocExactly(Inc(capacity));
+	discard_and_alloc(Inc(capacity));
 }
 
 template <class T>
 void array<T>::Realloc(size_t capacity)
 {
-	ReallocExactly(Inc(capacity));
+	alloc_and_copy(Inc(capacity));
 }
 
 template <class T>
 void array<T>::shrink_to_fit()
 {
-	ReallocExactly(size());
+	alloc_and_copy(size());
 }
 
 template <class T>

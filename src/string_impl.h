@@ -20,7 +20,7 @@
 
 B_BEGIN_NAMESPACE
 
-void string::AllocExactly(size_t capacity)
+void string::discard_and_alloc(size_t capacity)
 {
 	B_ASSERT(!IsLocked());
 
@@ -42,7 +42,7 @@ void string::AllocExactly(size_t capacity)
 	}
 }
 
-void string::ReallocExactly(size_t capacity)
+void string::alloc_and_copy(size_t capacity)
 {
 	B_ASSERT(!IsLocked());
 
@@ -362,7 +362,7 @@ void string::clear()
 
 void string::appendfv(const char* format, va_list arguments)
 {
-	ReallocExactly(GetLength() + 8 * 1024);
+	alloc_and_copy(GetLength() + 8 * 1024); // reserve()?
 
 	metadata()->length += FormatString(chars + GetLength(),
 		format, arguments);

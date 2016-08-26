@@ -28,7 +28,7 @@
 B_BEGIN_NAMESPACE
 
 template <class T>
-void array<T>::AllocExactly(size_t new_capacity)
+void array<T>::discard_and_alloc(size_t new_capacity)
 {
 	B_ASSERT(!IsLocked());
 
@@ -51,7 +51,7 @@ void array<T>::AllocExactly(size_t new_capacity)
 }
 
 template <class T>
-void array<T>::ReallocExactly(size_t new_capacity)
+void array<T>::alloc_and_copy(size_t new_capacity)
 {
 	B_ASSERT(!IsLocked());
 
