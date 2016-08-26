@@ -303,7 +303,10 @@ protected:
 
 	void ReplaceBuffer(char* new_buffer_chars);
 
-	void CopyBeforeWrite();
+	// Make sure that the buffer is not shared with other strings.
+	// Reallocate the buffer if it's shared; keep the original
+	// contents.
+	void isolate();
 
 public:
 	~string()
@@ -421,7 +424,7 @@ inline char* string::AllocBuffer(size_t length)
 	return new_buffer_chars;
 }
 
-inline void string::CopyBeforeWrite()
+inline void string::isolate()
 {
 	if (IsShared())
 	{
@@ -435,7 +438,7 @@ inline void string::CopyBeforeWrite()
 
 inline char* string::LockBuffer()
 {
-	CopyBeforeWrite();
+	isolate();
 
 	--metadata()->refs;
 
@@ -475,7 +478,7 @@ inline void string::SetAt(size_t index, char value)
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
-	CopyBeforeWrite();
+	isolate();
 	chars[index] = value;
 }
 
@@ -483,7 +486,7 @@ inline char& string::operator [](size_t index)
 {
 	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
 
-	CopyBeforeWrite();
+	isolate();
 	return chars[index];
 }
 
@@ -498,7 +501,7 @@ inline char& string::GetHead()
 {
 	B_ASSERT(!empty());
 
-	CopyBeforeWrite();
+	isolate();
 	return *chars;
 }
 
@@ -513,7 +516,7 @@ inline char& string::GetTail()
 {
 	B_ASSERT(!empty());
 
-	CopyBeforeWrite();
+	isolate();
 	return chars[GetLength() - 1];
 }
 

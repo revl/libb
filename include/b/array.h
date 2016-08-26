@@ -236,7 +236,10 @@ private:
 
 	void ReplaceBuffer(T* new_buffer_elements);
 
-	void CopyBeforeWrite();
+	// Make sure that the buffer is not shared with other
+	// array objects. Reallocate the buffer if it's shared;
+	// keep the original contents.
+	void isolate();
 
 public:
 	~array()
@@ -323,7 +326,7 @@ array<T>::operator const T*() const
 template <class T>
 T* array<T>::LockBuffer()
 {
-	CopyBeforeWrite();
+	isolate();
 
 	--metadata()->refs;
 
@@ -359,7 +362,7 @@ T& array<T>::GetAt(size_t index)
 {
 	B_ASSERT(index < size());
 
-	CopyBeforeWrite();
+	isolate();
 	return elements[index];
 }
 
@@ -368,7 +371,7 @@ T& array<T>::operator [](size_t index)
 {
 	B_ASSERT(index < size());
 
-	CopyBeforeWrite();
+	isolate();
 	return elements[index];
 }
 
@@ -385,7 +388,7 @@ T& array<T>::GetHead()
 {
 	B_ASSERT(!empty());
 
-	CopyBeforeWrite();
+	isolate();
 	return *elements;
 }
 
@@ -402,7 +405,7 @@ T& array<T>::GetTail()
 {
 	B_ASSERT(!empty());
 
-	CopyBeforeWrite();
+	isolate();
 	return elements[size() - 1];
 }
 
@@ -503,7 +506,7 @@ void array<T>::ReplaceBuffer(T* new_buffer_elements)
 }
 
 template <class T>
-void array<T>::CopyBeforeWrite()
+void array<T>::isolate()
 {
 	if (IsShared())
 		Realloc(size());
