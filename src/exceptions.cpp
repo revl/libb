@@ -40,7 +40,7 @@ void SystemException::GetMessage(string& target) const
 #else
 		const char* message_buffer = strerror(code);
 #endif // B_UNICODE
-		target.Assign(message_buffer, b::CalcLength(message_buffer));
+		target.assign(message_buffer, b::CalcLength(message_buffer));
 	}
 	catch (Memory::Exception&)
 	{
@@ -64,7 +64,7 @@ CustomException::CustomException(const B_CHAR* message_format, ...) :
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.FormatV(message_format, arguments);
+	message.formatv(message_format, arguments);
 	va_end(arguments);
 }
 
@@ -72,7 +72,7 @@ void CustomException::SetMessage(const B_CHAR* message_format, ...)
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.FormatV(message_format, arguments);
+	message.formatv(message_format, arguments);
 	va_end(arguments);
 }
 

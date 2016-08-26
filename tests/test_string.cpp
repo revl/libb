@@ -68,7 +68,7 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 */
 	b::string str1;
-	if (!str1.IsEmpty())
+	if (!str1.empty())
 		return 2;
 
 	b::string str2(B_TEXT("abcd"), 3);
@@ -103,13 +103,13 @@ int main()
 	if (str4.ReverseFind(B_TEXT('b')) != (size_t) -1)
 		return 8;
 
-	str3.Format(B_TEXT("abc%s"), B_TEXT("xxx"));
+	str3.format(B_TEXT("abc%s"), B_TEXT("xxx"));
 	str3 += B_STATIC_STRING(cba);
 	if (str1 != (const B_CHAR*) str3)
 		return 9;
 
 	b::string str5;
-	str5.Format(B_TEXT("init"));
+	str5.format(B_TEXT("init"));
 	if (str5 != B_TEXT("init"))
 		return 10;
 

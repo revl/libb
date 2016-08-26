@@ -208,7 +208,7 @@ inline void Pathname::Assign(const B_CHAR* pathname, int count)
 
 inline void Pathname::GoUpDir()
 {
-	if (!components.IsEmpty())
+	if (!components.empty())
 		components.RemoveAt(components.GetSize() - 1);
 	else
 		if (up_dir_level != INT_MAX)

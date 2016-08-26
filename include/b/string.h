@@ -56,7 +56,7 @@ public:
 	size_t GetLength() const;
 
 	// Returns true if the string is empty.
-	bool IsEmpty() const;
+	bool empty() const;
 
 // Lock State
 public:
@@ -134,13 +134,13 @@ public:
 // Assignment
 public:
 	// Assigns the contents of <source> to this string.
-	void Assign(const string& source);
+	void assign(const string& source);
 
 	// Replaces the string contents with a copy of character array.
-	void Assign(const char* source, size_t count);
+	void assign(const char* source, size_t count);
 
 	// Replaces the string contents with <count> copies of <source>.
-	void Assign(char source, size_t count = 1);
+	void assign(char source, size_t count = 1);
 
 	// Assigns the contents of one string object to another.
 	string& operator =(const string& source);
@@ -170,18 +170,18 @@ public:
 // Concatenation
 public:
 	// Appends characters from <source> to this string.
-	void Append(const char* source, size_t count);
+	void append(const char* source, size_t count);
 
 	// Appends the contents of <source> at the end of this string.
-	void Append(const string& source);
+	void append(const string& source);
 
 	// Appends <count> copies of <source> to this string.
-	void Append(char source, size_t count = 1);
+	void append(char source, size_t count = 1);
 
-	// Operator version of Append(source).
+	// Operator version of append(source).
 	string& operator +=(const string& source);
 
-	// Operator version of Append(source).
+	// Operator version of append(source).
 	string& operator +=(char source);
 
 	// Constructs a new string from the concatenation of
@@ -198,7 +198,7 @@ public:
 	void Delete(size_t index, size_t count = 1);
 
 	// Empties the string.
-	void Empty();
+	void clear();
 
 // Comparison
 public:
@@ -244,16 +244,16 @@ public:
 // Formatting
 public:
 	// Appends formatted data to this string.
-	void AppendFormatV(const char* format, va_list arguments);
+	void appendfv(const char* format, va_list arguments);
 
 	// Formats this string like vsprintf does.
-	void FormatV(const char* format, va_list arguments);
+	void formatv(const char* format, va_list arguments);
 
 	// Appends formatted data to this string.
-	void AppendFormat(const char* format, ...);
+	void appendf(const char* format, ...);
 
 	// Formats this string like sprintf does.
-	void Format(const char* format, ...);
+	void format(const char* format, ...);
 
 // Searching
 public:
@@ -316,18 +316,18 @@ inline string::string() : chars(empty_string())
 
 inline string::string(const string& source) : chars(empty_string())
 {
-	Assign(source);
+	assign(source);
 }
 
 inline string::string(const char* source, size_t count) :
 	chars(empty_string())
 {
-	Assign(source, count);
+	assign(source, count);
 }
 
 inline string::string(char source, size_t count) : chars(empty_string())
 {
-	Assign(source, count);
+	assign(source, count);
 }
 
 inline string::buffer* string::metadata(const char* chars)
@@ -355,7 +355,7 @@ inline size_t string::GetLength() const
 	return metadata()->length;
 }
 
-inline bool string::IsEmpty() const
+inline bool string::empty() const
 {
 	return GetLength() == 0;
 }
@@ -489,14 +489,14 @@ inline char& string::operator [](size_t index)
 
 inline char string::GetHead() const
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	return *chars;
 }
 
 inline char& string::GetHead()
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	CopyBeforeWrite();
 	return *chars;
@@ -504,14 +504,14 @@ inline char& string::GetHead()
 
 inline char string::GetTail() const
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	return chars[GetLength() - 1];
 }
 
 inline char& string::GetTail()
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	CopyBeforeWrite();
 	return chars[GetLength() - 1];
@@ -519,13 +519,13 @@ inline char& string::GetTail()
 
 inline string& string::operator =(const string& source)
 {
-	Assign(source);
+	assign(source);
 	return *this;
 }
 
 inline string& string::operator =(char source)
 {
-	Assign(source);
+	assign(source);
 	return *this;
 }
 
@@ -534,20 +534,20 @@ inline void string::Insert(size_t index, const string& source)
 	Insert(index, source.GetBuffer(), source.GetLength());
 }
 
-inline void string::Append(const string& source)
+inline void string::append(const string& source)
 {
-	Append(source.GetBuffer(), source.GetLength());
+	append(source.GetBuffer(), source.GetLength());
 }
 
 inline string& string::operator +=(const string& source)
 {
-	Append(source.GetBuffer(), source.GetLength());
+	append(source.GetBuffer(), source.GetLength());
 	return *this;
 }
 
 inline string& string::operator +=(char source)
 {
-	Append(source);
+	append(source);
 	return *this;
 }
 
@@ -622,10 +622,10 @@ inline bool string::operator >=(const char* right_side) const
 	return compare(right_side) >= 0;
 }
 
-inline void string::FormatV(const char* format, va_list arguments)
+inline void string::formatv(const char* format, va_list arguments)
 {
-	Empty();
-	AppendFormatV(format, arguments);
+	clear();
+	appendfv(format, arguments);
 }
 
 inline void string::Trim(const char* samples)

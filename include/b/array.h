@@ -54,7 +54,7 @@ public:
 	size_t size() const;
 
 	// Checks if the array is empty.
-	bool IsEmpty() const;
+	bool empty() const;
 
 // Lock State
 public:
@@ -279,7 +279,7 @@ size_t array<T>::size() const
 }
 
 template <class T>
-bool array<T>::IsEmpty() const
+bool array<T>::empty() const
 {
 	return size() == 0;
 }
@@ -375,7 +375,7 @@ T& array<T>::operator [](size_t index)
 template <class T>
 const T& array<T>::GetHead() const
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	return *elements;
 }
@@ -383,7 +383,7 @@ const T& array<T>::GetHead() const
 template <class T>
 T& array<T>::GetHead()
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	CopyBeforeWrite();
 	return *elements;
@@ -392,7 +392,7 @@ T& array<T>::GetHead()
 template <class T>
 const T& array<T>::GetTail() const
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	return elements[size() - 1];
 }
@@ -400,7 +400,7 @@ const T& array<T>::GetTail() const
 template <class T>
 T& array<T>::GetTail()
 {
-	B_ASSERT(!IsEmpty());
+	B_ASSERT(!empty());
 
 	CopyBeforeWrite();
 	return elements[size() - 1];

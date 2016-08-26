@@ -67,7 +67,7 @@ void string::ReallocExactly(size_t capacity)
 	}
 }
 
-void string::Assign(const string& source)
+void string::assign(const string& source)
 {
 	if (!IsLocked() && !source.IsLocked())
 	{
@@ -78,10 +78,10 @@ void string::Assign(const string& source)
 	}
 	else
 		if (chars != source.chars)
-			Assign(source.GetBuffer(), source.GetLength());
+			assign(source.GetBuffer(), source.GetLength());
 }
 
-void string::Assign(const char* source, size_t count)
+void string::assign(const char* source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -93,10 +93,10 @@ void string::Assign(const char* source, size_t count)
 		chars[metadata()->length = count] = 0;
 	}
 	else
-		Empty();
+		clear();
 }
 
-void string::Assign(char source, size_t count)
+void string::assign(char source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -108,11 +108,11 @@ void string::Assign(char source, size_t count)
 		chars[metadata()->length = count] = 0;
 	}
 	else
-		Empty();
+		clear();
 }
 
 /*
-void string::Assign(const char* source, size_t count)
+void string::assign(const char* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -122,10 +122,10 @@ void string::Assign(const char* source, size_t count)
 		UnlockBuffer();
 	}
 	else
-		Empty();
+		clear();
 }
 
-void string::Assign(char source, size_t count)
+void string::assign(char source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -135,7 +135,7 @@ void string::Assign(char source, size_t count)
 		UnlockBuffer();
 	}
 	else
-		Empty();
+		clear();
 }
 
 void string::Replace(size_t index, const char* source, size_t count)
@@ -261,7 +261,7 @@ void string::Insert(size_t index, char source, size_t count)
 	}
 }
 
-void string::Append(const char* source, size_t count)
+void string::append(const char* source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -274,7 +274,7 @@ void string::Append(const char* source, size_t count)
 	}
 }
 
-void string::Append(char source, size_t count)
+void string::append(char source, size_t count)
 {
 	B_ASSERT(!IsLocked());
 
@@ -288,7 +288,7 @@ void string::Append(char source, size_t count)
 }
 
 /*
-void string::Append(const char* source, size_t count)
+void string::append(const char* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -300,7 +300,7 @@ void string::Append(const char* source, size_t count)
 	}
 }
 
-void string::Append(char source, size_t count)
+void string::append(char source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -349,7 +349,7 @@ void string::Delete(size_t index, size_t count)
 	}
 }
 
-void string::Empty()
+void string::clear()
 {
 	if (!IsShared())
 	{
@@ -360,7 +360,7 @@ void string::Empty()
 		ReplaceBuffer(empty_string());
 }
 
-void string::AppendFormatV(const char* format, va_list arguments)
+void string::appendfv(const char* format, va_list arguments)
 {
 	ReallocExactly(GetLength() + 8 * 1024);
 
@@ -368,21 +368,21 @@ void string::AppendFormatV(const char* format, va_list arguments)
 		format, arguments);
 }
 
-void string::AppendFormat(const char* format, ...)
+void string::appendf(const char* format, ...)
 {
 	va_list arguments;
 
 	va_start(arguments, format);
-	AppendFormatV(format, arguments);
+	appendfv(format, arguments);
 	va_end(arguments);
 }
 
-void string::Format(const char* format, ...)
+void string::format(const char* format, ...)
 {
 	va_list arguments;
 
 	va_start(arguments, format);
-	FormatV(format, arguments);
+	formatv(format, arguments);
 	va_end(arguments);
 }
 
