@@ -50,10 +50,10 @@ public:
 // String Length
 public:
 	// Returns the size (in characters) of the allocated buffer.
-	size_t GetCapacity() const;
+	size_t capacity() const;
 
 	// Returns the string length in characters.
-	size_t GetLength() const;
+	size_t length() const;
 
 	// Returns true if the string is empty.
 	bool empty() const;
@@ -61,29 +61,29 @@ public:
 // Lock State
 public:
 	// Checks if the string is locked.
-	bool IsLocked() const;
+	bool is_locked() const;
 
 // Memory Management
 public:
 	// Discards the string contents and allocates the exact
 	// amount of memory for the buffer.
-	void discard_and_alloc(size_t capacity);
+	void discard_and_alloc(size_t new_capacity);
 
 	// Reallocates the buffer preserving the string contents.
-	void alloc_and_copy(size_t capacity);
+	void alloc_and_copy(size_t new_capacity);
 
 	// Does the same as discard_and_alloc(), but also allocates some
 	// extra characters for future string expansion.
-	void Alloc(size_t capacity);
+	void Alloc(size_t new_capacity);
 
 	// The same as alloc_and_copy(), but also allocates some
 	// extra characters for future string expansion.
-	void Realloc(size_t capacity);
+	void Realloc(size_t new_capacity);
 
-	// Allocates enough memory to store 'capacity' characters.
+	// Allocates enough memory to store 'new_capacity' characters.
 	// In case if the buffer gets reallocated, the contents is
 	// not preserved.
-	void reserve(size_t capacity);
+	void reserve(size_t new_capacity);
 
 	// Frees memory that is not used by the string.
 	void shrink_to_fit();
@@ -97,39 +97,39 @@ public:
 	operator const char*() const;
 
 	// Fixes the buffer in memory disabling the memory reallocation.
-	char* LockBuffer();
+	char* lock();
 
 	// Gives control over the buffer back to this object.
-	void UnlockBuffer();
+	void unlock();
 
 	// Unlocks the buffer and sets the new string length.
-	void UnlockBuffer(size_t new_length);
+	void unlock(size_t new_length);
 
 // Single Character Access
 public:
 	// Returns the character with the specified index.
-	char GetAt(size_t index) const;
+	char at(size_t index) const;
+
+	// Returns a reference to the character at the specified position.
+	char& at(size_t index);
 
 	// Returns the character with the specified index.
 	char operator [](size_t index) const;
-
-	// Overwrites character in position specified by <index>.
-	void SetAt(size_t index, char value);
 
 	// Returns a reference to the specified character.
 	char& operator [](size_t index);
 
 	// Returns the first character of the string.
-	char GetHead() const;
+	char front() const;
 
 	// Returns a reference to the first character of the string.
-	char& GetHead();
+	char& front();
 
 	// Returns the last character of the string.
-	char GetTail() const;
+	char back() const;
 
 	// Returns a reference to the last character of the string.
-	char& GetTail();
+	char& back();
 
 // Assignment
 public:
@@ -151,21 +151,21 @@ public:
 // Replacement
 public:
 	// Replaces a part of this string with a character sequence.
-	void Replace(size_t index, const char* source, size_t count);
+	void replace(size_t index, const char* source, size_t count);
 
 	// Replaces a part of this string with a fill character.
-	void Replace(size_t index, char source, size_t count = 1);
+	void replace(size_t index, char source, size_t count = 1);
 
 // Insertion
 public:
 	// Inserts a character array into this string.
-	void Insert(size_t index, const char* source, size_t count);
+	void insert(size_t index, const char* source, size_t count);
 
 	// Inserts the contents of <source> into this string.
-	void Insert(size_t index, const string& source);
+	void insert(size_t index, const string& source);
 
 	// Inserts <count> copies of <source> into this string.
-	void Insert(size_t index, char source, size_t count = 1);
+	void insert(size_t index, char source, size_t count = 1);
 
 // Concatenation
 public:
@@ -267,14 +267,14 @@ public:
 public:
 	// Removes all occurrences of characters from <samples>
 	// from the end of this string.
-	void TrimRight(const char* samples);
+	void trim_right(const char* samples);
 
 	// Removes all occurrences of characters from <samples>
 	// found at the beginning of this string.
-	void TrimLeft(const char* samples);
+	void trim_left(const char* samples);
 
 	// Removes all characters from <samples> from both ends of this string.
-	void Trim(const char* samples);
+	void trim(const char* samples);
 
 // Implementation
 protected:
@@ -288,11 +288,11 @@ protected:
 
 	char* chars;
 
-	bool IsShared() const;
+	bool is_shared() const;
 
 	static char* empty_string();
 
-	static char* AllocBufferExactly(size_t capacity, size_t length);
+	static char* AllocBufferExactly(size_t new_capacity, size_t length);
 
 	static char* AllocBuffer(size_t length);
 
@@ -302,8 +302,8 @@ protected:
 	void ReplaceBuffer(char* new_buffer_chars);
 
 	// Make sure that the buffer is not shared with other strings.
-	// Reallocate the buffer if it's shared; keep the original
-	// contents.
+	// Reallocate the buffer if it's shared; preserve the original
+	// buffer contents.
 	void isolate();
 
 public:
@@ -341,56 +341,56 @@ inline string::buffer* string::metadata() const
 	return metadata(chars);
 }
 
-inline bool string::IsLocked() const
+inline bool string::is_locked() const
 {
 	return metadata()->refs <= 0;
 }
 
-inline size_t string::GetCapacity() const
+inline size_t string::capacity() const
 {
 	return metadata()->capacity;
 }
 
-inline size_t string::GetLength() const
+inline size_t string::length() const
 {
 	return metadata()->length;
 }
 
 inline bool string::empty() const
 {
-	return GetLength() == 0;
+	return length() == 0;
 }
 
-inline void string::Alloc(size_t capacity)
+inline void string::Alloc(size_t new_capacity)
 {
-	discard_and_alloc(extra_capacity(capacity));
+	discard_and_alloc(extra_capacity(new_capacity));
 }
 
-inline void string::Realloc(size_t capacity)
+inline void string::Realloc(size_t new_capacity)
 {
-	alloc_and_copy(extra_capacity(capacity));
+	alloc_and_copy(extra_capacity(new_capacity));
 }
 
-inline bool string::IsShared() const
+inline bool string::is_shared() const
 {
 	return metadata()->refs > 1;
 }
 
-inline void string::reserve(size_t capacity)
+inline void string::reserve(size_t new_capacity)
 {
-	if (GetCapacity() < capacity || IsShared())
-		Realloc(capacity);
+	if (capacity() < new_capacity || is_shared())
+		Realloc(new_capacity);
 }
 
 inline void string::shrink_to_fit()
 {
-	size_t length = GetLength();
+	size_t len = length();
 
-	if (!IsShared() && length != GetCapacity())
+	if (!is_shared() && len != capacity())
 	{
-		char* new_buffer_chars = AllocBufferExactly(length, length);
+		char* new_buffer_chars = AllocBufferExactly(len, len);
 
-		Copy(new_buffer_chars, chars, length + 1);
+		Copy(new_buffer_chars, chars, len + 1);
 
 		ReplaceBuffer(new_buffer_chars);
 	}
@@ -417,17 +417,17 @@ inline char* string::AllocBuffer(size_t length)
 
 inline void string::isolate()
 {
-	if (IsShared())
+	if (is_shared())
 	{
-		char* new_buffer_chars = AllocBuffer(GetLength());
+		char* new_buffer_chars = AllocBuffer(length());
 
-		Copy(new_buffer_chars, chars, GetLength());
+		Copy(new_buffer_chars, chars, length());
 
 		ReplaceBuffer(new_buffer_chars);
 	}
 }
 
-inline char* string::LockBuffer()
+inline char* string::lock()
 {
 	isolate();
 
@@ -436,59 +436,59 @@ inline char* string::LockBuffer()
 	return chars;
 }
 
-inline void string::UnlockBuffer()
+inline void string::unlock()
 {
-	B_ASSERT(IsLocked());
+	B_ASSERT(is_locked());
 
 	++metadata()->refs;
 }
 
-inline void string::UnlockBuffer(size_t new_length)
+inline void string::unlock(size_t new_length)
 {
-	B_ASSERT(IsLocked() && new_length <= GetCapacity());
+	B_ASSERT(is_locked() && new_length <= capacity());
 
 	chars[metadata()->length = new_length] = 0;
 	++metadata()->refs;
 }
 
-inline char string::GetAt(size_t index) const
+inline char string::at(size_t index) const
 {
-	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (is_locked() ? capacity() : length()));
 
+	return chars[index];
+}
+
+inline char& string::at(size_t index)
+{
+	B_ASSERT(index < (is_locked() ? capacity() : length()));
+
+	isolate();
 	return chars[index];
 }
 
 inline char string::operator [](size_t index) const
 {
-	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (is_locked() ? capacity() : length()));
 
 	return chars[index];
-}
-
-inline void string::SetAt(size_t index, char value)
-{
-	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
-
-	isolate();
-	chars[index] = value;
 }
 
 inline char& string::operator [](size_t index)
 {
-	B_ASSERT(index < (IsLocked() ? GetCapacity() : GetLength()));
+	B_ASSERT(index < (is_locked() ? capacity() : length()));
 
 	isolate();
 	return chars[index];
 }
 
-inline char string::GetHead() const
+inline char string::front() const
 {
 	B_ASSERT(!empty());
 
 	return *chars;
 }
 
-inline char& string::GetHead()
+inline char& string::front()
 {
 	B_ASSERT(!empty());
 
@@ -496,19 +496,19 @@ inline char& string::GetHead()
 	return *chars;
 }
 
-inline char string::GetTail() const
+inline char string::back() const
 {
 	B_ASSERT(!empty());
 
-	return chars[GetLength() - 1];
+	return chars[length() - 1];
 }
 
-inline char& string::GetTail()
+inline char& string::back()
 {
 	B_ASSERT(!empty());
 
 	isolate();
-	return chars[GetLength() - 1];
+	return chars[length() - 1];
 }
 
 inline string& string::operator =(const string& source)
@@ -523,19 +523,19 @@ inline string& string::operator =(char source)
 	return *this;
 }
 
-inline void string::Insert(size_t index, const string& source)
+inline void string::insert(size_t index, const string& source)
 {
-	Insert(index, source.GetBuffer(), source.GetLength());
+	insert(index, source.GetBuffer(), source.length());
 }
 
 inline void string::append(const string& source)
 {
-	append(source.GetBuffer(), source.GetLength());
+	append(source.GetBuffer(), source.length());
 }
 
 inline string& string::operator +=(const string& source)
 {
-	append(source.GetBuffer(), source.GetLength());
+	append(source.GetBuffer(), source.length());
 	return *this;
 }
 
@@ -622,24 +622,24 @@ inline void string::formatv(const char* format, va_list arguments)
 	appendfv(format, arguments);
 }
 
-inline void string::Trim(const char* samples)
+inline void string::trim(const char* samples)
 {
-	TrimRight(samples);
-	TrimLeft(samples);
+	trim_right(samples);
+	trim_left(samples);
 }
 
 inline string operator +(char left_side, const string& right_side)
 {
 	string result;
-	size_t length = right_side.GetLength();
+	size_t length = right_side.length();
 
 	result.Alloc(length + 1);
-	char* chars = result.LockBuffer();
+	char* chars = result.lock();
 
 	*chars = left_side;
 	Copy(chars + 1, right_side.GetBuffer(), length);
 
-	result.UnlockBuffer(length + 1);
+	result.unlock(length + 1);
 	return result;
 }
 

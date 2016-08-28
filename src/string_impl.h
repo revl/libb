@@ -20,43 +20,44 @@
 
 B_BEGIN_NAMESPACE
 
-void string::discard_and_alloc(size_t capacity)
+void string::discard_and_alloc(size_t new_capacity)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
-	if (GetCapacity() != capacity || IsShared())
+	if (capacity() != new_capacity || is_shared())
 	{
 		// Release previous buffer before allocating a new one.
 		ReplaceBuffer(empty_string());
 
-		if (capacity > 0)
+		if (new_capacity > 0)
 			// No need to call ReplaceBuffer again:
-			// "ReplaceBuffer(AllocBufferExactly(capacity, 0));"
+			// "ReplaceBuffer(AllocBufferExactly(new_capacity, 0));"
 			// It does the same thing as the next line:
-			chars = AllocBufferExactly(capacity, 0);
+			chars = AllocBufferExactly(new_capacity, 0);
 	}
 	else
 		metadata()->length = 0;
 	*chars = 0;
 }
 
-void string::alloc_and_copy(size_t capacity)
+void string::alloc_and_copy(size_t new_capacity)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	// Even if the array already has the capacity requested,
 	// if the buffer is shared, it must be reallocated.
 	// This behavior is used by other functions.
-	if (GetCapacity() != capacity || IsShared())
+	if (capacity() != new_capacity || is_shared())
 	{
-		size_t length = GetLength() < capacity ? GetLength() : capacity;
-
-		if (capacity > 0)
+		if (new_capacity > 0)
 		{
-			char* new_buffer_chars =
-				AllocBufferExactly(capacity, length);
+			size_t len = length() < new_capacity ?
+				length() : new_capacity;
 
-			Copy(new_buffer_chars, chars, length + 1);
+			char* new_buffer_chars =
+				AllocBufferExactly(new_capacity, len);
+
+			Copy(new_buffer_chars, chars, len + 1);
 
 			ReplaceBuffer(new_buffer_chars);
 		}
@@ -67,7 +68,7 @@ void string::alloc_and_copy(size_t capacity)
 
 void string::assign(const string& source)
 {
-	if (!IsLocked() && !source.IsLocked())
+	if (!is_locked() && !source.is_locked())
 	{
 		if (source.chars != empty_string())
 			++source.metadata()->refs;
@@ -76,16 +77,16 @@ void string::assign(const string& source)
 	}
 	else
 		if (chars != source.chars)
-			assign(source.GetBuffer(), source.GetLength());
+			assign(source.GetBuffer(), source.length());
 }
 
 void string::assign(const char* source, size_t count)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (count > 0)
 	{
-		if (IsShared() || count > GetCapacity())
+		if (is_shared() || count > capacity())
 			Alloc(count);
 		Copy(chars, source, count);
 		chars[metadata()->length = count] = 0;
@@ -96,11 +97,11 @@ void string::assign(const char* source, size_t count)
 
 void string::assign(char source, size_t count)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (count > 0)
 	{
-		if (IsShared() || count > GetCapacity())
+		if (is_shared() || count > capacity())
 			Alloc(count);
 		Copy(chars, source, count);
 		chars[metadata()->length = count] = 0;
@@ -136,44 +137,44 @@ void string::assign(char source, size_t count)
 		clear();
 }
 
-void string::Replace(size_t index, const char* source, size_t count)
+void string::replace(size_t index, const char* source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetLength() && count >= 0);
+	B_ASSERT(index >= 0 && index <= length() && count >= 0);
 
 	size_t unaffected = index + count;
 
-	Copy((unaffected <= GetLength() ? LockBuffer() :
+	Copy((unaffected <= length() ? LockBuffer() :
 		LockBuffer(unaffected)) + index, source, count);
 
 	UnlockBuffer();
 }
 
-void string::Replace(size_t index, char source, size_t count)
+void string::replace(size_t index, char source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= GetLength() && count >= 0);
+	B_ASSERT(index >= 0 && index <= length() && count >= 0);
 
 	size_t unaffected = index + count;
 
-	Copy((unaffected <= GetLength() ? LockBuffer() :
+	Copy((unaffected <= length() ? LockBuffer() :
 		LockBuffer(unaffected)) + index, source, count);
 
 	UnlockBuffer();
 }
 */
 
-void string::Insert(size_t index, const char* source, size_t count)
+void string::insert(size_t index, const char* source, size_t count)
 {
-	B_ASSERT(index <= GetLength());
+	B_ASSERT(index <= length());
 	// source must not be a part of this array
-	B_ASSERT(source >= chars + GetCapacity() || source + count < chars);
+	B_ASSERT(source >= chars + capacity() || source + count < chars);
 
 	if (count > 0)
 	{
 		char* tail = chars + index;
-		size_t tail_length = GetLength() - index;
-		size_t new_length = GetLength() + count;
+		size_t tail_length = length() - index;
+		size_t new_length = length() + count;
 
-		if (new_length > GetCapacity() || IsShared())
+		if (new_length > capacity() || is_shared())
 		{
 			char* new_buffer_chars = AllocBuffer(new_length);
 
@@ -211,17 +212,17 @@ void string::Insert(size_t index, const char* source, size_t count)
 	}
 }
 
-void string::Insert(size_t index, char source, size_t count)
+void string::insert(size_t index, char source, size_t count)
 {
-	B_ASSERT(index <= GetLength());
+	B_ASSERT(index <= length());
 
 	if (count > 0)
 	{
 		char* tail = chars + index;
-		size_t tail_length = GetLength() - index;
-		size_t new_length = GetLength() + count;
+		size_t tail_length = length() - index;
+		size_t new_length = length() + count;
 
-		if (new_length > GetCapacity() || IsShared())
+		if (new_length > capacity() || is_shared())
 		{
 			char* new_buffer_chars = AllocBuffer(new_length);
 
@@ -261,26 +262,26 @@ void string::Insert(size_t index, char source, size_t count)
 
 void string::append(const char* source, size_t count)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (count > 0)
 	{
-		if (IsShared() || count + GetLength() > GetCapacity())
-			Realloc(GetLength() + count);
-		Copy(chars + GetLength(), source, count);
+		if (is_shared() || count + length() > capacity())
+			Realloc(length() + count);
+		Copy(chars + length(), source, count);
 		chars[metadata()->length += count] = 0;
 	}
 }
 
 void string::append(char source, size_t count)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (count > 0)
 	{
-		if (IsShared() || count + GetLength() > GetCapacity())
-			Realloc(GetLength() + count);
-		Copy(chars + GetLength(), source, count);
+		if (is_shared() || count + length() > capacity())
+			Realloc(length() + count);
+		Copy(chars + length(), source, count);
 		chars[metadata()->length += count] = 0;
 	}
 }
@@ -292,8 +293,8 @@ void string::append(const char* source, size_t count)
 
 	if (count > 0)
 	{
-		Lock(GetLength() + count);
-		Copy(chars + GetLength(), source, count);
+		Lock(length() + count);
+		Copy(chars + length(), source, count);
 		Unlock();
 	}
 }
@@ -304,8 +305,8 @@ void string::append(char source, size_t count)
 
 	if (count > 0)
 	{
-		Lock(GetLength() + count);
-		Copy(chars + GetLength(), source, count);
+		Lock(length() + count);
+		Copy(chars + length(), source, count);
 		UnlockBuffer();
 	}
 }
@@ -319,14 +320,14 @@ string string::operator +(const string& source) const
 
 void string::erase(size_t index, size_t count)
 {
-	if (index + count > GetLength())
-		count = GetLength() - index;
+	if (index + count > length())
+		count = length() - index;
 
 	if (count > 0)
 	{
-		size_t new_length = GetLength() - count;
+		size_t new_length = length() - count;
 
-		if (!IsShared())
+		if (!is_shared())
 		{
 			Copy(chars + index, chars + index + count,
 				new_length - index + 1);
@@ -349,7 +350,7 @@ void string::erase(size_t index, size_t count)
 
 void string::clear()
 {
-	if (!IsShared())
+	if (!is_shared())
 	{
 		metadata()->length = 0;
 		*chars = 0;
@@ -360,9 +361,9 @@ void string::clear()
 
 void string::appendfv(const char* format, va_list arguments)
 {
-	alloc_and_copy(GetLength() + 8 * 1024); // reserve()?
+	alloc_and_copy(length() + 8 * 1024); // TODO reserve()?
 
-	metadata()->length += FormatString(chars + GetLength(),
+	metadata()->length += FormatString(chars + length(),
 		format, arguments);
 }
 
@@ -386,7 +387,7 @@ void string::format(const char* format, ...)
 
 size_t string::find(char c) const
 {
-	size_t counter = GetLength();
+	size_t counter = length();
 
 	const char* pos = chars;
 
@@ -403,7 +404,7 @@ size_t string::find(char c) const
 
 size_t string::rfind(char c) const
 {
-	size_t index = GetLength();
+	size_t index = length();
 
 	const char* pos = chars + index;
 
@@ -414,9 +415,9 @@ size_t string::rfind(char c) const
 	return (size_t) -1;
 }
 
-void string::TrimRight(const char* samples)
+void string::trim_right(const char* samples)
 {
-	char* end = chars + GetLength();
+	char* end = chars + length();
 
 	while (--end >= chars &&
 		FindCharInString(samples, *end) != NULL)
@@ -424,9 +425,9 @@ void string::TrimRight(const char* samples)
 
 	size_t new_length = ++end - chars;
 
-	if (new_length < GetLength())
+	if (new_length < length())
 	{
-		if (!IsShared())
+		if (!is_shared())
 			*end = 0;
 		else
 		{
@@ -443,7 +444,7 @@ void string::TrimRight(const char* samples)
 	}
 }
 
-void string::TrimLeft(const char* samples)
+void string::trim_left(const char* samples)
 {
 	char* start = chars;
 
@@ -452,9 +453,9 @@ void string::TrimLeft(const char* samples)
 
 	if (start > chars)
 	{
-		size_t new_length = chars + GetLength() - start;
+		size_t new_length = chars + length() - start;
 
-		if (!IsShared())
+		if (!is_shared())
 			ReverseCopy(chars, start, new_length);
 		else
 		{
@@ -482,15 +483,15 @@ char* string::empty_string()
 	return const_cast<char*>(empty_string_buffer.first_char);
 }
 
-char* string::AllocBufferExactly(size_t capacity, size_t length)
+char* string::AllocBufferExactly(size_t new_capacity, size_t length)
 {
-	B_ASSERT(capacity >= length);
+	B_ASSERT(new_capacity >= length);
 
 	buffer* new_buffer = (buffer*) Memory::Alloc(sizeof(buffer) +
-		capacity * sizeof(char));
+		new_capacity * sizeof(char));
 
 	new_buffer->refs = 1;
-	new_buffer->capacity = capacity;
+	new_buffer->capacity = new_capacity;
 	new_buffer->length = length;
 
 	return new_buffer->first_char;
@@ -498,7 +499,7 @@ char* string::AllocBufferExactly(size_t capacity, size_t length)
 
 void string::ReplaceBuffer(char* new_buffer_chars)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (chars != empty_string() && !--metadata()->refs)
 		Memory::Free(metadata());
@@ -509,7 +510,7 @@ void string::ReplaceBuffer(char* new_buffer_chars)
 string::~string()
 	throw ()
 {
-	if (chars != empty_string() && (IsLocked() || !--metadata()->refs))
+	if (chars != empty_string() && (is_locked() || !--metadata()->refs))
 		Memory::Free(metadata());
 }
 
