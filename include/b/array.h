@@ -219,8 +219,6 @@ private:
 
 	T* elements;
 
-	static size_t Inc(size_t size);
-
 	bool IsShared() const;
 
 	static T* empty_array();
@@ -296,13 +294,13 @@ bool array<T>::IsLocked() const
 template <class T>
 void array<T>::Alloc(size_t capacity)
 {
-	discard_and_alloc(Inc(capacity));
+	discard_and_alloc(extra_capacity(capacity));
 }
 
 template <class T>
 void array<T>::Realloc(size_t capacity)
 {
-	alloc_and_copy(Inc(capacity));
+	alloc_and_copy(extra_capacity(capacity));
 }
 
 template <class T>
@@ -463,14 +461,6 @@ array<T> array<T>::operator +(const T& element) const
 }
 
 template <class T>
-size_t array<T>::Inc(size_t size)
-{
-	size_t extra = size >> 3;
-
-	return size + (extra > 4 ?  (extra <= 1024 ? extra : 1024) : 4);
-}
-
-template <class T>
 bool array<T>::IsShared() const
 {
 	return metadata()->refs > 0;
@@ -479,7 +469,7 @@ bool array<T>::IsShared() const
 template <class T>
 T* array<T>::AllocBuffer(size_t capacity)
 {
-	return AllocBufferExactly(Inc(capacity));
+	return AllocBufferExactly(extra_capacity(capacity));
 }
 
 template <class T>

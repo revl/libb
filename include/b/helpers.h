@@ -26,6 +26,17 @@
 
 B_BEGIN_NAMESPACE
 
+// Global utility functions
+
+// Increment the specified size value. This function is for use by
+// the containers that reserve additional space for future growth.
+inline size_t extra_capacity(size_t size)
+{
+	size_t extra = size >> 3;
+
+	return size + (extra > 4 ? (extra <= 1024 ? extra : 1024) : 4);
+}
+
 // Operations on the file system directory structure
 bool IsDirectory(const string& directory)
 	throw ();

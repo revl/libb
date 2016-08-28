@@ -288,8 +288,6 @@ protected:
 
 	char* chars;
 
-	static size_t Inc(size_t length);
-
 	bool IsShared() const;
 
 	static char* empty_string();
@@ -363,22 +361,14 @@ inline bool string::empty() const
 	return GetLength() == 0;
 }
 
-inline size_t string::Inc(size_t length)
-{
-	size_t extra;
-
-	return length + ((extra = length >> 3) > 0x4 ?
-		(extra <= 0x400 ? extra : 0x400) : 0x4);
-}
-
 inline void string::Alloc(size_t capacity)
 {
-	discard_and_alloc(Inc(capacity));
+	discard_and_alloc(extra_capacity(capacity));
 }
 
 inline void string::Realloc(size_t capacity)
 {
-	alloc_and_copy(Inc(capacity));
+	alloc_and_copy(extra_capacity(capacity));
 }
 
 inline bool string::IsShared() const
@@ -419,7 +409,7 @@ inline string::operator const char*() const
 inline char* string::AllocBuffer(size_t length)
 {
 	char* new_buffer_chars =
-		AllocBufferExactly(Inc(length), length);
+		AllocBufferExactly(extra_capacity(length), length);
 	new_buffer_chars[length] = 0;
 
 	return new_buffer_chars;
