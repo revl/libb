@@ -31,15 +31,13 @@ void string::discard_and_alloc(size_t capacity)
 
 		if (capacity > 0)
 			// No need to call ReplaceBuffer again:
-			// "ReplaceBuffer(AllocBufferExactly(capacity));"
+			// "ReplaceBuffer(AllocBufferExactly(capacity, 0));"
 			// It does the same thing as the next line:
-			chars = AllocBufferExactly(capacity);
+			chars = AllocBufferExactly(capacity, 0);
 	}
 	else
-	{
 		metadata()->length = 0;
-		*chars = 0;
-	}
+	*chars = 0;
 }
 
 void string::alloc_and_copy(size_t capacity)
@@ -55,10 +53,10 @@ void string::alloc_and_copy(size_t capacity)
 
 		if (capacity > 0)
 		{
-			char* new_buffer_chars = AllocBufferExactly(capacity);
+			char* new_buffer_chars =
+				AllocBufferExactly(capacity, length);
 
-			Copy(new_buffer_chars, chars, (metadata(
-				new_buffer_chars)->length = length) + 1);
+			Copy(new_buffer_chars, chars, length + 1);
 
 			ReplaceBuffer(new_buffer_chars);
 		}
@@ -484,14 +482,16 @@ char* string::empty_string()
 	return const_cast<char*>(empty_string_buffer.first_char);
 }
 
-char* string::AllocBufferExactly(size_t capacity)
+char* string::AllocBufferExactly(size_t capacity, size_t length)
 {
+	B_ASSERT(capacity >= length);
+
 	buffer* new_buffer = (buffer*) Memory::Alloc(sizeof(buffer) +
 		capacity * sizeof(char));
 
 	new_buffer->refs = 1;
 	new_buffer->capacity = capacity;
-	new_buffer->length = 0;
+	new_buffer->length = length;
 
 	return new_buffer->first_char;
 }

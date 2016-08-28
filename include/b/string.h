@@ -294,7 +294,7 @@ protected:
 
 	static char* empty_string();
 
-	static char* AllocBufferExactly(size_t capacity);
+	static char* AllocBufferExactly(size_t capacity, size_t length);
 
 	static char* AllocBuffer(size_t length);
 
@@ -398,9 +398,9 @@ inline void string::shrink_to_fit()
 
 	if (!IsShared() && length != GetCapacity())
 	{
-		char* new_buffer_chars = AllocBufferExactly(length);
+		char* new_buffer_chars = AllocBufferExactly(length, length);
 
-		Copy(new_buffer_chars, chars, length);
+		Copy(new_buffer_chars, chars, length + 1);
 
 		ReplaceBuffer(new_buffer_chars);
 	}
@@ -418,8 +418,9 @@ inline string::operator const char*() const
 
 inline char* string::AllocBuffer(size_t length)
 {
-	char* new_buffer_chars = AllocBufferExactly(Inc(length));
-	new_buffer_chars[metadata(new_buffer_chars)->length = length] = 0;
+	char* new_buffer_chars =
+		AllocBufferExactly(Inc(length), length);
+	new_buffer_chars[length] = 0;
 
 	return new_buffer_chars;
 }
