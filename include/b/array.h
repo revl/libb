@@ -196,23 +196,13 @@ private:
 		size_t size;
 	};
 
-	struct first_element_wrapper
+	struct buffer : public array_metadata
 	{
 		T first_element;
 
 		// The constructor is never used, because this structure
 		// is never constructed explicitly.
-		explicit first_element_wrapper(const T& value) :
-			first_element(value)
-		{
-		}
-	};
-
-	struct buffer : public array_metadata, public first_element_wrapper
-	{
-		// The constructor is never used, because this structure
-		// is never constructed explicitly.
-		explicit buffer(const T& value) : first_element_wrapper(value)
+		explicit buffer(const T& value) : first_element(value)
 		{
 		}
 	};
@@ -227,8 +217,8 @@ private:
 
 	static T* AllocBuffer(size_t capacity);
 
-	static array_metadata* metadata(const T* elements);
-	array_metadata* metadata() const;
+	static buffer* metadata(const T* elements);
+	buffer* metadata() const;
 
 	void Release();
 
@@ -473,16 +463,13 @@ T* array<T>::AllocBuffer(size_t capacity)
 }
 
 template <class T>
-typename array<T>::array_metadata* array<T>::metadata(const T* data)
+typename array<T>::buffer* array<T>::metadata(const T* data)
 {
-	return static_cast<array_metadata*>(
-		static_cast<buffer*>(
-			reinterpret_cast<first_element_wrapper*>(
-				const_cast<T*>(data))));
+	return B_OUTERSTRUCT(buffer, first_element, data);
 }
 
 template <class T>
-typename array<T>::array_metadata* array<T>::metadata() const
+typename array<T>::buffer* array<T>::metadata() const
 {
 	return metadata(elements);
 }
