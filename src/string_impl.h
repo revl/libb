@@ -27,13 +27,13 @@ void string::discard_and_alloc(size_t new_capacity)
 	if (capacity() != new_capacity || is_shared())
 	{
 		// Release previous buffer before allocating a new one.
-		ReplaceBuffer(empty_string());
+		replace_buffer(empty_string());
 
 		if (new_capacity > 0)
-			// No need to call ReplaceBuffer again:
-			// "ReplaceBuffer(AllocBufferExactly(new_capacity, 0));"
+			// No need to call replace_buffer() again, as in:
+			// "replace_buffer(alloc_buffer(new_capacity, 0));"
 			// It does the same thing as the next line:
-			chars = AllocBufferExactly(new_capacity, 0);
+			chars = alloc_buffer(new_capacity, 0);
 	}
 	else
 		metadata()->length = 0;
@@ -55,14 +55,14 @@ void string::alloc_and_copy(size_t new_capacity)
 				length() : new_capacity;
 
 			char* new_buffer_chars =
-				AllocBufferExactly(new_capacity, len);
+				alloc_buffer(new_capacity, len);
 
 			Copy(new_buffer_chars, chars, len + 1);
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 		}
 		else
-			ReplaceBuffer(empty_string());
+			replace_buffer(empty_string());
 	}
 }
 
@@ -73,11 +73,11 @@ void string::assign(const string& source)
 		if (source.chars != empty_string())
 			++source.metadata()->refs;
 
-		ReplaceBuffer(source.chars);
+		replace_buffer(source.chars);
 	}
 	else
 		if (chars != source.chars)
-			assign(source.GetBuffer(), source.length());
+			assign(source.c_str(), source.length());
 }
 
 void string::assign(const char* source, size_t count)
@@ -87,7 +87,7 @@ void string::assign(const char* source, size_t count)
 	if (count > 0)
 	{
 		if (is_shared() || count > capacity())
-			Alloc(count);
+			discard_and_alloc(extra_capacity(count));
 		Copy(chars, source, count);
 		chars[metadata()->length = count] = 0;
 	}
@@ -102,7 +102,7 @@ void string::assign(char source, size_t count)
 	if (count > 0)
 	{
 		if (is_shared() || count > capacity())
-			Alloc(count);
+			discard_and_alloc(extra_capacity(count));
 		Copy(chars, source, count);
 		chars[metadata()->length = count] = 0;
 	}
@@ -176,14 +176,15 @@ void string::insert(size_t index, const char* source, size_t count)
 
 		if (new_length > capacity() || is_shared())
 		{
-			char* new_buffer_chars = AllocBuffer(new_length);
+			char* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
 
 			Copy(new_buffer_chars, chars, index);
 			Copy(new_buffer_chars + index, source, count);
 			Copy(new_buffer_chars + index + count,
-				tail, tail_length);
+				tail, tail_length + 1);
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 		}
 		else
 		{
@@ -224,14 +225,15 @@ void string::insert(size_t index, char source, size_t count)
 
 		if (new_length > capacity() || is_shared())
 		{
-			char* new_buffer_chars = AllocBuffer(new_length);
+			char* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
 
 			Copy(new_buffer_chars, chars, index);
 			Copy(new_buffer_chars + index, source, count);
 			Copy(new_buffer_chars + index + count,
-				tail, tail_length);
+				tail, tail_length + 1);
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 		}
 		else
 		{
@@ -267,7 +269,7 @@ void string::append(const char* source, size_t count)
 	if (count > 0)
 	{
 		if (is_shared() || count + length() > capacity())
-			Realloc(length() + count);
+			alloc_and_copy(extra_capacity(length() + count));
 		Copy(chars + length(), source, count);
 		chars[metadata()->length += count] = 0;
 	}
@@ -280,7 +282,7 @@ void string::append(char source, size_t count)
 	if (count > 0)
 	{
 		if (is_shared() || count + length() > capacity())
-			Realloc(length() + count);
+			alloc_and_copy(extra_capacity(length() + count));
 		Copy(chars + length(), source, count);
 		chars[metadata()->length += count] = 0;
 	}
@@ -336,14 +338,15 @@ void string::erase(size_t index, size_t count)
 		}
 		else
 		{
-			char* new_buffer_chars = AllocBuffer(new_length);
+			char* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
 
 			Copy(new_buffer_chars, chars, index);
 
 			Copy(new_buffer_chars + index, chars + index + count,
 				new_length - index + 1);
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 		}
 	}
 }
@@ -356,7 +359,7 @@ void string::clear()
 		*chars = 0;
 	}
 	else
-		ReplaceBuffer(empty_string());
+		replace_buffer(empty_string());
 }
 
 void string::appendfv(const char* format, va_list arguments)
@@ -431,11 +434,13 @@ void string::trim_right(const char* samples)
 			*end = 0;
 		else
 		{
-			char* new_buffer_chars = AllocBuffer(new_length);
+			char* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
 
 			Copy(new_buffer_chars, chars, new_length);
+			new_buffer_chars[new_length] = 0;
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 
 			new_buffer_chars[new_length] = 0;
 		}
@@ -459,11 +464,13 @@ void string::trim_left(const char* samples)
 			ReverseCopy(chars, start, new_length);
 		else
 		{
-			char* new_buffer_chars = AllocBuffer(new_length);
+			char* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
 
 			Copy(new_buffer_chars, start, new_length);
+			new_buffer_chars[new_length] = 0;
 
-			ReplaceBuffer(new_buffer_chars);
+			replace_buffer(new_buffer_chars);
 		}
 
 		chars[metadata()->length = new_length] = 0;
@@ -483,7 +490,7 @@ char* string::empty_string()
 	return const_cast<char*>(empty_string_buffer.first_char);
 }
 
-char* string::AllocBufferExactly(size_t new_capacity, size_t length)
+char* string::alloc_buffer(size_t new_capacity, size_t length)
 {
 	B_ASSERT(new_capacity >= length);
 
@@ -497,7 +504,7 @@ char* string::AllocBufferExactly(size_t new_capacity, size_t length)
 	return new_buffer->first_char;
 }
 
-void string::ReplaceBuffer(char* new_buffer_chars)
+void string::replace_buffer(char* new_buffer_chars)
 {
 	B_ASSERT(!is_locked());
 

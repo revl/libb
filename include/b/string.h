@@ -72,14 +72,6 @@ public:
 	// Reallocates the buffer preserving the string contents.
 	void alloc_and_copy(size_t new_capacity);
 
-	// Does the same as discard_and_alloc(), but also allocates some
-	// extra characters for future string expansion.
-	void Alloc(size_t new_capacity);
-
-	// The same as alloc_and_copy(), but also allocates some
-	// extra characters for future string expansion.
-	void Realloc(size_t new_capacity);
-
 	// Allocates enough memory to store 'new_capacity' characters.
 	// In case if the buffer gets reallocated, the contents is
 	// not preserved.
@@ -90,8 +82,9 @@ public:
 
 // Buffer Access
 public:
-	// Returns a constant pointer to the array of characters.
-	const char* GetBuffer() const;
+	// Returns a constant pointer to the null-terminated
+	// array of characters.
+	const char* c_str() const;
 
 	// Converts to a const char pointer.
 	operator const char*() const;
@@ -292,14 +285,12 @@ protected:
 
 	static char* empty_string();
 
-	static char* AllocBufferExactly(size_t new_capacity, size_t length);
-
-	static char* AllocBuffer(size_t length);
+	static char* alloc_buffer(size_t new_capacity, size_t length);
 
 	static buffer* metadata(const char* chars);
 	buffer* metadata() const;
 
-	void ReplaceBuffer(char* new_buffer_chars);
+	void replace_buffer(char* new_buffer_chars);
 
 	// Make sure that the buffer is not shared with other strings.
 	// Reallocate the buffer if it's shared; preserve the original
@@ -361,16 +352,6 @@ inline bool string::empty() const
 	return length() == 0;
 }
 
-inline void string::Alloc(size_t new_capacity)
-{
-	discard_and_alloc(extra_capacity(new_capacity));
-}
-
-inline void string::Realloc(size_t new_capacity)
-{
-	alloc_and_copy(extra_capacity(new_capacity));
-}
-
 inline bool string::is_shared() const
 {
 	return metadata()->refs > 1;
@@ -379,7 +360,7 @@ inline bool string::is_shared() const
 inline void string::reserve(size_t new_capacity)
 {
 	if (capacity() < new_capacity || is_shared())
-		Realloc(new_capacity);
+		alloc_and_copy(extra_capacity(new_capacity));
 }
 
 inline void string::shrink_to_fit()
@@ -388,15 +369,15 @@ inline void string::shrink_to_fit()
 
 	if (!is_shared() && len != capacity())
 	{
-		char* new_buffer_chars = AllocBufferExactly(len, len);
+		char* new_buffer_chars = alloc_buffer(len, len);
 
 		Copy(new_buffer_chars, chars, len + 1);
 
-		ReplaceBuffer(new_buffer_chars);
+		replace_buffer(new_buffer_chars);
 	}
 }
 
-inline const char* string::GetBuffer() const
+inline const char* string::c_str() const
 {
 	return chars;
 }
@@ -406,24 +387,17 @@ inline string::operator const char*() const
 	return chars;
 }
 
-inline char* string::AllocBuffer(size_t length)
-{
-	char* new_buffer_chars =
-		AllocBufferExactly(extra_capacity(length), length);
-	new_buffer_chars[length] = 0;
-
-	return new_buffer_chars;
-}
-
 inline void string::isolate()
 {
 	if (is_shared())
 	{
-		char* new_buffer_chars = AllocBuffer(length());
+		size_t len = length();
 
-		Copy(new_buffer_chars, chars, length());
+		char* new_buffer_chars = alloc_buffer(extra_capacity(len), len);
 
-		ReplaceBuffer(new_buffer_chars);
+		Copy(new_buffer_chars, chars, len + 1);
+
+		replace_buffer(new_buffer_chars);
 	}
 }
 
@@ -525,17 +499,17 @@ inline string& string::operator =(char source)
 
 inline void string::insert(size_t index, const string& source)
 {
-	insert(index, source.GetBuffer(), source.length());
+	insert(index, source.c_str(), source.length());
 }
 
 inline void string::append(const string& source)
 {
-	append(source.GetBuffer(), source.length());
+	append(source.c_str(), source.length());
 }
 
 inline string& string::operator +=(const string& source)
 {
-	append(source.GetBuffer(), source.length());
+	append(source.c_str(), source.length());
 	return *this;
 }
 
@@ -633,11 +607,11 @@ inline string operator +(char left_side, const string& right_side)
 	string result;
 	size_t length = right_side.length();
 
-	result.Alloc(length + 1);
+	result.discard_and_alloc(extra_capacity(length + 1));
 	char* chars = result.lock();
 
 	*chars = left_side;
-	Copy(chars + 1, right_side.GetBuffer(), length);
+	Copy(chars + 1, right_side.c_str(), length);
 
 	result.unlock(length + 1);
 	return result;
