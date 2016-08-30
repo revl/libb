@@ -22,7 +22,7 @@
 #define B_STRING_H
 
 #include "ref_count.h"
-#include "helpers.h"
+#include "util.h"
 
 #undef B_STRING_H
 

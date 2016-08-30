@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_HELPERS_H
-#define B_HELPERS_H
+#ifndef B_UTIL_H
+#define B_UTIL_H
 
 #include "memory.h"
 #include "random.h"
@@ -50,7 +50,7 @@ void MakePath(const string& path)
 void RemoveDirectory(const string& directory)
 	throw (SystemException);
 
-// Template functions and helpers
+// Global function templates
 
 // Determines the lowest position before which <value> can be inserted in
 // the ordered sequence of <count> elements preserving the ordering.
@@ -126,7 +126,7 @@ inline int Compare(const TYPE* buffer1, const TYPE* buffer2, size_t count)
 	return 0;
 }
 
-// String helpers
+// Operations on C strings
 
 // Computes the length of null-terminated strings.
 inline size_t CalcLength(const char* string)
@@ -484,4 +484,4 @@ B_END_NAMESPACE
 
 #include "string.h"
 
-#endif // !defined(B_HELPERS_H)
+#endif // !defined(B_UTIL_H)

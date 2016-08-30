@@ -25,7 +25,6 @@ pkginclude_HEADERS = \
 	doubly_linked_list.h \
 	doubly_linked_list_container.h \
 	exception.h \
-	helpers.h \
 	host.h \
 	levenshtein_distance.h \
 	linked_list.h \
@@ -38,7 +37,8 @@ pkginclude_HEADERS = \
 	ref_count.h \
 	runtime_exception.h \
 	string.h \
-	system_exception.h
+	system_exception.h \
+	util.h
 
 all: config.h
 

@@ -18,7 +18,7 @@
  *
  */
 
-#include <b/helpers.h>
+#include <b/util.h>
 
 #include <unistd.h>
 

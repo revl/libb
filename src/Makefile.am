@@ -32,10 +32,10 @@ endif
 
 sources = \
 	exceptions.cpp \
-	helpers.cpp \
 	memory.cpp \
 	string.cpp \
-	string_impl.h
+	string_impl.h \
+	util.cpp
 
 libbd_r_la_SOURCES = $(sources)
 libb_r_la_SOURCES = $(sources)

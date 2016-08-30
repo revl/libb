@@ -21,7 +21,7 @@
 #ifndef B_LINKEDLIST_H
 #define B_LINKEDLIST_H
 
-#include "helpers.h"
+#include "util.h"
 
 B_BEGIN_NAMESPACE
 

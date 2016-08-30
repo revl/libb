@@ -19,7 +19,7 @@
  */
 
 #include "ref_count.h"
-#include "helpers.h"
+#include "util.h"
 
 #ifndef B_ARRAY_DEFINED
 #define B_ARRAY_DEFINED
