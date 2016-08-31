@@ -84,11 +84,11 @@ public:
 
 // Operations
 public:
-	void Assign(const Pathname& right_side);
+	void Assign(const Pathname& rhs);
 
 	void Assign(const B_CHAR* pathname, int count);
 
-	void ChDir(const Pathname& right_side);
+	void ChDir(const Pathname& rhs);
 
 	void ChDir(const B_CHAR* pathname, int count);
 
@@ -181,9 +181,9 @@ inline bool Pathname::CanBeFilename() const
 	return can_be_filename;
 }
 
-inline void Pathname::Assign(const Pathname& right_side)
+inline void Pathname::Assign(const Pathname& rhs)
 {
-	*this = right_side;
+	*this = rhs;
 }
 
 inline void Pathname::Assign(const B_CHAR* pathname, int count)

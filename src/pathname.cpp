@@ -62,31 +62,30 @@ void Pathname::AppendPathnameTo(String& pathname) const
 	}
 }
 
-void Pathname::ChDir(const Pathname& right_side)
+void Pathname::ChDir(const Pathname& rhs)
 {
-	switch (right_side.up_dir_level)
+	switch (rhs.up_dir_level)
 	{
 	case INT_MAX:
-		*this = right_side;
+		*this = rhs;
 		break;
 
 	default:
-		if (right_side.up_dir_level <= components.GetSize())
+		if (rhs.up_dir_level <= components.GetSize())
 			components.RemoveAt(components.GetSize() -
-				right_side.up_dir_level,
-				right_side.up_dir_level);
+				rhs.up_dir_level,
+				rhs.up_dir_level);
 		else
 		{
-			up_dir_level += right_side.up_dir_level -
-				components.GetSize();
+			up_dir_level += rhs.up_dir_level - components.GetSize();
 
 			components.RemoveAll();
 		}
 
 	case 0:
-		components.Append(right_side.components);
+		components.Append(rhs.components);
 
-		can_be_filename = right_side.can_be_filename;
+		can_be_filename = rhs.can_be_filename;
 	}
 }
 

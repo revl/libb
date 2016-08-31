@@ -195,44 +195,44 @@ public:
 
 // Comparison
 public:
-	// Compares this string against <right_side> lexicographically.
-	int compare(const char* right_side) const;
+	// Compares this string against 'rhs' lexicographically.
+	int compare(const char* rhs) const;
 
-	// Returns true if this string and <right_side> are equal.
-	bool operator ==(const string& right_side) const;
+	// Returns true if this string and 'rhs' are equal.
+	bool operator ==(const string& rhs) const;
 
 	// Checks this string and result for equality.
-	bool operator ==(const char* right_side) const;
+	bool operator ==(const char* rhs) const;
 
-	// Returns true if this string and <right_side> differ.
-	bool operator !=(const string& right_side) const;
+	// Returns true if this string and 'rhs' differ.
+	bool operator !=(const string& rhs) const;
 
-	// Returns true if this string and <right_side> differ.
-	bool operator !=(const char* right_side) const;
+	// Returns true if this string and 'rhs' differ.
+	bool operator !=(const char* rhs) const;
 
-	// Returns true if this string is less than <right_side>.
-	bool operator <(const string& right_side) const;
+	// Returns true if this string is less than 'rhs'.
+	bool operator <(const string& rhs) const;
 
-	// Returns true if this string is less than <right_side>.
-	bool operator <(const char* right_side) const;
+	// Returns true if this string is less than 'rhs'.
+	bool operator <(const char* rhs) const;
 
-	// Returns true if this string is greater than <right_side>.
-	bool operator >(const string& right_side) const;
+	// Returns true if this string is greater than 'rhs'.
+	bool operator >(const string& rhs) const;
 
-	// Returns true if this string is greater than <right_side>.
-	bool operator >(const char* right_side) const;
+	// Returns true if this string is greater than 'rhs'.
+	bool operator >(const char* rhs) const;
 
-	// Returns true if this string is less or equal than <right_side>.
-	bool operator <=(const string& right_side) const;
+	// Returns true if this string is less or equal than 'rhs'.
+	bool operator <=(const string& rhs) const;
 
-	// Returns true if this string is less or equal than <right_side>.
-	bool operator <=(const char* right_side) const;
+	// Returns true if this string is less or equal than 'rhs'.
+	bool operator <=(const char* rhs) const;
 
-	// Returns true if this string is greater or equal than <right_side>.
-	bool operator >=(const string& right_side) const;
+	// Returns true if this string is greater or equal than 'rhs'.
+	bool operator >=(const string& rhs) const;
 
-	// Returns true if this string is greater or equal than <right_side>.
-	bool operator >=(const char* right_side) const;
+	// Returns true if this string is greater or equal than 'rhs'.
+	bool operator >=(const char* rhs) const;
 
 // Formatting
 public:
@@ -525,69 +525,69 @@ inline string string::operator +(char source) const
 	return result += source;
 }
 
-inline int string::compare(const char* right_side) const
+inline int string::compare(const char* rhs) const
 {
-	return CompareStrings(chars, right_side);
+	return CompareStrings(chars, rhs);
 }
 
-inline bool string::operator ==(const string& right_side) const
+inline bool string::operator ==(const string& rhs) const
 {
-	return compare(right_side) == 0;
+	return compare(rhs) == 0;
 }
 
-inline bool string::operator ==(const char* right_side) const
+inline bool string::operator ==(const char* rhs) const
 {
-	return compare(right_side) == 0;
+	return compare(rhs) == 0;
 }
 
-inline bool string::operator !=(const string& right_side) const
+inline bool string::operator !=(const string& rhs) const
 {
-	return compare(right_side) != 0;
+	return compare(rhs) != 0;
 }
 
-inline bool string::operator !=(const char* right_side) const
+inline bool string::operator !=(const char* rhs) const
 {
-	return compare(right_side) != 0;
+	return compare(rhs) != 0;
 }
 
-inline bool string::operator <(const string& right_side) const
+inline bool string::operator <(const string& rhs) const
 {
-	return compare(right_side) < 0;
+	return compare(rhs) < 0;
 }
 
-inline bool string::operator <(const char* right_side) const
+inline bool string::operator <(const char* rhs) const
 {
-	return compare(right_side) < 0;
+	return compare(rhs) < 0;
 }
 
-inline bool string::operator >(const string& right_side) const
+inline bool string::operator >(const string& rhs) const
 {
-	return compare(right_side) > 0;
+	return compare(rhs) > 0;
 }
 
-inline bool string::operator >(const char* right_side) const
+inline bool string::operator >(const char* rhs) const
 {
-	return compare(right_side) > 0;
+	return compare(rhs) > 0;
 }
 
-inline bool string::operator <=(const string& right_side) const
+inline bool string::operator <=(const string& rhs) const
 {
-	return compare(right_side) <= 0;
+	return compare(rhs) <= 0;
 }
 
-inline bool string::operator <=(const char* right_side) const
+inline bool string::operator <=(const char* rhs) const
 {
-	return compare(right_side) <= 0;
+	return compare(rhs) <= 0;
 }
 
-inline bool string::operator >=(const string& right_side) const
+inline bool string::operator >=(const string& rhs) const
 {
-	return compare(right_side) >= 0;
+	return compare(rhs) >= 0;
 }
 
-inline bool string::operator >=(const char* right_side) const
+inline bool string::operator >=(const char* rhs) const
 {
-	return compare(right_side) >= 0;
+	return compare(rhs) >= 0;
 }
 
 inline void string::formatv(const char* format, va_list arguments)
@@ -602,49 +602,49 @@ inline void string::trim(const char* samples)
 	trim_left(samples);
 }
 
-inline string operator +(char left_side, const string& right_side)
+inline string operator +(char ch, const string& str)
 {
 	string result;
-	size_t length = right_side.length();
+	size_t length = str.length();
 
 	result.discard_and_alloc(extra_capacity(length + 1));
 	char* chars = result.lock();
 
-	*chars = left_side;
-	Copy(chars + 1, right_side.c_str(), length);
+	*chars = ch;
+	Copy(chars + 1, str.c_str(), length);
 
 	result.unlock(length + 1);
 	return result;
 }
 
-inline bool operator ==(const char* left_side, const string& right_side)
+inline bool operator ==(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) == 0;
+	return str.compare(c_str) == 0;
 }
 
-inline bool operator !=(const char* left_side, const string& right_side)
+inline bool operator !=(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) != 0;
+	return str.compare(c_str) != 0;
 }
 
-inline bool operator <(const char* left_side, const string& right_side)
+inline bool operator <(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) > 0;
+	return str.compare(c_str) > 0;
 }
 
-inline bool operator >(const char* left_side, const string& right_side)
+inline bool operator >(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) < 0;
+	return str.compare(c_str) < 0;
 }
 
-inline bool operator <=(const char* left_side, const string& right_side)
+inline bool operator <=(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) >= 0;
+	return str.compare(c_str) >= 0;
 }
 
-inline bool operator >=(const char* left_side, const string& right_side)
+inline bool operator >=(const char* c_str, const string& str)
 {
-	return right_side.compare(left_side) <= 0;
+	return str.compare(c_str) <= 0;
 }
 
 // Finds the first occurrence of character <c> in <string>.
