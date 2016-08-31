@@ -247,12 +247,6 @@ inline void Construct(TYPE* dest, const TYPE* source, size_t count)
 		new (dest++) TYPE(*source++);
 }
 
-// MS C++ issues misplaced C4100: 'objects' : unreferenced formal parameter.
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100)
-#endif // _MSC_VER
-
 // Calls TYPE destructors.
 template <class TYPE>
 inline void Destroy(TYPE* objects, size_t count)
@@ -260,10 +254,6 @@ inline void Destroy(TYPE* objects, size_t count)
 	while (count-- > 0)
 		(objects++)->~TYPE();
 }
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif // _MSC_VER
 
 // Calls TYPE assignment operator (element-based array assignment).
 template <class TYPE>

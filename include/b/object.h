@@ -31,20 +31,9 @@ class Object
 {
 // Construction
 public:
-#ifdef _MSC_VER
-	// Allocates objects of the derived classes. Special
-	// version for MS C++.
-	void* operator new(size_t size, int tag = 0)
-		throw (Memory::Exception);
-
-	// Frees memory allocated by operator new if initialization
-	// throws an exception. Special version for MS C++.
-	void operator delete(void* object, int tag);
-#else
 	// Allocates objects of the derived classes.
 	void* operator new(size_t size)
 		throw (Memory::Exception);
-#endif
 
 	// Deallocates objects previously allocated by operator new.
 	void operator delete(void* object, size_t size);
@@ -85,26 +74,12 @@ protected:
 	mutable RefCount refs;
 };
 
-#ifdef _MSC_VER
-inline void* Object::operator new(size_t size, int /*tag*/)
-	throw (Memory::Exception)
-{
-	return Memory::FixedAlloc(size > B_MIN_FIXED_ALLOC ?
-		size : B_MIN_FIXED_ALLOC);
-}
-
-inline void Object::operator delete(void* object, int /*tag*/)
-{
-	Memory::FixedFree(object, B_MIN_FIXED_ALLOC);
-}
-#else
 inline void* Object::operator new(size_t size)
 	throw (Memory::Exception)
 {
 	return Memory::FixedAlloc(size > B_MIN_FIXED_ALLOC ?
 		size : B_MIN_FIXED_ALLOC);
 }
-#endif
 
 inline void Object::operator delete(void* object, size_t size)
 {

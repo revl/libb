@@ -28,14 +28,6 @@
 
 B_BEGIN_NAMESPACE
 
-// Disable MS C++ warning C4251: 'components' : class
-// 'b::array<class b::Pathname::Component>' needs to have
-// dll-interface to be used by clients of class 'b::Pathname'
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4251)
-#endif // _MSC_VER
-
 class Pathname
 {
 // Types
@@ -115,10 +107,6 @@ private:
 
 	void GetComponents(String& pathname) const;
 };
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif // _MSC_VER
 
 inline Pathname::Component::Component(const B_CHAR* name,
 	const B_CHAR* suffix, const B_CHAR* end) :
