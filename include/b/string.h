@@ -56,7 +56,7 @@ public:
 	size_t length() const;
 
 	// Returns true if the string is empty.
-	bool empty() const;
+	bool is_empty() const;
 
 // Lock State
 public:
@@ -347,7 +347,7 @@ inline size_t string::length() const
 	return metadata()->length;
 }
 
-inline bool string::empty() const
+inline bool string::is_empty() const
 {
 	return length() == 0;
 }
@@ -457,14 +457,14 @@ inline char& string::operator [](size_t index)
 
 inline char string::front() const
 {
-	B_ASSERT(!empty());
+	B_ASSERT(!is_empty());
 
 	return *chars;
 }
 
 inline char& string::front()
 {
-	B_ASSERT(!empty());
+	B_ASSERT(!is_empty());
 
 	isolate();
 	return *chars;
@@ -472,14 +472,14 @@ inline char& string::front()
 
 inline char string::back() const
 {
-	B_ASSERT(!empty());
+	B_ASSERT(!is_empty());
 
 	return chars[length() - 1];
 }
 
 inline char& string::back()
 {
-	B_ASSERT(!empty());
+	B_ASSERT(!is_empty());
 
 	isolate();
 	return chars[length() - 1];

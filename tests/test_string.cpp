@@ -68,7 +68,7 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 */
 	b::string str1;
-	if (!str1.empty())
+	if (!str1.is_empty())
 		return 2;
 
 	b::string str2(B_TEXT("abcd"), 3);

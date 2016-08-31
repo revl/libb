@@ -36,7 +36,7 @@ bool IsDirectory(const string& directory)
 void MakeDirectory(const string& directory)
 	throw (SystemException)
 {
-	if (!directory.empty() && mkdir(directory,
+	if (!directory.is_empty() && mkdir(directory,
 		S_IRUSR | S_IWUSR | S_IXUSR |
 		S_IRGRP | S_IWGRP | S_IXGRP |
 		S_IROTH | S_IWOTH | S_IXOTH) == -1)
@@ -73,7 +73,7 @@ void MakePath(const string& path)
 void RemoveDirectory(const string& directory)
 	throw (SystemException)
 {
-	if (!directory.empty() && rmdir(directory) == -1)
+	if (!directory.is_empty() && rmdir(directory) == -1)
 		throw SystemException();
 }
 
