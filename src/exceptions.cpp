@@ -64,7 +64,7 @@ CustomException::CustomException(const B_CHAR* message_format, ...) :
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.formatv(message_format, arguments);
+	message.assignfv(message_format, arguments);
 	va_end(arguments);
 }
 
@@ -72,7 +72,7 @@ void CustomException::SetMessage(const B_CHAR* message_format, ...)
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.formatv(message_format, arguments);
+	message.assignfv(message_format, arguments);
 	va_end(arguments);
 }
 

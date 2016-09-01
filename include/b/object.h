@@ -32,11 +32,16 @@ class Object
 // Construction
 public:
 	// Allocates objects of the derived classes.
-	void* operator new(size_t size)
+	static void* operator new(size_t size)
 		throw (Memory::Exception);
 
 	// Deallocates objects previously allocated by operator new.
-	void operator delete(void* object, size_t size);
+	// Inlined here to get rid of a warning issued by gcc 4.0.1:
+	// 'operator delete' was used before it was declared inline.
+	static void operator delete(void* object, size_t size)
+	{
+		Memory::FixedFree(object, size);
+	}
 
 protected:
 	// Initializes the reference count with zero.
@@ -79,11 +84,6 @@ inline void* Object::operator new(size_t size)
 {
 	return Memory::FixedAlloc(size > B_MIN_FIXED_ALLOC ?
 		size : B_MIN_FIXED_ALLOC);
-}
-
-inline void Object::operator delete(void* object, size_t size)
-{
-	Memory::FixedFree(object, size);
 }
 
 inline Object::Object()

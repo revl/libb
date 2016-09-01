@@ -239,14 +239,14 @@ public:
 	// Appends formatted data to this string.
 	void appendfv(const char* format, va_list arguments);
 
-	// Formats this string like vsprintf does.
-	void formatv(const char* format, va_list arguments);
-
 	// Appends formatted data to this string.
 	void appendf(const char* format, ...);
 
-	// Formats this string like sprintf does.
-	void format(const char* format, ...);
+	// Formats this string the way vsprintf does.
+	void assignfv(const char* format, va_list arguments);
+
+	// Formats this string the way sprintf does.
+	void assignf(const char* format, ...);
 
 // Searching
 public:
@@ -590,7 +590,7 @@ inline bool string::operator >=(const char* rhs) const
 	return compare(rhs) >= 0;
 }
 
-inline void string::formatv(const char* format, va_list arguments)
+inline void string::assignfv(const char* format, va_list arguments)
 {
 	clear();
 	appendfv(format, arguments);

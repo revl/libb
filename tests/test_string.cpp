@@ -103,13 +103,13 @@ int main()
 	if (str4.rfind(B_TEXT('b')) != (size_t) -1)
 		return 8;
 
-	str3.format(B_TEXT("abc%s"), B_TEXT("xxx"));
+	str3.assignf(B_TEXT("abc%s"), B_TEXT("xxx"));
 	str3 += B_STATIC_STRING(cba);
 	if (str1 != (const B_CHAR*) str3)
 		return 9;
 
 	b::string str5;
-	str5.format(B_TEXT("init"));
+	str5.assignf(B_TEXT("init"));
 	if (str5 != B_TEXT("init"))
 		return 10;
 

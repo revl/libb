@@ -379,12 +379,12 @@ void string::appendf(const char* format, ...)
 	va_end(arguments);
 }
 
-void string::format(const char* format, ...)
+void string::assignf(const char* format, ...)
 {
 	va_list arguments;
 
 	va_start(arguments, format);
-	formatv(format, arguments);
+	assignfv(format, arguments);
 	va_end(arguments);
 }
 

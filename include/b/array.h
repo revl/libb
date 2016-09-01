@@ -69,7 +69,7 @@ public:
 	// Reallocates the buffer preserving its contents.
 	void alloc_and_copy(size_t new_capacity);
 
-	// Allocates enough memory to store <capacity> elements.
+	// Allocates enough memory to store <new_capacity> elements.
 	void Alloc(size_t new_capacity);
 
 	// Reallocates the buffer preserving its contents.
@@ -282,15 +282,15 @@ bool array<T>::IsLocked() const
 }
 
 template <class T>
-void array<T>::Alloc(size_t capacity)
+void array<T>::Alloc(size_t new_capacity)
 {
-	discard_and_alloc(extra_capacity(capacity));
+	discard_and_alloc(extra_capacity(new_capacity));
 }
 
 template <class T>
-void array<T>::Realloc(size_t capacity)
+void array<T>::Realloc(size_t new_capacity)
 {
-	alloc_and_copy(extra_capacity(capacity));
+	alloc_and_copy(extra_capacity(new_capacity));
 }
 
 template <class T>
