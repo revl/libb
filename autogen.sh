@@ -19,7 +19,7 @@
 #
 
 aclocal &&
-	libtoolize --automake && \
+	libtoolize --automake --copy && \
 	autoheader && \
-	automake --gnu --add-missing && \
+	automake --gnu --add-missing --copy && \
 	autoconf
