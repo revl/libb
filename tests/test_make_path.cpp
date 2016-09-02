@@ -18,7 +18,7 @@
  *
  */
 
-#include <b/util.h>
+#include <b/misc.h>
 
 B_DEFINE_STATIC_STRING(test_dir, "TestDir");
 B_DEFINE_STATIC_STRING(dot_dir, ".");

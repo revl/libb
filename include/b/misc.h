@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_UTIL_H
-#define B_UTIL_H
+#ifndef B_MISC_H
+#define B_MISC_H
 
 #include "memory.h"
 #include "random.h"
@@ -474,4 +474,4 @@ B_END_NAMESPACE
 
 #include "string.h"
 
-#endif // !defined(B_UTIL_H)
+#endif // !defined(B_MISC_H)

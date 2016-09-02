@@ -18,7 +18,7 @@
  *
  */
 
-#include <b/util.h>
+#include <b/misc.h>
 
 struct MatchPatternTestCase
 {

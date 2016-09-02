@@ -31,14 +31,14 @@ pkginclude_HEADERS = \
 	linked_list_container.h \
 	memory.h \
 	meta.h \
+	misc.h \
 	object.h \
 	random.h \
 	ref.h \
 	ref_count.h \
 	runtime_exception.h \
 	string.h \
-	system_exception.h \
-	util.h
+	system_exception.h
 
 all: config.h
 

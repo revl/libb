@@ -145,6 +145,6 @@ inline void* Memory::Align(void* value, size_t alignment)
 
 B_END_NAMESPACE
 
-#include "util.h"
+#include "misc.h"
 
 #endif // !defined(B_MEMORY_H)

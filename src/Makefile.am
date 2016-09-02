@@ -33,9 +33,9 @@ endif
 sources = \
 	exceptions.cpp \
 	memory.cpp \
+	misc.cpp \
 	string.cpp \
-	string_impl.h \
-	util.cpp
+	string_impl.h
 
 libbd_r_la_SOURCES = $(sources)
 libb_r_la_SOURCES = $(sources)
