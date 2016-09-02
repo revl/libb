@@ -76,7 +76,9 @@ static const MatchPatternTestCase match_pattern_test_cases[] =
 	{B_TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
 		B_TEXT("a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"), false},
 	{B_TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-		B_TEXT("a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*"), true}
+		B_TEXT("a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*"), true},
+	{B_TEXT("aaaaaa"), B_TEXT("aaa*aaa"), true},
+	{B_TEXT("aaaaaa"), B_TEXT("aaa**aaa"), true}
 };
 
 struct VersionComparisonTestCase
