@@ -423,7 +423,7 @@ void string::trim_right(const char* samples)
 	char* end = chars + length();
 
 	while (--end >= chars &&
-		FindCharInString(samples, *end) != NULL)
+			FindCharInString(samples, *end) != NULL)
 		;
 
 	size_t new_length = ++end - chars;
@@ -441,8 +441,6 @@ void string::trim_right(const char* samples)
 			new_buffer_chars[new_length] = 0;
 
 			replace_buffer(new_buffer_chars);
-
-			new_buffer_chars[new_length] = 0;
 		}
 
 		metadata()->length = new_length;
@@ -461,7 +459,7 @@ void string::trim_left(const char* samples)
 		size_t new_length = chars + length() - start;
 
 		if (!is_shared())
-			ReverseCopy(chars, start, new_length);
+			ReverseCopy(chars, start, new_length + 1);
 		else
 		{
 			char* new_buffer_chars = alloc_buffer(
@@ -473,7 +471,7 @@ void string::trim_left(const char* samples)
 			replace_buffer(new_buffer_chars);
 		}
 
-		chars[metadata()->length = new_length] = 0;
+		metadata()->length = new_length;
 	}
 }
 
