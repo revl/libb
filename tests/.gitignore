@@ -2,11 +2,11 @@
 *.o
 *.trs
 test_array
-test_helpers
 test_levenshtein_distance
 test_lists
 test_make_path
 test_memory
+test_misc
 test_object
 test_random
 test_string

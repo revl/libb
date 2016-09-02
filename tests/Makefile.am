@@ -19,28 +19,26 @@
 LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 
 TESTS = \
-	test_helpers \
 	test_string \
 	test_array \
 	test_levenshtein_distance \
 	test_lists \
 	test_memory \
+	test_misc \
 	test_object \
 	test_random \
 	test_make_path
 
 check_PROGRAMS = \
-	test_helpers \
 	test_string \
 	test_array \
 	test_levenshtein_distance \
 	test_lists \
 	test_memory \
+	test_misc \
 	test_object \
 	test_random \
 	test_make_path
-
-test_helpers_SOURCES = test_helpers.cpp
 
 test_string_SOURCES = test_string.cpp
 
@@ -51,6 +49,8 @@ test_levenshtein_distance_SOURCES = test_levenshtein_distance.cpp
 test_lists_SOURCES = test_lists.cpp
 
 test_memory_SOURCES = test_memory.cpp
+
+test_misc_SOURCES = test_misc.cpp
 
 test_object_SOURCES = test_object.cpp
 
