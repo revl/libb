@@ -20,13 +20,9 @@
 
 #include <b/array.h>
 
-#define CHECK(condition, message) \
-	if (!(condition)) { \
-		fprintf(stderr, message); \
-		return false; \
-	}
+#include "unit_test.h"
 
-static bool test_shrink_to_fit()
+B_TEST_CASE(test_shrink_to_fit)
 {
 	static const size_t initial_size = 100;
 
@@ -34,14 +30,14 @@ static bool test_shrink_to_fit()
 
 	size_t initial_capacity = a1.capacity();
 
-	CHECK(initial_capacity > initial_size,
+	B_CHECK(initial_capacity > initial_size,
 		"Capacity must be greater than the initial size\n");
 
 	b::array<int> a2(a1);
 
 	a1.shrink_to_fit();
 
-	CHECK(a1.data() != a2.data(),
+	B_CHECK(a1.data() != a2.data(),
 		"shrink_to_fit() must cause reallocation");
 
 	return true;
@@ -70,7 +66,7 @@ struct test_element
 typedef b::array<test_element> test_array;
 template class b::array<test_element>;
 
-static bool test_copying()
+B_TEST_CASE(test_copying)
 {
 	{
 		test_array test(test_element(123));
@@ -95,9 +91,3 @@ static bool test_copying()
 }
 
 b::array<b::array<test_element> > test2d;
-
-int main(int /*argc*/, char* /*argv*/[])
-{
-	return !test_shrink_to_fit() +
-		!test_copying();
-}
