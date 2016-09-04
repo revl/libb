@@ -30,15 +30,14 @@ B_BEGIN_NAMESPACE
 template <class T>
 void array<T>::discard_and_alloc(size_t new_capacity)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
-	if (capacity() != new_capacity || IsShared())
+	if (capacity() != new_capacity || is_shared())
 	{
-		Release();
+		release();
 
 		elements = new_capacity > 0 ?
-			AllocBufferExactly(new_capacity) :
-			empty_array();
+			alloc_buffer(new_capacity) : empty_array();
 	}
 	else
 	{
@@ -53,15 +52,15 @@ void array<T>::discard_and_alloc(size_t new_capacity)
 template <class T>
 void array<T>::alloc_and_copy(size_t new_capacity)
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	// Even if the array already has the capacity requested,
 	// if the buffer is shared, it must be reallocated.
-	if (capacity() != new_capacity || IsShared())
+	if (capacity() != new_capacity || is_shared())
 	{
 		if (new_capacity > 0)
 		{
-			T* new_buffer_elements = AllocBufferExactly(new_capacity);
+			T* new_buffer_elements = alloc_buffer(new_capacity);
 
 			size_t new_array_size =
 				size() < new_capacity ? size() : new_capacity;
@@ -69,34 +68,34 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 			Construct(new_buffer_elements, elements,
 				metadata(new_buffer_elements)->size = new_array_size);
 
-			ReplaceBuffer(new_buffer_elements);
+			replace_buffer(new_buffer_elements);
 		}
 		else
-			ReplaceBuffer(empty_array());
+			replace_buffer(empty_array());
 	}
 }
 
 template <class T>
-void array<T>::Assign(const array<T>& source)
+void array<T>::assign(const array<T>& source)
 {
-	if (!IsLocked() && !source.IsLocked())
+	if (!is_locked() && !source.is_locked())
 	{
 		if (source.elements != empty_array())
 			++source.metadata()->refs;
 
-		ReplaceBuffer(source.elements);
+		replace_buffer(source.elements);
 	}
 	else
 		if (elements != source.elements)
-			Assign(source.data(), source.size());
+			assign(source.data(), source.size());
 }
 
 template <class T>
-void array<T>::Assign(const T* source, size_t count)
+void array<T>::assign(const T* source, size_t count)
 {
 	if (count > 0)
 	{
-		if (!IsShared() && count <= capacity())
+		if (!is_shared() && count <= capacity())
 			if (count > size())
 			{
 				Copy(elements, source, size());
@@ -112,7 +111,7 @@ void array<T>::Assign(const T* source, size_t count)
 			}
 		else
 		{
-			Alloc(count);
+			discard_and_alloc(extra_capacity(count));
 			Construct(elements, source, count);
 		}
 
@@ -123,11 +122,11 @@ void array<T>::Assign(const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::Assign(const T& element, size_t count)
+void array<T>::assign(const T& element, size_t count)
 {
 	if (count > 0)
 	{
-		if (!IsShared() && count <= capacity())
+		if (!is_shared() && count <= capacity())
 			if (count > size())
 			{
 				Copy(elements, element, size());
@@ -142,7 +141,7 @@ void array<T>::Assign(const T& element, size_t count)
 			}
 		else
 		{
-			Alloc(count);
+			discard_and_alloc(extra_capacity(count));
 			Construct(elements, element, count);
 		}
 
@@ -153,10 +152,10 @@ void array<T>::Assign(const T& element, size_t count)
 }
 
 template <class T>
-void array<T>::SetAt(size_t index, const T* source, size_t count)
+void array<T>::overwrite(size_t index, const T* source, size_t count)
 {
 	B_ASSERT(index <= size());
-	// The source array cannot be a part of this array
+	// This and the source array must not overlap.
 	B_ASSERT(source >= elements + capacity() ||
 		source + count < elements);
 
@@ -164,7 +163,7 @@ void array<T>::SetAt(size_t index, const T* source, size_t count)
 	{
 		size_t tail_index = index + count;
 
-		if (!IsShared())
+		if (!is_shared())
 		{
 			if (tail_index <= size())
 			{
@@ -195,13 +194,14 @@ void array<T>::SetAt(size_t index, const T* source, size_t count)
 
 		// The array must not be locked, because its buffer
 		// is to be reallocated.
-		B_ASSERT(!IsLocked());
+		B_ASSERT(!is_locked());
 
 		T* new_buffer_elements;
 
 		if (tail_index < size())
 		{
-			new_buffer_elements = AllocBuffer(size());
+			new_buffer_elements =
+				alloc_buffer(extra_capacity(size()));
 
 			Construct(new_buffer_elements + tail_index, elements + tail_index,
 				(metadata(new_buffer_elements)->size =
@@ -209,7 +209,8 @@ void array<T>::SetAt(size_t index, const T* source, size_t count)
 		}
 		else
 		{
-			new_buffer_elements = AllocBuffer(tail_index);
+			new_buffer_elements =
+				alloc_buffer(extra_capacity(tail_index));
 
 			metadata(new_buffer_elements)->size = tail_index;
 		}
@@ -217,12 +218,12 @@ void array<T>::SetAt(size_t index, const T* source, size_t count)
 		Construct(new_buffer_elements, elements, index);
 		Construct(new_buffer_elements + index, source, count);
 
-		ReplaceBuffer(new_buffer_elements);
+		replace_buffer(new_buffer_elements);
 	}
 }
 
 template <class T>
-void array<T>::SetAt(size_t index, const T& element, size_t count)
+void array<T>::overwrite(size_t index, const T& element, size_t count)
 {
 	B_ASSERT(index <= size());
 
@@ -230,7 +231,7 @@ void array<T>::SetAt(size_t index, const T& element, size_t count)
 	{
 		size_t tail_index = index + count;
 
-		if (!IsShared())
+		if (!is_shared())
 		{
 			if (tail_index <= size())
 			{
@@ -253,13 +254,14 @@ void array<T>::SetAt(size_t index, const T& element, size_t count)
 				}
 		}
 
-		B_ASSERT(!IsLocked());
+		B_ASSERT(!is_locked());
 
 		T* new_buffer_elements;
 
 		if (tail_index < size())
 		{
-			new_buffer_elements = AllocBuffer(size());
+			new_buffer_elements =
+				alloc_buffer(extra_capacity(size()));
 
 			Construct(new_buffer_elements + tail_index, elements + tail_index,
 				(metadata(new_buffer_elements)->size =
@@ -267,7 +269,8 @@ void array<T>::SetAt(size_t index, const T& element, size_t count)
 		}
 		else
 		{
-			new_buffer_elements = AllocBuffer(tail_index);
+			new_buffer_elements =
+				alloc_buffer(extra_capacity(tail_index));
 
 			metadata(new_buffer_elements)->size = tail_index;
 		}
@@ -275,15 +278,15 @@ void array<T>::SetAt(size_t index, const T& element, size_t count)
 		Construct(new_buffer_elements, elements, index);
 		Construct(new_buffer_elements + index, element, count);
 
-		ReplaceBuffer(new_buffer_elements);
+		replace_buffer(new_buffer_elements);
 	}
 }
 
 template <class T>
-void array<T>::InsertAt(size_t index, const T* source, size_t count)
+void array<T>::insert(size_t index, const T* source, size_t count)
 {
 	B_ASSERT(index <= size());
-	// <source> must not be a part of this array
+	// This and the source array must not overlap.
 	B_ASSERT(source >= elements + capacity() ||
 		source + count < elements);
 
@@ -293,16 +296,17 @@ void array<T>::InsertAt(size_t index, const T* source, size_t count)
 		size_t tail_size = size() - index;
 		size_t new_size = size() + count;
 
-		if (new_size > capacity() || IsShared())
+		if (new_size > capacity() || is_shared())
 		{
-			T* new_buffer_elements = AllocBuffer(new_size);
+			T* new_buffer_elements =
+				alloc_buffer(extra_capacity(new_size));
 
 			Construct(new_buffer_elements, elements, index);
 			Construct(new_buffer_elements + index, source, count);
 			Construct(new_buffer_elements + index + count,
 				tail, tail_size);
 
-			ReplaceBuffer(new_buffer_elements);
+			replace_buffer(new_buffer_elements);
 		}
 		else
 			if (count < tail_size)
@@ -330,7 +334,7 @@ void array<T>::InsertAt(size_t index, const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::InsertAt(size_t index, const T& element, size_t count)
+void array<T>::insert(size_t index, const T& element, size_t count)
 {
 	B_ASSERT(index <= size());
 
@@ -340,15 +344,16 @@ void array<T>::InsertAt(size_t index, const T& element, size_t count)
 		size_t tail_size = size() - index;
 		size_t new_size = size() + count;
 
-		if (new_size > capacity() || IsShared())
+		if (new_size > capacity() || is_shared())
 		{
-			T* new_buffer_elements = AllocBuffer(new_size);
+			T* new_buffer_elements =
+				alloc_buffer(extra_capacity(new_size));
 
 			Construct(new_buffer_elements, elements, index);
 			Construct(new_buffer_elements + index, element, count);
 			Construct(new_buffer_elements + index + count, tail, tail_size);
 
-			ReplaceBuffer(new_buffer_elements);
+			replace_buffer(new_buffer_elements);
 		}
 		else
 			if (count < tail_size)
@@ -376,12 +381,12 @@ void array<T>::InsertAt(size_t index, const T& element, size_t count)
 }
 
 template <class T>
-void array<T>::Append(const T* source, size_t count)
+void array<T>::append(const T* source, size_t count)
 {
 	if (count > 0)
 	{
-		if (IsShared() || size() + count > capacity())
-			Realloc(size() + count);
+		if (is_shared() || size() + count > capacity())
+			alloc_and_copy(extra_capacity(size() + count));
 
 		Construct(elements + size(), source, count);
 		metadata()->size += count;
@@ -389,12 +394,12 @@ void array<T>::Append(const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::Append(const T& element, size_t count)
+void array<T>::append(const T& element, size_t count)
 {
 	if (count > 0)
 	{
-		if (IsShared() || size() + count > capacity())
-			Realloc(size() + count);
+		if (is_shared() || size() + count > capacity())
+			alloc_and_copy(extra_capacity(size() + count));
 
 		Construct(elements + size(), element, count);
 		metadata()->size += count;
@@ -402,7 +407,7 @@ void array<T>::Append(const T& element, size_t count)
 }
 
 template <class T>
-void array<T>::RemoveAt(size_t index, size_t count)
+void array<T>::erase(size_t index, size_t count)
 {
 	if (index + count > size())
 		count = size() - index;
@@ -411,7 +416,7 @@ void array<T>::RemoveAt(size_t index, size_t count)
 	{
 		size_t new_size = size() - count;
 
-		if (!IsShared())
+		if (!is_shared())
 		{
 			Copy(elements + index, elements + index + count,
 				new_size - index);
@@ -420,14 +425,15 @@ void array<T>::RemoveAt(size_t index, size_t count)
 		}
 		else
 		{
-			T* new_buffer_elements = AllocBuffer(new_size);
+			T* new_buffer_elements =
+				alloc_buffer(extra_capacity(new_size));
 
 			Construct(new_buffer_elements, elements, index);
 
 			Construct(new_buffer_elements + index, elements + index + count,
 				new_size - index);
 
-			ReplaceBuffer(new_buffer_elements);
+			replace_buffer(new_buffer_elements);
 		}
 
 		metadata()->size = new_size;
@@ -437,13 +443,13 @@ void array<T>::RemoveAt(size_t index, size_t count)
 template <class T>
 void array<T>::clear()
 {
-	if (!IsShared())
+	if (!is_shared())
 	{
 		Destroy(elements, size());
 		metadata()->size = 0;
 	}
 	else
-		ReplaceBuffer(empty_array());
+		replace_buffer(empty_array());
 }
 
 template <class T>
@@ -462,7 +468,7 @@ T* array<T>::empty_array()
 }
 
 template <class T>
-T* array<T>::AllocBufferExactly(size_t capacity)
+T* array<T>::alloc_buffer(size_t capacity)
 {
 	buffer* new_buffer = (buffer*) Memory::Alloc((size_t)
 		&((buffer*) (sizeof(T) * capacity))->first_element);
@@ -475,9 +481,9 @@ T* array<T>::AllocBufferExactly(size_t capacity)
 }
 
 template <class T>
-void array<T>::Release()
+void array<T>::release()
 {
-	B_ASSERT(!IsLocked());
+	B_ASSERT(!is_locked());
 
 	if (elements != empty_array() && !--metadata()->refs)
 	{

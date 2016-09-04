@@ -41,7 +41,7 @@ public:
 	// Constructs an array from a sequence of objects.
 	array(const T* source, size_t count);
 
-	// Creates an array of <count> copies of <element>.
+	// Creates an array of 'count' copies of 'element'.
 	array(const T& element, size_t count = 1);
 
 // Array Length
@@ -59,7 +59,7 @@ public:
 // Lock State
 public:
 	// Checks if the array is locked.
-	bool IsLocked() const;
+	bool is_locked() const;
 
 // Memory Management
 public:
@@ -69,12 +69,6 @@ public:
 	// Reallocates the buffer preserving its contents.
 	void alloc_and_copy(size_t new_capacity);
 
-	// Allocates enough memory to store <new_capacity> elements.
-	void Alloc(size_t new_capacity);
-
-	// Reallocates the buffer preserving its contents.
-	void Realloc(size_t new_capacity);
-
 	// Frees memory that is not occupied by the array elements.
 	void shrink_to_fit();
 
@@ -83,106 +77,102 @@ public:
 	// Returns a constant pointer to the elements.
 	const T* data() const;
 
-	// Returns the same as data().
+	// Returns 'data()'.
 	operator const T*() const;
 
 	// Fixes the buffer in memory and returns a modifiable pointer to it.
-	T* LockBuffer();
+	T* lock();
 
 	// Gives control over the buffer back to this object.
-	void UnlockBuffer();
+	void unlock();
 
 // Element Access
 public:
 	// Returns a constant reference to an element.
-	const T& GetAt(size_t index) const;
+	const T& at(size_t index) const;
 
-	// Does the same thing as GetAt().
+	// Operator version of 'at(index)'.
 	const T& operator [](size_t index) const;
 
 	// Returns a modifiable reference to an element.
-	T& GetAt(size_t index);
+	T& at(size_t index);
 
-	// Does the same thing as GetAt().
+	// Operator version of 'at(index)'.
 	T& operator [](size_t index);
 
 	// Returns a constant reference to the first array element.
-	const T& GetHead() const;
+	const T& front() const;
 
 	// Returns a modifiable reference to the first array element.
-	T& GetHead();
+	T& front();
 
 	// Returns a constant reference to the last array element.
-	const T& GetTail() const;
+	const T& back() const;
 
 	// Returns a modifiable reference to the last array element.
-	T& GetTail();
+	T& back();
 
 // Assignment
 public:
-	// Assigns the contents of <source> to this object.
-	void Assign(const array<T>& source);
+	// Assigns the contents of 'source' to this object.
+	void assign(const array<T>& source);
 
 	// Assigns a sequence of elements to this object.
-	void Assign(const T* source, size_t count);
+	void assign(const T* source, size_t count);
 
-	// Creates an array with <count> copies of <element>.
-	void Assign(const T& element, size_t count);
+	// Creates an array with 'count' copies of 'element'.
+	void assign(const T& element, size_t count);
 
-	// A shorter version of Assign(source).
+	// A shorter version of assign(source).
 	array<T>& operator =(const array<T>& source);
 
-	// Overwrites array range with the contents of <source>.
-	void SetAt(size_t index, const array<T>& source);
+	// Overwrites array range with the contents of 'source'.
+	void overwrite(size_t index, const array<T>& source);
 
 	// Overwrites array range with copies of elements
-	// pointed to by <source>.
-	void SetAt(size_t index, const T* source, size_t count);
+	// pointed to by 'source'.
+	void overwrite(size_t index, const T* source, size_t count);
 
-	// Overwrites array range with <count> copies of <element>.
-	void SetAt(size_t index, const T& element, size_t count = 1);
+	// Overwrites array range with 'count' copies of 'element'.
+	void overwrite(size_t index, const T& element, size_t count = 1);
 
 // Insertion
 public:
-	// Inserts the entire contents of <source> into this array
+	// Inserts the entire contents of 'source' into this array
 	// at the specified position.
-	void InsertAt(size_t index, const array<T>& source);
+	void insert(size_t index, const array<T>& source);
 
-	// Inserts elements pointed to by <source> at the specified position.
-	void InsertAt(size_t index, const T* source, size_t count);
+	// Inserts elements pointed to by 'source' at the specified position.
+	void insert(size_t index, const T* source, size_t count);
 
-	// Inserts <count> copies of <element> at the specified position.
-	void InsertAt(size_t index, const T& element, size_t count = 1);
+	// Inserts 'count' copies of 'element' at the specified position.
+	void insert(size_t index, const T& element, size_t count = 1);
 
 // Appending
 public:
-	// Appends this array with copies of elements from <source>.
-	void Append(const array<T>& source);
+	// Extends this array with copies of elements from 'source'.
+	void append(const array<T>& source);
 
-	// Appends this array with elements from <source>.
-	void Append(const T* source, size_t count);
+	// Extends this array with elements from 'source'.
+	void append(const T* source, size_t count);
 
-	// Appends this array with <count> copies of <element>.
-	void Append(const T& element, size_t count = 1);
+	// Appends 'count' copies of 'element' at the end of this array.
+	void append(const T& element, size_t count = 1);
 
-	// The same as Append(source).
+	// Operator version of 'append(source)'.
 	array<T>& operator +=(const array<T>& source);
 
-	// The same as Append(element, 1).
+	// Operator version of 'append(element, 1)'.
 	array<T>& operator +=(const T& element);
 
-	// Concatenates this array with <source> and returns the
+	// Concatenates this array with 'source' and returns the
 	// result as a new array object.
 	array<T> operator +(const array<T>& source) const;
-
-	// Appends <element> to the contents of this array and returns
-	// the result as a new array object.
-	array<T> operator +(const T& element) const;
 
 // Removal
 public:
 	// Removes a number of elements at the specified position.
-	void RemoveAt(size_t index, size_t count = 1);
+	void erase(size_t index, size_t count = 1);
 
 	// Empties the array.
 	void clear();
@@ -209,20 +199,18 @@ private:
 
 	T* elements;
 
-	bool IsShared() const;
+	bool is_shared() const;
 
 	static T* empty_array();
 
-	static T* AllocBufferExactly(size_t capacity);
-
-	static T* AllocBuffer(size_t capacity);
+	static T* alloc_buffer(size_t capacity);
 
 	static buffer* metadata(const T* elements);
 	buffer* metadata() const;
 
-	void Release();
+	void release();
 
-	void ReplaceBuffer(T* new_buffer_elements);
+	void replace_buffer(T* new_buffer_elements);
 
 	// Make sure that the buffer is not shared with other
 	// array objects. Reallocate the buffer if it's shared;
@@ -242,19 +230,19 @@ array<T>::array() : elements(empty_array())
 template <class T>
 array<T>::array(const array<T>& source) : elements(empty_array())
 {
-	Assign(source);
+	assign(source);
 }
 
 template <class T>
 array<T>::array(const T* source, size_t count) : elements(empty_array())
 {
-	Assign(source, count);
+	assign(source, count);
 }
 
 template <class T>
 array<T>::array(const T& element, size_t count) : elements(empty_array())
 {
-	Assign(element, count);
+	assign(element, count);
 }
 
 template <class T>
@@ -276,21 +264,9 @@ bool array<T>::is_empty() const
 }
 
 template <class T>
-bool array<T>::IsLocked() const
+bool array<T>::is_locked() const
 {
 	return metadata()->refs < 0;
-}
-
-template <class T>
-void array<T>::Alloc(size_t new_capacity)
-{
-	discard_and_alloc(extra_capacity(new_capacity));
-}
-
-template <class T>
-void array<T>::Realloc(size_t new_capacity)
-{
-	alloc_and_copy(extra_capacity(new_capacity));
 }
 
 template <class T>
@@ -312,7 +288,7 @@ array<T>::operator const T*() const
 }
 
 template <class T>
-T* array<T>::LockBuffer()
+T* array<T>::lock()
 {
 	isolate();
 
@@ -322,15 +298,15 @@ T* array<T>::LockBuffer()
 }
 
 template <class T>
-void array<T>::UnlockBuffer()
+void array<T>::unlock()
 {
-	B_ASSERT(IsLocked());
+	B_ASSERT(is_locked());
 
 	++metadata()->refs;
 }
 
 template <class T>
-const T& array<T>::GetAt(size_t index) const
+const T& array<T>::at(size_t index) const
 {
 	B_ASSERT(index < size());
 
@@ -346,7 +322,7 @@ const T& array<T>::operator [](size_t index) const
 }
 
 template <class T>
-T& array<T>::GetAt(size_t index)
+T& array<T>::at(size_t index)
 {
 	B_ASSERT(index < size());
 
@@ -364,7 +340,7 @@ T& array<T>::operator [](size_t index)
 }
 
 template <class T>
-const T& array<T>::GetHead() const
+const T& array<T>::front() const
 {
 	B_ASSERT(!is_empty());
 
@@ -372,7 +348,7 @@ const T& array<T>::GetHead() const
 }
 
 template <class T>
-T& array<T>::GetHead()
+T& array<T>::front()
 {
 	B_ASSERT(!is_empty());
 
@@ -381,7 +357,7 @@ T& array<T>::GetHead()
 }
 
 template <class T>
-const T& array<T>::GetTail() const
+const T& array<T>::back() const
 {
 	B_ASSERT(!is_empty());
 
@@ -389,7 +365,7 @@ const T& array<T>::GetTail() const
 }
 
 template <class T>
-T& array<T>::GetTail()
+T& array<T>::back()
 {
 	B_ASSERT(!is_empty());
 
@@ -400,39 +376,39 @@ T& array<T>::GetTail()
 template <class T>
 array<T>& array<T>::operator =(const array<T>& source)
 {
-	Assign(source);
+	assign(source);
 	return *this;
 }
 
 template <class T>
-void array<T>::SetAt(size_t index, const array<T>& source)
+void array<T>::overwrite(size_t index, const array<T>& source)
 {
-	SetAt(index, source.data(), source.size());
+	overwrite(index, source.data(), source.size());
 }
 
 template <class T>
-void array<T>::InsertAt(size_t index, const array<T>& source)
+void array<T>::insert(size_t index, const array<T>& source)
 {
-	InsertAt(index, source.data(), source.size());
+	insert(index, source.data(), source.size());
 }
 
 template <class T>
-void array<T>::Append(const array<T>& source)
+void array<T>::append(const array<T>& source)
 {
-	Append(source.elements, source.size());
+	append(source.elements, source.size());
 }
 
 template <class T>
 array<T>& array<T>::operator +=(const array<T>& source)
 {
-	Append(source);
+	append(source);
 	return *this;
 }
 
 template <class T>
 array<T>& array<T>::operator +=(const T& element)
 {
-	Append(element);
+	append(element);
 	return *this;
 }
 
@@ -444,22 +420,9 @@ array<T> array<T>::operator +(const array<T>& source) const
 }
 
 template <class T>
-array<T> array<T>::operator +(const T& element) const
-{
-	array<T> result(*this);
-	return result += element;
-}
-
-template <class T>
-bool array<T>::IsShared() const
+bool array<T>::is_shared() const
 {
 	return metadata()->refs > 0;
-}
-
-template <class T>
-T* array<T>::AllocBuffer(size_t capacity)
-{
-	return AllocBufferExactly(extra_capacity(capacity));
 }
 
 template <class T>
@@ -475,9 +438,9 @@ typename array<T>::buffer* array<T>::metadata() const
 }
 
 template <class T>
-void array<T>::ReplaceBuffer(T* new_buffer_elements)
+void array<T>::replace_buffer(T* new_buffer_elements)
 {
-	Release();
+	release();
 
 	elements = new_buffer_elements;
 }
@@ -485,15 +448,15 @@ void array<T>::ReplaceBuffer(T* new_buffer_elements)
 template <class T>
 void array<T>::isolate()
 {
-	if (IsShared())
-		Realloc(size());
+	if (is_shared())
+		alloc_and_copy(extra_capacity(size()));
 }
 
 template <class T>
 array<T>::~array()
 	throw ()
 {
-	Release();
+	release();
 }
 
 B_END_NAMESPACE
