@@ -488,15 +488,15 @@ char* string::empty_string()
 	return const_cast<char*>(empty_string_buffer.first_char);
 }
 
-char* string::alloc_buffer(size_t new_capacity, size_t length)
+char* string::alloc_buffer(size_t capacity, size_t length)
 {
-	B_ASSERT(new_capacity >= length);
+	B_ASSERT(capacity >= length);
 
 	buffer* new_buffer = (buffer*) Memory::Alloc(sizeof(buffer) +
-		new_capacity * sizeof(char));
+		capacity * sizeof(char));
 
 	new_buffer->refs = 1;
-	new_buffer->capacity = new_capacity;
+	new_buffer->capacity = capacity;
 	new_buffer->length = length;
 
 	return new_buffer->first_char;

@@ -285,7 +285,7 @@ protected:
 
 	static char* empty_string();
 
-	static char* alloc_buffer(size_t new_capacity, size_t length);
+	static char* alloc_buffer(size_t capacity, size_t length);
 
 	static buffer* metadata(const char* chars);
 	buffer* metadata() const;
