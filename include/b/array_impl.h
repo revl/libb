@@ -473,7 +473,7 @@ T* array<T>::alloc_buffer(size_t capacity)
 	buffer* new_buffer = (buffer*) Memory::Alloc((size_t)
 		&((buffer*) (sizeof(T) * capacity))->first_element);
 
-	new_buffer->refs = 0;
+	new_buffer->refs = 1;
 	new_buffer->capacity = capacity;
 	new_buffer->size = 0;
 
@@ -488,7 +488,7 @@ void array<T>::release()
 	if (elements != empty_array() && !--metadata()->refs)
 	{
 		Destroy(elements, size());
-		Memory::Free(static_cast<buffer*>(metadata()));
+		Memory::Free(metadata());
 	}
 }
 

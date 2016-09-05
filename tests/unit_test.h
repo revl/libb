@@ -58,7 +58,7 @@ B_END_NAMESPACE
 	
 #define B_CHECK(condition, message) \
 	if (!(condition)) { \
-		fprintf(stderr, message); \
+		fprintf(stderr, "%s\n", message); \
 		return false; \
 	}
 

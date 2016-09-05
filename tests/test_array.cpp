@@ -22,6 +22,20 @@
 
 #include "unit_test.h"
 
+B_TEST_CASE(test_shared)
+{
+	static const size_t initial_size = 100;
+
+	b::array<int> a1(1, initial_size);
+
+	b::array<int> a2(a1);
+
+	B_CHECK(a1.data() == a2.data(),
+		"Both arrays must share the same buffer");
+
+	return true;
+}
+
 B_TEST_CASE(test_shrink_to_fit)
 {
 	static const size_t initial_size = 100;
@@ -31,7 +45,7 @@ B_TEST_CASE(test_shrink_to_fit)
 	size_t initial_capacity = a1.capacity();
 
 	B_CHECK(initial_capacity > initial_size,
-		"Capacity must be greater than the initial size\n");
+		"Capacity must be greater than the initial size");
 
 	b::array<int> a2(a1);
 
@@ -74,18 +88,11 @@ B_TEST_CASE(test_copying)
 		test_array test2;
 		test2 = test1;
 
-		if (test2.size() != 1) {
-			fprintf(stderr, "Number of elements "
-				"must not change in a copy.\n");
-			return false;
-		}
+		B_CHECK(test2.size() == 1,
+			"Number of elements must not change in a copy");
 	}
 
-	if (element_counter != 0)
-	{
-		fprintf(stderr, "All elements must be destructed.\n");
-		return false;
-	}
+	B_CHECK(element_counter == 0, "All elements must be destructed");
 
 	return true;
 }
