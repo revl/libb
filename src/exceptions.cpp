@@ -40,7 +40,7 @@ void SystemException::GetMessage(string& target) const
 #else
 		const char* message_buffer = strerror(code);
 #endif // B_UNICODE
-		target.assign(message_buffer, b::CalcLength(message_buffer));
+		target.assign(message_buffer, calc_length(message_buffer));
 	}
 	catch (Memory::Exception&)
 	{

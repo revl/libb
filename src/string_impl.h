@@ -423,8 +423,7 @@ void string::trim_right(const char* samples)
 {
 	char* end = chars + length();
 
-	while (--end >= chars &&
-			FindCharInString(samples, *end) != NULL)
+	while (--end >= chars && find_char(samples, *end) != NULL)
 		;
 
 	size_t new_length = ++end - chars;
@@ -452,7 +451,7 @@ void string::trim_left(const char* samples)
 {
 	char* start = chars;
 
-	while (*start && FindCharInString(samples, *start) != NULL)
+	while (*start && find_char(samples, *start) != NULL)
 		++start;
 
 	if (start > chars)
@@ -520,7 +519,7 @@ string::~string()
 		Memory::Free(metadata());
 }
 
-char* FindCharInString(const char* string, char c)
+char* find_char(const char* string, char c)
 {
 	while (*string != 0)
 		if (*string++ == c)
@@ -529,9 +528,9 @@ char* FindCharInString(const char* string, char c)
 	return NULL;
 }
 
-char* FindLastCharInString(const char* string, char c)
+char* find_char_backwards(const char* string, char c)
 {
-	size_t index = CalcLength(string);
+	size_t index = calc_length(string);
 
 	string += index;
 

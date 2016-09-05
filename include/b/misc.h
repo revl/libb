@@ -128,30 +128,30 @@ inline int Compare(const TYPE* buffer1, const TYPE* buffer2, size_t count)
 
 // Operations on C strings
 
-// Computes the length of null-terminated strings.
-inline size_t CalcLength(const char* string)
+// Computes the length of a null-terminated string.
+inline size_t calc_length(const char* string)
 {
 	return ::strlen(string);
 }
 
-// Computes the length of null-terminated strings (Unicode version).
-inline size_t CalcLength(const wchar_t* string)
+// Computes the length of a null-terminated string (Unicode version).
+inline size_t calc_length(const wchar_t* string)
 {
 	return ::wcslen(string);
 }
 
-// Computes the length of strings limited either by the
-// terminating null character or the <limit> parameter.
-inline size_t CalcLength(const char* string, size_t limit)
+// Computes the length of a string either terminated by
+// a null character or limited by the 'limit' parameter.
+inline size_t calc_length(const char* string, size_t limit)
 {
 	const char* null_char_ptr = (const char*) memchr(string, 0, limit);
 
 	return null_char_ptr != NULL ? null_char_ptr - string : limit;
 }
 
-// Computes the length of strings limited either by the
-// terminating null character or the limit parameter (Unicode version).
-inline size_t CalcLength(const wchar_t* string, size_t limit)
+// Computes the length of a string either terminated by
+// a null character or limited by the 'limit' parameter (Unicode version).
+inline size_t calc_length(const wchar_t* string, size_t limit)
 {
 	const wchar_t* null_char_ptr = wmemchr(string, L'\0', limit);
 
@@ -223,7 +223,7 @@ inline void char_to_wchar(wchar_t* result, const char* source, size_t length)
 
 // Calls TYPE default constructor.
 template <class TYPE>
-inline void Construct(TYPE* objects, size_t count)
+inline void construct_default(TYPE* objects, size_t count)
 {
 	while (count-- > 0)
 		new (objects++) TYPE;
@@ -292,7 +292,7 @@ inline int Compare(const int& n1, const int& n2)
 }
 
 template <>
-inline void Construct(int* dest, size_t count)
+inline void construct_default(int* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }
@@ -336,7 +336,7 @@ inline int Compare(const long& l1, const long& l2)
 }
 
 template <>
-inline void Construct(long* dest, size_t count)
+inline void construct_default(long* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(long));
 }
@@ -386,7 +386,7 @@ inline int Compare(const char* buffer1, const char* buffer2, size_t count)
 }
 
 template <>
-inline void Construct(char* dest, size_t count)
+inline void construct_default(char* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(char));
 }
@@ -435,7 +435,7 @@ inline int Compare(const wchar_t& c1, const wchar_t& c2)
 }
 
 template <>
-inline void Construct(wchar_t* dest, size_t count)
+inline void construct_default(wchar_t* dest, size_t count)
 {
 	Memory::Zero(dest, count * sizeof(*dest));
 }

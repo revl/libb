@@ -32,8 +32,8 @@ struct MatchPatternTestCase
 
 bool MatchPatternTestCase::Test() const
 {
-	size_t string_length = b::CalcLength(string);
-	size_t pattern_length = b::CalcLength(pattern);
+	size_t string_length = b::calc_length(string);
+	size_t pattern_length = b::calc_length(pattern);
 
 	return Assert("MatchPatternZZ", b::MatchPatternZZ(string,
 			pattern)) &&

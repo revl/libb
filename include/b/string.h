@@ -647,11 +647,11 @@ inline bool operator >=(const char* c_str, const string& str)
 	return str.compare(c_str) <= 0;
 }
 
-// Finds the first occurrence of character <c> in <string>.
-char* FindCharInString(const char* string, char c);
+// Finds the first occurrence of character 'c' in 'string'.
+char* find_char(const char* string, char c);
 
-// Finds the last occurrence of character <c> in <string>.
-char* FindLastCharInString(const char* string, char c);
+// Finds the last occurrence of character 'c' in 'string'.
+char* find_char_backwards(const char* string, char c);
 
 B_END_NAMESPACE
 
