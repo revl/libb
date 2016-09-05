@@ -206,14 +206,14 @@ bool MatchPatternRR(
 int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.
-inline void Copy(char* result, const wchar_t* source, size_t length)
+inline void wchar_to_char(char* result, const wchar_t* source, size_t length)
 {
 	::wcstombs(result, source, reinterpret_cast<size_t&>(length));
 }
 
 // Converts a sequence of multibyte characters to a sequence of wide
 // characters.
-inline void Copy(wchar_t* result, const char* source, size_t length)
+inline void char_to_wchar(wchar_t* result, const char* source, size_t length)
 {
 	::mbstowcs(result, source, reinterpret_cast<size_t&>(length));
 }
@@ -257,7 +257,7 @@ inline void Destroy(TYPE* objects, size_t count)
 
 // Calls TYPE assignment operator (element-based array assignment).
 template <class TYPE>
-inline void Copy(TYPE* dest, const TYPE* source, size_t count)
+inline void assign_range(TYPE* dest, const TYPE* source, size_t count)
 {
 	while (count-- > 0)
 		*dest++ = *source++;
@@ -272,10 +272,10 @@ inline void Copy(TYPE* dest, const TYPE& value, size_t count)
 		*dest++ = value;
 }
 
-// Repeated calls of TYPE assignment operator (element-based
+// Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
 template <class TYPE>
-inline void ReverseCopy(TYPE* dest, const TYPE* source, size_t count)
+inline void assign_range_backwards(TYPE* dest, const TYPE* source, size_t count)
 {
 	while (count-- > 0)
 		dest[count] = source[count];
@@ -316,13 +316,13 @@ inline void Destroy(int*, size_t)
 }
 
 template <>
-inline void Copy(int* dest, const int* source, size_t count)
+inline void assign_range(int* dest, const int* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void ReverseCopy(int* dest, const int* source, size_t count)
+inline void assign_range_backwards(int* dest, const int* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -360,13 +360,13 @@ inline void Destroy(long*, size_t)
 }
 
 template <>
-inline void Copy(long* dest, const long* source, size_t count)
+inline void assign_range(long* dest, const long* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void ReverseCopy(long* dest, const long* source, size_t count)
+inline void assign_range_backwards(long* dest, const long* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -409,7 +409,7 @@ inline void Destroy(char*, size_t)
 }
 
 template <>
-inline void Copy(char* dest, const char* source, size_t count)
+inline void assign_range(char* dest, const char* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
@@ -421,7 +421,7 @@ inline void Copy(char* dest, const char& value, size_t count)
 }
 
 template <>
-inline void ReverseCopy(char* dest, const char* source, size_t count)
+inline void assign_range_backwards(char* dest, const char* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -452,7 +452,7 @@ inline void Destroy(wchar_t*, size_t)
 }
 
 template <>
-inline void Copy(wchar_t* dest, const wchar_t* source, size_t count)
+inline void assign_range(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
@@ -465,7 +465,8 @@ inline void Copy(wchar_t* dest, const wchar_t& value, size_t count)
 }
 
 template <>
-inline void ReverseCopy(wchar_t* dest, const wchar_t* source, size_t count)
+inline void assign_range_backwards(wchar_t* dest,
+	const wchar_t* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }

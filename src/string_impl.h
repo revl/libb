@@ -57,7 +57,7 @@ void string::alloc_and_copy(size_t new_capacity)
 			char* new_buffer_chars =
 				alloc_buffer(new_capacity, len);
 
-			Copy(new_buffer_chars, chars, len + 1);
+			assign_range(new_buffer_chars, chars, len + 1);
 
 			replace_buffer(new_buffer_chars);
 		}
@@ -88,7 +88,7 @@ void string::assign(const char* source, size_t count)
 	{
 		if (is_shared() || count > capacity())
 			discard_and_alloc(extra_capacity(count));
-		Copy(chars, source, count);
+		assign_range(chars, source, count);
 		chars[metadata()->length = count] = 0;
 	}
 	else
@@ -117,7 +117,7 @@ void string::assign(const char* source, size_t count)
 
 	if (count > 0)
 	{
-		Copy(Allocate(count), source, count);
+		assign_range(Allocate(count), source, count);
 		UnlockBuffer();
 	}
 	else
@@ -143,7 +143,7 @@ void string::replace(size_t index, const char* source, size_t count)
 
 	size_t unaffected = index + count;
 
-	Copy((unaffected <= length() ? LockBuffer() :
+	assign_range((unaffected <= length() ? LockBuffer() :
 		LockBuffer(unaffected)) + index, source, count);
 
 	UnlockBuffer();
@@ -179,9 +179,9 @@ void string::insert(size_t index, const char* source, size_t count)
 			char* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			Copy(new_buffer_chars, chars, index);
-			Copy(new_buffer_chars + index, source, count);
-			Copy(new_buffer_chars + index + count,
+			assign_range(new_buffer_chars, chars, index);
+			assign_range(new_buffer_chars + index, source, count);
+			assign_range(new_buffer_chars + index + count,
 				tail, tail_length + 1);
 
 			replace_buffer(new_buffer_chars);
@@ -190,22 +190,23 @@ void string::insert(size_t index, const char* source, size_t count)
 		{
 			if (count < tail_length)
 			{
-				Copy(tail + tail_length,
+				assign_range(tail + tail_length,
 					tail + tail_length - count, count);
 
-				ReverseCopy(tail + count,
+				assign_range_backwards(tail + count,
 					tail, tail_length - count);
 
-				Copy(tail, source, count);
+				assign_range(tail, source, count);
 			}
 			else
 			{
-				Copy(tail + tail_length, source + tail_length,
+				assign_range(tail + tail_length,
+					source + tail_length,
 					count - tail_length);
 
-				Copy(tail + count, tail, tail_length);
+				assign_range(tail + count, tail, tail_length);
 
-				Copy(tail, source, tail_length);
+				assign_range(tail, source, tail_length);
 			}
 
 			metadata()->length = new_length;
@@ -228,9 +229,9 @@ void string::insert(size_t index, char source, size_t count)
 			char* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			Copy(new_buffer_chars, chars, index);
+			assign_range(new_buffer_chars, chars, index);
 			Copy(new_buffer_chars + index, source, count);
-			Copy(new_buffer_chars + index + count,
+			assign_range(new_buffer_chars + index + count,
 				tail, tail_length + 1);
 
 			replace_buffer(new_buffer_chars);
@@ -239,10 +240,10 @@ void string::insert(size_t index, char source, size_t count)
 		{
 			if (count < tail_length)
 			{
-				Copy(tail + tail_length,
+				assign_range(tail + tail_length,
 					tail + tail_length - count, count);
 
-				ReverseCopy(tail + count,
+				assign_range_backwards(tail + count,
 					tail, tail_length - count);
 
 				Copy(tail, source, count);
@@ -252,7 +253,7 @@ void string::insert(size_t index, char source, size_t count)
 				Copy(tail + tail_length,
 					source, count - tail_length);
 
-				Copy(tail + count, tail, tail_length);
+				assign_range(tail + count, tail, tail_length);
 
 				Copy(tail, source, tail_length);
 			}
@@ -270,7 +271,7 @@ void string::append(const char* source, size_t count)
 	{
 		if (is_shared() || count + length() > capacity())
 			alloc_and_copy(extra_capacity(length() + count));
-		Copy(chars + length(), source, count);
+		assign_range(chars + length(), source, count);
 		chars[metadata()->length += count] = 0;
 	}
 }
@@ -296,7 +297,7 @@ void string::append(const char* source, size_t count)
 	if (count > 0)
 	{
 		Lock(length() + count);
-		Copy(chars + length(), source, count);
+		assign_range(chars + length(), source, count);
 		Unlock();
 	}
 }
@@ -331,7 +332,7 @@ void string::erase(size_t index, size_t count)
 
 		if (!is_shared())
 		{
-			Copy(chars + index, chars + index + count,
+			assign_range(chars + index, chars + index + count,
 				new_length - index + 1);
 
 			metadata()->length = new_length;
@@ -341,10 +342,10 @@ void string::erase(size_t index, size_t count)
 			char* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			Copy(new_buffer_chars, chars, index);
+			assign_range(new_buffer_chars, chars, index);
 
-			Copy(new_buffer_chars + index, chars + index + count,
-				new_length - index + 1);
+			assign_range(new_buffer_chars + index,
+				chars + index + count, new_length - index + 1);
 
 			replace_buffer(new_buffer_chars);
 		}
@@ -437,7 +438,7 @@ void string::trim_right(const char* samples)
 			char* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			Copy(new_buffer_chars, chars, new_length);
+			assign_range(new_buffer_chars, chars, new_length);
 			new_buffer_chars[new_length] = 0;
 
 			replace_buffer(new_buffer_chars);
@@ -459,13 +460,13 @@ void string::trim_left(const char* samples)
 		size_t new_length = chars + length() - start;
 
 		if (!is_shared())
-			ReverseCopy(chars, start, new_length + 1);
+			assign_range_backwards(chars, start, new_length + 1);
 		else
 		{
 			char* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			Copy(new_buffer_chars, start, new_length);
+			assign_range(new_buffer_chars, start, new_length);
 			new_buffer_chars[new_length] = 0;
 
 			replace_buffer(new_buffer_chars);

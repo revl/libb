@@ -98,14 +98,14 @@ void array<T>::assign(const T* source, size_t count)
 		if (!is_shared() && count <= capacity())
 			if (count > size())
 			{
-				Copy(elements, source, size());
+				assign_range(elements, source, size());
 				Construct(elements + size(),
 					source + size(),
 					count - size());
 			}
 			else
 			{
-				Copy(elements, source, count);
+				assign_range(elements, source, count);
 				Destroy(elements + count,
 					size() - count);
 			}
@@ -170,14 +170,14 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 				// This is the most frequent case,
 				// that's why it is processed first.
 
-				Copy(elements + index, source, count);
+				assign_range(elements + index, source, count);
 
 				return;
 			}
 			else
 				if (tail_index <= capacity())
 				{
-					Copy(elements + index, source,
+					assign_range(elements + index, source,
 						size() - index);
 					Construct(elements + size(),
 						source + size() - index,
@@ -311,10 +311,10 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 				Construct(tail + tail_size,
 					tail + tail_size - count, count);
 
-				ReverseCopy(tail + count,
+				assign_range_backwards(tail + count,
 					tail, tail_size - count);
 
-				Copy(tail, source, count);
+				assign_range(tail, source, count);
 			}
 			else
 			{
@@ -323,7 +323,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 
 				Construct(tail + count, tail, tail_size);
 
-				Copy(tail, source, tail_size);
+				assign_range(tail, source, tail_size);
 			}
 
 			metadata()->size = new_size;
@@ -361,7 +361,7 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 				Construct(tail + tail_size,
 					tail + tail_size - count, count);
 
-				ReverseCopy(tail + count,
+				assign_range_backwards(tail + count,
 					tail, tail_size - count);
 
 				Copy(tail, element, count);
@@ -419,7 +419,7 @@ void array<T>::erase(size_t index, size_t count)
 
 		if (!is_shared())
 		{
-			Copy(elements + index, elements + index + count,
+			assign_range(elements + index, elements + index + count,
 				new_size - index);
 
 			Destroy(elements + new_size, count);
