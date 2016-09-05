@@ -203,7 +203,7 @@ private:
 
 	static T* empty_array();
 
-	static T* alloc_buffer(size_t capacity);
+	static T* alloc_buffer(size_t capacity, size_t size);
 
 	static buffer* metadata(const T* elements);
 	buffer* metadata() const;

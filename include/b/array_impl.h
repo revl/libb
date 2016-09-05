@@ -37,7 +37,7 @@ void array<T>::discard_and_alloc(size_t new_capacity)
 		release();
 
 		elements = new_capacity > 0 ?
-			alloc_buffer(new_capacity) : empty_array();
+			alloc_buffer(new_capacity, 0) : empty_array();
 	}
 	else
 	{
@@ -60,13 +60,13 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 	{
 		if (new_capacity > 0)
 		{
-			T* new_buffer_elements = alloc_buffer(new_capacity);
-
-			size_t new_array_size =
+			size_t new_size =
 				size() < new_capacity ? size() : new_capacity;
 
-			Construct(new_buffer_elements, elements,
-				metadata(new_buffer_elements)->size = new_array_size);
+			T* new_buffer_elements =
+				alloc_buffer(new_capacity, new_size);
+
+			Construct(new_buffer_elements, elements, new_size);
 
 			replace_buffer(new_buffer_elements);
 		}
@@ -200,20 +200,18 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 
 		if (tail_index < size())
 		{
-			new_buffer_elements =
-				alloc_buffer(extra_capacity(size()));
+			const size_t unaffected_size = size();
 
-			Construct(new_buffer_elements + tail_index, elements + tail_index,
-				(metadata(new_buffer_elements)->size =
-					size()) - tail_index);
+			new_buffer_elements = alloc_buffer(extra_capacity(
+				unaffected_size), unaffected_size);
+
+			Construct(new_buffer_elements + tail_index,
+				elements + tail_index,
+				unaffected_size - tail_index);
 		}
 		else
-		{
-			new_buffer_elements =
-				alloc_buffer(extra_capacity(tail_index));
-
-			metadata(new_buffer_elements)->size = tail_index;
-		}
+			new_buffer_elements = alloc_buffer(extra_capacity(
+				tail_index), tail_index);
 
 		Construct(new_buffer_elements, elements, index);
 		Construct(new_buffer_elements + index, source, count);
@@ -260,20 +258,18 @@ void array<T>::overwrite(size_t index, const T& element, size_t count)
 
 		if (tail_index < size())
 		{
-			new_buffer_elements =
-				alloc_buffer(extra_capacity(size()));
+			const size_t unaffected_size = size();
 
-			Construct(new_buffer_elements + tail_index, elements + tail_index,
-				(metadata(new_buffer_elements)->size =
-					size()) - tail_index);
+			new_buffer_elements = alloc_buffer(extra_capacity(
+				unaffected_size), unaffected_size);
+
+			Construct(new_buffer_elements + tail_index,
+				elements + tail_index,
+				unaffected_size - tail_index);
 		}
 		else
-		{
-			new_buffer_elements =
-				alloc_buffer(extra_capacity(tail_index));
-
-			metadata(new_buffer_elements)->size = tail_index;
-		}
+			new_buffer_elements = alloc_buffer(extra_capacity(
+				tail_index), tail_index);
 
 		Construct(new_buffer_elements, elements, index);
 		Construct(new_buffer_elements + index, element, count);
@@ -298,8 +294,8 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 
 		if (new_size > capacity() || is_shared())
 		{
-			T* new_buffer_elements =
-				alloc_buffer(extra_capacity(new_size));
+			T* new_buffer_elements = alloc_buffer(extra_capacity(
+				new_size), new_size);
 
 			Construct(new_buffer_elements, elements, index);
 			Construct(new_buffer_elements + index, source, count);
@@ -309,6 +305,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 			replace_buffer(new_buffer_elements);
 		}
 		else
+		{
 			if (count < tail_size)
 			{
 				Construct(tail + tail_size,
@@ -329,7 +326,8 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 				Copy(tail, source, tail_size);
 			}
 
-		metadata()->size = new_size;
+			metadata()->size = new_size;
+		}
 	}
 }
 
@@ -346,16 +344,18 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 
 		if (new_size > capacity() || is_shared())
 		{
-			T* new_buffer_elements =
-				alloc_buffer(extra_capacity(new_size));
+			T* new_buffer_elements = alloc_buffer(extra_capacity(
+				new_size), new_size);
 
 			Construct(new_buffer_elements, elements, index);
 			Construct(new_buffer_elements + index, element, count);
-			Construct(new_buffer_elements + index + count, tail, tail_size);
+			Construct(new_buffer_elements + index + count,
+				tail, tail_size);
 
 			replace_buffer(new_buffer_elements);
 		}
 		else
+		{
 			if (count < tail_size)
 			{
 				Construct(tail + tail_size,
@@ -376,7 +376,8 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 				Copy(tail, element, tail_size);
 			}
 
-		metadata()->size = new_size;
+			metadata()->size = new_size;
+		}
 	}
 }
 
@@ -422,21 +423,21 @@ void array<T>::erase(size_t index, size_t count)
 				new_size - index);
 
 			Destroy(elements + new_size, count);
+
+			metadata()->size = new_size;
 		}
 		else
 		{
-			T* new_buffer_elements =
-				alloc_buffer(extra_capacity(new_size));
+			T* new_buffer_elements = alloc_buffer(extra_capacity(
+				new_size), new_size);
 
 			Construct(new_buffer_elements, elements, index);
 
-			Construct(new_buffer_elements + index, elements + index + count,
-				new_size - index);
+			Construct(new_buffer_elements + index,
+				elements + index + count, new_size - index);
 
 			replace_buffer(new_buffer_elements);
 		}
-
-		metadata()->size = new_size;
 	}
 }
 
@@ -468,14 +469,14 @@ T* array<T>::empty_array()
 }
 
 template <class T>
-T* array<T>::alloc_buffer(size_t capacity)
+T* array<T>::alloc_buffer(size_t capacity, size_t size)
 {
 	buffer* new_buffer = (buffer*) Memory::Alloc((size_t)
 		&((buffer*) (sizeof(T) * capacity))->first_element);
 
 	new_buffer->refs = 1;
 	new_buffer->capacity = capacity;
-	new_buffer->size = 0;
+	new_buffer->size = size;
 
 	return &new_buffer->first_element;
 }
