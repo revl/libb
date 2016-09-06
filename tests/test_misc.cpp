@@ -123,7 +123,7 @@ struct SignedCharAlignmentTestCase
 
 inline bool SignedCharAlignmentTestCase::Test() const
 {
-	return b::Align(value, alignment) == expected_result;
+	return b::align(value, alignment) == expected_result;
 }
 
 static const SignedCharAlignmentTestCase signed_char_alignment_test_cases[] =
@@ -145,7 +145,7 @@ struct PtrAlignmentTestCase
 
 inline bool PtrAlignmentTestCase::Test() const
 {
-	return b::Align(value, alignment) == expected_result;
+	return b::align(value, alignment) == expected_result;
 }
 
 static const PtrAlignmentTestCase ptr_alignment_test_cases[] =

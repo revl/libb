@@ -43,8 +43,8 @@ void array<T>::discard_and_alloc(size_t new_capacity)
 	{
 		// It makes no sense to allocate memory block
 		// of the same size. However, all elements are
-		// destroyed to simulate usual behavior.
-		Destroy(elements, size());
+		// destructed to simulate usual behavior.
+		destruct(elements, size());
 		metadata()->size = 0;
 	}
 }
@@ -66,7 +66,8 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 			T* new_buffer_elements =
 				alloc_buffer(new_capacity, new_size);
 
-			Construct(new_buffer_elements, elements, new_size);
+			construct_copies(new_buffer_elements,
+				elements, new_size);
 
 			replace_buffer(new_buffer_elements);
 		}
@@ -98,21 +99,20 @@ void array<T>::assign(const T* source, size_t count)
 		if (!is_shared() && count <= capacity())
 			if (count > size())
 			{
-				assign_range(elements, source, size());
-				Construct(elements + size(),
+				assign_pairwise(elements, source, size());
+				construct_copies(elements + size(),
 					source + size(),
 					count - size());
 			}
 			else
 			{
-				assign_range(elements, source, count);
-				Destroy(elements + count,
-					size() - count);
+				assign_pairwise(elements, source, count);
+				destruct(elements + count, size() - count);
 			}
 		else
 		{
 			discard_and_alloc(extra_capacity(count));
-			Construct(elements, source, count);
+			construct_copies(elements, source, count);
 		}
 
 		metadata()->size = count;
@@ -130,19 +130,18 @@ void array<T>::assign(const T& element, size_t count)
 			if (count > size())
 			{
 				Copy(elements, element, size());
-				Construct(elements + size(),
+				construct_identical_copies(elements + size(),
 					element, count - size());
 			}
 			else
 			{
 				Copy(elements, element, count);
-				Destroy(elements + count,
-					size() - count);
+				destruct(elements + count, size() - count);
 			}
 		else
 		{
 			discard_and_alloc(extra_capacity(count));
-			Construct(elements, element, count);
+			construct_identical_copies(elements, element, count);
 		}
 
 		metadata()->size = count;
@@ -170,16 +169,17 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 				// This is the most frequent case,
 				// that's why it is processed first.
 
-				assign_range(elements + index, source, count);
+				assign_pairwise(elements + index,
+					source, count);
 
 				return;
 			}
 			else
 				if (tail_index <= capacity())
 				{
-					assign_range(elements + index, source,
-						size() - index);
-					Construct(elements + size(),
+					assign_pairwise(elements + index,
+						source, size() - index);
+					construct_copies(elements + size(),
 						source + size() - index,
 						tail_index - size());
 
@@ -205,7 +205,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
 
-			Construct(new_buffer_elements + tail_index,
+			construct_copies(new_buffer_elements + tail_index,
 				elements + tail_index,
 				unaffected_size - tail_index);
 		}
@@ -213,8 +213,8 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				tail_index), tail_index);
 
-		Construct(new_buffer_elements, elements, index);
-		Construct(new_buffer_elements + index, source, count);
+		construct_copies(new_buffer_elements, elements, index);
+		construct_copies(new_buffer_elements + index, source, count);
 
 		replace_buffer(new_buffer_elements);
 	}
@@ -243,7 +243,8 @@ void array<T>::overwrite(size_t index, const T& element, size_t count)
 					Copy(elements + index, element,
 						size() - index);
 
-					Construct(elements + size(), element,
+					construct_identical_copies(
+						elements + size(), element,
 						tail_index - size());
 
 					metadata()->size = tail_index;
@@ -263,7 +264,7 @@ void array<T>::overwrite(size_t index, const T& element, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
 
-			Construct(new_buffer_elements + tail_index,
+			construct_copies(new_buffer_elements + tail_index,
 				elements + tail_index,
 				unaffected_size - tail_index);
 		}
@@ -271,8 +272,9 @@ void array<T>::overwrite(size_t index, const T& element, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				tail_index), tail_index);
 
-		Construct(new_buffer_elements, elements, index);
-		Construct(new_buffer_elements + index, element, count);
+		construct_copies(new_buffer_elements, elements, index);
+		construct_identical_copies(new_buffer_elements + index,
+			element, count);
 
 		replace_buffer(new_buffer_elements);
 	}
@@ -297,9 +299,10 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			Construct(new_buffer_elements, elements, index);
-			Construct(new_buffer_elements + index, source, count);
-			Construct(new_buffer_elements + index + count,
+			construct_copies(new_buffer_elements, elements, index);
+			construct_copies(new_buffer_elements + index,
+				source, count);
+			construct_copies(new_buffer_elements + index + count,
 				tail, tail_size);
 
 			replace_buffer(new_buffer_elements);
@@ -308,22 +311,22 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 		{
 			if (count < tail_size)
 			{
-				Construct(tail + tail_size,
+				construct_copies(tail + tail_size,
 					tail + tail_size - count, count);
 
-				assign_range_backwards(tail + count,
+				assign_pairwise_backwards(tail + count,
 					tail, tail_size - count);
 
-				assign_range(tail, source, count);
+				assign_pairwise(tail, source, count);
 			}
 			else
 			{
-				Construct(tail + tail_size, source + tail_size,
-					count - tail_size);
+				construct_copies(tail + tail_size,
+					source + tail_size, count - tail_size);
 
-				Construct(tail + count, tail, tail_size);
+				construct_copies(tail + count, tail, tail_size);
 
-				assign_range(tail, source, tail_size);
+				assign_pairwise(tail, source, tail_size);
 			}
 
 			metadata()->size = new_size;
@@ -347,9 +350,10 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			Construct(new_buffer_elements, elements, index);
-			Construct(new_buffer_elements + index, element, count);
-			Construct(new_buffer_elements + index + count,
+			construct_copies(new_buffer_elements, elements, index);
+			construct_identical_copies(new_buffer_elements + index,
+				element, count);
+			construct_copies(new_buffer_elements + index + count,
 				tail, tail_size);
 
 			replace_buffer(new_buffer_elements);
@@ -358,20 +362,20 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 		{
 			if (count < tail_size)
 			{
-				Construct(tail + tail_size,
+				construct_copies(tail + tail_size,
 					tail + tail_size - count, count);
 
-				assign_range_backwards(tail + count,
+				assign_pairwise_backwards(tail + count,
 					tail, tail_size - count);
 
 				Copy(tail, element, count);
 			}
 			else
 			{
-				Construct(tail + tail_size,
+				construct_identical_copies(tail + tail_size,
 					element, count - tail_size);
 
-				Construct(tail + count, tail, tail_size);
+				construct_copies(tail + count, tail, tail_size);
 
 				Copy(tail, element, tail_size);
 			}
@@ -389,7 +393,7 @@ void array<T>::append(const T* source, size_t count)
 		if (is_shared() || size() + count > capacity())
 			alloc_and_copy(extra_capacity(size() + count));
 
-		Construct(elements + size(), source, count);
+		construct_copies(elements + size(), source, count);
 		metadata()->size += count;
 	}
 }
@@ -402,7 +406,7 @@ void array<T>::append(const T& element, size_t count)
 		if (is_shared() || size() + count > capacity())
 			alloc_and_copy(extra_capacity(size() + count));
 
-		Construct(elements + size(), element, count);
+		construct_identical_copies(elements + size(), element, count);
 		metadata()->size += count;
 	}
 }
@@ -419,10 +423,10 @@ void array<T>::erase(size_t index, size_t count)
 
 		if (!is_shared())
 		{
-			assign_range(elements + index, elements + index + count,
-				new_size - index);
+			assign_pairwise(elements + index,
+				elements + index + count, new_size - index);
 
-			Destroy(elements + new_size, count);
+			destruct(elements + new_size, count);
 
 			metadata()->size = new_size;
 		}
@@ -431,9 +435,9 @@ void array<T>::erase(size_t index, size_t count)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			Construct(new_buffer_elements, elements, index);
+			construct_copies(new_buffer_elements, elements, index);
 
-			Construct(new_buffer_elements + index,
+			construct_copies(new_buffer_elements + index,
 				elements + index + count, new_size - index);
 
 			replace_buffer(new_buffer_elements);
@@ -446,7 +450,7 @@ void array<T>::clear()
 {
 	if (!is_shared())
 	{
-		Destroy(elements, size());
+		destruct(elements, size());
 		metadata()->size = 0;
 	}
 	else
@@ -488,7 +492,7 @@ void array<T>::release()
 
 	if (elements != empty_array() && !--metadata()->refs)
 	{
-		Destroy(elements, size());
+		destruct(elements, size());
 		Memory::Free(metadata());
 	}
 }

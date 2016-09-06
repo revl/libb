@@ -371,7 +371,7 @@ inline void string::shrink_to_fit()
 	{
 		char* new_buffer_chars = alloc_buffer(len, len);
 
-		assign_range(new_buffer_chars, chars, len + 1);
+		assign_pairwise(new_buffer_chars, chars, len + 1);
 
 		replace_buffer(new_buffer_chars);
 	}
@@ -395,7 +395,7 @@ inline void string::isolate()
 
 		char* new_buffer_chars = alloc_buffer(extra_capacity(len), len);
 
-		assign_range(new_buffer_chars, chars, len + 1);
+		assign_pairwise(new_buffer_chars, chars, len + 1);
 
 		replace_buffer(new_buffer_chars);
 	}
@@ -611,7 +611,7 @@ inline string operator +(char ch, const string& str)
 	char* chars = result.lock();
 
 	*chars = ch;
-	assign_range(chars + 1, str.c_str(), length);
+	assign_pairwise(chars + 1, str.c_str(), length);
 
 	result.unlock(length + 1);
 	return result;

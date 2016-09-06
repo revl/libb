@@ -52,12 +52,12 @@ void RemoveDirectory(const string& directory)
 
 // Global function templates
 
-// Determines the lowest position before which <value> can be inserted in
-// the ordered sequence of <count> elements preserving the ordering.
-template <class Iterator, class Type>
-Iterator FindLowerBound(Iterator first, size_t count, const Type& value)
+// Determines the lowest position before which 'value' can be inserted in
+// the ordered sequence of 'count' elements preserving the ordering.
+template <class Iter, class T>
+Iter find_lower_bound(Iter first, size_t count, const T& value)
 {
-	Iterator middle;
+	Iter middle;
 	size_t prev_count;
 
 	while (count > 0)
@@ -76,28 +76,28 @@ Iterator FindLowerBound(Iterator first, size_t count, const Type& value)
 	return first;
 }
 
-// Aligns an integer value on the <alignment> boundary.
-template <class TYPE>
-inline TYPE Align(TYPE value, size_t alignment)
+// Aligns an integer value on the 'alignment' boundary.
+template <class T>
+inline T align(T value, size_t alignment)
 {
 	size_t remainder = (size_t) value % alignment;
 
 	return remainder == 0 ? value :
-		(TYPE) ((size_t) value + alignment - remainder);
+		(T) ((size_t) value + alignment - remainder);
 }
 
 // Exchanges values of two variables.
-template <class TYPE>
-inline void Swap(TYPE& object1, TYPE& object2)
+template <class T>
+inline void swap(T& object1, T& object2)
 {
-	TYPE dummy(object1);
+	T dummy(object1);
 	object1 = object2;
 	object2 = dummy;
 }
 
 // Shuffles the sequence of objects using the pseudo-random number generator.
-template <class TYPE>
-inline void Shuffle(TYPE* objects, size_t count)
+template <class T>
+inline void shuffle(T* objects, size_t count)
 {
 	size_t i;
 
@@ -107,8 +107,8 @@ inline void Shuffle(TYPE* objects, size_t count)
 
 // Compares two objects. Returns zero, if objects are equal;
 // -1, if the first object is less, and 1, if the second is less.
-template <class TYPE>
-inline int Compare(const TYPE& object1, const TYPE& object2)
+template <class T>
+inline int compare(const T& object1, const T& object2)
 {
 	return object1 < object2 ? -1 : object2 < object1;
 }
@@ -221,43 +221,44 @@ inline void char_to_wchar(wchar_t* result, const char* source, size_t length)
 // Template functions for construction, destruction,
 // copying and moving of arrays of various objects
 
-// Calls TYPE default constructor.
-template <class TYPE>
-inline void construct_default(TYPE* objects, size_t count)
+// Calls the default constructor of the class 'T'.
+template <class T>
+inline void construct_default(T* objects, size_t count)
 {
 	while (count-- > 0)
-		new (objects++) TYPE;
+		new (objects++) T;
 }
 
-// Calls TYPE copy constructor (sequence initialization
-// with a single value).
-template <class TYPE>
-inline void Construct(TYPE* dest, const TYPE& value, size_t count)
+// Calls the copy constructor of the class 'T' (sequence
+// initialization with a single value).
+template <class T>
+inline void construct_identical_copies(T* dest,
+	const T& master_copy, size_t count)
 {
 	while (count-- > 0)
-		new (dest++) TYPE(value);
+		new (dest++) T(master_copy);
 }
 
-// Calls TYPE copy constructor (initialization with objects
-// from the same-sized array).
-template <class TYPE>
-inline void Construct(TYPE* dest, const TYPE* source, size_t count)
+// Calls the copy constructor of the class 'T' (initialization
+// with objects from the same-sized array).
+template <class T>
+inline void construct_copies(T* dest, const T* source, size_t count)
 {
 	while (count-- > 0)
-		new (dest++) TYPE(*source++);
+		new (dest++) T(*source++);
 }
 
-// Calls TYPE destructors.
-template <class TYPE>
-inline void Destroy(TYPE* objects, size_t count)
+// Calls the destructors of the 'T' class.
+template <class T>
+inline void destruct(T* objects, size_t count)
 {
 	while (count-- > 0)
-		(objects++)->~TYPE();
+		(objects++)->~T();
 }
 
-// Calls TYPE assignment operator (element-based array assignment).
-template <class TYPE>
-inline void assign_range(TYPE* dest, const TYPE* source, size_t count)
+// Calls T assignment operator (element-based array assignment).
+template <class T>
+inline void assign_pairwise(T* dest, const T* source, size_t count)
 {
 	while (count-- > 0)
 		*dest++ = *source++;
@@ -275,7 +276,8 @@ inline void Copy(TYPE* dest, const TYPE& value, size_t count)
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
 template <class TYPE>
-inline void assign_range_backwards(TYPE* dest, const TYPE* source, size_t count)
+inline void assign_pairwise_backwards(TYPE* dest,
+	const TYPE* source, size_t count)
 {
 	while (count-- > 0)
 		dest[count] = source[count];
@@ -286,7 +288,7 @@ inline void assign_range_backwards(TYPE* dest, const TYPE* source, size_t count)
 // int
 
 template <>
-inline int Compare(const int& n1, const int& n2)
+inline int compare(const int& n1, const int& n2)
 {
 	return n1 - n2;
 }
@@ -298,31 +300,33 @@ inline void construct_default(int* dest, size_t count)
 }
 
 template <>
-inline void Construct(int* dest, const int& value, size_t count)
+inline void construct_identical_copies(int* dest,
+	const int& master_copy, size_t count)
 {
 	while (count-- > 0)
-		*dest++ = value;
+		*dest++ = master_copy;
 }
 
 template <>
-inline void Construct(int* dest, const int* source, size_t count)
+inline void construct_copies(int* dest, const int* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(int*, size_t)
+inline void destruct(int*, size_t)
 {
 }
 
 template <>
-inline void assign_range(int* dest, const int* source, size_t count)
+inline void assign_pairwise(int* dest, const int* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void assign_range_backwards(int* dest, const int* source, size_t count)
+inline void assign_pairwise_backwards(int* dest,
+	const int* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -330,7 +334,7 @@ inline void assign_range_backwards(int* dest, const int* source, size_t count)
 // long
 
 template <>
-inline int Compare(const long& l1, const long& l2)
+inline int compare(const long& l1, const long& l2)
 {
 	return int(l1 - l2);
 }
@@ -342,31 +346,33 @@ inline void construct_default(long* dest, size_t count)
 }
 
 template <>
-inline void Construct(long* dest, const long& value, size_t count)
+inline void construct_identical_copies(long* dest,
+	const long& master_copy, size_t count)
 {
 	while (count-- > 0)
-		*dest++ = value;
+		*dest++ = master_copy;
 }
 
 template <>
-inline void Construct(long* dest, const long* source, size_t count)
+inline void construct_copies(long* dest, const long* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(long*, size_t)
+inline void destruct(long*, size_t)
 {
 }
 
 template <>
-inline void assign_range(long* dest, const long* source, size_t count)
+inline void assign_pairwise(long* dest, const long* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void assign_range_backwards(long* dest, const long* source, size_t count)
+inline void assign_pairwise_backwards(long* dest,
+	const long* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -374,7 +380,7 @@ inline void assign_range_backwards(long* dest, const long* source, size_t count)
 // char
 
 template <>
-inline int Compare(const char& c1, const char& c2)
+inline int compare(const char& c1, const char& c2)
 {
 	return int(c1) - int(c2);
 }
@@ -392,24 +398,25 @@ inline void construct_default(char* dest, size_t count)
 }
 
 template <>
-inline void Construct(char* dest, const char& value, size_t count)
+inline void construct_identical_copies(char* dest,
+	const char& master_copy, size_t count)
 {
-	Memory::Fill(dest, count, value);
+	Memory::Fill(dest, count, master_copy);
 }
 
 template <>
-inline void Construct(char* dest, const char* source, size_t count)
+inline void construct_copies(char* dest, const char* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(char*, size_t)
+inline void destruct(char*, size_t)
 {
 }
 
 template <>
-inline void assign_range(char* dest, const char* source, size_t count)
+inline void assign_pairwise(char* dest, const char* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
@@ -421,7 +428,8 @@ inline void Copy(char* dest, const char& value, size_t count)
 }
 
 template <>
-inline void assign_range_backwards(char* dest, const char* source, size_t count)
+inline void assign_pairwise_backwards(char* dest,
+	const char* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
 }
@@ -429,7 +437,7 @@ inline void assign_range_backwards(char* dest, const char* source, size_t count)
 // wchar_t
 
 template <>
-inline int Compare(const wchar_t& c1, const wchar_t& c2)
+inline int compare(const wchar_t& c1, const wchar_t& c2)
 {
 	return int(c1) - int(c2);
 }
@@ -441,18 +449,18 @@ inline void construct_default(wchar_t* dest, size_t count)
 }
 
 template <>
-inline void Construct(wchar_t* dest, const wchar_t* source, size_t count)
+inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
-inline void Destroy(wchar_t*, size_t)
+inline void destruct(wchar_t*, size_t)
 {
 }
 
 template <>
-inline void assign_range(wchar_t* dest, const wchar_t* source, size_t count)
+inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	Memory::Copy(dest, source, count * sizeof(*dest));
 }
@@ -465,7 +473,7 @@ inline void Copy(wchar_t* dest, const wchar_t& value, size_t count)
 }
 
 template <>
-inline void assign_range_backwards(wchar_t* dest,
+inline void assign_pairwise_backwards(wchar_t* dest,
 	const wchar_t* source, size_t count)
 {
 	Memory::Move(dest, source, count * sizeof(*dest));
