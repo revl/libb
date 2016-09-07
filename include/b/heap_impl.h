@@ -66,7 +66,7 @@ void Heap<TYPE>::Push(TYPE* data, int size)
 	while (size > 0 && data[parent = size >> 1] < data[size])
 	{
 		// Restore the heap property
-		Swap(data[parent], data[size]);
+		swap(data[parent], data[size]);
 
 		// Move up
 		size = parent;
@@ -109,7 +109,7 @@ void Heap<TYPE>::Pop(TYPE* data, int size)
 
 	if (size > 1)
 	{
-		// The first call to Swap function will exchange the
+		// The first call to swap() function will exchange the
 		// first and the last elements of the array
 
 		int child = 0; // Index of the first element
@@ -121,7 +121,7 @@ void Heap<TYPE>::Pop(TYPE* data, int size)
 		do
 		{
 			// Restore the heap property
-			Swap(data[parent], data[child]);
+			swap(data[parent], data[child]);
 
 			// Continue with subtree rooted at child
 			parent = child;

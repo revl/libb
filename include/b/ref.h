@@ -98,7 +98,7 @@ public:
 
 	// Makes this smart pointer instance point to the object
 	// pointed to by <that> and vice versa.
-	void Swap(Ref<TYPE>& that);
+	void swap(Ref<TYPE>& that);
 
 // Implementation
 public:
@@ -282,7 +282,7 @@ TYPE* Ref<TYPE>::Detach()
 }
 
 template <class TYPE>
-void Ref<TYPE>::Swap(Ref<TYPE>& that)
+void Ref<TYPE>::swap(Ref<TYPE>& that)
 {
 	TYPE* this_ptr = ptr;
 

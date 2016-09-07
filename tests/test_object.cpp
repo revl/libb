@@ -116,7 +116,7 @@ static int TestObject()
 		base1 = base2;
 		base2 = derived;
 
-		base1.Swap(base2);
+		base1.swap(base2);
 
 		if (Base::GetInstanceCount() != 2 ||
 			base1->GetValue() != 3 ||
