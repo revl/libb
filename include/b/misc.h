@@ -265,9 +265,9 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 }
 
 // Calls TYPE assignment operator (assignment of a single value
-// to each element of the array pointed to by <dest>).
+// to each element of the array pointed to by 'dest').
 template <class TYPE>
-inline void Copy(TYPE* dest, const TYPE& value, size_t count)
+inline void assign_multiple(TYPE* dest, size_t count, const TYPE& value)
 {
 	while (count-- > 0)
 		*dest++ = value;
@@ -422,7 +422,7 @@ inline void assign_pairwise(char* dest, const char* source, size_t count)
 }
 
 template <>
-inline void Copy(char* dest, const char& value, size_t count)
+inline void assign_multiple(char* dest, size_t count, const char& value)
 {
 	Memory::Fill(dest, count, value);
 }
@@ -466,7 +466,7 @@ inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 }
 
 template <>
-inline void Copy(wchar_t* dest, const wchar_t& value, size_t count)
+inline void assign_multiple(wchar_t* dest, size_t count, const wchar_t& value)
 {
 	while (count-- > 0)
 		*dest++ = value;
