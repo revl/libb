@@ -32,7 +32,7 @@ int main()
 
 	printf("[%s]$ cd ", current_dir.GetBuffer());
 
-	B_CHAR buffer[1024];
+	char buffer[1024];
 
 	while (fgets(buffer, sizeof(buffer), stdin))
 	{

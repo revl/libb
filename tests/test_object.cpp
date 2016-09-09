@@ -129,12 +129,7 @@ static int TestObject()
 
 		e.GetMessage(message);
 
-#ifdef B_UNICODE
-#define fprintf fwprintf
-#endif
-
-		fprintf(stderr, B_TEXT("Error: %s\n"),
-			(const B_CHAR*) message);
+		fprintf(stderr, "Error: %s\n", (const char*) message);
 
 		return 5;
 	}

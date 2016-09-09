@@ -667,27 +667,32 @@ B_END_NAMESPACE
 
 #include "string.h"
 
-#define B_DEFINE_STATIC_STRING_T(name, value) \
+#define B_DEFINE_STATIC_STRING_T(type, name, value) \
 	static struct \
 	{ \
 		b::RefCount refs; \
 		size_t capacity; \
 		size_t length; \
-		B_CHAR chars[sizeof(value)]; \
+		type chars[sizeof(value)]; \
 	} \
 	const name##buffer = \
 	{ \
 		B_REFCOUNT_STATIC_INIT(-1), \
-		sizeof(value) / sizeof(B_CHAR) - 1, \
-		sizeof(value) / sizeof(B_CHAR) - 1, \
+		sizeof(value) / sizeof(type) - 1, \
+		sizeof(value) / sizeof(type) - 1, \
 		value \
 	}; \
-	static const B_CHAR* name##Buffer = name##buffer.chars
+	static const type* name##Buffer = name##buffer.chars
 
 #define B_DEFINE_STATIC_STRING(name, value) \
-	B_DEFINE_STATIC_STRING_T(name, B_TEXT(value))
+	B_DEFINE_STATIC_STRING_T(char, name, value)
+
+#define B_DEFINE_STATIC_WSTRING(name, value) \
+	B_DEFINE_STATIC_STRING_T(wchar_t, name, L##value)
 
 #define B_STATIC_STRING(name) (*(const b::string*) &name##Buffer)
+
+#define B_STATIC_WSTRING(name) (*(const b::wstring*) &name##Buffer)
 
 #define B_STRING_H
 

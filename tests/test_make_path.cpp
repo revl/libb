@@ -22,10 +22,10 @@
 
 B_DEFINE_STATIC_STRING(test_dir, "TestDir");
 B_DEFINE_STATIC_STRING(dot_dir, ".");
-B_DEFINE_STATIC_STRING_T(new_dir, B_TEXT("TestDir") B_PATH_SEPARATOR_SZ \
-	B_TEXT("Intermed") B_PATH_SEPARATOR_SZ B_TEXT("NewDir"));
-B_DEFINE_STATIC_STRING_T(intermediate,
-	B_TEXT("TestDir") B_PATH_SEPARATOR_SZ B_TEXT("Intermed"));
+B_DEFINE_STATIC_STRING(new_dir, "TestDir" B_PATH_SEPARATOR_SZ \
+	"Intermed" B_PATH_SEPARATOR_SZ "NewDir");
+B_DEFINE_STATIC_STRING(intermediate,
+	"TestDir" B_PATH_SEPARATOR_SZ "Intermed");
 
 int main()
 {

@@ -22,8 +22,8 @@
 
 struct MatchPatternTestCase
 {
-	const B_CHAR* string;
-	const B_CHAR* pattern;
+	const char* string;
+	const char* pattern;
 	bool expected_result;
 
 	bool Test() const;
@@ -51,11 +51,7 @@ bool MatchPatternTestCase::Assert(const char* function_name, bool result) const
 	if (result != expected_result)
 	{
 		fprintf(stderr,
-#ifdef B_UNICODE
-			"%s(\"%ls\", \"%ls\") returned %s\n",
-#else
 			"%s(\"%s\", \"%s\") returned %s\n",
-#endif // defined(B_UNICODE)
 			function_name, string, pattern,
 			result ? "true" : "false");
 
@@ -67,24 +63,24 @@ bool MatchPatternTestCase::Assert(const char* function_name, bool result) const
 
 static const MatchPatternTestCase match_pattern_test_cases[] =
 {
-	{B_TEXT(""), B_TEXT("*?*"), false},
-	{B_TEXT("abc"), B_TEXT("*b*"), true},
-	{B_TEXT("abcd"), B_TEXT("ab*c"), false},
-	{B_TEXT("abcdbc"), B_TEXT("abd*"), false},
-	{B_TEXT("abcdbcda"), B_TEXT("a?*cda"), true},
-	{B_TEXT("abcdefgh"), B_TEXT("ab?d*ef?h"), true},
-	{B_TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-		B_TEXT("a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"), false},
-	{B_TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-		B_TEXT("a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*"), true},
-	{B_TEXT("aaaaaa"), B_TEXT("aaa*aaa"), true},
-	{B_TEXT("aaaaaa"), B_TEXT("aaa**aaa"), true}
+	{"", "*?*", false},
+	{"abc", "*b*", true},
+	{"abcd", "ab*c", false},
+	{"abcdbc", "abd*", false},
+	{"abcdbcda", "a?*cda", true},
+	{"abcdefgh", "ab?d*ef?h", true},
+	{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b", false},
+	{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*", true},
+	{"aaaaaa", "aaa*aaa", true},
+	{"aaaaaa", "aaa**aaa", true}
 };
 
 struct VersionComparisonTestCase
 {
-	const B_CHAR* version1;
-	const B_CHAR* version2;
+	const char* version1;
+	const char* version2;
 	int expected_result;
 
 	bool Test() const;
@@ -105,11 +101,11 @@ bool VersionComparisonTestCase::Test() const
 
 static const VersionComparisonTestCase version_comparison_test_cases[] =
 {
-	{B_TEXT("11.2"), B_TEXT("2.11"), 1},
-	{B_TEXT("1.1"), B_TEXT("1.1.1"), -1},
-	{B_TEXT("1.2.3"), B_TEXT("1.2.3"), 0},
-	{B_TEXT("1.22.1"), B_TEXT("1.6.1"), 1},
-	{B_TEXT("1.2.3.4"), B_TEXT("1.2.3"), 1}
+	{"11.2", "2.11", 1},
+	{"1.1", "1.1.1", -1},
+	{"1.2.3", "1.2.3", 0},
+	{"1.22.1", "1.6.1", 1},
+	{"1.2.3.4", "1.2.3", 1}
 };
 
 struct SignedCharAlignmentTestCase

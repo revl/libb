@@ -77,7 +77,7 @@ void RemoveDirectory(const string& directory)
 		throw SystemException();
 }
 
-bool MatchPatternZZ(const B_CHAR* string, const B_CHAR* pattern)
+bool MatchPatternZZ(const char* string, const char* pattern)
 {
 	while (*pattern != '*')
 	{
@@ -91,8 +91,8 @@ bool MatchPatternZZ(const B_CHAR* string, const B_CHAR* pattern)
 		++pattern;
 	}
 
-	const B_CHAR* saved_string;
-	const B_CHAR* saved_pattern;
+	const char* saved_string;
+	const char* saved_pattern;
 
 	for (;;)
 	{
@@ -127,8 +127,8 @@ bool MatchPatternZZ(const B_CHAR* string, const B_CHAR* pattern)
 	}
 }
 
-bool MatchPatternZR(const B_CHAR* string,
-	const B_CHAR* pattern, const B_CHAR* pattern_end)
+bool MatchPatternZR(const char* string,
+	const char* pattern, const char* pattern_end)
 {
 	for (;;)
 	{
@@ -145,8 +145,8 @@ bool MatchPatternZR(const B_CHAR* string,
 		++pattern;
 	}
 
-	const B_CHAR* saved_string;
-	const B_CHAR* saved_pattern;
+	const char* saved_string;
+	const char* saved_pattern;
 
 	for (;;)
 	{
@@ -180,8 +180,8 @@ bool MatchPatternZR(const B_CHAR* string,
 	}
 }
 
-bool MatchPatternRZ(const B_CHAR* string, const B_CHAR* string_end,
-	const B_CHAR* pattern)
+bool MatchPatternRZ(const char* string, const char* string_end,
+	const char* pattern)
 {
 	while (*pattern != '*')
 	{
@@ -196,8 +196,8 @@ bool MatchPatternRZ(const B_CHAR* string, const B_CHAR* string_end,
 		++pattern;
 	}
 
-	const B_CHAR* saved_string;
-	const B_CHAR* saved_pattern;
+	const char* saved_string;
+	const char* saved_pattern;
 
 	for (;;)
 	{
@@ -232,8 +232,8 @@ bool MatchPatternRZ(const B_CHAR* string, const B_CHAR* string_end,
 	}
 }
 
-bool MatchPatternRR(const B_CHAR* string, const B_CHAR* string_end,
-	const B_CHAR* pattern, const B_CHAR* pattern_end)
+bool MatchPatternRR(const char* string, const char* string_end,
+	const char* pattern, const char* pattern_end)
 {
 	for (;;)
 	{
@@ -251,8 +251,8 @@ bool MatchPatternRR(const B_CHAR* string, const B_CHAR* string_end,
 		++pattern;
 	}
 
-	const B_CHAR* saved_string;
-	const B_CHAR* saved_pattern;
+	const char* saved_string;
+	const char* saved_pattern;
 
 	for (;;)
 	{
@@ -286,21 +286,19 @@ bool MatchPatternRR(const B_CHAR* string, const B_CHAR* string_end,
 	}
 }
 
-int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2)
+int CompareVersionStrings(const char* version1, const char* version2)
 {
-	for (; *version1 == *version2 && *version1 != B_TEXT('\0');
-		++version1, ++version2)
+	for (; *version1 == *version2 && *version1 != '\0';
+			++version1, ++version2)
 		;
 
 	int result = *version1 - *version2;
 
-	for (; *version1 != B_TEXT('.') && *version1 != B_TEXT('\0');
-		++version1, ++version2)
-		if (*version2 == B_TEXT('.') || *version2 == B_TEXT('\0'))
+	for (; *version1 != '.' && *version1 != '\0'; ++version1, ++version2)
+		if (*version2 == '.' || *version2 == '\0')
 			return 1;
 
-	return *version2 == B_TEXT('.') ||
-		*version2 == B_TEXT('\0') ? result : -1;
+	return *version2 == '.' || *version2 == '\0' ? result : -1;
 }
 
 B_END_NAMESPACE

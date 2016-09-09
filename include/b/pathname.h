@@ -36,19 +36,19 @@ public:
 	{
 	// Construction
 	public:
-		Component(const B_CHAR* name,
-			const B_CHAR* suffix, const B_CHAR* end);
+		Component(const char* name,
+			const char* suffix, const char* end);
 
 	// Attributes
 	public:
-		void GetName(const B_CHAR*& name,
-			const B_CHAR*& end) const;
+		void GetName(const char*& name,
+			const char*& end) const;
 
-		void GetBasename(const B_CHAR*& name,
-			const B_CHAR*& suffix) const;
+		void GetBasename(const char*& name,
+			const char*& suffix) const;
 
-		void GetSuffix(const B_CHAR*& suffix,
-			const B_CHAR*& end) const;
+		void GetSuffix(const char*& suffix,
+			const char*& end) const;
 
 		void AppendNameTo(String& pathname) const;
 
@@ -58,9 +58,9 @@ public:
 
 	// Implementation
 	private:
-		const B_CHAR* name;
-		const B_CHAR* suffix;
-		const B_CHAR* end;
+		const char* name;
+		const char* suffix;
+		const char* end;
 	};
 
 	typedef array<Component> ComponentArray;
@@ -69,7 +69,7 @@ public:
 public:
 	Pathname();
 
-	Pathname(const B_CHAR* pathname, int count);
+	Pathname(const char* pathname, int count);
 
 // Attributes
 public:
@@ -86,11 +86,11 @@ public:
 public:
 	void Assign(const Pathname& rhs);
 
-	void Assign(const B_CHAR* pathname, int count);
+	void Assign(const char* pathname, int count);
 
 	void ChDir(const Pathname& rhs);
 
-	void ChDir(const B_CHAR* pathname, int count);
+	void ChDir(const char* pathname, int count);
 
 	void GoUpDir();
 
@@ -102,34 +102,34 @@ private:
 
 	bool can_be_filename;
 
-	void AddComponent(const B_CHAR* name,
-		const B_CHAR* suffix, const B_CHAR* end);
+	void AddComponent(const char* name,
+		const char* suffix, const char* end);
 
 	void GetComponents(String& pathname) const;
 };
 
-inline Pathname::Component::Component(const B_CHAR* name,
-	const B_CHAR* suffix, const B_CHAR* end) :
+inline Pathname::Component::Component(const char* name,
+	const char* suffix, const char* end) :
 	name(name), suffix(suffix), end(end)
 {
 }
 
-inline void Pathname::Component::GetName(const B_CHAR*& name,
-	const B_CHAR*& end) const
+inline void Pathname::Component::GetName(const char*& name,
+	const char*& end) const
 {
 	name = this->name;
 	end = this->end;
 }
 
-inline void Pathname::Component::GetBasename(const B_CHAR*& name,
-	const B_CHAR*& suffix) const
+inline void Pathname::Component::GetBasename(const char*& name,
+	const char*& suffix) const
 {
 	name = this->name;
 	suffix = this->suffix;
 }
 
-inline void Pathname::Component::GetSuffix(const B_CHAR*& suffix,
-	const B_CHAR*& end) const
+inline void Pathname::Component::GetSuffix(const char*& suffix,
+	const char*& end) const
 {
 	suffix = this->suffix;
 	end = this->end;
@@ -155,7 +155,7 @@ inline Pathname::Pathname() :
 {
 }
 
-inline Pathname::Pathname(const B_CHAR* pathname, int count) :
+inline Pathname::Pathname(const char* pathname, int count) :
 	up_dir_level(0), can_be_filename(false)
 {
 	ChDir(pathname, count);
@@ -186,7 +186,7 @@ inline void Pathname::Assign(const Pathname& rhs)
 	*this = rhs;
 }
 
-inline void Pathname::Assign(const B_CHAR* pathname, int count)
+inline void Pathname::Assign(const char* pathname, int count)
 {
 	components.RemoveAll();
 	up_dir_level = 0;
@@ -203,8 +203,8 @@ inline void Pathname::GoUpDir()
 			++up_dir_level;
 }
 
-inline void Pathname::AddComponent(const B_CHAR* name,
-	const B_CHAR* suffix, const B_CHAR* end)
+inline void Pathname::AddComponent(const char* name,
+	const char* suffix, const char* end)
 {
 	components.Append(Component(name,
 		suffix == NULL ? end : suffix, end));

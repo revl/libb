@@ -121,24 +121,8 @@
 #include <exception>
 #endif // B_USE_STL
 
-#ifndef B_TEXT
-#ifdef B_UNICODE
-#define B_TEXT(x) L##x
-#else
-#define B_TEXT(x) x
-#endif // B_UNICODE
-#endif // TEXT
-
-#ifndef B_CHAR
-#ifdef B_UNICODE
-#define B_CHAR wchar_t
-#else
-#define B_CHAR char
-#endif // B_UNICODE
-#endif // B_CHAR
-
-#define B_PATH_SEPARATOR B_TEXT('/')
-#define B_PATH_SEPARATOR_SZ B_TEXT("/")
+#define B_PATH_SEPARATOR '/'
+#define B_PATH_SEPARATOR_SZ "/"
 
 B_BEGIN_NAMESPACE
 

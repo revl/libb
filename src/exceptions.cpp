@@ -35,11 +35,7 @@ void SystemException::GetMessage(string& target) const
 {
 	try
 	{
-#ifdef B_UNICODE
-		const wchar_t* message_buffer = wcserror(code);
-#else
 		const char* message_buffer = strerror(code);
-#endif // B_UNICODE
 		target.assign(message_buffer, calc_length(message_buffer));
 	}
 	catch (Memory::Exception&)
@@ -51,15 +47,11 @@ void SystemException::GetMessage(string& target) const
 const char* SystemException::what() const
 	throw ()
 {
-#ifdef B_UNICODE
-	return wcserror(code);
-#else
 	return strerror(code);
-#endif // B_UNICODE
 }
 #endif // B_USE_STL
 
-CustomException::CustomException(const B_CHAR* message_format, ...) :
+CustomException::CustomException(const char* message_format, ...) :
 	message()
 {
 	va_list arguments;
@@ -68,7 +60,7 @@ CustomException::CustomException(const B_CHAR* message_format, ...) :
 	va_end(arguments);
 }
 
-void CustomException::SetMessage(const B_CHAR* message_format, ...)
+void CustomException::SetMessage(const char* message_format, ...)
 {
 	va_list arguments;
 	va_start(arguments, message_format);

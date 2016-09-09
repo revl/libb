@@ -37,7 +37,7 @@ void Pathname::AppendPathnameTo(String& pathname) const
 		if (!components.IsEmpty())
 			GetComponents(pathname);
 		else
-			pathname.Append(B_TEXT('.'));
+			pathname.Append('.');
 		break;
 
 	default:
@@ -46,7 +46,7 @@ void Pathname::AppendPathnameTo(String& pathname) const
 		if (!components.IsEmpty())
 		{
 			while (--i >= 0)
-				pathname.Append(B_TEXT("..")
+				pathname.Append(".."
 					B_PATH_SEPARATOR_SZ, 3);
 
 			GetComponents(pathname);
@@ -54,10 +54,10 @@ void Pathname::AppendPathnameTo(String& pathname) const
 		else
 		{
 			while (--i > 0)
-				pathname.Append(B_TEXT("..")
+				pathname.Append(".."
 					B_PATH_SEPARATOR_SZ, 3);
 
-			pathname.Append(B_TEXT(".."), 2);
+			pathname.Append("..", 2);
 		}
 	}
 }
@@ -89,10 +89,10 @@ void Pathname::ChDir(const Pathname& rhs)
 	}
 }
 
-void Pathname::ChDir(const B_CHAR* pathname, int count)
+void Pathname::ChDir(const char* pathname, int count)
 {
-	const B_CHAR* component;
-	const B_CHAR* suffix;
+	const char* component;
+	const char* suffix;
 
 	can_be_filename = false;
 
@@ -107,7 +107,7 @@ void Pathname::ChDir(const B_CHAR* pathname, int count)
 
 		goto Slash;
 
-	case B_TEXT('.'):
+	case '.':
 		goto DotFirst;
 	}
 
@@ -136,7 +136,7 @@ Continue:
 
 			goto Slash;
 
-		case B_TEXT('.'):
+		case '.':
 			suffix = pathname;
 		}
 	}
@@ -153,7 +153,7 @@ DotFirst:
 	case B_PATH_SEPARATOR:
 		goto Slash;
 
-	case B_TEXT('.'):
+	case '.':
 		suffix = pathname;
 
 		if (--count == 0)
@@ -170,7 +170,7 @@ DotFirst:
 
 			goto Slash;
 
-		case B_TEXT('.'):
+		case '.':
 			suffix = pathname;
 		}
 	}
@@ -186,7 +186,7 @@ Slash:
 	case B_PATH_SEPARATOR:
 		goto Slash;
 
-	case B_TEXT('.'):
+	case '.':
 		goto DotFirst;
 	}
 

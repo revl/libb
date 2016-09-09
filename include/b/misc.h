@@ -134,7 +134,7 @@ inline size_t calc_length(const char* string)
 	return ::strlen(string);
 }
 
-// Computes the length of a null-terminated string (Unicode version).
+// Computes the length of a null-terminated string (wchar_t version).
 inline size_t calc_length(const wchar_t* string)
 {
 	return ::wcslen(string);
@@ -150,7 +150,7 @@ inline size_t calc_length(const char* string, size_t limit)
 }
 
 // Computes the length of a string either terminated by
-// a null character or limited by the 'limit' parameter (Unicode version).
+// a null character or limited by the 'limit' parameter (wchar_t version).
 inline size_t calc_length(const wchar_t* string, size_t limit)
 {
 	const wchar_t* null_char_ptr = wmemchr(string, L'\0', limit);
@@ -187,23 +187,23 @@ inline int FormatString(wchar_t*, const wchar_t*, va_list)
 // Wildcard pattern matching.
 
 bool MatchPatternZZ(
-	const B_CHAR* string,
-	const B_CHAR* pattern);
+	const char* string,
+	const char* pattern);
 
 bool MatchPatternZR(
-	const B_CHAR* string,
-	const B_CHAR* pattern, const B_CHAR* pattern_end);
+	const char* string,
+	const char* pattern, const char* pattern_end);
 
 bool MatchPatternRZ(
-	const B_CHAR* string, const B_CHAR* string_end,
-	const B_CHAR* pattern);
+	const char* string, const char* string_end,
+	const char* pattern);
 
 bool MatchPatternRR(
-	const B_CHAR* string, const B_CHAR* string_end,
-	const B_CHAR* pattern, const B_CHAR* pattern_end);
+	const char* string, const char* string_end,
+	const char* pattern, const char* pattern_end);
 
 // Compares two version strings.
-int CompareVersionStrings(const B_CHAR* version1, const B_CHAR* version2);
+int CompareVersionStrings(const char* version1, const char* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.
 inline void wchar_to_char(char* result, const wchar_t* source, size_t length)

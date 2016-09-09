@@ -28,8 +28,8 @@ B_DEFINE_STATIC_STRING(cba, "cba");
 
 int main()
 {
-/*	b::string str1(B_TEXT("012"));
-	b::string str2(B_TEXT("345"));
+/*	b::string str1("012");
+	b::string str2("345");
 
 	printf("str1 = %s\n", (const char*) str1);
 
@@ -39,7 +39,7 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append the last 2 items in str2 to str1
-	str2 = B_TEXT("567");
+	str2 = "567";
 	str1.append(str2, 1, 2);    // begin at pos 1, append 2 elements
 
 	printf("str1 = %s\n", (const char*) str1);
@@ -51,7 +51,7 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append all of a string literal to str1
-	char test[] = B_TEXT("abc");
+	char test[] = "abc";
 	str1.append(test);
 
 	printf("str1 = %s\n", (const char*) str1);
@@ -62,7 +62,7 @@ int main()
 	printf("str1 = %s\n", (const char*) str1);
 
 	// append str2 to str1 using iterators
-	str2 = B_TEXT("EF");
+	str2 = "EF";
 	str1.append(str2.begin(), str2.end());
 
 	printf("str1 = %s\n", (const char*) str1);
@@ -71,52 +71,52 @@ int main()
 	if (!str1.is_empty())
 		return 2;
 
-	b::string str2(B_TEXT("abcd"), 3);
+	b::string str2("abcd", 3);
 	if (str2.length() != 3)
 		return 1;
 
-	b::string str3(B_TEXT("cba"), 3);
-	b::string str4(B_TEXT('x'), 3);
+	b::string str3("cba", 3);
+	b::string str4('x', 3);
 
 	if (str4 < str3)
 		return 3;
 
 	str1 = B_STATIC_STRING(left) + str2 +
 		str4 + str3 + B_STATIC_STRING(right);
-	str1.trim_left(B_TEXT("Ll"));
-	str1.trim_right(B_TEXT("Rr"));
-	str1.trim(B_TEXT("C"));
-	if (str1 != B_TEXT("abcxxxcba"))
+	str1.trim_left("Ll");
+	str1.trim_right("Rr");
+	str1.trim("C");
+	if (str1 != "abcxxxcba")
 		return 4;
 
 	str2 = B_STATIC_STRING(abc) + str4 + str3;
 	if (!(str1 == str2))
 		return 5;
 
-	size_t position = str3.rfind(B_TEXT('b'));
+	size_t position = str3.rfind('b');
 	if (position != 1)
 		return 6;
 
-	if (str3[position] != B_TEXT('b'))
+	if (str3[position] != 'b')
 		return 7;
 
-	if (str4.rfind(B_TEXT('b')) != (size_t) -1)
+	if (str4.rfind('b') != (size_t) -1)
 		return 8;
 
-	str3.assignf(B_TEXT("abc%s"), B_TEXT("xxx"));
+	str3.assignf("abc%s", "xxx");
 	str3 += B_STATIC_STRING(cba);
-	if (str1 != (const B_CHAR*) str3)
+	if (str1 != (const char*) str3)
 		return 9;
 
 	b::string str5;
-	str5.assignf(B_TEXT("init"));
-	if (str5 != B_TEXT("init"))
+	str5.assignf("init");
+	if (str5 != "init")
 		return 10;
 
 	const b::string& hello = B_STATIC_STRING(hello);
 
 	if (hello.length() != 5 || hello.capacity() != 5 ||
-		hello != hello || hello != B_TEXT("hello"))
+		hello != hello || hello != "hello")
 		return 11;
 
 	return 0;

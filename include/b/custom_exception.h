@@ -41,10 +41,10 @@ public:
 	CustomException(const string& initial_message);
 
 	// Initializes this object with a formatted error message.
-	CustomException(const B_CHAR* message_format, va_list arguments);
+	CustomException(const char* message_format, va_list arguments);
 
 	// Initializes this object with a formatted error message.
-	CustomException(const B_CHAR* message_format, ...);
+	CustomException(const char* message_format, ...);
 
 // Attributes
 public:
@@ -52,10 +52,10 @@ public:
 	void SetMessage(const string& message);
 
 	// Builds an error description from a format string and a va_list.
-	void SetMessage(const B_CHAR* message_format, va_list arguments);
+	void SetMessage(const char* message_format, va_list arguments);
 
 	// Builds an error description from a printf-like format string
-	void SetMessage(const B_CHAR* message_format, ...);
+	void SetMessage(const char* message_format, ...);
 
 // Overridden
 public:
@@ -91,7 +91,7 @@ inline CustomException::CustomException(const string& initial_message) :
 {
 }
 
-inline CustomException::CustomException(const B_CHAR* message_format,
+inline CustomException::CustomException(const char* message_format,
 	va_list arguments) : message()
 {
 	message.assignfv(message_format, arguments);
@@ -102,7 +102,7 @@ inline void CustomException::SetMessage(const string& new_message)
 	message = new_message;
 }
 
-inline void CustomException::SetMessage(const B_CHAR* message_format,
+inline void CustomException::SetMessage(const char* message_format,
 	va_list arguments)
 {
 	message.assignfv(message_format, arguments);
