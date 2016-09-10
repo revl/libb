@@ -527,7 +527,7 @@ inline string string::operator +(char source) const
 
 inline int string::compare(const char* rhs) const
 {
-	return CompareStrings(chars, rhs);
+	return compare_strings(chars, rhs);
 }
 
 inline bool string::operator ==(const string& rhs) const

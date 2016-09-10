@@ -24,7 +24,7 @@
 
 B_BEGIN_NAMESPACE
 
-bool IsDirectory(const string& directory)
+bool is_directory(const string& directory)
 	throw ()
 {
 	struct stat stat_struct;
@@ -33,7 +33,7 @@ bool IsDirectory(const string& directory)
 		S_ISDIR(stat_struct.st_mode);
 }
 
-void MakeDirectory(const string& directory)
+void make_directory(const string& directory)
 	throw (SystemException)
 {
 	if (!directory.is_empty() && mkdir(directory,
@@ -43,17 +43,17 @@ void MakeDirectory(const string& directory)
 	{
 		int error = errno;
 
-		if (error != EEXIST || !IsDirectory(directory))
+		if (error != EEXIST || !is_directory(directory))
 			throw SystemException(error);
 	}
 }
 
-void MakePath(const string& path)
+void make_path(const string& path)
 	throw (SystemException)
 {
 	try
 	{
-		MakeDirectory(path);
+		make_directory(path);
 	}
 	catch (SystemException& e)
 	{
@@ -64,13 +64,13 @@ void MakePath(const string& path)
 
 		if ((slash_pos = path.rfind(B_PATH_SEPARATOR)) > 0)
 		{
-			MakePath(string(path, slash_pos));
-			MakeDirectory(path);
+			make_path(string(path, slash_pos));
+			make_directory(path);
 		}
 	}
 }
 
-void RemoveDirectory(const string& directory)
+void remove_directory(const string& directory)
 	throw (SystemException)
 {
 	if (!directory.is_empty() && rmdir(directory) == -1)
@@ -286,7 +286,7 @@ bool MatchPatternRR(const char* string, const char* string_end,
 	}
 }
 
-int CompareVersionStrings(const char* version1, const char* version2)
+int compare_versions(const char* version1, const char* version2)
 {
 	for (; *version1 == *version2 && *version1 != '\0';
 			++version1, ++version2)

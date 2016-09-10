@@ -88,7 +88,7 @@ struct VersionComparisonTestCase
 
 bool VersionComparisonTestCase::Test() const
 {
-	int diff = b::CompareVersionStrings(version1, version2);
+	int diff = b::compare_versions(version1, version2);
 
 	if (expected_result == 1)
 		return diff > 0;

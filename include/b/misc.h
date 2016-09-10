@@ -38,16 +38,16 @@ inline size_t extra_capacity(size_t size)
 }
 
 // Operations on the file system directory structure
-bool IsDirectory(const string& directory)
+bool is_directory(const string& directory)
 	throw ();
 
-void MakeDirectory(const string& directory)
+void make_directory(const string& directory)
 	throw (SystemException);
 
-void MakePath(const string& path)
+void make_path(const string& path)
 	throw (SystemException);
 
-void RemoveDirectory(const string& directory)
+void remove_directory(const string& directory)
 	throw (SystemException);
 
 // Global function templates
@@ -114,13 +114,13 @@ inline int compare(const T& object1, const T& object2)
 }
 
 // Compares two object sequences of the same length.
-template <class TYPE>
-inline int Compare(const TYPE* buffer1, const TYPE* buffer2, size_t count)
+template <class T>
+inline int compare_arrays(const T* array1, const T* array2, size_t count)
 {
 	register int cmp_res;
 
 	while (count-- > 0)
-		if ((cmp_res = Compare(*buffer1++, *buffer2++)) != 0)
+		if ((cmp_res = compare(*array1++, *array2++)) != 0)
 			return cmp_res;
 
 	return 0;
@@ -159,25 +159,25 @@ inline size_t calc_length(const wchar_t* string, size_t limit)
 }
 
 // Compares two strings.
-inline int CompareStrings(const char* string1, const char* string2)
+inline int compare_strings(const char* string1, const char* string2)
 {
 	return ::strcmp(string1, string2);
 }
 
 // Compares two strings.
-inline int CompareStrings(const wchar_t* string1, const wchar_t* string2)
+inline int compare_strings(const wchar_t* string1, const wchar_t* string2)
 {
 	return ::wcscmp(string1, string2);
 }
 
 // Formats a string as vsprintf does.
-inline int FormatString(char* buffer, const char* format, va_list arguments)
+inline int format_string(char* buffer, const char* format, va_list arguments)
 {
 	return vsprintf(buffer, format, arguments);
 }
 
 // Formats a string as vswprintf does.
-inline int FormatString(wchar_t*, const wchar_t*, va_list)
+inline int format_string(wchar_t*, const wchar_t*, va_list)
 {
 	B_ASSERT(0);
 
@@ -203,7 +203,7 @@ bool MatchPatternRR(
 	const char* pattern, const char* pattern_end);
 
 // Compares two version strings.
-int CompareVersionStrings(const char* version1, const char* version2);
+int compare_versions(const char* version1, const char* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.
 inline void wchar_to_char(char* result, const wchar_t* source, size_t length)
@@ -264,10 +264,10 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 		*dest++ = *source++;
 }
 
-// Calls TYPE assignment operator (assignment of a single value
+// Calls T assignment operator (assignment of a single value
 // to each element of the array pointed to by 'dest').
-template <class TYPE>
-inline void assign_multiple(TYPE* dest, size_t count, const TYPE& value)
+template <class T>
+inline void assign_multiple(T* dest, size_t count, const T& value)
 {
 	while (count-- > 0)
 		*dest++ = value;
@@ -275,9 +275,8 @@ inline void assign_multiple(TYPE* dest, size_t count, const TYPE& value)
 
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
-template <class TYPE>
-inline void assign_pairwise_backwards(TYPE* dest,
-	const TYPE* source, size_t count)
+template <class T>
+inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 {
 	while (count-- > 0)
 		dest[count] = source[count];
@@ -386,9 +385,9 @@ inline int compare(const char& c1, const char& c2)
 }
 
 template <>
-inline int Compare(const char* buffer1, const char* buffer2, size_t count)
+inline int compare_arrays(const char* array1, const char* array2, size_t count)
 {
-	return Memory::Compare(buffer1, buffer2, count);
+	return Memory::Compare(array1, array2, count);
 }
 
 template <>

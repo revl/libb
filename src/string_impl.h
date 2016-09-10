@@ -371,7 +371,7 @@ void string::appendfv(const char* format, va_list arguments)
 {
 	alloc_and_copy(length() + 8 * 1024); // TODO reserve()?
 
-	metadata()->length += FormatString(chars + length(),
+	metadata()->length += format_string(chars + length(),
 		format, arguments);
 }
 
