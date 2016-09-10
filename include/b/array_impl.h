@@ -129,13 +129,13 @@ void array<T>::assign(const T& element, size_t count)
 		if (!is_shared() && count <= capacity())
 			if (count > size())
 			{
-				assign_multiple(elements, size(), element);
+				assign_value(elements, size(), element);
 				construct_identical_copies(elements + size(),
 					element, count - size());
 			}
 			else
 			{
-				assign_multiple(elements, count, element);
+				assign_value(elements, count, element);
 				destruct(elements + count, size() - count);
 			}
 		else
@@ -233,15 +233,14 @@ void array<T>::overwrite(size_t index, const T& element, size_t count)
 		{
 			if (tail_index <= size())
 			{
-				assign_multiple(elements + index,
-					count, element);
+				assign_value(elements + index, count, element);
 
 				return;
 			}
 			else
 				if (tail_index <= capacity())
 				{
-					assign_multiple(elements + index,
+					assign_value(elements + index,
 						size() - index, element);
 
 					construct_identical_copies(
@@ -369,7 +368,7 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 				assign_pairwise_backwards(tail + count,
 					tail, tail_size - count);
 
-				assign_multiple(tail, count, element);
+				assign_value(tail, count, element);
 			}
 			else
 			{
@@ -378,7 +377,7 @@ void array<T>::insert(size_t index, const T& element, size_t count)
 
 				construct_copies(tail + count, tail, tail_size);
 
-				assign_multiple(tail, tail_size, element);
+				assign_value(tail, tail_size, element);
 			}
 
 			metadata()->size = new_size;

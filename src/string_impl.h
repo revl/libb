@@ -103,7 +103,7 @@ void string::assign(char source, size_t count)
 	{
 		if (is_shared() || count > capacity())
 			discard_and_alloc(extra_capacity(count));
-		assign_multiple(chars, count, source);
+		assign_value(chars, count, source);
 		chars[metadata()->length = count] = 0;
 	}
 	else
@@ -130,7 +130,7 @@ void string::assign(char source, size_t count)
 
 	if (count > 0)
 	{
-		assign_multiple(Allocate(count), source, count);
+		assign_value(Allocate(count), source, count);
 		UnlockBuffer();
 	}
 	else
@@ -155,7 +155,7 @@ void string::replace(size_t index, char source, size_t count)
 
 	size_t unaffected = index + count;
 
-	assign_multiple((unaffected <= length() ? LockBuffer() :
+	assign_value((unaffected <= length() ? LockBuffer() :
 		LockBuffer(unaffected)) + index, source, count);
 
 	UnlockBuffer();
@@ -232,7 +232,7 @@ void string::insert(size_t index, char source, size_t count)
 				extra_capacity(new_length), new_length);
 
 			assign_pairwise(new_buffer_chars, chars, index);
-			assign_multiple(new_buffer_chars + index,
+			assign_value(new_buffer_chars + index,
 				count, source);
 			assign_pairwise(new_buffer_chars + index + count,
 				tail, tail_length + 1);
@@ -249,17 +249,17 @@ void string::insert(size_t index, char source, size_t count)
 				assign_pairwise_backwards(tail + count,
 					tail, tail_length - count);
 
-				assign_multiple(tail, count, source);
+				assign_value(tail, count, source);
 			}
 			else
 			{
-				assign_multiple(tail + tail_length,
+				assign_value(tail + tail_length,
 					count - tail_length, source);
 
 				assign_pairwise(tail + count,
 					tail, tail_length);
 
-				assign_multiple(tail, tail_length, source);
+				assign_value(tail, tail_length, source);
 			}
 
 			metadata()->length = new_length;
@@ -288,7 +288,7 @@ void string::append(char source, size_t count)
 	{
 		if (is_shared() || count + length() > capacity())
 			alloc_and_copy(extra_capacity(length() + count));
-		assign_multiple(chars + length(), count, source);
+		assign_value(chars + length(), count, source);
 		chars[metadata()->length += count] = 0;
 	}
 }
@@ -313,7 +313,7 @@ void string::append(char source, size_t count)
 	if (count > 0)
 	{
 		Lock(length() + count);
-		assign_multiple(chars + length(), source, count);
+		assign_value(chars + length(), source, count);
 		UnlockBuffer();
 	}
 }

@@ -256,21 +256,21 @@ inline void destruct(T* objects, size_t count)
 		(objects++)->~T();
 }
 
+// Calls T assignment operator (assignment of a single value
+// to each element of the array pointed to by 'dest').
+template <class T>
+inline void assign_value(T* dest, size_t count, const T& value)
+{
+	while (count-- > 0)
+		*dest++ = value;
+}
+
 // Calls T assignment operator (element-based array assignment).
 template <class T>
 inline void assign_pairwise(T* dest, const T* source, size_t count)
 {
 	while (count-- > 0)
 		*dest++ = *source++;
-}
-
-// Calls T assignment operator (assignment of a single value
-// to each element of the array pointed to by 'dest').
-template <class T>
-inline void assign_multiple(T* dest, size_t count, const T& value)
-{
-	while (count-- > 0)
-		*dest++ = value;
 }
 
 // Repeated calls of the assignment operator (element-based
@@ -415,15 +415,15 @@ inline void destruct(char*, size_t)
 }
 
 template <>
-inline void assign_pairwise(char* dest, const char* source, size_t count)
+inline void assign_value(char* dest, size_t count, const char& value)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	Memory::Fill(dest, count, value);
 }
 
 template <>
-inline void assign_multiple(char* dest, size_t count, const char& value)
+inline void assign_pairwise(char* dest, const char* source, size_t count)
 {
-	Memory::Fill(dest, count, value);
+	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -459,16 +459,16 @@ inline void destruct(wchar_t*, size_t)
 }
 
 template <>
-inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
-{
-	Memory::Copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_multiple(wchar_t* dest, size_t count, const wchar_t& value)
+inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 {
 	while (count-- > 0)
 		*dest++ = value;
+}
+
+template <>
+inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
+{
+	Memory::Copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
