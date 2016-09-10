@@ -28,17 +28,19 @@ class test_case
 public:
 	test_case(const char* name);
 
-	virtual bool run() const = 0;
+	virtual void run() = 0;
 
 	const char* const test_name;
-	const test_case* const next_test_case;
+	test_case* const next_test_case;
+	int failed_checks;
 };
 
-const test_case* first_test_case = NULL;
+test_case* first_test_case = NULL;
 
 inline test_case::test_case(const char* name) :
 	test_name(name),
-	next_test_case(first_test_case)
+	next_test_case(first_test_case),
+	failed_checks(0)
 {
 	first_test_case = this;
 }
@@ -52,30 +54,41 @@ B_END_NAMESPACE
 		class_name(const char* name) : b::test_case(name) \
 		{ \
 		} \
-		virtual bool run() const; \
+		virtual void run(); \
 	} class_name##_instance(#class_name); \
-	bool class_name::run() const
+	void class_name::run()
 	
-#define B_CHECK(condition, message) \
+#define B_CHECK(condition) \
 	if (!(condition)) { \
-		fprintf(stderr, "%s\n", message); \
-		return false; \
+		++failed_checks; \
+		fputs("FAILED CHECK: " #condition "\n", stderr); \
+	}
+
+#define B_REQUIRE(condition) \
+	if (!(condition)) { \
+		++failed_checks; \
+		fputs("FAILED REQUIREMENT: " #condition "\n", stderr); \
+		return; \
 	}
 
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
-	const b::test_case* current_test_case = b::first_test_case;
+	b::test_case* current_test_case = b::first_test_case;
 
 	while (current_test_case != NULL)
 	{
 		try
 		{
-			if (!current_test_case->run())
+			current_test_case->run();
+
+			if (current_test_case->failed_checks > 0)
 				++failed_tests;
 		}
 		catch (...)
 		{
+			++failed_tests;
+
 			fprintf(stderr, "Unhandled exception in %s\n",
 				current_test_case->test_name);
 		}

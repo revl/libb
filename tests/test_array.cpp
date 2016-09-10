@@ -30,10 +30,8 @@ B_TEST_CASE(test_shared)
 
 	b::array<int> a2(a1);
 
-	B_CHECK(a1.data() == a2.data(),
-		"Both arrays must share the same buffer");
-
-	return true;
+	// Both arrays must share the same buffer.
+	B_CHECK(a1.data() == a2.data());
 }
 
 B_TEST_CASE(test_shrink_to_fit)
@@ -44,17 +42,15 @@ B_TEST_CASE(test_shrink_to_fit)
 
 	size_t initial_capacity = a1.capacity();
 
-	B_CHECK(initial_capacity > initial_size,
-		"Capacity must be greater than the initial size");
+	// Capacity must be greater than the initial size.
+	B_CHECK(initial_capacity > initial_size);
 
 	b::array<int> a2(a1);
 
 	a1.shrink_to_fit();
 
-	B_CHECK(a1.data() != a2.data(),
-		"shrink_to_fit() must cause reallocation");
-
-	return true;
+	// shrink_to_fit() must cause reallocation.
+	B_CHECK(a1.data() != a2.data());
 }
 
 static int element_counter = 0;
@@ -88,13 +84,12 @@ B_TEST_CASE(test_copying)
 		test_array test2;
 		test2 = test1;
 
-		B_CHECK(test2.size() == 1,
-			"Number of elements must not change in a copy");
+		// Number of elements must not change in a copy.
+		B_CHECK(test2.size() == 1);
 	}
 
-	B_CHECK(element_counter == 0, "All elements must be destructed");
-
-	return true;
+	// All elements must be destructed.
+	B_CHECK(element_counter == 0);
 }
 
 b::array<b::array<test_element> > test2d;
