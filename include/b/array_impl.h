@@ -399,7 +399,7 @@ void array<T>::append(const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::append(const T& element, size_t count)
+void array<T>::append(size_t count, const T& element)
 {
 	if (count > 0)
 	{

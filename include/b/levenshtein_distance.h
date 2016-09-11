@@ -23,8 +23,6 @@
 
 #include "array.h"
 
-#include <vector>
-
 B_BEGIN_NAMESPACE
 
 class levenshtein_distance
@@ -38,9 +36,7 @@ public:
 // Implementation
 private:
 	// A row of the dynamic programming matrix
-	typedef std::vector<size_t> row_t;
-
-	row_t row;
+	array<size_t> row;
 };
 
 template <typename Iter>
@@ -55,7 +51,7 @@ size_t levenshtein_distance::operator ()(Iter string1,
 
 	// Ensure the buffer is big enough
 	if (row.size() <= length2)
-		row.resize(length2 + 1);
+		row.append(length2 + 1 - row.size(), 0);
 
 	// Pointer to the current character of the second string
 	Iter current_char;
@@ -73,9 +69,11 @@ size_t levenshtein_distance::operator ()(Iter string1,
 
 	j = distance = length2;
 
+	size_t* first_element = row.lock();
+
 	// Pointer to the matrix element over that
 	// being calculated now
-	row_t::iterator upper = row.begin() + j;
+	size_t* upper = first_element + j;
 
 	// Boundary conditions
 	while ((*upper = j) > 0)
@@ -86,7 +84,7 @@ size_t levenshtein_distance::operator ()(Iter string1,
 	for (; length1 > 0; --length1)
 	{
 		// Boundary conditions
-		upper = row.begin();
+		upper = first_element;
 
 		diagonal = *upper;
 
@@ -125,6 +123,8 @@ size_t levenshtein_distance::operator ()(Iter string1,
 
 		++string1;
 	}
+
+	row.unlock();
 
 	return distance;
 }

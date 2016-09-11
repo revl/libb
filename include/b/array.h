@@ -157,12 +157,12 @@ public:
 	void append(const T* source, size_t count);
 
 	// Appends 'count' copies of 'element' at the end of this array.
-	void append(const T& element, size_t count = 1);
+	void append(size_t count, const T& element);
 
 	// Operator version of 'append(source)'.
 	array<T>& operator +=(const array<T>& source);
 
-	// Operator version of 'append(element, 1)'.
+	// Operator version of 'append(1, element)'.
 	array<T>& operator +=(const T& element);
 
 	// Concatenates this array with 'source' and returns the
@@ -266,7 +266,7 @@ bool array<T>::is_empty() const
 template <class T>
 bool array<T>::is_locked() const
 {
-	return metadata()->refs < 0;
+	return metadata()->refs <= 0;
 }
 
 template <class T>
@@ -408,7 +408,7 @@ array<T>& array<T>::operator +=(const array<T>& source)
 template <class T>
 array<T>& array<T>::operator +=(const T& element)
 {
-	append(element);
+	append(1, element);
 	return *this;
 }
 
