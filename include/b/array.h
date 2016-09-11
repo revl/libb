@@ -177,6 +177,19 @@ public:
 	// Empties the array.
 	void clear();
 
+// Range-based 'for' Loop Compatibility
+public:
+	typedef const T* const_iterator;
+
+	// Returns a pointer to the first element if the array
+	// is not empty.
+	// Returns an invalid pointer that is equal to end()
+	// if the array is empty.
+	const T* begin() const;
+
+	// Returns a pointer past the last element in the array.
+	const T* end() const;
+
 // Implementation
 private:
 	struct array_metadata
@@ -417,6 +430,18 @@ array<T> array<T>::operator +(const array<T>& source) const
 {
 	array<T> result(*this);
 	return result += source;
+}
+
+template <class T>
+const T* array<T>::begin() const
+{
+	return elements;
+}
+
+template <class T>
+const T* array<T>::end() const
+{
+	return elements + size();
 }
 
 template <class T>
