@@ -38,7 +38,7 @@ B_TEST_CASE(test_shrink_to_fit)
 {
 	static const size_t initial_size = 100;
 
-	b::array<int> a1(1, initial_size);
+	b::array<int> a1(initial_size, 1);
 
 	size_t initial_capacity = a1.capacity();
 
@@ -79,7 +79,7 @@ template class b::array<test_element>;
 B_TEST_CASE(test_copying)
 {
 	{
-		test_array test(test_element(123));
+		test_array test(1, test_element(123));
 		test_array test1(test);
 		test_array test2;
 		test2 = test1;

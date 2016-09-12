@@ -42,7 +42,7 @@ public:
 	array(const T* source, size_t count);
 
 	// Creates an array of 'count' copies of 'element'.
-	array(const T& element, size_t count = 1);
+	array(size_t count, const T& element);
 
 // Array Length
 public:
@@ -121,7 +121,7 @@ public:
 	void assign(const T* source, size_t count);
 
 	// Creates an array with 'count' copies of 'element'.
-	void assign(const T& element, size_t count);
+	void assign(size_t count, const T& element);
 
 	// A shorter version of assign(source).
 	array<T>& operator =(const array<T>& source);
@@ -134,7 +134,7 @@ public:
 	void overwrite(size_t index, const T* source, size_t count);
 
 	// Overwrites array range with 'count' copies of 'element'.
-	void overwrite(size_t index, const T& element, size_t count = 1);
+	void overwrite(size_t index, size_t count, const T& element);
 
 // Insertion
 public:
@@ -146,7 +146,7 @@ public:
 	void insert(size_t index, const T* source, size_t count);
 
 	// Inserts 'count' copies of 'element' at the specified position.
-	void insert(size_t index, const T& element, size_t count = 1);
+	void insert(size_t index, size_t count, const T& element);
 
 // Appending
 public:
@@ -253,9 +253,9 @@ array<T>::array(const T* source, size_t count) : elements(empty_array())
 }
 
 template <class T>
-array<T>::array(const T& element, size_t count) : elements(empty_array())
+array<T>::array(size_t count, const T& element) : elements(empty_array())
 {
-	assign(element, count);
+	assign(count, element);
 }
 
 template <class T>

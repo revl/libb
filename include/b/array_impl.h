@@ -122,7 +122,7 @@ void array<T>::assign(const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::assign(const T& element, size_t count)
+void array<T>::assign(size_t count, const T& element)
 {
 	if (count > 0)
 	{
@@ -221,7 +221,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::overwrite(size_t index, const T& element, size_t count)
+void array<T>::overwrite(size_t index, size_t count, const T& element)
 {
 	B_ASSERT(index <= size());
 
@@ -335,7 +335,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 }
 
 template <class T>
-void array<T>::insert(size_t index, const T& element, size_t count)
+void array<T>::insert(size_t index, size_t count, const T& element)
 {
 	B_ASSERT(index <= size());
 
