@@ -20,12 +20,18 @@
 
 #include <b/string.h>
 
-#define char wchar_t
-#define string wstring
-#include "string_impl.h"
-#undef string
-#undef char
+#include "unit_test.h"
 
-#include "string_impl.h"
+B_TEST_CASE(test_int_conversions)
+{
+	size_t len = b::format_string(NULL, "int: %d and int: %d", 0, 100);
 
-#include "string_formatting.h"
+	B_CHECK(len == 19);
+
+	b::string s;
+
+	s.format("verbatim %d verbatim", 123);
+	printf("%s\n", s.c_str());
+
+	B_CHECK(s == "verbatim 123 verbatim");
+}

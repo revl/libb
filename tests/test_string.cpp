@@ -20,13 +20,14 @@
 
 #include <b/string.h>
 
-B_DEFINE_STATIC_STRING(hello, "hello");
+#include "unit_test.h"
+
 B_DEFINE_STATIC_STRING(left, "lLC");
 B_DEFINE_STATIC_STRING(right, "CRr");
 B_DEFINE_STATIC_STRING(abc, "abc");
 B_DEFINE_STATIC_STRING(cba, "cba");
 
-int main()
+B_TEST_CASE(disabled_checks)
 {
 /*	b::string str1("012");
 	b::string str2("345");
@@ -67,57 +68,61 @@ int main()
 
 	printf("str1 = %s\n", (const char*) str1);
 */
+}
+
+// TODO FIXME Split into many small tests
+B_TEST_CASE(test_string)
+{
 	b::string str1;
-	if (!str1.is_empty())
-		return 2;
+
+	B_CHECK(str1.is_empty());
 
 	b::string str2("abcd", 3);
-	if (str2.length() != 3)
-		return 1;
+	B_CHECK(str2.length() == 3);
 
 	b::string str3("cba", 3);
 	b::string str4('x', 3);
 
-	if (str4 < str3)
-		return 3;
+	B_CHECK(str4 > str3);
 
 	str1 = B_STATIC_STRING(left) + str2 +
 		str4 + str3 + B_STATIC_STRING(right);
 	str1.trim_left("Ll");
 	str1.trim_right("Rr");
 	str1.trim("C");
-	if (str1 != "abcxxxcba")
-		return 4;
+	B_CHECK(str1 == "abcxxxcba");
 
 	str2 = B_STATIC_STRING(abc) + str4 + str3;
-	if (!(str1 == str2))
-		return 5;
+	B_CHECK(str1 == str2);
 
 	size_t position = str3.rfind('b');
-	if (position != 1)
-		return 6;
+	B_CHECK(position == 1);
 
-	if (str3[position] != 'b')
-		return 7;
+	B_CHECK(str3[position] == 'b');
 
-	if (str4.rfind('b') != (size_t) -1)
-		return 8;
+	B_CHECK(str4.rfind('b') == (size_t) -1);
+}
 
-	str3.assignf("abc%s", "xxx");
-	str3 += B_STATIC_STRING(cba);
-	if (str1 != (const char*) str3)
-		return 9;
+B_TEST_CASE(test_string_formatting)
+{
+	b::string str1;
+	str1.format("abc%s", "xxx");
+	str1 += B_STATIC_STRING(cba);
+	B_CHECK(str1 == "abcxxxcba");
 
-	b::string str5;
-	str5.assignf("init");
-	if (str5 != "init")
-		return 10;
+	b::string str2;
+	str2.append_format("init");
+	B_CHECK(str2 == "init");
+}
 
+B_DEFINE_STATIC_STRING(hello, "hello");
+
+B_TEST_CASE(test_static_string)
+{
 	const b::string& hello = B_STATIC_STRING(hello);
 
-	if (hello.length() != 5 || hello.capacity() != 5 ||
-		hello != hello || hello != "hello")
-		return 11;
-
-	return 0;
+	B_CHECK(hello.length() == 5);
+	B_CHECK(hello.capacity() == 5);
+	B_CHECK(hello == hello);
+	B_CHECK(hello == "hello");
 }

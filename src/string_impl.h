@@ -367,30 +367,35 @@ void string::clear()
 		replace_buffer(empty_string());
 }
 
-void string::appendfv(const char* format, va_list arguments)
+void string::format(const char* fmt, ...)
 {
-	alloc_and_copy(length() + 8 * 1024); // TODO reserve()?
+	va_list args;
 
-	metadata()->length += format_string(chars + length(),
-		format, arguments);
+	va_start(args, fmt);
+	format(args, fmt);
+	va_end(args);
 }
 
-void string::appendf(const char* format, ...)
+void string::format(va_list args, const char* fmt)
 {
-	va_list arguments;
-
-	va_start(arguments, format);
-	appendfv(format, arguments);
-	va_end(arguments);
+	clear();
+	append_format(args, fmt);
 }
 
-void string::assignf(const char* format, ...)
+void string::append_format(const char* fmt, ...)
 {
-	va_list arguments;
+	va_list args;
 
-	va_start(arguments, format);
-	assignfv(format, arguments);
-	va_end(arguments);
+	va_start(args, fmt);
+	append_format(args, fmt);
+	va_end(args);
+}
+
+void string::append_format(va_list args, const char* fmt)
+{
+	alloc_and_copy(length() + 8 * 1024); // TODO reserve() if it preserves?
+
+	metadata()->length += format_string(chars + length(), args, fmt);
 }
 
 size_t string::find(char c) const

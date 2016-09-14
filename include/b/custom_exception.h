@@ -94,7 +94,7 @@ inline CustomException::CustomException(const string& initial_message) :
 inline CustomException::CustomException(const char* message_format,
 	va_list arguments) : message()
 {
-	message.assignfv(message_format, arguments);
+	message.format(arguments, message_format);
 }
 
 inline void CustomException::SetMessage(const string& new_message)
@@ -105,7 +105,7 @@ inline void CustomException::SetMessage(const string& new_message)
 inline void CustomException::SetMessage(const char* message_format,
 	va_list arguments)
 {
-	message.assignfv(message_format, arguments);
+	message.format(arguments, message_format);
 }
 
 B_END_NAMESPACE

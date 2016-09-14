@@ -170,14 +170,22 @@ inline int compare_strings(const wchar_t* string1, const wchar_t* string2)
 	return ::wcscmp(string1, string2);
 }
 
-// Formats a string as vsprintf does.
-inline int format_string(char* buffer, const char* format, va_list arguments)
+// Formats a string using a format specification.
+size_t format_string(char* buffer, const char* fmt, ...);
+
+// Formats a string using a format specification.
+size_t format_string(char* buffer, va_list args, const char* fmt);
+
+// Formats a string using a format specification (wchar_t version).
+inline size_t format_string(wchar_t*, const wchar_t*, ...)
 {
-	return vsprintf(buffer, format, arguments);
+	B_ASSERT(0);
+
+	return 0;
 }
 
-// Formats a string as vswprintf does.
-inline int format_string(wchar_t*, const wchar_t*, va_list)
+// Formats a string using a format specification (wchar_t version).
+inline size_t format_string(wchar_t*, va_list, const wchar_t*)
 {
 	B_ASSERT(0);
 

@@ -236,17 +236,20 @@ public:
 
 // Formatting
 public:
-	// Appends formatted data to this string.
-	void appendfv(const char* format, va_list arguments);
-
-	// Appends formatted data to this string.
-	void appendf(const char* format, ...);
+	// Formats this string the way sprintf does.
+	void format(const char* fmt, ...);
 
 	// Formats this string the way vsprintf does.
-	void assignfv(const char* format, va_list arguments);
+	// Appends formatted data to this string. Note the reverse
+	// parameter order to make the overload unambiguous.
+	void format(va_list args, const char* fmt);
 
-	// Formats this string the way sprintf does.
-	void assignf(const char* format, ...);
+	// Appends formatted data to this string.
+	void append_format(const char* fmt, ...);
+
+	// Appends formatted data to this string. Note the reverse
+	// parameter order to make the overload unambiguous.
+	void append_format(va_list args, const char* fmt);
 
 // Searching
 public:
@@ -588,12 +591,6 @@ inline bool string::operator >=(const string& rhs) const
 inline bool string::operator >=(const char* rhs) const
 {
 	return compare(rhs) >= 0;
-}
-
-inline void string::assignfv(const char* format, va_list arguments)
-{
-	clear();
-	appendfv(format, arguments);
 }
 
 inline void string::trim(const char* samples)
