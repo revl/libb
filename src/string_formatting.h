@@ -36,32 +36,46 @@ namespace
 		va_list args;
 		size_t acc_len;
 		char* buffer;
-		char* out_ptr;
 
-		string_formatting() : acc_len(0), buffer(NULL), out_ptr(NULL)
+		string_formatting() : acc_len(0), buffer(NULL)
 		{
 		}
 
-		void alloc_buffer();
-		void output_int(const char* fmt);
-		void output_string(const char* fmt);
-		void output_conversion(const char* fmt);
-		void output_verbatim(const char* fmt);
+		char* copy(char* out_ptr, const char* source, size_t len);
+
+		char* alloc_buffer();
+		char* output_int(const char* fmt);
+		char* output_string(const char* fmt);
+		char* output_conversion(const char* fmt);
+		char* output_verbatim(const char* fmt);
 	};
 }
 
-void string_formatting::alloc_buffer()
+char* string_formatting::copy(char* out_ptr, const char* source, size_t len)
 {
-	if (output_buffer != NULL)
-		*(out_ptr = (buffer = output_buffer) + acc_len) = '\0';
-	else
-		out_ptr = NULL;
+	if (len > 0 && out_ptr != NULL)
+		// TODO Use one of the global functions from misc
+		memcpy(out_ptr -= len, source, len);
+
+	return out_ptr;
+}
+
+char* string_formatting::alloc_buffer()
+{
+	if (output_buffer == NULL)
+		return NULL;
+
+	char* out_ptr = (buffer = output_buffer) + acc_len;
+
+	*out_ptr = '\0';
+
+	return out_ptr;
 	// *(out_ptr = (buffer = (char*) malloc(acc_len + 1)) + acc_len) = '\0';
 }
 
 #define MAX_INT_CONV_BUF_LEN (sizeof(int) * 3 >> 1)
 
-void string_formatting::output_int(const char* fmt)
+char* string_formatting::output_int(const char* fmt)
 {
 	char conv_buf[MAX_INT_CONV_BUF_LEN];
 	char* ch = conv_buf + MAX_INT_CONV_BUF_LEN - 1;
@@ -79,24 +93,17 @@ void string_formatting::output_int(const char* fmt)
 	size_t len = conv_buf + MAX_INT_CONV_BUF_LEN - ch;
 	acc_len += len;
 
-	output_verbatim(fmt);
-
-	// TODO Use character-based copy
-	if (out_ptr != NULL)
-		memcpy(out_ptr -= len, ch, len);
+	return copy(output_verbatim(fmt), ch, len);
 }
 
-void string_formatting::output_string(const char* fmt)
+char* string_formatting::output_string(const char* fmt)
 {
 	const char* str = va_arg(args, const char*);
 
 	size_t len = b::calc_length(str);
 	acc_len += len;
 
-	output_verbatim(fmt);
-
-	if (out_ptr != NULL)
-		memcpy(out_ptr -= len, str, len);
+	return copy(output_verbatim(fmt), str, len);
 }
 
 struct conversion_spec
@@ -107,52 +114,46 @@ struct conversion_spec
 	//int length_mod;
 };
 
-void string_formatting::output_conversion(const char* fmt)
+char* string_formatting::output_conversion(const char* fmt)
 {
 	const char* ch = fmt;
 
 	switch (*ch)
 	{
 	case 'd':
-		output_int(ch + 1);
-		break;
+		return output_int(ch + 1);
 	case 's':
-		output_string(ch + 1);
-		break;
+		return output_string(ch + 1);
 	default:
 		B_ASSERT("unknown conversion type character" && false);
-		break;
+		return NULL;
 	}
 }
 
-void string_formatting::output_verbatim(const char* fmt)
+char* string_formatting::output_verbatim(const char* fmt)
 {
-	size_t copy_len = 0;
 	const char* ch = fmt;
+	size_t len = 0;
 
 	for (;;)
 	{
-		switch (*ch)
+		if (*ch == '%')
 		{
-		case '%':
-			acc_len += copy_len;
-			output_conversion(++ch);
-			break;
-		case '\0':
-			acc_len += copy_len;
-			alloc_buffer();
-			break;
-		default:
-			++ch;
-			++copy_len;
-			continue;
+			acc_len += len;
+			return copy(output_conversion(++ch), fmt, len);
 		}
-		break;
+		else
+			if (*ch == 0)
+			{
+				acc_len += len;
+				return copy(alloc_buffer(), fmt, len);
+			}
+			else
+			{
+				++ch;
+				++len;
+			}
 	}
-
-	if (copy_len > 0 && out_ptr != NULL)
-		// TODO Use one of the global functions from misc
-		memcpy(out_ptr -= copy_len, fmt, copy_len);
 }
 
 B_BEGIN_NAMESPACE
