@@ -120,6 +120,9 @@ char* string_formatting::output_conversion(const char* fmt)
 
 	switch (*ch)
 	{
+	case '%':
+		++acc_len;
+		return copy(output_verbatim(ch + 1), ch, 1);
 	case 'd':
 		return output_int(ch + 1);
 	case 's':

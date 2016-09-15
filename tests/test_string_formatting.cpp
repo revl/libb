@@ -31,7 +31,19 @@ B_TEST_CASE(test_int_conversions)
 	b::string s;
 
 	s.format("verbatim %d verbatim", 123);
-	printf("%s\n", s.c_str());
 
 	B_CHECK(s == "verbatim 123 verbatim");
+}
+
+B_TEST_CASE(test_percent_output)
+{
+	b::string s;
+
+	s.format("%d%%", 99);
+
+	B_CHECK(s == "99%");
+
+	s.format("%d%% done", 100);
+
+	B_CHECK(s == "100% done");
 }
