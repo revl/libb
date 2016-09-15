@@ -86,9 +86,6 @@ public:
 	// array of characters.
 	const char* c_str() const;
 
-	// Converts to a const char pointer.
-	operator const char*() const;
-
 	// Fixes the buffer in memory disabling the memory reallocation.
 	char* lock();
 
@@ -385,11 +382,6 @@ inline const char* string::c_str() const
 	return chars;
 }
 
-inline string::operator const char*() const
-{
-	return chars;
-}
-
 inline void string::isolate()
 {
 	if (is_shared())
@@ -535,7 +527,7 @@ inline int string::compare(const char* rhs) const
 
 inline bool string::operator ==(const string& rhs) const
 {
-	return compare(rhs) == 0;
+	return compare(rhs.c_str()) == 0;
 }
 
 inline bool string::operator ==(const char* rhs) const
@@ -545,7 +537,7 @@ inline bool string::operator ==(const char* rhs) const
 
 inline bool string::operator !=(const string& rhs) const
 {
-	return compare(rhs) != 0;
+	return compare(rhs.c_str()) != 0;
 }
 
 inline bool string::operator !=(const char* rhs) const
@@ -555,7 +547,7 @@ inline bool string::operator !=(const char* rhs) const
 
 inline bool string::operator <(const string& rhs) const
 {
-	return compare(rhs) < 0;
+	return compare(rhs.c_str()) < 0;
 }
 
 inline bool string::operator <(const char* rhs) const
@@ -565,7 +557,7 @@ inline bool string::operator <(const char* rhs) const
 
 inline bool string::operator >(const string& rhs) const
 {
-	return compare(rhs) > 0;
+	return compare(rhs.c_str()) > 0;
 }
 
 inline bool string::operator >(const char* rhs) const
@@ -575,7 +567,7 @@ inline bool string::operator >(const char* rhs) const
 
 inline bool string::operator <=(const string& rhs) const
 {
-	return compare(rhs) <= 0;
+	return compare(rhs.c_str()) <= 0;
 }
 
 inline bool string::operator <=(const char* rhs) const
@@ -585,7 +577,7 @@ inline bool string::operator <=(const char* rhs) const
 
 inline bool string::operator >=(const string& rhs) const
 {
-	return compare(rhs) >= 0;
+	return compare(rhs.c_str()) >= 0;
 }
 
 inline bool string::operator >=(const char* rhs) const

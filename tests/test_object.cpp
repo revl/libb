@@ -129,7 +129,7 @@ static int TestObject()
 
 		e.GetMessage(message);
 
-		fprintf(stderr, "Error: %s\n", (const char*) message);
+		fprintf(stderr, "Error: %s\n", message.c_str());
 
 		return 5;
 	}

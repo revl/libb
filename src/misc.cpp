@@ -29,14 +29,14 @@ bool is_directory(const string& directory)
 {
 	struct stat stat_struct;
 
-	return ::stat(directory, &stat_struct) != -1 &&
+	return ::stat(directory.c_str(), &stat_struct) != -1 &&
 		S_ISDIR(stat_struct.st_mode);
 }
 
 void make_directory(const string& directory)
 	throw (SystemException)
 {
-	if (!directory.is_empty() && mkdir(directory,
+	if (!directory.is_empty() && mkdir(directory.c_str(),
 		S_IRUSR | S_IWUSR | S_IXUSR |
 		S_IRGRP | S_IWGRP | S_IXGRP |
 		S_IROTH | S_IWOTH | S_IXOTH) == -1)
@@ -64,7 +64,7 @@ void make_path(const string& path)
 
 		if ((slash_pos = path.rfind(B_PATH_SEPARATOR)) > 0)
 		{
-			make_path(string(path, slash_pos));
+			make_path(string(path.c_str(), slash_pos));
 			make_directory(path);
 		}
 	}
@@ -73,7 +73,7 @@ void make_path(const string& path)
 void remove_directory(const string& directory)
 	throw (SystemException)
 {
-	if (!directory.is_empty() && rmdir(directory) == -1)
+	if (!directory.is_empty() && rmdir(directory.c_str()) == -1)
 		throw SystemException();
 }
 
