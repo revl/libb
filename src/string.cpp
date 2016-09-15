@@ -20,12 +20,20 @@
 
 #include <b/string.h>
 
-#define char wchar_t
 #define string wstring
+#define char_t wchar_t
+#define B_L_PREFIX(ch) L##ch
 #include "string_impl.h"
-#undef string
-#undef char
-
-#include "string_impl.h"
-
+#define string_formatting wstring_formatting
 #include "string_formatting.h"
+#undef string_formatting
+#undef B_L_PREFIX
+#undef char_t
+#undef string
+
+#define char_t char
+#define B_L_PREFIX(ch) ch
+#include "string_impl.h"
+#include "string_formatting.h"
+#undef B_L_PREFIX
+#undef char_t

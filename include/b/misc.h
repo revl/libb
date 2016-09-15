@@ -177,20 +177,10 @@ size_t format_string(char* buffer, const char* fmt, ...);
 size_t format_string(char* buffer, va_list args, const char* fmt);
 
 // Formats a string using a format specification (wchar_t version).
-inline size_t format_string(wchar_t*, const wchar_t*, ...)
-{
-	B_ASSERT(0);
-
-	return 0;
-}
+size_t format_string(wchar_t* buffer, const wchar_t* fmt, ...);
 
 // Formats a string using a format specification (wchar_t version).
-inline size_t format_string(wchar_t*, va_list, const wchar_t*)
-{
-	B_ASSERT(0);
-
-	return 0;
-}
+size_t format_string(wchar_t* buffer, va_list args, const wchar_t* fmt);
 
 // Wildcard pattern matching.
 

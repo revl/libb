@@ -32,59 +32,69 @@ namespace
 {
 	struct string_formatting
 	{
-		char* output_buffer;
+		char_t* output_buffer;
 		va_list args;
 		size_t acc_len;
-		char* buffer;
+		char_t* buffer;
 
 		string_formatting() : acc_len(0), buffer(NULL)
 		{
 		}
 
-		char* copy(char* out_ptr, const char* source, size_t len);
+		char_t* copy(char_t* dest, const char_t* source, size_t len);
 
-		char* alloc_buffer();
-		char* output_int(const char* fmt);
-		char* output_string(const char* fmt);
-		char* output_conversion(const char* fmt);
-		char* output_verbatim(const char* fmt);
+		char_t* alloc_buffer();
+
+		struct conversion_spec
+		{
+			//int flags;
+			//int min_width;
+			//int precision;
+			//int length_mod;
+		};
+
+		char_t* output_int(const char_t* fmt);
+		char_t* output_string(const char_t* fmt);
+		char_t* output_conversion(const char_t* fmt);
+		char_t* output_verbatim(const char_t* fmt);
 	};
 }
 
-char* string_formatting::copy(char* out_ptr, const char* source, size_t len)
+char_t* string_formatting::copy(char_t* dest, const char_t* source, size_t len)
 {
-	if (len > 0 && out_ptr != NULL)
+	if (len > 0 && dest != NULL)
 		// TODO Use one of the global functions from misc
-		memcpy(out_ptr -= len, source, len);
+		memcpy(dest -= len, source, len);
 
-	return out_ptr;
+	return dest;
 }
 
-char* string_formatting::alloc_buffer()
+char_t* string_formatting::alloc_buffer()
 {
 	if (output_buffer == NULL)
 		return NULL;
 
-	char* out_ptr = (buffer = output_buffer) + acc_len;
+	char_t* dest = (buffer = output_buffer) + acc_len;
 
-	*out_ptr = '\0';
+	*dest = B_L_PREFIX('\0');
 
-	return out_ptr;
-	// *(out_ptr = (buffer = (char*) malloc(acc_len + 1)) + acc_len) = '\0';
+	return dest;
+	// *(dest = (buffer = (char_t*) malloc(acc_len + 1)) + acc_len) =
+	// B_L_PREFIX('\0');
 }
 
 #define MAX_INT_CONV_BUF_LEN (sizeof(int) * 3 >> 1)
 
-char* string_formatting::output_int(const char* fmt)
+char_t* string_formatting::output_int(const char_t* fmt)
 {
-	char conv_buf[MAX_INT_CONV_BUF_LEN];
-	char* ch = conv_buf + MAX_INT_CONV_BUF_LEN - 1;
+	char_t conv_buf[MAX_INT_CONV_BUF_LEN];
+	char_t* ch = conv_buf + MAX_INT_CONV_BUF_LEN - 1;
 
 	int number = va_arg(args, int);
 
 	for (;;)
 	{
-		*ch = (char) ('0' + number % 10);
+		*ch = (char_t) (B_L_PREFIX('0') + number % 10);
 		if ((number /= 10) == 0)
 			break;
 		--ch;
@@ -96,9 +106,9 @@ char* string_formatting::output_int(const char* fmt)
 	return copy(output_verbatim(fmt), ch, len);
 }
 
-char* string_formatting::output_string(const char* fmt)
+char_t* string_formatting::output_string(const char_t* fmt)
 {
-	const char* str = va_arg(args, const char*);
+	const char_t* str = va_arg(args, const char_t*);
 
 	size_t len = b::calc_length(str);
 	acc_len += len;
@@ -106,26 +116,18 @@ char* string_formatting::output_string(const char* fmt)
 	return copy(output_verbatim(fmt), str, len);
 }
 
-struct conversion_spec
+char_t* string_formatting::output_conversion(const char_t* fmt)
 {
-	//int flags;
-	//int min_width;
-	//int precision;
-	//int length_mod;
-};
-
-char* string_formatting::output_conversion(const char* fmt)
-{
-	const char* ch = fmt;
+	const char_t* ch = fmt;
 
 	switch (*ch)
 	{
-	case '%':
+	case B_L_PREFIX('%'):
 		++acc_len;
 		return copy(output_verbatim(ch + 1), ch, 1);
-	case 'd':
+	case B_L_PREFIX('d'):
 		return output_int(ch + 1);
-	case 's':
+	case B_L_PREFIX('s'):
 		return output_string(ch + 1);
 	default:
 		B_ASSERT("unknown conversion type character" && false);
@@ -134,20 +136,20 @@ char* string_formatting::output_conversion(const char* fmt)
 	}
 }
 
-char* string_formatting::output_verbatim(const char* fmt)
+char_t* string_formatting::output_verbatim(const char_t* fmt)
 {
-	const char* ch = fmt;
+	const char_t* ch = fmt;
 	size_t len = 0;
 
 	for (;;)
 	{
-		if (*ch == '%')
+		if (*ch == B_L_PREFIX('%'))
 		{
 			acc_len += len;
 			return copy(output_conversion(++ch), fmt, len);
 		}
 		else
-			if (*ch == 0)
+			if (*ch == B_L_PREFIX('\0'))
 			{
 				acc_len += len;
 				return copy(alloc_buffer(), fmt, len);
@@ -162,7 +164,7 @@ char* string_formatting::output_verbatim(const char* fmt)
 
 B_BEGIN_NAMESPACE
 
-size_t format_string(char* buffer, const char* fmt, ...)
+size_t format_string(char_t* buffer, const char_t* fmt, ...)
 {
 	string_formatting formatting;
 
@@ -175,7 +177,7 @@ size_t format_string(char* buffer, const char* fmt, ...)
 	return formatting.acc_len;
 }
 
-size_t format_string(char* buffer, va_list args, const char* fmt)
+size_t format_string(char_t* buffer, va_list args, const char_t* fmt)
 {
 	string_formatting formatting;
 
