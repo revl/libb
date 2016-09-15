@@ -126,6 +126,7 @@ char* string_formatting::output_conversion(const char* fmt)
 		return output_string(ch + 1);
 	default:
 		B_ASSERT("unknown conversion type character" && false);
+		acc_len = (size_t) -1;
 		return NULL;
 	}
 }
