@@ -56,7 +56,7 @@ CustomException::CustomException(const char* message_format, ...) :
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.format(arguments, message_format);
+	message.format(message_format, arguments);
 	va_end(arguments);
 }
 
@@ -64,7 +64,7 @@ void CustomException::SetMessage(const char* message_format, ...)
 {
 	va_list arguments;
 	va_start(arguments, message_format);
-	message.format(arguments, message_format);
+	message.format(message_format, arguments);
 	va_end(arguments);
 }
 

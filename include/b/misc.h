@@ -174,13 +174,13 @@ inline int compare_strings(const wchar_t* string1, const wchar_t* string2)
 size_t format_string(char* buffer, const char* fmt, ...);
 
 // Formats a string using a format specification.
-size_t format_string(char* buffer, va_list args, const char* fmt);
+size_t format_string(char* buffer, const char* fmt, va_list args);
 
 // Formats a string using a format specification (wchar_t version).
 size_t format_string(wchar_t* buffer, const wchar_t* fmt, ...);
 
 // Formats a string using a format specification (wchar_t version).
-size_t format_string(wchar_t* buffer, va_list args, const wchar_t* fmt);
+size_t format_string(wchar_t* buffer, const wchar_t* fmt, va_list args);
 
 // Wildcard pattern matching.
 

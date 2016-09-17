@@ -372,14 +372,14 @@ void string::format(const char_t* fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	format(args, fmt);
+	format(fmt, args);
 	va_end(args);
 }
 
-void string::format(va_list args, const char_t* fmt)
+void string::format(const char_t* fmt, va_list args)
 {
 	clear();
-	append_format(args, fmt);
+	append_format(fmt, args);
 }
 
 void string::append_format(const char_t* fmt, ...)
@@ -387,15 +387,15 @@ void string::append_format(const char_t* fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	append_format(args, fmt);
+	append_format(fmt, args);
 	va_end(args);
 }
 
-void string::append_format(va_list args, const char_t* fmt)
+void string::append_format(const char_t* fmt, va_list args)
 {
 	alloc_and_copy(length() + 8 * 1024); // TODO reserve() if it preserves?
 
-	metadata()->length += format_string(chars + length(), args, fmt);
+	metadata()->length += format_string(chars + length(), fmt, args);
 }
 
 size_t string::find(char_t c) const

@@ -239,14 +239,14 @@ public:
 	// Formats this string the way vsprintf does.
 	// Appends formatted data to this string. Note the reverse
 	// parameter order to make the overload unambiguous.
-	void format(va_list args, const char_t* fmt);
+	void format(const char_t* fmt, va_list args);
 
 	// Appends formatted data to this string.
 	void append_format(const char_t* fmt, ...);
 
 	// Appends formatted data to this string. Note the reverse
 	// parameter order to make the overload unambiguous.
-	void append_format(va_list args, const char_t* fmt);
+	void append_format(const char_t* fmt, va_list args);
 
 // Searching
 public:

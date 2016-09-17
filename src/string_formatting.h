@@ -177,7 +177,7 @@ size_t format_string(char_t* buffer, const char_t* fmt, ...)
 	return formatting.acc_len;
 }
 
-size_t format_string(char_t* buffer, va_list args, const char_t* fmt)
+size_t format_string(char_t* buffer, const char_t* fmt, va_list args)
 {
 	string_formatting formatting;
 
