@@ -38,17 +38,13 @@ inline size_t extra_capacity(size_t size)
 }
 
 // Operations on the file system directory structure
-bool is_directory(const string& directory)
-	throw ();
+bool is_directory(const string& directory);
 
-void make_directory(const string& directory)
-	throw (SystemException);
+void make_directory(const string& directory);
 
-void make_path(const string& path)
-	throw (SystemException);
+void make_path(const string& path);
 
-void remove_directory(const string& directory)
-	throw (SystemException);
+void remove_directory(const string& directory);
 
 // Global function templates
 
@@ -477,7 +473,5 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 }
 
 B_END_NAMESPACE
-
-#include "string.h"
 
 #endif // !defined(B_MISC_H)

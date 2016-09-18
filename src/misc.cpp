@@ -19,13 +19,13 @@
  */
 
 #include <b/misc.h>
+#include <b/system_exception.h>
 
 #include <unistd.h>
 
 B_BEGIN_NAMESPACE
 
 bool is_directory(const string& directory)
-	throw ()
 {
 	struct stat stat_struct;
 
@@ -34,7 +34,6 @@ bool is_directory(const string& directory)
 }
 
 void make_directory(const string& directory)
-	throw (SystemException)
 {
 	if (!directory.is_empty() && mkdir(directory.c_str(),
 		S_IRUSR | S_IWUSR | S_IXUSR |
@@ -44,20 +43,19 @@ void make_directory(const string& directory)
 		int error = errno;
 
 		if (error != EEXIST || !is_directory(directory))
-			throw SystemException(error);
+			throw system_exception(directory, error);
 	}
 }
 
 void make_path(const string& path)
-	throw (SystemException)
 {
 	try
 	{
 		make_directory(path);
 	}
-	catch (SystemException& e)
+	catch (system_exception& e)
 	{
-		if (e.GetErrorCode() != SystemException::PathNotFound)
+		if (e.error_code() != ENOENT)
 			throw;
 
 		size_t slash_pos;
@@ -71,10 +69,9 @@ void make_path(const string& path)
 }
 
 void remove_directory(const string& directory)
-	throw (SystemException)
 {
 	if (!directory.is_empty() && rmdir(directory.c_str()) == -1)
-		throw SystemException();
+		throw system_exception(directory, errno);
 }
 
 bool MatchPatternZZ(const char* string, const char* pattern)

@@ -671,14 +671,14 @@ B_END_NAMESPACE
 		size_t length; \
 		type chars[sizeof(value)]; \
 	} \
-	const name##buffer = \
+	const name##_buffer = \
 	{ \
 		B_REFCOUNT_STATIC_INIT(-1), \
 		sizeof(value) / sizeof(type) - 1, \
 		sizeof(value) / sizeof(type) - 1, \
 		value \
 	}; \
-	static const type* name##Buffer = name##buffer.chars
+	static const type* name##_buffer_chars = name##_buffer.chars
 
 #define B_DEFINE_STATIC_STRING(name, value) \
 	B_DEFINE_STATIC_STRING_T(char, name, value)
@@ -686,9 +686,9 @@ B_END_NAMESPACE
 #define B_DEFINE_STATIC_WSTRING(name, value) \
 	B_DEFINE_STATIC_STRING_T(wchar_t, name, L##value)
 
-#define B_STATIC_STRING(name) (*(const b::string*) &name##Buffer)
+#define B_STATIC_STRING(name) (*(const b::string*) &name##_buffer_chars)
 
-#define B_STATIC_WSTRING(name) (*(const b::wstring*) &name##Buffer)
+#define B_STATIC_WSTRING(name) (*(const b::wstring*) &name##_buffer_chars)
 
 #define B_STRING_H
 

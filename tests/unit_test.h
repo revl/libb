@@ -87,17 +87,13 @@ int main(int /*argc*/, char* /*argv*/[])
 			if (current_test_case->failed_checks > 0)
 				++failed_tests;
 		}
-		catch (b::RuntimeException& e)
+		catch (b::runtime_exception& e)
 		{
 			++failed_tests;
 
-			b::string error_message;
-
-			e.GetMessage(error_message);
-
 			fprintf(stderr, "Exception in %s: %s\n",
 				current_test_case->test_name,
-				error_message.c_str());
+				e.message().c_str());
 		}
 		catch (...)
 		{

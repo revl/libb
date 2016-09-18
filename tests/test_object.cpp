@@ -20,6 +20,7 @@
 
 #include <b/object.h>
 #include <b/ref.h>
+#include <b/runtime_exception.h>
 
 B_BEGIN_NAMESPACE
 
@@ -123,13 +124,9 @@ static int TestObject()
 			base2->GetValue() != 2)
 			return 4;
 	}
-	catch (RuntimeException& e)
+	catch (runtime_exception& e)
 	{
-		string message;
-
-		e.GetMessage(message);
-
-		fprintf(stderr, "Error: %s\n", message.c_str());
+		fprintf(stderr, "Error: %s\n", e.message().c_str());
 
 		return 5;
 	}

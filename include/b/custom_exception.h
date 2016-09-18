@@ -30,36 +30,28 @@
 B_BEGIN_NAMESPACE
 
 // Customizable error exception class.
-class CustomException : public RuntimeException
+class custom_exception : public runtime_exception
 {
 // Constructors
 public:
 	// Constructs a new object with an empty description.
-	CustomException();
+	custom_exception();
 
-	// Initializes this object with a preformed error message.
-	CustomException(const string& initial_message);
+	// Initializes this object with a preformatted error message.
+	custom_exception(const string& msg);
 
-	// Initializes this object with a formatted error message.
-	CustomException(const char* message_format, va_list arguments);
+	// Initializes the error message to be contained by this
+	// object using a format string and a va_list.
+	custom_exception(const char* fmt, va_list args);
 
-	// Initializes this object with a formatted error message.
-	CustomException(const char* message_format, ...);
-
-// Attributes
-public:
-	// Sets the description message.
-	void SetMessage(const string& message);
-
-	// Builds an error description from a format string and a va_list.
-	void SetMessage(const char* message_format, va_list arguments);
-
-	// Builds an error description from a printf-like format string
-	void SetMessage(const char* message_format, ...);
+	// Initializes the error message to be contained by this
+	// object using a format string and a variable number
+	// of arguments.
+	custom_exception(const char* fmt, ...);
 
 // Overridden
 public:
-	virtual void GetMessage(string& target) const
+	virtual string message() const
 		throw ();
 
 #ifdef B_USE_STL
@@ -69,43 +61,27 @@ public:
 
 // Implementation
 public:
-	virtual ~CustomException()
+	virtual ~custom_exception()
 		throw ()
 	{
 	}
 
 private:
-#ifdef B_USE_STL
-	mutable
-#endif // B_USE_STL
-	string message;
+	string error_message;
 };
 
-inline CustomException::CustomException() :
-	message()
+inline custom_exception::custom_exception()
 {
 }
 
-inline CustomException::CustomException(const string& initial_message) :
-	message(initial_message)
+inline custom_exception::custom_exception(const string& msg) :
+	error_message(msg)
 {
 }
 
-inline CustomException::CustomException(const char* message_format,
-	va_list arguments) : message()
+inline custom_exception::custom_exception(const char* fmt, va_list args)
 {
-	message.format(message_format, arguments);
-}
-
-inline void CustomException::SetMessage(const string& new_message)
-{
-	message = new_message;
-}
-
-inline void CustomException::SetMessage(const char* message_format,
-	va_list arguments)
-{
-	message.format(message_format, arguments);
+	error_message.format(fmt, args);
 }
 
 B_END_NAMESPACE

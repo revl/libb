@@ -30,56 +30,57 @@
 
 B_BEGIN_NAMESPACE
 
-void SystemException::GetMessage(string& target) const
+B_DEFINE_STATIC_STRING(oom_message, "Insufficient memory to "
+	"allocate a buffer for a system error message.");
+
+string system_exception::message() const
 	throw ()
 {
 	try
 	{
-		const char* message_buffer = strerror(code);
-		target.assign(message_buffer, calc_length(message_buffer));
+		string error_message;
+
+		error_message.format("%s: %s", exception_context.c_str(),
+			strerror(system_error_code));
+
+		return error_message;
 	}
-	catch (Memory::Exception&)
+	catch (system_exception&)
 	{
+		return B_STATIC_STRING(oom_message);
 	}
 }
 
 #ifdef B_USE_STL
-const char* SystemException::what() const
+const char* system_exception::what() const
 	throw ()
 {
-	return strerror(code);
+	message_buffer = message();
+
+	return message_buffer.c_str();
 }
 #endif // B_USE_STL
 
-CustomException::CustomException(const char* message_format, ...) :
-	message()
+custom_exception::custom_exception(const char* fmt, ...)
 {
-	va_list arguments;
-	va_start(arguments, message_format);
-	message.format(message_format, arguments);
-	va_end(arguments);
+	va_list args;
+
+	va_start(args, fmt);
+	error_message.format(fmt, args);
+	va_end(args);
 }
 
-void CustomException::SetMessage(const char* message_format, ...)
-{
-	va_list arguments;
-	va_start(arguments, message_format);
-	message.format(message_format, arguments);
-	va_end(arguments);
-}
-
-void CustomException::GetMessage(string& target) const
+string custom_exception::message() const
 	throw ()
 {
-	target = message;
+	return error_message;
 }
 
 #ifdef B_USE_STL
-const char* CustomException::what() const
+const char* custom_exception::what() const
 	throw ()
 {
-	GetMessage(message);
-	return message;
+	return error_message.c_str();
 }
 #endif // B_USE_STL
 

@@ -30,7 +30,7 @@
 B_BEGIN_NAMESPACE
 
 // The base class for all exceptions.
-class Exception
+class exception
 #ifdef B_USE_STL
 	: public std::exception
 #endif // B_USE_STL
@@ -38,7 +38,7 @@ class Exception
 #ifndef B_USE_STL
 // Implementation
 public:
-	virtual ~Exception()
+	virtual ~exception()
 		throw ()
 	{
 	}

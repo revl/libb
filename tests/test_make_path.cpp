@@ -19,6 +19,8 @@
  */
 
 #include <b/misc.h>
+#include <b/string.h>
+#include <b/system_exception.h>
 
 B_DEFINE_STATIC_STRING(test_dir, "TestDir");
 B_DEFINE_STATIC_STRING(dot_dir, ".");
@@ -65,7 +67,7 @@ int main()
 				b::make_directory(B_STATIC_STRING(new_dir));
 				return test_number;
 			}
-			catch (b::SystemException&)
+			catch (b::system_exception&)
 			{
 			}
 
@@ -84,7 +86,7 @@ int main()
 
 		b::remove_directory(B_STATIC_STRING(test_dir));
 	}
-	catch (b::SystemException&)
+	catch (b::system_exception&)
 	{
 		return test_number;
 	}

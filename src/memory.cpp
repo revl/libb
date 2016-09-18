@@ -19,22 +19,23 @@
  */
 
 #include <b/memory.h>
+#include <b/system_exception.h>
 
 B_BEGIN_NAMESPACE
 
 void* Memory::Alloc(size_t size)
-	throw (Memory::Exception)
 {
+	B_DEFINE_STATIC_STRING(method_name, "b::memory::alloc()");
+
 	register void* block;
 
 	if ((block = malloc(size)) == NULL)
-		throw Memory::Exception();
+		throw system_exception(B_STATIC_STRING(method_name), ENOMEM);
 
 	return block;
 }
 
 void* Memory::FixedAlloc(size_t size)
-	throw (Memory::Exception)
 {
 	return Alloc(size);
 }

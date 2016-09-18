@@ -21,7 +21,7 @@
 #ifndef B_MEMORY_H
 #define B_MEMORY_H
 
-#include "system_exception.h"
+#include "host.h"
 
 B_BEGIN_NAMESPACE
 
@@ -38,21 +38,10 @@ B_BEGIN_NAMESPACE
 class Memory
 {
 public:
-	// Insufficient memory condition. An exception of this type
-	// is thrown as a result of any memory allocation failure
-	// in the library.
-	class Exception : public SystemException
-	{
-	// Construction
-	public:
-		Exception();
-	};
-
 	// Allocates <size> number of bytes and returns a pointer to
 	// the allocated memory block.
-	// Throws Memory::Exception if an out-of-memory condition occurs.
-	static void* Alloc(size_t size)
-		throw (Exception);
+	// Throws 'system_exception' if an out-of-memory condition occurs.
+	static void* Alloc(size_t size);
 
 	// Frees a memory block allocated by a previous call to
 	// the Alloc() method.
@@ -61,9 +50,8 @@ public:
 	// Allocates a chunk of memory of the appropriate size
 	// from the internal list of free chunks. If no such chunk
 	// is found, the method allocates a new one from the heap.
-	// Throws Memory::Exception if an out-of-memory condition occurs.
-	static void* FixedAlloc(size_t size)
-		throw (Exception);
+	// Throws 'system_exception' if an out-of-memory condition occurs.
+	static void* FixedAlloc(size_t size);
 
 	// Places a chunk of memory allocated by a previous call
 	// to the FixedAlloc() method back to the list of free chunks.
@@ -96,10 +84,6 @@ public:
 	// The boundary must be given as a power of two.
 	static void* Align(void* value, size_t alignment);
 };
-
-inline Memory::Exception::Exception() : SystemException(ENOMEM)
-{
-}
 
 inline void Memory::Free(void* block)
 {
@@ -144,7 +128,5 @@ inline void* Memory::Align(void* value, size_t alignment)
 }
 
 B_END_NAMESPACE
-
-#include "misc.h"
 
 #endif // !defined(B_MEMORY_H)

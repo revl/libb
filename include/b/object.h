@@ -32,8 +32,7 @@ class Object
 // Construction
 public:
 	// Allocates objects of the derived classes.
-	static void* operator new(size_t size)
-		throw (Memory::Exception);
+	static void* operator new(size_t size);
 
 	// Deallocates objects previously allocated by operator new.
 	// Inlined here to get rid of a warning issued by gcc 4.0.1:
@@ -80,7 +79,6 @@ protected:
 };
 
 inline void* Object::operator new(size_t size)
-	throw (Memory::Exception)
 {
 	return Memory::FixedAlloc(size > B_MIN_FIXED_ALLOC ?
 		size : B_MIN_FIXED_ALLOC);

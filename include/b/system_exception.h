@@ -30,46 +30,27 @@
 B_BEGIN_NAMESPACE
 
 // System error condition. An exception of this class indicates
-// abnormal termination of a system call.
-class SystemException : public RuntimeException
+// abnormal termination of a system or standard library call.
+class system_exception : public runtime_exception
 {
-// Types
-public:
-	// System-specific typedef for the system error number.
-	typedef int Code;
-
-	// Enumeration of system-specific error codes.
-	enum
-	{
-		FileNotFound = ENOENT,
-		PathNotFound = ENOENT
-	};
-
-// Utility Method
-public:
-	// Returns the error code of the last system error occured
-	// in the calling thread.
-	static Code GetLastErrorCode();
-
 // Construction
 public:
-	// Constructs an object with the number of the last error.
-	SystemException();
+	// Initializes the object using the specified error context
+	// (subject, resource, or method name) and the specified
+	// error code.
+	system_exception(const string& context_or_subject, int errno_value);
 
-	// Constructs an object with the specified error number.
-	SystemException(Code code);
-
-// Attributes
+// Information for the receiving end
 public:
-	// Retrieves the stored code of the last system error.
-	Code GetErrorCode() const;
+	// Retrieves the context that this object was constructed with.
+	string context() const;
 
-	// Sets the error number to the specified value.
-	void SetErrorCode(Code code);
+	// Retrieves the system error code that this object
+	// was constructed with.
+	int error_code() const;
 
-// Overridden
-public:
-	virtual void GetMessage(string& target) const
+	// Returns the detailed description of this error.
+	virtual string message() const
 		throw ();
 
 #if defined(B_USE_STL)
@@ -79,34 +60,31 @@ public:
 
 // Implementation
 private:
-	Code code;
+	const string exception_context;
+	const int system_error_code;
+
+#if defined(B_USE_STL)
+	mutable string message_buffer;
+#endif // B_USE_STL
 };
 
-inline SystemException::Code SystemException::GetLastErrorCode()
-{
-	return errno;
-}
-
-inline SystemException::SystemException() : code(GetLastErrorCode())
+inline system_exception::system_exception(const string& context_or_subject,
+		int errno_value) :
+	exception_context(context_or_subject),
+	system_error_code(errno_value)
 {
 }
 
-inline SystemException::SystemException(Code saved_code) : code(saved_code)
+inline string system_exception::context() const
 {
+	return exception_context;
 }
 
-inline SystemException::Code SystemException::GetErrorCode() const
+inline int system_exception::error_code() const
 {
-	return code;
-}
-
-inline void SystemException::SetErrorCode(Code new_code)
-{
-	code = new_code;
+	return system_error_code;
 }
 
 B_END_NAMESPACE
-
-#include "memory.h"
 
 #endif // !defined(B_SYSTEMEXCEPTION_H)

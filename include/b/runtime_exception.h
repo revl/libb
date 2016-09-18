@@ -26,22 +26,21 @@
 #endif // __GNUG__
 
 #include "exception.h"
+#include "string.h"
 
 B_BEGIN_NAMESPACE
 
 // The superclass of exceptions resulting from errors that may
 // occur during the normal program flow.
-class RuntimeException : public Exception
+class runtime_exception : public exception
 {
 // Overridable
 public:
 	// Returns the detailed description of this error.
-	virtual void GetMessage(string& target) const
+	virtual string message() const
 		throw () = 0;
 };
 
 B_END_NAMESPACE
-
-#include "system_exception.h"
 
 #endif // !defined(B_RUNTIMEEXCEPTION_H)
