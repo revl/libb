@@ -522,7 +522,6 @@ void string_t::replace_buffer(char_t* new_buffer_chars)
 }
 
 string_t::~string_t()
-	throw ()
 {
 	if (chars != empty_string() && (is_locked() || !--metadata()->refs))
 		Memory::Free(metadata());

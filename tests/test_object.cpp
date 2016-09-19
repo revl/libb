@@ -42,8 +42,7 @@ public:
 protected:
 	Base(int initial_value);
 
-	virtual ~Base()
-		throw ();
+	virtual ~Base();
 
 private:
 	int value;
@@ -72,7 +71,6 @@ int Base::GetInstanceCount()
 }
 
 Base::~Base()
-	throw ()
 {
 	--instance_count;
 }

@@ -34,7 +34,6 @@ B_DEFINE_STATIC_STRING(oom_message, "Insufficient memory to "
 	"allocate a buffer for a system error message.");
 
 string system_exception::message() const
-	throw ()
 {
 	try
 	{
@@ -71,7 +70,6 @@ custom_exception::custom_exception(const char* fmt, ...)
 }
 
 string custom_exception::message() const
-	throw ()
 {
 	return error_message;
 }

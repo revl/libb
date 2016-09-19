@@ -51,8 +51,7 @@ public:
 
 // Implementation
 protected:
-	virtual ~TestElement()
-		throw ();
+	virtual ~TestElement();
 
 private:
 	int value;
@@ -69,7 +68,6 @@ inline int TestElement::GetValue() const
 }
 
 TestElement::~TestElement()
-	throw ()
 {
 	--object_count;
 }
