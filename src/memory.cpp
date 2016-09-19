@@ -19,7 +19,6 @@
  */
 
 #include <b/memory.h>
-#include <b/system_exception.h>
 
 B_BEGIN_NAMESPACE
 

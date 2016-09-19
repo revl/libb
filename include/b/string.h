@@ -18,11 +18,12 @@
  *
  */
 
+#include "misc.h"
+
 #ifndef B_STRING_H
 #define B_STRING_H
 
 #include "ref_count.h"
-#include "misc.h"
 
 #undef B_STRING_H
 

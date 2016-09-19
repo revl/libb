@@ -18,10 +18,11 @@
  *
  */
 
+#include "memory.h"
+
 #ifndef B_MISC_H
 #define B_MISC_H
 
-#include "memory.h"
 #include "random.h"
 
 B_BEGIN_NAMESPACE

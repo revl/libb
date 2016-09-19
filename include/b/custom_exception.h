@@ -41,13 +41,13 @@ public:
 	custom_exception(const string& msg);
 
 	// Initializes the error message to be contained by this
-	// object using a format string and a va_list.
-	custom_exception(const char* fmt, va_list args);
-
-	// Initializes the error message to be contained by this
 	// object using a format string and a variable number
 	// of arguments.
 	custom_exception(const char* fmt, ...);
+
+	// Initializes the error message to be contained by this
+	// object using a format string and a va_list.
+	custom_exception(const char* fmt, va_list args);
 
 // Overridden
 public:

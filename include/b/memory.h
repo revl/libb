@@ -129,4 +129,6 @@ inline void* Memory::Align(void* value, size_t alignment)
 
 B_END_NAMESPACE
 
+#include "system_exception.h"
+
 #endif /* !defined(B_MEMORY_H) */

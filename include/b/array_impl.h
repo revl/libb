@@ -24,7 +24,6 @@
 #define B_ARRAY_IMPLEMENTED
 
 #include "array.h"
-#include "string.h"
 
 B_BEGIN_NAMESPACE
 

@@ -19,7 +19,6 @@
  */
 
 #include <b/misc.h>
-#include <b/system_exception.h>
 
 #include <unistd.h>
 

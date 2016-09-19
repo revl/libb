@@ -114,4 +114,6 @@ inline Object& Object::operator =(Object&)
 
 B_END_NAMESPACE
 
+#include <b/ref.h>
+
 #endif /* !defined(B_OBJECT_H) */

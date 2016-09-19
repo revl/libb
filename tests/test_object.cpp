@@ -19,8 +19,6 @@
  */
 
 #include <b/object.h>
-#include <b/ref.h>
-#include <b/runtime_exception.h>
 
 B_BEGIN_NAMESPACE
 
