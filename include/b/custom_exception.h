@@ -51,8 +51,7 @@ public:
 
 // Overridden
 public:
-	virtual string message() const
-		throw ();
+	virtual string message() const;
 
 #ifdef B_USE_STL
 	virtual const char* what() const
@@ -62,7 +61,6 @@ public:
 // Implementation
 public:
 	virtual ~custom_exception()
-		throw ()
 	{
 	}
 

@@ -39,7 +39,6 @@ class exception
 // Implementation
 public:
 	virtual ~exception()
-		throw ()
 	{
 	}
 #endif /* !defined(B_USE_STL) */

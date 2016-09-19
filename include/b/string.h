@@ -299,8 +299,7 @@ protected:
 	void isolate();
 
 public:
-	~string()
-		throw ();
+	~string();
 };
 
 inline string::string() : chars(empty_string())

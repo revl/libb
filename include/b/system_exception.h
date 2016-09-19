@@ -50,8 +50,7 @@ public:
 	int error_code() const;
 
 	// Returns the detailed description of this error.
-	virtual string message() const
-		throw ();
+	virtual string message() const;
 
 #if defined(B_USE_STL)
 	virtual const char* what() const

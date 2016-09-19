@@ -37,8 +37,7 @@ class runtime_exception : public exception
 // Overridable
 public:
 	// Returns the detailed description of this error.
-	virtual string message() const
-		throw () = 0;
+	virtual string message() const = 0;
 };
 
 B_END_NAMESPACE

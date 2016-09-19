@@ -230,7 +230,6 @@ public:
 // Implementation
 public:
 	~LinkedList()
-		throw ()
 	{
 		RemoveAll();
 	}

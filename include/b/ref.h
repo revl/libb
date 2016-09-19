@@ -103,8 +103,7 @@ public:
 // Implementation
 public:
 	// Releases the controlled object.
-	~Ref()
-		throw ();
+	~Ref();
 
 protected:
 	TYPE* ptr;
@@ -292,7 +291,6 @@ void Ref<TYPE>::swap(Ref<TYPE>& that)
 
 template <class TYPE>
 Ref<TYPE>::~Ref()
-	throw ()
 {
 	if (ptr != NULL)
 		ptr->Release();

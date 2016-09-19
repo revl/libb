@@ -231,8 +231,7 @@ private:
 	void isolate();
 
 public:
-	~array()
-		throw ();
+	~array();
 };
 
 template <class T>
@@ -479,7 +478,6 @@ void array<T>::isolate()
 
 template <class T>
 array<T>::~array()
-	throw ()
 {
 	release();
 }

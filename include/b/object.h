@@ -69,7 +69,6 @@ protected:
 	// Protected destructor prohibits direct calls to
 	// operator delete.
 	virtual ~Object()
-		throw ()
 	{
 		B_ASSERT(refs <= 0);
 	}
