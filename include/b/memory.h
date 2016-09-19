@@ -129,4 +129,4 @@ inline void* Memory::Align(void* value, size_t alignment)
 
 B_END_NAMESPACE
 
-#endif // !defined(B_MEMORY_H)
+#endif /* !defined(B_MEMORY_H) */

@@ -474,4 +474,4 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 
 B_END_NAMESPACE
 
-#endif // !defined(B_MISC_H)
+#endif /* !defined(B_MISC_H) */

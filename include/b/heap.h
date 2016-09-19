@@ -21,7 +21,7 @@
 #ifdef B_HEAP_SKIP_IMPLEMENTATION
 #undef B_ARRAY_SKIP_IMPLEMENTATION
 #define B_ARRAY_SKIP_IMPLEMENTATION
-#endif // B_HEAP_SKIP_IMPLEMENTATION
+#endif /* defined(B_HEAP_SKIP_IMPLEMENTATION) */
 #include "array.h"
 
 #ifndef B_HEAP_DEFINED
@@ -133,6 +133,6 @@ TYPE Heap<TYPE>::Pop()
 
 B_END_NAMESPACE
 
-#endif // B_HEAP_DEFINED
+#endif /* !defined(B_HEAP_DEFINED) */
 
 #include "heap_impl.h"

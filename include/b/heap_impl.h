@@ -201,8 +201,8 @@ void Heap<TYPE>::Sort(TYPE* data, int size)
 
 B_END_NAMESPACE
 
-#endif // B_HEAP_IMPLEMENTED
+#endif /* !defined(B_HEAP_IMPLEMENTED) */
 
 #else
 #undef B_HEAP_SKIP_IMPLEMENTATION
-#endif // B_HEAP_SKIP_IMPLEMENTATION
+#endif /* !defined(B_HEAP_SKIP_IMPLEMENTATION) */

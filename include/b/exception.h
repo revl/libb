@@ -23,7 +23,7 @@
 
 #ifdef __GNUG__
 #pragma interface "b/exception.h"
-#endif // __GNUG__
+#endif /* defined(__GNUG__) */
 
 #include "host.h"
 
@@ -33,7 +33,7 @@ B_BEGIN_NAMESPACE
 class exception
 #ifdef B_USE_STL
 	: public std::exception
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
 {
 #ifndef B_USE_STL
 // Implementation
@@ -42,9 +42,9 @@ public:
 		throw ()
 	{
 	}
-#endif // !defined(B_USE_STL)
+#endif /* !defined(B_USE_STL) */
 };
 
 B_END_NAMESPACE
 
-#endif // !defined(B_EXCEPTION_H)
+#endif /* !defined(B_EXCEPTION_H) */

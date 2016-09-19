@@ -18,12 +18,12 @@
  *
  */
 
-#ifndef B_SYSTEMEXCEPTION_H
-#define B_SYSTEMEXCEPTION_H
+#ifndef B_SYSTEM_EXCEPTION_H
+#define B_SYSTEM_EXCEPTION_H
 
 #ifdef __GNUG__
 #pragma interface "b/system_exception.h"
-#endif // __GNUG__
+#endif /* defined(__GNUG__) */
 
 #include "runtime_exception.h"
 
@@ -56,7 +56,7 @@ public:
 #if defined(B_USE_STL)
 	virtual const char* what() const
 		throw ();
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
 
 // Implementation
 private:
@@ -65,7 +65,7 @@ private:
 
 #if defined(B_USE_STL)
 	mutable string message_buffer;
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
 };
 
 inline system_exception::system_exception(const string& context_or_subject,
@@ -87,4 +87,4 @@ inline int system_exception::error_code() const
 
 B_END_NAMESPACE
 
-#endif // !defined(B_SYSTEMEXCEPTION_H)
+#endif /* !defined(B_SYSTEM_EXCEPTION_H) */

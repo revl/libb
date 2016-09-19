@@ -44,14 +44,14 @@
 #define B_BEGIN_NAMESPACE namespace b {
 #define B_END_NAMESPACE }
 
-#endif // B_NO_NAMESPACE
+#endif /* defined(B_NO_NAMESPACE) */
 
 // Most compilers support placement form of operator delete.
-#if !defined(USE_PLACEMENT_DELETE)
-#if defined(__GNUG__)
+#ifndef USE_PLACEMENT_DELETE
+#ifdef __GNUG__
 #define USE_PLACEMENT_DELETE
-#endif // defined(__GNUG__)
-#endif // !defined(USE_PLACEMENT_DELETE)
+#endif /* defined(__GNUG__) */
+#endif /* !defined(USE_PLACEMENT_DELETE) */
 
 #if defined(__DECCXX_VER)
 // Disable Digital C++ warnings:
@@ -77,15 +77,15 @@
 #include <b/configd_r.h>
 #else
 #include <b/config_r.h>
-#endif // defined(B_DEBUG)
+#endif /* defined(B_DEBUG) */
 #else
 #ifdef B_DEBUG
 #include <b/configd.h>
 #else
 #include <b/config.h>
-#endif // defined(B_DEBUG)
-#endif // defined(B_MT)
-#endif // defined(B_UNINSTALLED)
+#endif /* defined(B_DEBUG) */
+#endif /* defined(B_MT) */
+#endif /* defined(B_UNINSTALLED) */
 
 #include <errno.h>
 
@@ -110,16 +110,16 @@
 #define B_OUTERSTRUCT(s, m, a) const_cast<s*>((const s*) \
 	((const char*) (a) - B_OFFSETOF(s, m)))
 
-#if defined(B_DEBUG)
+#ifdef B_DEBUG
 #include <assert.h>
 #define B_ASSERT(expr) assert(expr)
 #else
 #define B_ASSERT(expr)
-#endif // defined(B_DEBUG)
+#endif /* defined(B_DEBUG) */
 
 #ifdef B_USE_STL
 #include <exception>
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
 
 #define B_PATH_SEPARATOR '/'
 #define B_PATH_SEPARATOR_SZ "/"
@@ -131,4 +131,4 @@ class string;
 
 B_END_NAMESPACE
 
-#endif // !B_HOST_H
+#endif /* !defined(B_HOST_H) */

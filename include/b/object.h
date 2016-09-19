@@ -114,4 +114,4 @@ inline Object& Object::operator =(Object&)
 
 B_END_NAMESPACE
 
-#endif // !B_OBJECT_H
+#endif /* !defined(B_OBJECT_H) */

@@ -90,4 +90,4 @@ inline Random::value_type Random::GetNext(Random::value_type limit)
 
 B_END_NAMESPACE
 
-#endif // !defined(B_RANDOM_H)
+#endif /* !defined(B_RANDOM_H) */

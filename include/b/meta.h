@@ -49,4 +49,4 @@ public:
 
 B_END_NAMESPACE
 
-#endif // B_META_H
+#endif /* !defined(B_META_H) */

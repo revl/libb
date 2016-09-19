@@ -692,6 +692,6 @@ B_END_NAMESPACE
 
 #define B_STRING_H
 
-#endif // B_DECLARE_STRING
+#endif /* defined(B_DECLARE_STRING) */
 
-#endif // !defined(B_STRING_H)
+#endif /* !defined(B_STRING_H) */

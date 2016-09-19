@@ -18,12 +18,12 @@
  *
  */
 
-#ifndef B_CUSTOMEXCEPTION_H
-#define B_CUSTOMEXCEPTION_H
+#ifndef B_CUSTOM_EXCEPTION_H
+#define B_CUSTOM_EXCEPTION_H
 
 #ifdef __GNUG__
 #pragma interface "b/custom_exception.h"
-#endif // __GNUG__
+#endif /* defined(__GNUG__) */
 
 #include "runtime_exception.h"
 
@@ -57,7 +57,7 @@ public:
 #ifdef B_USE_STL
 	virtual const char* what() const
 		throw ();
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
 
 // Implementation
 public:
@@ -86,4 +86,4 @@ inline custom_exception::custom_exception(const char* fmt, va_list args)
 
 B_END_NAMESPACE
 
-#endif // !defined(B_CUSTOMEXCEPTION_H)
+#endif /* !defined(B_CUSTOM_EXCEPTION_H) */

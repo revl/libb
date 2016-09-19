@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_REFCOUNT_H
-#define B_REFCOUNT_H
+#ifndef B_REF_COUNT_H
+#define B_REF_COUNT_H
 
 #include "host.h"
 
@@ -126,4 +126,4 @@ inline bool RefCount::operator --()
 
 B_END_NAMESPACE
 
-#endif // !B_REFCOUNT_H
+#endif /* !defined(B_REF_COUNT_H) */

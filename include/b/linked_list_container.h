@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_LINKEDLISTCONTAINER_H
-#define B_LINKEDLISTCONTAINER_H
+#ifndef B_LINKED_LIST_CONTAINER_H
+#define B_LINKED_LIST_CONTAINER_H
 
 #include "linked_list.h"
 
@@ -178,4 +178,4 @@ private:
 
 B_END_NAMESPACE
 
-#endif // B_LINKEDLISTCONTAINER_H
+#endif /* !defined(B_LINKED_LIST_CONTAINER_H) */

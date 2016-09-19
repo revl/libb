@@ -486,6 +486,6 @@ array<T>::~array()
 
 B_END_NAMESPACE
 
-#endif // B_ARRAY_DEFINED
+#endif /* !defined(B_ARRAY_DEFINED) */
 
 #include "array_impl.h"

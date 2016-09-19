@@ -500,8 +500,8 @@ void array<T>::release()
 
 B_END_NAMESPACE
 
-#endif // B_ARRAY_IMPLEMENTED
+#endif /* !defined(B_ARRAY_IMPLEMENTED) */
 
 #else
 #undef B_ARRAY_SKIP_IMPLEMENTATION
-#endif // B_ARRAY_SKIP_IMPLEMENTATION
+#endif /* !defined(B_ARRAY_SKIP_IMPLEMENTATION) */

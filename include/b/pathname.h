@@ -212,4 +212,4 @@ inline void Pathname::AddComponent(const char* name,
 
 B_END_NAMESPACE
 
-#endif // !defined(B_PATHNAME_H)
+#endif /* !defined(B_PATHNAME_H) */

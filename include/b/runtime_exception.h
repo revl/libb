@@ -18,12 +18,12 @@
  *
  */
 
-#ifndef B_RUNTIMEEXCEPTION_H
-#define B_RUNTIMEEXCEPTION_H
+#ifndef B_RUNTIME_EXCEPTION_H
+#define B_RUNTIME_EXCEPTION_H
 
 #ifdef __GNUG__
 #pragma interface "b/runtime_exception.h"
-#endif // __GNUG__
+#endif /* defined(__GNUG__) */
 
 #include "exception.h"
 #include "string.h"
@@ -43,4 +43,4 @@ public:
 
 B_END_NAMESPACE
 
-#endif // !defined(B_RUNTIMEEXCEPTION_H)
+#endif /* !defined(B_RUNTIME_EXCEPTION_H) */

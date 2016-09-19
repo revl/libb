@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_LEVENSHTEINDISTANCE
-#define B_LEVENSHTEINDISTANCE
+#ifndef B_LEVENSHTEIN_DISTANCE_H
+#define B_LEVENSHTEIN_DISTANCE_H
 
 #include "array.h"
 
@@ -131,4 +131,4 @@ size_t levenshtein_distance::operator ()(Iter string1,
 
 B_END_NAMESPACE
 
-#endif // B_LEVENSHTEINDISTANCE
+#endif /* !defined(B_LEVENSHTEIN_DISTANCE_H) */

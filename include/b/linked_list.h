@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_LINKEDLIST_H
-#define B_LINKEDLIST_H
+#ifndef B_LINKED_LIST_H
+#define B_LINKED_LIST_H
 
 #include "misc.h"
 
@@ -242,4 +242,4 @@ protected:
 
 B_END_NAMESPACE
 
-#endif // B_LINKEDLIST_H
+#endif /* !defined(B_LINKED_LIST_H) */

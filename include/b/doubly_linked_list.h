@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_DOUBLYLINKEDLIST_H
-#define B_DOUBLYLINKEDLIST_H
+#ifndef B_DOUBLY_LINKED_LIST_H
+#define B_DOUBLY_LINKED_LIST_H
 
 #include "linked_list.h"
 
@@ -239,4 +239,4 @@ public:
 
 B_END_NAMESPACE
 
-#endif // B_DOUBLYLINKEDLIST_H
+#endif /* !defined(B_DOUBLY_LINKED_LIST_H) */

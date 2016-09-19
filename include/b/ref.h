@@ -300,4 +300,4 @@ Ref<TYPE>::~Ref()
 
 B_END_NAMESPACE
 
-#endif // !defined(B_REF_H)
+#endif /* !defined(B_REF_H) */
