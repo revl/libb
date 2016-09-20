@@ -22,10 +22,10 @@
 
 #include "unit_test.h"
 
-B_DEFINE_STATIC_STRING(left, "lLC");
-B_DEFINE_STATIC_STRING(right, "CRr");
-B_DEFINE_STATIC_STRING(abc, "abc");
-B_DEFINE_STATIC_STRING(cba, "cba");
+B_STATIC_CONST_STRING(left, "lLC");
+B_STATIC_CONST_STRING(right, "CRr");
+B_STATIC_CONST_STRING(abc, "abc");
+B_STATIC_CONST_STRING(cba, "cba");
 
 B_TEST_CASE(disabled_checks)
 {
@@ -85,14 +85,13 @@ B_TEST_CASE(test_string)
 
 	B_CHECK(str4 > str3);
 
-	str1 = B_STATIC_STRING(left) + str2 +
-		str4 + str3 + B_STATIC_STRING(right);
+	str1 = left + str2 + str4 + str3 + right;
 	str1.trim_left("Ll");
 	str1.trim_right("Rr");
 	str1.trim("C");
 	B_CHECK(str1 == "abcxxxcba");
 
-	str2 = B_STATIC_STRING(abc) + str4 + str3;
+	str2 = abc + str4 + str3;
 	B_CHECK(str1 == str2);
 
 	size_t position = str3.rfind('b');
@@ -107,7 +106,7 @@ B_TEST_CASE(test_string_formatting)
 {
 	b::string str1;
 	str1.format("abc%s", "xxx");
-	str1 += B_STATIC_STRING(cba);
+	str1 += cba;
 	B_CHECK(str1 == "abcxxxcba");
 
 	b::string str2;
@@ -115,11 +114,9 @@ B_TEST_CASE(test_string_formatting)
 	B_CHECK(str2 == "init");
 }
 
-B_DEFINE_STATIC_STRING(hello, "hello");
-
 B_TEST_CASE(test_static_string)
 {
-	const b::string& hello = B_STATIC_STRING(hello);
+	B_STATIC_CONST_STRING(hello, "hello");
 
 	B_CHECK(hello.length() == 5);
 	B_CHECK(hello.capacity() == 5);

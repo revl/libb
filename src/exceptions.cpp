@@ -30,7 +30,7 @@
 
 B_BEGIN_NAMESPACE
 
-B_DEFINE_STATIC_STRING(oom_message, "Insufficient memory to "
+B_STATIC_CONST_STRING(oom_message, "Insufficient memory to "
 	"allocate a buffer for a system error message.");
 
 string system_exception::message() const
@@ -46,7 +46,7 @@ string system_exception::message() const
 	}
 	catch (system_exception&)
 	{
-		return B_STATIC_STRING(oom_message);
+		return oom_message;
 	}
 }
 

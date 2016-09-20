@@ -24,12 +24,12 @@ B_BEGIN_NAMESPACE
 
 void* Memory::Alloc(size_t size)
 {
-	B_DEFINE_STATIC_STRING(method_name, "b::memory::alloc()");
+	B_STATIC_CONST_STRING(method_name, "b::memory::alloc()");
 
 	register void* block;
 
 	if ((block = malloc(size)) == NULL)
-		throw system_exception(B_STATIC_STRING(method_name), ENOMEM);
+		throw system_exception(method_name, ENOMEM);
 
 	return block;
 }

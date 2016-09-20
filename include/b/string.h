@@ -663,32 +663,30 @@ B_END_NAMESPACE
 #undef B_L_PREFIX
 #undef char_t
 
-#define B_DEFINE_STATIC_STRING_T(type, name, value) \
+#define B_STATIC_CONST_STRING_IMPL(char_type, string_type, name, value) \
 	static struct \
 	{ \
 		b::RefCount refs; \
 		size_t capacity; \
 		size_t length; \
-		type chars[sizeof(value)]; \
+		char_type chars[sizeof(value)]; \
 	} \
 	const name##_buffer = \
 	{ \
 		B_REFCOUNT_STATIC_INIT(-1), \
-		sizeof(value) / sizeof(type) - 1, \
-		sizeof(value) / sizeof(type) - 1, \
+		sizeof(value) / sizeof(char_type) - 1, \
+		sizeof(value) / sizeof(char_type) - 1, \
 		value \
 	}; \
-	static const type* name##_buffer_chars = name##_buffer.chars
+	static const char_type* name##_buffer_chars = name##_buffer.chars; \
+	static const b::string_type& name = \
+		(*(const b::string_type*) &name##_buffer_chars)
 
-#define B_DEFINE_STATIC_STRING(name, value) \
-	B_DEFINE_STATIC_STRING_T(char, name, value)
+#define B_STATIC_CONST_STRING(name, value) \
+	B_STATIC_CONST_STRING_IMPL(char, string, name, value)
 
-#define B_DEFINE_STATIC_WSTRING(name, value) \
-	B_DEFINE_STATIC_STRING_T(wchar_t, name, L##value)
-
-#define B_STATIC_STRING(name) (*(const b::string*) &name##_buffer_chars)
-
-#define B_STATIC_WSTRING(name) (*(const b::wstring*) &name##_buffer_chars)
+#define B_STATIC_CONST_WSTRING(name, value) \
+	B_STATIC_CONST_STRING_IMPL(wchar_t, wstring, name, L##value)
 
 #define B_STRING_H
 

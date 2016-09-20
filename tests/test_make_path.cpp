@@ -20,11 +20,11 @@
 
 #include <b/misc.h>
 
-B_DEFINE_STATIC_STRING(test_dir, "TestDir");
-B_DEFINE_STATIC_STRING(dot_dir, ".");
-B_DEFINE_STATIC_STRING(new_dir, "TestDir" B_PATH_SEPARATOR_SZ \
+B_STATIC_CONST_STRING(test_dir, "TestDir");
+B_STATIC_CONST_STRING(dot_dir, ".");
+B_STATIC_CONST_STRING(new_dir, "TestDir" B_PATH_SEPARATOR_SZ \
 	"Intermed" B_PATH_SEPARATOR_SZ "NewDir");
-B_DEFINE_STATIC_STRING(intermediate,
+B_STATIC_CONST_STRING(intermediate,
 	"TestDir" B_PATH_SEPARATOR_SZ "Intermed");
 
 int main()
@@ -33,22 +33,22 @@ int main()
 
 	try
 	{
-		b::make_directory(B_STATIC_STRING(test_dir));
+		b::make_directory(test_dir);
 
 		++test_number;
 
 		// Make sure the directory is created.
-		if (!b::is_directory(B_STATIC_STRING(test_dir)))
+		if (!b::is_directory(test_dir))
 			return test_number;
 
 		++test_number;
 
 		// Creation of existing directories must succeed.
-		b::make_directory(B_STATIC_STRING(test_dir));
+		b::make_directory(test_dir);
 
 		++test_number;
 
-		b::make_directory(B_STATIC_STRING(dot_dir));
+		b::make_directory(dot_dir);
 
 		++test_number;
 
@@ -59,10 +59,10 @@ int main()
 
 		// make_directory() should not create intermediate
 		// directories.
-		if (!b::is_directory(B_STATIC_STRING(new_dir)))
+		if (!b::is_directory(new_dir))
 			try
 			{
-				b::make_directory(B_STATIC_STRING(new_dir));
+				b::make_directory(new_dir);
 				return test_number;
 			}
 			catch (b::system_exception&)
@@ -72,17 +72,17 @@ int main()
 		++test_number;
 
 		// And make_path() should.
-		b::make_path(B_STATIC_STRING(new_dir));
+		b::make_path(new_dir);
 
-		b::remove_directory(B_STATIC_STRING(new_dir));
-
-		++test_number;
-
-		b::remove_directory(B_STATIC_STRING(intermediate));
+		b::remove_directory(new_dir);
 
 		++test_number;
 
-		b::remove_directory(B_STATIC_STRING(test_dir));
+		b::remove_directory(intermediate);
+
+		++test_number;
+
+		b::remove_directory(test_dir);
 	}
 	catch (b::system_exception&)
 	{
