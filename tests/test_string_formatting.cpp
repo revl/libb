@@ -38,11 +38,11 @@ void* save_length_allocator::allocate(size_t size)
 
 B_TEST_CASE(test_int_conversions)
 {
-	save_length_allocator save_length;
+	save_length_allocator length_saver;
 
-	b::format_buffer(&save_length, L"int: %d and int: %d", 0, 100);
+	b::format_buffer(&length_saver, L"int: %d and int: %d", 0, 100);
 
-	B_CHECK(save_length.saved_length == 19);
+	B_CHECK(length_saver.saved_length == 19);
 
 	b::string s;
 
