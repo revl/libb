@@ -22,11 +22,27 @@
 
 #include "unit_test.h"
 
+struct save_length_allocator : public b::allocator
+{
+	virtual void* allocate(size_t size);
+
+	size_t saved_length;
+};
+
+void* save_length_allocator::allocate(size_t size)
+{
+	saved_length = size / sizeof(wchar_t);
+
+	return NULL;
+}
+
 B_TEST_CASE(test_int_conversions)
 {
-	size_t len = b::format_string(NULL, "int: %d and int: %d", 0, 100);
+	save_length_allocator save_length;
 
-	B_CHECK(len == 19);
+	b::format_buffer(&save_length, L"int: %d and int: %d", 0, 100);
+
+	B_CHECK(save_length.saved_length == 19);
 
 	b::string s;
 

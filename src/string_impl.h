@@ -391,11 +391,45 @@ void string_t::append_format(const char_t* fmt, ...)
 	va_end(args);
 }
 
+class string_allocator : public allocator
+{
+public:
+	string_allocator(string_t* d) : dest(d), allocated(false)
+	{
+	}
+
+	virtual void* allocate(size_t size);
+
+	virtual ~string_allocator();
+
+private:
+	string_t* dest;
+	size_t new_length;
+	bool allocated;
+};
+
+void* string_allocator::allocate(size_t size)
+{
+	// TODO reserve() if it preserves?
+	new_length = dest->length() + size / sizeof(char_t);
+
+	dest->alloc_and_copy(extra_capacity(new_length));
+	allocated = true;
+
+	return dest->lock() + dest->length();
+}
+
+string_allocator::~string_allocator()
+{
+	if (allocated)
+		dest->unlock(new_length);
+}
+
 void string_t::append_format(const char_t* fmt, va_list args)
 {
-	alloc_and_copy(length() + 8 * 1024); // TODO reserve() if it preserves?
+	string_allocator str_alloc(this);
 
-	metadata()->length += format_string(chars + length(), fmt, args);
+	format_buffer(&str_alloc, fmt, args);
 }
 
 size_t string_t::find(char_t c) const

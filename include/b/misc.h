@@ -167,17 +167,28 @@ inline int compare_strings(const wchar_t* string1, const wchar_t* string2)
 	return ::wcscmp(string1, string2);
 }
 
-// Formats a string using a format specification.
-size_t format_string(char* buffer, const char* fmt, ...);
+// Custom allocator interface.
+class allocator
+{
+protected:
+	virtual ~allocator()
+	{
+	}
 
-// Formats a string using a format specification.
-size_t format_string(char* buffer, const char* fmt, va_list args);
+public:
+	// Allocate a buffer large enough to contain 'size' bytes.
+	virtual void* allocate(size_t size) = 0;
+};
 
-// Formats a string using a format specification (wchar_t version).
-size_t format_string(wchar_t* buffer, const wchar_t* fmt, ...);
-
-// Formats a string using a format specification (wchar_t version).
-size_t format_string(wchar_t* buffer, const wchar_t* fmt, va_list args);
+// Formats a string buffer using a format specification.
+// These functions do not append the null character automatically.
+// The supplied allocator has the option to perform this task.
+// Consequently, the amount of memory requested from the allocator
+// does not account for the terminating null character.
+void format_buffer(allocator* buf_alloc, const char* fmt, ...);
+void format_buffer(allocator* buf_alloc, const char* fmt, va_list args);
+void format_buffer(allocator* buf_alloc, const wchar_t* fmt, ...);
+void format_buffer(allocator* buf_alloc, const wchar_t* fmt, va_list args);
 
 // Wildcard pattern matching.
 

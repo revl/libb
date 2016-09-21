@@ -23,7 +23,9 @@
 #define string_t wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
+#define string_allocator wstring_allocator
 #include "string_impl.h"
+#undef string_allocator
 #define string_formatting wstring_formatting
 #include "string_formatting.h"
 #undef string_formatting

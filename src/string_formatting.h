@@ -32,12 +32,13 @@ namespace
 {
 	struct string_formatting
 	{
-		char_t* output_buffer;
+		b::allocator* buffer_allocator;
 		va_list args;
 		size_t acc_len;
-		char_t* buffer;
 
-		string_formatting() : acc_len(0), buffer(NULL)
+		string_formatting(b::allocator* buf_alloc) :
+			buffer_allocator(buf_alloc),
+			acc_len(0)
 		{
 		}
 
@@ -71,16 +72,13 @@ char_t* string_formatting::copy(char_t* dest, const char_t* source, size_t len)
 
 char_t* string_formatting::alloc_buffer()
 {
-	if (output_buffer == NULL)
+	char_t* buffer = reinterpret_cast<char_t*>(
+		buffer_allocator->allocate(acc_len * sizeof(char_t)));
+
+	if (buffer == NULL)
 		return NULL;
 
-	char_t* dest = (buffer = output_buffer) + acc_len;
-
-	*dest = B_L_PREFIX('\0');
-
-	return dest;
-	// *(dest = (buffer = (char_t*) malloc(acc_len + 1)) + acc_len) =
-	// B_L_PREFIX('\0');
+	return buffer + acc_len;
 }
 
 #define MAX_INT_CONV_BUF_LEN (sizeof(int) * 3 >> 1)
@@ -164,30 +162,22 @@ char_t* string_formatting::output_verbatim(const char_t* fmt)
 
 B_BEGIN_NAMESPACE
 
-size_t format_string(char_t* buffer, const char_t* fmt, ...)
+void format_buffer(allocator* buf_alloc, const char_t* fmt, ...)
 {
-	string_formatting formatting;
-
-	formatting.output_buffer = buffer;
+	string_formatting formatting(buf_alloc);
 
 	va_start(formatting.args, fmt);
 	formatting.output_verbatim(fmt);
 	va_end(formatting.args);
-
-	return formatting.acc_len;
 }
 
-size_t format_string(char_t* buffer, const char_t* fmt, va_list args)
+void format_buffer(allocator* buf_alloc, const char_t* fmt, va_list args)
 {
-	string_formatting formatting;
-
-	formatting.output_buffer = buffer;
+	string_formatting formatting(buf_alloc);
 
 	B_VA_COPY(formatting.args, args);
 	formatting.output_verbatim(fmt);
 	B_VA_COPY_END(formatting.args);
-
-	return formatting.acc_len;
 }
 
 B_END_NAMESPACE
