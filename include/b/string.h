@@ -84,8 +84,12 @@ public:
 // Buffer Access
 public:
 	// Returns a constant pointer to the null-terminated
-	// array of characters.
+	// array of characters that this string contains.
 	const char_t* c_str() const;
+
+	// Returns a constant pointer to the string contents.
+	// This method is a synonym for c_str().
+	const char_t* data() const;
 
 	// Fixes the buffer in memory disabling the memory reallocation.
 	char_t* lock();
@@ -199,7 +203,7 @@ public:
 	// Returns true if this string and 'rhs' are equal.
 	bool operator ==(const string& rhs) const;
 
-	// Checks this string and result for equality.
+	// Checks this string and 'rhs' for equality.
 	bool operator ==(const char_t* rhs) const;
 
 	// Returns true if this string and 'rhs' differ.
@@ -271,7 +275,7 @@ public:
 	void trim(const char_t* samples);
 
 // Implementation
-protected:
+private:
 	struct buffer
 	{
 		RefCount refs;
@@ -378,6 +382,11 @@ inline void string::shrink_to_fit()
 }
 
 inline const char_t* string::c_str() const
+{
+	return chars;
+}
+
+inline const char_t* string::data() const
 {
 	return chars;
 }
