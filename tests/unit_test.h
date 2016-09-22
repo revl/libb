@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_UNIT_TEST_DEFINED
-#define B_UNIT_TEST_DEFINED
+#ifndef B_UNIT_TEST_H
+#define B_UNIT_TEST_H
 
 #include <b/runtime_exception.h>
 
@@ -59,7 +59,7 @@ B_END_NAMESPACE
 		virtual void run(); \
 	} class_name##_instance(#class_name); \
 	void class_name::run()
-	
+
 #define B_CHECK(condition) \
 	if (!(condition)) { \
 		++failed_checks; \
@@ -109,4 +109,4 @@ int main(int /*argc*/, char* /*argv*/[])
 	return failed_tests;
 }
 
-#endif // B_UNIT_TEST_DEFINED
+#endif /* !defined(B_UNIT_TEST_H) */
