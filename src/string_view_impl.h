@@ -18,30 +18,53 @@
  *
  */
 
-#include <b/string.h>
+B_BEGIN_NAMESPACE
 
-#define string_t wstring
-#define char_t wchar_t
-#define B_L_PREFIX(ch) L##ch
-#define string_allocator wstring_allocator
-#define string_view wstring_view
-#include "string_impl.h"
-#include "string_view_impl.h"
-#undef string_view
-#undef string_allocator
-#define string_formatting wstring_formatting
-#include "string_formatting.h"
-#undef string_formatting
-#undef B_L_PREFIX
-#undef char_t
-#undef string_t
+size_t string_view::find(char_t c) const
+{
+	size_t counter = length();
 
-#define string_t string
-#define char_t char
-#define B_L_PREFIX(ch) ch
-#include "string_impl.h"
-#include "string_view_impl.h"
-#include "string_formatting.h"
-#undef B_L_PREFIX
-#undef char_t
-#undef string_t
+	const char_t* pos = view;
+
+	while (counter-- > 0)
+	{
+		if (*pos == c)
+			return (size_t) (pos - view);
+
+		++pos;
+	}
+
+	return (size_t) -1;
+}
+
+size_t string_view::rfind(char_t c) const
+{
+	size_t index = length();
+
+	const char_t* pos = view + index;
+
+	while (index-- > 0)
+		if (*--pos == c)
+			return (size_t) (pos - view);
+
+	return (size_t) -1;
+}
+
+void string_view::trim_right(const char_t* samples)
+{
+	const char_t* end = view + view_length;
+
+	while (view_length > 0 && find_char(samples, *--end) != NULL)
+		--view_length;
+}
+
+void string_view::trim_left(const char_t* samples)
+{
+	while (view_length > 0 && find_char(samples, *view) != NULL)
+	{
+		++view;
+		--view_length;
+	}
+}
+
+B_END_NAMESPACE

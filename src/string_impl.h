@@ -492,7 +492,7 @@ void string_t::trim_right(const char_t* samples)
 
 void string_t::trim_left(const char_t* samples)
 {
-	char_t* start = chars;
+	const char_t* start = chars;
 
 	while (*start && find_char(samples, *start) != NULL)
 		++start;

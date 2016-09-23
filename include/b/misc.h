@@ -19,6 +19,7 @@
  */
 
 #include "memory.h"
+#include "string_view.h"
 
 #ifndef B_MISC_H
 #define B_MISC_H
@@ -155,16 +156,32 @@ inline size_t calc_length(const wchar_t* string, size_t limit)
 	return null_char_ptr != NULL ? null_char_ptr - string : limit;
 }
 
-// Compares two strings.
-inline int compare_strings(const char* string1, const char* string2)
+// Compares two null-terminated strings.
+inline int compare_strings(const char* c_str1, const char* c_str2)
 {
-	return ::strcmp(string1, string2);
+	return ::strcmp(c_str1, c_str2);
+}
+
+// Compares two null-terminated strings. Only the first (at most)
+// 'max_len' characters are compared.
+inline int compare_strings(const char* c_str1, const char* c_str2,
+	size_t max_len)
+{
+	return ::strncmp(c_str1, c_str2, max_len);
 }
 
 // Compares two strings.
-inline int compare_strings(const wchar_t* string1, const wchar_t* string2)
+inline int compare_strings(const wchar_t* c_str1, const wchar_t* c_str2)
 {
-	return ::wcscmp(string1, string2);
+	return ::wcscmp(c_str1, c_str2);
+}
+
+// Compares two null-terminated strings. Only the first (at most)
+// 'max_len' characters are compared.
+inline int compare_strings(const wchar_t* c_str1, const wchar_t* c_str2,
+	size_t max_len)
+{
+	return ::wcsncmp(c_str1, c_str2, max_len);
 }
 
 // Custom allocator interface.

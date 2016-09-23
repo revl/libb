@@ -21,6 +21,7 @@ LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 TESTS = \
 	test_string \
 	test_string_formatting \
+	test_string_view \
 	test_array \
 	test_levenshtein_distance \
 	test_lists \
@@ -33,6 +34,7 @@ TESTS = \
 check_PROGRAMS = \
 	test_string \
 	test_string_formatting \
+	test_string_view \
 	test_array \
 	test_levenshtein_distance \
 	test_lists \
@@ -45,6 +47,8 @@ check_PROGRAMS = \
 test_string_SOURCES = test_string.cpp
 
 test_string_formatting_SOURCES = test_string_formatting.cpp
+
+test_string_view_SOURCES = test_string_view.cpp
 
 test_array_SOURCES = test_array.cpp
 

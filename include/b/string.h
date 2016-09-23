@@ -31,7 +31,7 @@
 
 B_BEGIN_NAMESPACE
 
-// String class template
+// Sequence of characters.
 class string
 {
 // Construction
