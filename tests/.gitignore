@@ -10,3 +10,5 @@ test_misc
 test_object
 test_random
 test_string
+test_string_formatting
+test_string_view
