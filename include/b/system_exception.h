@@ -67,13 +67,6 @@ private:
 #endif /* defined(B_USE_STL) */
 };
 
-inline system_exception::system_exception(const string& context_or_subject,
-		int errno_value) :
-	exception_context(context_or_subject),
-	system_error_code(errno_value)
-{
-}
-
 inline string system_exception::context() const
 {
 	return exception_context;

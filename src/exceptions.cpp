@@ -30,6 +30,13 @@
 
 B_BEGIN_NAMESPACE
 
+system_exception::system_exception(const string& context_or_subject,
+		int errno_value) :
+	exception_context(context_or_subject),
+	system_error_code(errno_value)
+{
+}
+
 B_STATIC_CONST_STRING(oom_message, "Insufficient memory to "
 	"allocate a buffer for a system error message.");
 
