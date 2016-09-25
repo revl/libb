@@ -28,6 +28,8 @@ B_BEGIN_NAMESPACE
 class test_case
 {
 public:
+	virtual ~test_case() {}
+
 	test_case(const char* name);
 
 	virtual void run() = 0;
