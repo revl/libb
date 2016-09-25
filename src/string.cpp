@@ -20,7 +20,7 @@
 
 #include <b/string.h>
 
-#define string_t wstring
+#define string wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
 #define string_view wstring_view
@@ -34,9 +34,8 @@
 #undef string_view
 #undef B_L_PREFIX
 #undef char_t
-#undef string_t
+#undef string
 
-#define string_t string
 #define char_t char
 #define B_L_PREFIX(ch) ch
 #include "string_impl.h"
@@ -44,4 +43,3 @@
 #include "string_formatting.h"
 #undef B_L_PREFIX
 #undef char_t
-#undef string_t

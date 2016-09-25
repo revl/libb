@@ -20,7 +20,7 @@
 
 B_BEGIN_NAMESPACE
 
-void string_t::discard_and_alloc(size_t new_capacity)
+void string::discard_and_alloc(size_t new_capacity)
 {
 	B_ASSERT(!is_locked());
 
@@ -40,7 +40,7 @@ void string_t::discard_and_alloc(size_t new_capacity)
 	*chars = 0;
 }
 
-void string_t::alloc_and_copy(size_t new_capacity)
+void string::alloc_and_copy(size_t new_capacity)
 {
 	B_ASSERT(!is_locked());
 
@@ -66,7 +66,7 @@ void string_t::alloc_and_copy(size_t new_capacity)
 	}
 }
 
-void string_t::assign(const string_t& source)
+void string::assign(const string& source)
 {
 	if (!is_locked() && !source.is_locked())
 	{
@@ -80,7 +80,7 @@ void string_t::assign(const string_t& source)
 			assign(source.c_str(), source.length());
 }
 
-void string_t::assign(const char_t* source, size_t count)
+void string::assign(const char_t* source, size_t count)
 {
 	B_ASSERT(!is_locked());
 
@@ -95,7 +95,7 @@ void string_t::assign(const char_t* source, size_t count)
 		clear();
 }
 
-void string_t::assign(char_t source, size_t count)
+void string::assign(char_t source, size_t count)
 {
 	B_ASSERT(!is_locked());
 
@@ -111,7 +111,7 @@ void string_t::assign(char_t source, size_t count)
 }
 
 /*
-void string_t::assign(const char_t* source, size_t count)
+void string::assign(const char_t* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -124,7 +124,7 @@ void string_t::assign(const char_t* source, size_t count)
 		clear();
 }
 
-void string_t::assign(char_t source, size_t count)
+void string::assign(char_t source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -137,7 +137,7 @@ void string_t::assign(char_t source, size_t count)
 		clear();
 }
 
-void string_t::replace(size_t index, const char_t* source, size_t count)
+void string::replace(size_t index, const char_t* source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= length() && count >= 0);
 
@@ -149,7 +149,7 @@ void string_t::replace(size_t index, const char_t* source, size_t count)
 	UnlockBuffer();
 }
 
-void string_t::replace(size_t index, char_t source, size_t count)
+void string::replace(size_t index, char_t source, size_t count)
 {
 	B_ASSERT(index >= 0 && index <= length() && count >= 0);
 
@@ -162,7 +162,7 @@ void string_t::replace(size_t index, char_t source, size_t count)
 }
 */
 
-void string_t::insert(size_t index, const char_t* source, size_t count)
+void string::insert(size_t index, const char_t* source, size_t count)
 {
 	B_ASSERT(index <= length());
 	// source must not be a part of this array
@@ -216,7 +216,7 @@ void string_t::insert(size_t index, const char_t* source, size_t count)
 	}
 }
 
-void string_t::insert(size_t index, char_t source, size_t count)
+void string::insert(size_t index, char_t source, size_t count)
 {
 	B_ASSERT(index <= length());
 
@@ -267,7 +267,7 @@ void string_t::insert(size_t index, char_t source, size_t count)
 	}
 }
 
-void string_t::append(const char_t* source, size_t count)
+void string::append(const char_t* source, size_t count)
 {
 	B_ASSERT(!is_locked());
 
@@ -280,7 +280,7 @@ void string_t::append(const char_t* source, size_t count)
 	}
 }
 
-void string_t::append(char_t source, size_t count)
+void string::append(char_t source, size_t count)
 {
 	B_ASSERT(!is_locked());
 
@@ -294,7 +294,7 @@ void string_t::append(char_t source, size_t count)
 }
 
 /*
-void string_t::append(const char_t* source, size_t count)
+void string::append(const char_t* source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -306,7 +306,7 @@ void string_t::append(const char_t* source, size_t count)
 	}
 }
 
-void string_t::append(char_t source, size_t count)
+void string::append(char_t source, size_t count)
 {
 	B_ASSERT(count >= 0);
 
@@ -319,13 +319,13 @@ void string_t::append(char_t source, size_t count)
 }
 */
 
-string_t string_t::operator +(const string_t& source) const
+string string::operator +(const string& source) const
 {
-	string_t result(*this);
+	string result(*this);
 	return result += source;
 }
 
-void string_t::erase(size_t index, size_t count)
+void string::erase(size_t index, size_t count)
 {
 	if (index + count > length())
 		count = length() - index;
@@ -356,7 +356,7 @@ void string_t::erase(size_t index, size_t count)
 	}
 }
 
-void string_t::clear()
+void string::clear()
 {
 	if (!is_shared())
 	{
@@ -367,7 +367,7 @@ void string_t::clear()
 		replace_buffer(empty_string());
 }
 
-void string_t::format(const char_t* fmt, ...)
+void string::format(const char_t* fmt, ...)
 {
 	va_list args;
 
@@ -376,13 +376,13 @@ void string_t::format(const char_t* fmt, ...)
 	va_end(args);
 }
 
-void string_t::format(const char_t* fmt, va_list args)
+void string::format(const char_t* fmt, va_list args)
 {
 	clear();
 	append_format(fmt, args);
 }
 
-void string_t::append_format(const char_t* fmt, ...)
+void string::append_format(const char_t* fmt, ...)
 {
 	va_list args;
 
@@ -394,7 +394,7 @@ void string_t::append_format(const char_t* fmt, ...)
 class string_allocator : public allocator
 {
 public:
-	string_allocator(string_t* d) : dest(d), allocated(false)
+	string_allocator(string* d) : dest(d), allocated(false)
 	{
 	}
 
@@ -403,7 +403,7 @@ public:
 	virtual ~string_allocator();
 
 private:
-	string_t* dest;
+	string* dest;
 	size_t new_length;
 	bool allocated;
 };
@@ -425,14 +425,14 @@ string_allocator::~string_allocator()
 		dest->unlock(new_length);
 }
 
-void string_t::append_format(const char_t* fmt, va_list args)
+void string::append_format(const char_t* fmt, va_list args)
 {
 	string_allocator str_alloc(this);
 
 	format_buffer(&str_alloc, fmt, args);
 }
 
-size_t string_t::find(char_t c) const
+size_t string::find(char_t c) const
 {
 	size_t counter = length();
 
@@ -449,7 +449,7 @@ size_t string_t::find(char_t c) const
 	return (size_t) -1;
 }
 
-size_t string_t::rfind(char_t c) const
+size_t string::rfind(char_t c) const
 {
 	size_t index = length();
 
@@ -462,7 +462,7 @@ size_t string_t::rfind(char_t c) const
 	return (size_t) -1;
 }
 
-void string_t::trim_right(const char_t* samples)
+void string::trim_right(const char_t* samples)
 {
 	char_t* end = chars + length();
 
@@ -490,7 +490,7 @@ void string_t::trim_right(const char_t* samples)
 	}
 }
 
-void string_t::trim_left(const char_t* samples)
+void string::trim_left(const char_t* samples)
 {
 	const char_t* start = chars;
 
@@ -518,7 +518,7 @@ void string_t::trim_left(const char_t* samples)
 	}
 }
 
-char_t* string_t::empty_string()
+char_t* string::empty_string()
 {
 	static const buffer empty_string_buffer =
 	{
@@ -531,7 +531,7 @@ char_t* string_t::empty_string()
 	return const_cast<char_t*>(empty_string_buffer.first_char);
 }
 
-char_t* string_t::alloc_buffer(size_t capacity, size_t length)
+char_t* string::alloc_buffer(size_t capacity, size_t length)
 {
 	B_ASSERT(capacity >= length);
 
@@ -545,7 +545,7 @@ char_t* string_t::alloc_buffer(size_t capacity, size_t length)
 	return new_buffer->first_char;
 }
 
-void string_t::replace_buffer(char_t* new_buffer_chars)
+void string::replace_buffer(char_t* new_buffer_chars)
 {
 	B_ASSERT(!is_locked());
 
@@ -555,30 +555,30 @@ void string_t::replace_buffer(char_t* new_buffer_chars)
 	chars = new_buffer_chars;
 }
 
-string_t::~string_t()
+string::~string()
 {
 	if (chars != empty_string() && (is_locked() || !--metadata()->refs))
 		Memory::Free(metadata());
 }
 
-char_t* find_char(const char_t* string, char_t c)
+char_t* find_char(const char_t* input, char_t c)
 {
-	while (*string != 0)
-		if (*string++ == c)
-			return const_cast<char_t*>(string);
+	while (*input != 0)
+		if (*input++ == c)
+			return const_cast<char_t*>(input);
 
 	return NULL;
 }
 
-char_t* find_char_backwards(const char_t* string, char_t c)
+char_t* find_char_backwards(const char_t* input, char_t c)
 {
-	size_t index = calc_length(string);
+	size_t index = calc_length(input);
 
-	string += index;
+	input += index;
 
 	while (index-- > 0)
-		if (*--string == c)
-			return const_cast<char_t*>(string);
+		if (*--input == c)
+			return const_cast<char_t*>(input);
 
 	return NULL;
 }
