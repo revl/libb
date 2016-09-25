@@ -20,180 +20,60 @@
 
 #include <b/misc.h>
 
-struct MatchPatternTestCase
+#include "unit_test.h"
+
+static bool match_and_check_all(const char* input, const char* pattern,
+	bool expected_match)
 {
-	const char* string;
-	const char* pattern;
-	bool expected_result;
+	b::string_view input_sv(input, b::calc_length(input));
+	b::string_view pattern_sv(pattern, b::calc_length(pattern));
 
-	bool Test() const;
-	bool Assert(const char* function_name, bool result) const;
-};
-
-bool MatchPatternTestCase::Test() const
-{
-	size_t string_length = b::calc_length(string);
-	size_t pattern_length = b::calc_length(pattern);
-
-	return Assert("match_pattern(const char*, const char*)",
-			b::match_pattern(string, pattern)) &&
-		Assert("match_pattern(const char*, const string_view&)",
-			b::match_pattern(string,
-				b::string_view(pattern, pattern_length))) &&
-		Assert("match_pattern(const string_view&, const char*)",
-			b::match_pattern(b::string_view(string, string_length),
-				pattern)) &&
-		Assert("match_pattern(const string_view&, const string_view&)",
-			b::match_pattern(b::string_view(string, string_length),
-				b::string_view(pattern, pattern_length)));
+	return (expected_match ? 4 : 0) ==
+		(int) b::match_pattern(input, pattern) +
+		(int) b::match_pattern(input, pattern_sv) +
+		(int) b::match_pattern(input_sv, pattern) +
+		(int) b::match_pattern(input_sv, pattern_sv);
 }
 
-bool MatchPatternTestCase::Assert(const char* function_name, bool result) const
+#define CHECK_MATCH(input, pattern, expected_match) \
+	B_CHECK(match_and_check_all(input, pattern, expected_match))
+
+B_TEST_CASE(test_pattern_matching)
 {
-	if (result != expected_result)
-	{
-		fprintf(stderr,
-			"%s(\"%s\", \"%s\") returned %s\n",
-			function_name, string, pattern,
-			result ? "true" : "false");
-
-		return false;
-	}
-
-	return true;
+	CHECK_MATCH("", "*?*", false);
+	CHECK_MATCH("abc", "*b*", true);
+	CHECK_MATCH("abcd", "ab*c", false);
+	CHECK_MATCH("abcdbc", "abd*", false);
+	CHECK_MATCH("abcdbcda", "a?*cda", true);
+	CHECK_MATCH("abcdefgh", "ab?d*ef?h", true);
+	CHECK_MATCH("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b", false);
+	CHECK_MATCH("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*", true);
+	CHECK_MATCH("aaaaaa", "aaa*aaa", true);
+	CHECK_MATCH("aaaaaa", "aaa**aaa", true);
 }
 
-static const MatchPatternTestCase match_pattern_test_cases[] =
+B_TEST_CASE(test_version_comparison)
 {
-	{"", "*?*", false},
-	{"abc", "*b*", true},
-	{"abcd", "ab*c", false},
-	{"abcdbc", "abd*", false},
-	{"abcdbcda", "a?*cda", true},
-	{"abcdefgh", "ab?d*ef?h", true},
-	{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b", false},
-	{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*", true},
-	{"aaaaaa", "aaa*aaa", true},
-	{"aaaaaa", "aaa**aaa", true}
-};
-
-struct VersionComparisonTestCase
-{
-	const char* version1;
-	const char* version2;
-	int expected_result;
-
-	bool Test() const;
-};
-
-bool VersionComparisonTestCase::Test() const
-{
-	int diff = b::compare_versions(version1, version2);
-
-	if (expected_result == 1)
-		return diff > 0;
-
-	if (expected_result == 0)
-		return diff == 0;
-
-	return diff < 0;
+	B_CHECK(b::compare_versions("11.2", "2.11") > 0);
+	B_CHECK(b::compare_versions("1.1", "1.1.1") < 0);
+	B_CHECK(b::compare_versions("1.2.3", "1.2.3") == 0);
+	B_CHECK(b::compare_versions("1.22.1", "1.6.1") > 0);
+	B_CHECK(b::compare_versions("1.2.3.4", "1.2.3") > 0);
 }
 
-static const VersionComparisonTestCase version_comparison_test_cases[] =
+B_TEST_CASE(test_signed_char_alignment)
 {
-	{"11.2", "2.11", 1},
-	{"1.1", "1.1.1", -1},
-	{"1.2.3", "1.2.3", 0},
-	{"1.22.1", "1.6.1", 1},
-	{"1.2.3.4", "1.2.3", 1}
-};
-
-struct SignedCharAlignmentTestCase
-{
-	signed char value;
-	size_t alignment;
-	signed char expected_result;
-
-	bool Test() const;
-};
-
-inline bool SignedCharAlignmentTestCase::Test() const
-{
-	return b::align(value, alignment) == expected_result;
+	B_CHECK(b::align((signed char) 6, 3) == (signed char) 6);
+	B_CHECK(b::align((signed char) 7, 3) == (signed char) 9);
+	B_CHECK(b::align((signed char) 8, 4) == (signed char) 8);
+	B_CHECK(b::align((signed char) 9, 6) == (signed char) 12);
 }
 
-static const SignedCharAlignmentTestCase signed_char_alignment_test_cases[] =
+B_TEST_CASE(test_pointer_alignment)
 {
-	{6, 3, 6},
-	{7, 3, 9},
-	{8, 4, 8},
-	{9, 6, 12}
-};
-
-struct PtrAlignmentTestCase
-{
-	void* value;
-	size_t alignment;
-	void* expected_result;
-
-	bool Test() const;
-};
-
-inline bool PtrAlignmentTestCase::Test() const
-{
-	return b::align(value, alignment) == expected_result;
-}
-
-static const PtrAlignmentTestCase ptr_alignment_test_cases[] =
-{
-	{(void*) 9, 8, (void*) 16},
-	{(void*) 0, 16, (void*) 0},
-	{(void*) 1, 32, (void*) 32}
-};
-
-int main()
-{
-	size_t index = sizeof(match_pattern_test_cases) /
-		sizeof(*match_pattern_test_cases);
-
-	const MatchPatternTestCase* match_pattern_test_case =
-		match_pattern_test_cases;
-
-	while (index-- > 0)
-		if (!match_pattern_test_case++->Test())
-			return 1;
-
-	index = sizeof(version_comparison_test_cases) /
-		sizeof(*version_comparison_test_cases);
-
-	const VersionComparisonTestCase* version_comparison_test_case =
-		version_comparison_test_cases;
-
-	while (index-- > 0)
-		if (!version_comparison_test_case++->Test())
-			return 2;
-
-	index = sizeof(signed_char_alignment_test_cases) /
-		sizeof(*signed_char_alignment_test_cases);
-
-	const SignedCharAlignmentTestCase* signed_char_alignment_test_case =
-		signed_char_alignment_test_cases;
-
-	while (index-- > 0)
-		if (!signed_char_alignment_test_case++->Test())
-			return 3;
-
-	index = sizeof(ptr_alignment_test_cases) /
-		sizeof(*ptr_alignment_test_cases);
-
-	const PtrAlignmentTestCase* ptr_alignment_test_case =
-		ptr_alignment_test_cases;
-
-	while (index-- > 0)
-		if (!ptr_alignment_test_case++->Test())
-			return 4;
-
-	return 0;
+	B_CHECK(b::align((void*) 9, 8) == (void*) 16);
+	B_CHECK(b::align((void*) 0, 16) == (void*) 0);
+	B_CHECK(b::align((void*) 1, 32) == (void*) 32);
 }
