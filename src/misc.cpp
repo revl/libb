@@ -73,7 +73,7 @@ void remove_directory(const string& directory)
 		throw system_exception(directory, errno);
 }
 
-bool MatchPatternZZ(const char* string, const char* pattern)
+bool match_pattern(const char* string, const char* pattern)
 {
 	while (*pattern != '*')
 	{
@@ -123,22 +123,25 @@ bool MatchPatternZZ(const char* string, const char* pattern)
 	}
 }
 
-bool MatchPatternZR(const char* string,
-	const char* pattern, const char* pattern_end)
+bool match_pattern(const char* string, const string_view& pattern)
 {
+	const char* pattern_char = pattern.data();
+	const char* pattern_end = pattern_char + pattern.length();
+
 	for (;;)
 	{
-		if (pattern == pattern_end)
+		if (pattern_char == pattern_end)
 			return *string == '\0';
 
-		if (*pattern == '*')
+		if (*pattern_char == '*')
 			break;
 
-		if (*string == '\0' || (*string != *pattern && *pattern != '?'))
+		if (*string == '\0' || (*string != *pattern_char &&
+				*pattern_char != '?'))
 			return false;
 
 		++string;
-		++pattern;
+		++pattern_char;
 	}
 
 	const char* saved_string;
@@ -147,48 +150,50 @@ bool MatchPatternZR(const char* string,
 	for (;;)
 	{
 		do
-			if (++pattern == pattern_end)
+			if (++pattern_char == pattern_end)
 				return true;
-		while (*pattern == '*');
+		while (*pattern_char == '*');
 
 		saved_string = string;
-		saved_pattern = pattern;
+		saved_pattern = pattern_char;
 
 		do
 		{
 			if (*string == '\0')
 				return false;
 
-			if (*string == *pattern || *pattern == '?')
+			if (*string == *pattern_char || *pattern_char == '?')
 			{
 				++string;
 
-				if (++pattern == pattern_end)
+				if (++pattern_char == pattern_end)
 					return *string == '\0';
 			}
 			else
 			{
 				string = ++saved_string;
-				pattern = saved_pattern;
+				pattern_char = saved_pattern;
 			}
 		}
-		while (*pattern != '*');
+		while (*pattern_char != '*');
 	}
 }
 
-bool MatchPatternRZ(const char* string, const char* string_end,
-	const char* pattern)
+bool match_pattern(const string_view& string, const char* pattern)
 {
+	const char* string_char = string.data();
+	const char* string_end = string_char + string.length();
+
 	while (*pattern != '*')
 	{
 		if (*pattern == '\0')
-			return string == string_end;
+			return string_char == string_end;
 
-		if (string == string_end ||
-			(*string != *pattern && *pattern != '?'))
+		if (string_char == string_end ||
+			(*string_char != *pattern && *pattern != '?'))
 			return false;
 
-		++string;
+		++string_char;
 		++pattern;
 	}
 
@@ -203,24 +208,24 @@ bool MatchPatternRZ(const char* string, const char* string_end,
 		if (*pattern == '\0')
 			return true;
 
-		saved_string = string;
+		saved_string = string_char;
 		saved_pattern = pattern;
 
 		do
 		{
-			if (string == string_end)
+			if (string_char == string_end)
 				return false;
 
-			if (*string == *pattern || *pattern == '?')
+			if (*string_char == *pattern || *pattern == '?')
 			{
-				++string;
+				++string_char;
 
 				if (*++pattern == '\0')
-					return string == string_end;
+					return string_char == string_end;
 			}
 			else
 			{
-				string = ++saved_string;
+				string_char = ++saved_string;
 				pattern = saved_pattern;
 			}
 		}
@@ -228,23 +233,27 @@ bool MatchPatternRZ(const char* string, const char* string_end,
 	}
 }
 
-bool MatchPatternRR(const char* string, const char* string_end,
-	const char* pattern, const char* pattern_end)
+bool match_pattern(const string_view& string, const string_view& pattern)
 {
+	const char* string_char = string.data();
+	const char* string_end = string_char + string.length();
+	const char* pattern_char = pattern.data();
+	const char* pattern_end = pattern_char + pattern.length();
+
 	for (;;)
 	{
-		if (pattern == pattern_end)
-			return string == string_end;
+		if (pattern_char == pattern_end)
+			return string_char == string_end;
 
-		if (*pattern == '*')
+		if (*pattern_char == '*')
 			break;
 
-		if (string == string_end ||
-			(*string != *pattern && *pattern != '?'))
+		if (string_char == string_end ||
+			(*string_char != *pattern_char && *pattern_char != '?'))
 			return false;
 
-		++string;
-		++pattern;
+		++string_char;
+		++pattern_char;
 	}
 
 	const char* saved_string;
@@ -253,32 +262,33 @@ bool MatchPatternRR(const char* string, const char* string_end,
 	for (;;)
 	{
 		do
-			if (++pattern == pattern_end)
+			if (++pattern_char == pattern_end)
 				return true;
-		while (*pattern == '*');
+		while (*pattern_char == '*');
 
-		saved_string = string;
-		saved_pattern = pattern;
+		saved_string = string_char;
+		saved_pattern = pattern_char;
 
 		do
 		{
-			if (string == string_end)
+			if (string_char == string_end)
 				return false;
 
-			if (*string == *pattern || *pattern == '?')
+			if (*string_char == *pattern_char ||
+					*pattern_char == '?')
 			{
-				++string;
+				++string_char;
 
-				if (++pattern == pattern_end)
-					return string == string_end;
+				if (++pattern_char == pattern_end)
+					return string_char == string_end;
 			}
 			else
 			{
-				string = ++saved_string;
-				pattern = saved_pattern;
+				string_char = ++saved_string;
+				pattern_char = saved_pattern;
 			}
 		}
-		while (*pattern != '*');
+		while (*pattern_char != '*');
 	}
 }
 

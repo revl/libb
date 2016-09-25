@@ -35,15 +35,17 @@ bool MatchPatternTestCase::Test() const
 	size_t string_length = b::calc_length(string);
 	size_t pattern_length = b::calc_length(pattern);
 
-	return Assert("MatchPatternZZ", b::MatchPatternZZ(string,
-			pattern)) &&
-		Assert("MatchPatternZR", b::MatchPatternZR(string,
-			pattern, pattern + pattern_length)) &&
-		Assert("MatchPatternRZ", b::MatchPatternRZ(string,
-			string + string_length, pattern)) &&
-		Assert("MatchPatternRR", b::MatchPatternRR(string,
-			string + string_length, pattern,
-			pattern + pattern_length));
+	return Assert("match_pattern(const char*, const char*)",
+			b::match_pattern(string, pattern)) &&
+		Assert("match_pattern(const char*, const string_view&)",
+			b::match_pattern(string,
+				b::string_view(pattern, pattern_length))) &&
+		Assert("match_pattern(const string_view&, const char*)",
+			b::match_pattern(b::string_view(string, string_length),
+				pattern)) &&
+		Assert("match_pattern(const string_view&, const string_view&)",
+			b::match_pattern(b::string_view(string, string_length),
+				b::string_view(pattern, pattern_length)));
 }
 
 bool MatchPatternTestCase::Assert(const char* function_name, bool result) const
