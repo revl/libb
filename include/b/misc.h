@@ -18,12 +18,12 @@
  *
  */
 
-#include "memory.h"
 #include "string_view.h"
 
 #ifndef B_MISC_H
 #define B_MISC_H
 
+#include "memory.h"
 #include "random.h"
 
 B_BEGIN_NAMESPACE
@@ -202,10 +202,10 @@ public:
 // The supplied allocator has the option to perform this task.
 // Consequently, the amount of memory requested from the allocator
 // does not account for the terminating null character.
-void format_buffer(allocator* buf_alloc, const char* fmt, ...);
-void format_buffer(allocator* buf_alloc, const char* fmt, va_list args);
-void format_buffer(allocator* buf_alloc, const wchar_t* fmt, ...);
-void format_buffer(allocator* buf_alloc, const wchar_t* fmt, va_list args);
+string_view format_buffer(allocator* alloc, const char* fmt, ...);
+string_view format_buffer(allocator* alloc, const char* fmt, va_list args);
+wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, ...);
+wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, va_list args);
 
 // Wildcard pattern matching.
 

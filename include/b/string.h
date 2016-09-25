@@ -18,16 +18,9 @@
  *
  */
 
-#include "misc.h"
-
 #ifndef B_STRING_H
-#define B_STRING_H
 
-#include "ref_count.h"
-
-#undef B_STRING_H
-
-#ifdef B_DECLARE_STRING
+#if defined(B_STRING_DECL)
 
 B_BEGIN_NAMESPACE
 
@@ -306,6 +299,12 @@ public:
 	~string();
 };
 
+B_END_NAMESPACE
+
+#elif defined(B_STRING_INLINE)
+
+B_BEGIN_NAMESPACE
+
 inline string::string() : chars(empty_string())
 {
 }
@@ -426,7 +425,7 @@ inline void string::unlock(size_t new_length)
 {
 	B_ASSERT(is_locked() && new_length <= capacity());
 
-	chars[metadata()->length = new_length] = 0;
+	chars[metadata()->length = new_length] = B_L_PREFIX('\0');
 	++metadata()->refs;
 }
 
@@ -654,9 +653,29 @@ char_t* find_char_backwards(const char_t* string, char_t c);
 
 B_END_NAMESPACE
 
-#else
+#else /* !defined(B_STRING_DECL) && !defined(B_STRING_INLINE) */
 
-#define B_DECLARE_STRING
+#include "ref_count.h"
+
+#define B_STRING_DECL
+
+#define string wstring
+#define char_t wchar_t
+#include "string.h"
+#undef char_t
+#undef string
+
+#define char_t char
+#include "string.h"
+#undef char_t
+
+#undef B_STRING_DECL
+
+#define B_STRING_H
+#include "misc.h"
+#undef B_STRING_H
+
+#define B_STRING_INLINE
 
 #define string wstring
 #define char_t wchar_t
@@ -671,6 +690,8 @@ B_END_NAMESPACE
 #include "string.h"
 #undef B_L_PREFIX
 #undef char_t
+
+#undef B_STRING_INLINE
 
 #define B_STATIC_CONST_STRING_IMPL(char_type, string_type, name, value) \
 	static struct \
@@ -699,6 +720,6 @@ B_END_NAMESPACE
 
 #define B_STRING_H
 
-#endif /* defined(B_DECLARE_STRING) */
+#endif /* defined(B_STRING_DECL) || defined(B_STRING_INLINE) */
 
 #endif /* !defined(B_STRING_H) */

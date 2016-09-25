@@ -23,15 +23,15 @@
 #define string_t wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
-#define string_allocator wstring_allocator
 #define string_view wstring_view
+#define string_allocator wstring_allocator
 #include "string_impl.h"
 #include "string_view_impl.h"
-#undef string_view
 #undef string_allocator
 #define string_formatting wstring_formatting
 #include "string_formatting.h"
 #undef string_formatting
+#undef string_view
 #undef B_L_PREFIX
 #undef char_t
 #undef string_t

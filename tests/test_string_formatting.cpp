@@ -22,6 +22,8 @@
 
 #include "unit_test.h"
 
+#include <b/custom_exception.h>
+
 struct save_length_allocator : public b::allocator
 {
 	virtual void* allocate(size_t size);
@@ -49,6 +51,42 @@ B_TEST_CASE(test_int_conversions)
 	s.format("verbatim %d verbatim", 123);
 
 	B_CHECK(s == "verbatim 123 verbatim");
+}
+
+struct static_buffer_allocator : public b::allocator
+{
+	static_buffer_allocator(char* pre_allocated, size_t size) :
+		buffer(pre_allocated),
+		buffer_size(size)
+	{
+	}
+
+	virtual void* allocate(size_t size);
+
+	char* buffer;
+	size_t buffer_size;
+};
+
+void* static_buffer_allocator::allocate(size_t size)
+{
+	if (size > buffer_size)
+		throw b::custom_exception("Pre-allocated buffer "
+			"is too small for the requested data size.");
+
+	return buffer;
+}
+
+B_TEST_CASE(test_custom_allocator)
+{
+	static char buffer[1024];
+
+	static_buffer_allocator custom_allocator(buffer, sizeof(buffer));
+
+	b::string_view formatted = b::format_buffer(&custom_allocator,
+		"an int (%d) and a string (%s)", 128, "test string");
+
+	B_CHECK(formatted.data() == buffer);
+	B_CHECK(formatted.length() == 39);
 }
 
 B_TEST_CASE(test_percent_output)

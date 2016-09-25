@@ -19,15 +19,12 @@
  */
 
 #ifndef B_STRING_VIEW_H
-#define B_STRING_VIEW_H
 
-#include "string.h"
-
-#undef B_STRING_VIEW_H
-
-#ifdef B_DECLARE_STRING_VIEW
+#if defined(B_STRING_VIEW_DECL)
 
 B_BEGIN_NAMESPACE
+
+class string;
 
 // Pointer to a substring within a self-contained string.
 class string_view
@@ -162,6 +159,12 @@ private:
 	const char_t* view;
 	size_t view_length;
 };
+
+B_END_NAMESPACE
+
+#elif defined(B_STRING_VIEW_INLINE)
+
+B_BEGIN_NAMESPACE
 
 inline string_view::string_view() : view(NULL), view_length(0)
 {
@@ -378,9 +381,32 @@ inline bool operator >=(const char_t* c_str, const string_view& str)
 
 B_END_NAMESPACE
 
-#else
+#else /* !defined(B_STRING_VIEW_DECL) && !defined(B_STRING_VIEW_INLINE) */
 
-#define B_DECLARE_STRING_VIEW
+#include "host.h"
+
+#define B_STRING_VIEW_DECL
+
+#define string_view wstring_view
+#define char_t wchar_t
+#define string wstring
+#include "string_view.h"
+#undef string
+#undef char_t
+#undef string_view
+
+#define char_t char
+#include "string_view.h"
+#undef char_t
+
+#undef B_STRING_VIEW_DECL
+
+#define B_STRING_VIEW_H
+#include "string.h"
+#include "misc.h"
+#undef B_STRING_VIEW_H
+
+#define B_STRING_VIEW_INLINE
 
 #define string_view wstring_view
 #define char_t wchar_t
@@ -394,13 +420,14 @@ B_END_NAMESPACE
 
 #define char_t char
 #define B_L_PREFIX(ch) ch
-#define DEBB
 #include "string_view.h"
 #undef B_L_PREFIX
 #undef char_t
 
+#undef B_STRING_VIEW_INLINE
+
 #define B_STRING_VIEW_H
 
-#endif /* defined(B_DECLARE_STRING_VIEW) */
+#endif /* defined(B_STRING_VIEW_DECL) || defined(B_STRING_VIEW_INLINE) */
 
 #endif /* !defined(B_STRING_VIEW_H) */

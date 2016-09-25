@@ -36,8 +36,8 @@ namespace
 		va_list args;
 		size_t acc_len;
 
-		string_formatting(b::allocator* buf_alloc) :
-			buffer_allocator(buf_alloc),
+		string_formatting(b::allocator* alloc) :
+			buffer_allocator(alloc),
 			acc_len(0)
 		{
 		}
@@ -162,22 +162,26 @@ char_t* string_formatting::output_verbatim(const char_t* fmt)
 
 B_BEGIN_NAMESPACE
 
-void format_buffer(allocator* buf_alloc, const char_t* fmt, ...)
+string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 {
-	string_formatting formatting(buf_alloc);
+	string_formatting formatting(alloc);
 
 	va_start(formatting.args, fmt);
-	formatting.output_verbatim(fmt);
+	const char_t* buffer = formatting.output_verbatim(fmt);
 	va_end(formatting.args);
+
+	return string_view(buffer, formatting.acc_len);
 }
 
-void format_buffer(allocator* buf_alloc, const char_t* fmt, va_list args)
+string_view format_buffer(allocator* alloc, const char_t* fmt, va_list args)
 {
-	string_formatting formatting(buf_alloc);
+	string_formatting formatting(alloc);
 
 	B_VA_COPY(formatting.args, args);
-	formatting.output_verbatim(fmt);
+	const char_t* buffer = formatting.output_verbatim(fmt);
 	B_VA_COPY_END(formatting.args);
+
+	return string_view(buffer, formatting.acc_len);
 }
 
 B_END_NAMESPACE
