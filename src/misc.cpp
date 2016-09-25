@@ -73,21 +73,21 @@ void remove_directory(const string& directory)
 		throw system_exception(directory, errno);
 }
 
-bool match_pattern(const char* string, const char* pattern)
+bool match_pattern(const char* input, const char* pattern)
 {
 	while (*pattern != '*')
 	{
 		if (*pattern == '\0')
-			return *string == '\0';
+			return *input == '\0';
 
-		if (*string == '\0' || (*string != *pattern && *pattern != '?'))
+		if (*input == '\0' || (*input != *pattern && *pattern != '?'))
 			return false;
 
-		++string;
+		++input;
 		++pattern;
 	}
 
-	const char* saved_string;
+	const char* saved_input;
 	const char* saved_pattern;
 
 	for (;;)
@@ -98,24 +98,24 @@ bool match_pattern(const char* string, const char* pattern)
 		if (*pattern == '\0')
 			return true;
 
-		saved_string = string;
+		saved_input = input;
 		saved_pattern = pattern;
 
 		do
 		{
-			if (*string == '\0')
+			if (*input == '\0')
 				return false;
 
-			if (*string == *pattern || *pattern == '?')
+			if (*input == *pattern || *pattern == '?')
 			{
-				++string;
+				++input;
 
 				if (*++pattern == '\0')
-					return *string == '\0';
+					return *input == '\0';
 			}
 			else
 			{
-				string = ++saved_string;
+				input = ++saved_input;
 				pattern = saved_pattern;
 			}
 		}
@@ -123,7 +123,7 @@ bool match_pattern(const char* string, const char* pattern)
 	}
 }
 
-bool match_pattern(const char* string, const string_view& pattern)
+bool match_pattern(const char* input, const string_view& pattern)
 {
 	const char* pattern_char = pattern.data();
 	const char* pattern_end = pattern_char + pattern.length();
@@ -131,20 +131,20 @@ bool match_pattern(const char* string, const string_view& pattern)
 	for (;;)
 	{
 		if (pattern_char == pattern_end)
-			return *string == '\0';
+			return *input == '\0';
 
 		if (*pattern_char == '*')
 			break;
 
-		if (*string == '\0' || (*string != *pattern_char &&
+		if (*input == '\0' || (*input != *pattern_char &&
 				*pattern_char != '?'))
 			return false;
 
-		++string;
+		++input;
 		++pattern_char;
 	}
 
-	const char* saved_string;
+	const char* saved_input;
 	const char* saved_pattern;
 
 	for (;;)
@@ -154,24 +154,24 @@ bool match_pattern(const char* string, const string_view& pattern)
 				return true;
 		while (*pattern_char == '*');
 
-		saved_string = string;
+		saved_input = input;
 		saved_pattern = pattern_char;
 
 		do
 		{
-			if (*string == '\0')
+			if (*input == '\0')
 				return false;
 
-			if (*string == *pattern_char || *pattern_char == '?')
+			if (*input == *pattern_char || *pattern_char == '?')
 			{
-				++string;
+				++input;
 
 				if (++pattern_char == pattern_end)
-					return *string == '\0';
+					return *input == '\0';
 			}
 			else
 			{
-				string = ++saved_string;
+				input = ++saved_input;
 				pattern_char = saved_pattern;
 			}
 		}
@@ -179,25 +179,25 @@ bool match_pattern(const char* string, const string_view& pattern)
 	}
 }
 
-bool match_pattern(const string_view& string, const char* pattern)
+bool match_pattern(const string_view& input, const char* pattern)
 {
-	const char* string_char = string.data();
-	const char* string_end = string_char + string.length();
+	const char* input_char = input.data();
+	const char* input_end = input_char + input.length();
 
 	while (*pattern != '*')
 	{
 		if (*pattern == '\0')
-			return string_char == string_end;
+			return input_char == input_end;
 
-		if (string_char == string_end ||
-			(*string_char != *pattern && *pattern != '?'))
+		if (input_char == input_end ||
+			(*input_char != *pattern && *pattern != '?'))
 			return false;
 
-		++string_char;
+		++input_char;
 		++pattern;
 	}
 
-	const char* saved_string;
+	const char* saved_input;
 	const char* saved_pattern;
 
 	for (;;)
@@ -208,24 +208,24 @@ bool match_pattern(const string_view& string, const char* pattern)
 		if (*pattern == '\0')
 			return true;
 
-		saved_string = string_char;
+		saved_input = input_char;
 		saved_pattern = pattern;
 
 		do
 		{
-			if (string_char == string_end)
+			if (input_char == input_end)
 				return false;
 
-			if (*string_char == *pattern || *pattern == '?')
+			if (*input_char == *pattern || *pattern == '?')
 			{
-				++string_char;
+				++input_char;
 
 				if (*++pattern == '\0')
-					return string_char == string_end;
+					return input_char == input_end;
 			}
 			else
 			{
-				string_char = ++saved_string;
+				input_char = ++saved_input;
 				pattern = saved_pattern;
 			}
 		}
@@ -233,30 +233,30 @@ bool match_pattern(const string_view& string, const char* pattern)
 	}
 }
 
-bool match_pattern(const string_view& string, const string_view& pattern)
+bool match_pattern(const string_view& input, const string_view& pattern)
 {
-	const char* string_char = string.data();
-	const char* string_end = string_char + string.length();
+	const char* input_char = input.data();
+	const char* input_end = input_char + input.length();
 	const char* pattern_char = pattern.data();
 	const char* pattern_end = pattern_char + pattern.length();
 
 	for (;;)
 	{
 		if (pattern_char == pattern_end)
-			return string_char == string_end;
+			return input_char == input_end;
 
 		if (*pattern_char == '*')
 			break;
 
-		if (string_char == string_end ||
-			(*string_char != *pattern_char && *pattern_char != '?'))
+		if (input_char == input_end ||
+			(*input_char != *pattern_char && *pattern_char != '?'))
 			return false;
 
-		++string_char;
+		++input_char;
 		++pattern_char;
 	}
 
-	const char* saved_string;
+	const char* saved_input;
 	const char* saved_pattern;
 
 	for (;;)
@@ -266,25 +266,25 @@ bool match_pattern(const string_view& string, const string_view& pattern)
 				return true;
 		while (*pattern_char == '*');
 
-		saved_string = string_char;
+		saved_input = input_char;
 		saved_pattern = pattern_char;
 
 		do
 		{
-			if (string_char == string_end)
+			if (input_char == input_end)
 				return false;
 
-			if (*string_char == *pattern_char ||
+			if (*input_char == *pattern_char ||
 					*pattern_char == '?')
 			{
-				++string_char;
+				++input_char;
 
 				if (++pattern_char == pattern_end)
-					return string_char == string_end;
+					return input_char == input_end;
 			}
 			else
 			{
-				string_char = ++saved_string;
+				input_char = ++saved_input;
 				pattern_char = saved_pattern;
 			}
 		}

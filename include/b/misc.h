@@ -208,10 +208,10 @@ wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, ...);
 wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, va_list args);
 
 // Wildcard pattern matching.
-bool match_pattern(const char* string, const char* pattern);
-bool match_pattern(const char* string, const string_view& pattern);
-bool match_pattern(const string_view& string, const char* pattern);
-bool match_pattern(const string_view& string, const string_view& pattern);
+bool match_pattern(const char* input, const char* pattern);
+bool match_pattern(const char* input, const string_view& pattern);
+bool match_pattern(const string_view& input, const char* pattern);
+bool match_pattern(const string_view& input, const string_view& pattern);
 
 // Compares two version strings.
 int compare_versions(const char* version1, const char* version2);
