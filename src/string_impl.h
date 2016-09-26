@@ -369,44 +369,44 @@ void string::clear()
 
 string string::formatted(const char_t* fmt, ...)
 {
-	va_list args;
+	va_list ap;
 
-	va_start(args, fmt);
-	return formatted(fmt, args);
-	va_end(args);
+	va_start(ap, fmt);
+	return formatted_va(fmt, ap);
+	va_end(ap);
 }
 
-string string::formatted(const char_t* fmt, va_list args)
+string string::formatted_va(const char_t* fmt, va_list ap)
 {
 	string result;
 
-	result.format(fmt, args);
+	result.format_va(fmt, ap);
 
 	return result;
 }
 
 void string::format(const char_t* fmt, ...)
 {
-	va_list args;
+	va_list ap;
 
-	va_start(args, fmt);
-	format(fmt, args);
-	va_end(args);
+	va_start(ap, fmt);
+	format_va(fmt, ap);
+	va_end(ap);
 }
 
-void string::format(const char_t* fmt, va_list args)
+void string::format_va(const char_t* fmt, va_list ap)
 {
 	clear();
-	append_format(fmt, args);
+	append_format_va(fmt, ap);
 }
 
 void string::append_format(const char_t* fmt, ...)
 {
-	va_list args;
+	va_list ap;
 
-	va_start(args, fmt);
-	append_format(fmt, args);
-	va_end(args);
+	va_start(ap, fmt);
+	append_format_va(fmt, ap);
+	va_end(ap);
 }
 
 class string_allocator : public allocator
@@ -443,11 +443,11 @@ string_allocator::~string_allocator()
 		dest->unlock(new_length);
 }
 
-void string::append_format(const char_t* fmt, va_list args)
+void string::append_format_va(const char_t* fmt, va_list ap)
 {
 	string_allocator str_alloc(this);
 
-	format_buffer(&str_alloc, fmt, args);
+	format_buffer_va(&str_alloc, fmt, ap);
 }
 
 size_t string::find(char_t c) const

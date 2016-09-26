@@ -33,7 +33,7 @@ namespace
 	struct string_formatting
 	{
 		b::allocator* buffer_allocator;
-		va_list args;
+		va_list ap;
 		size_t acc_len;
 
 		string_formatting(b::allocator* alloc) :
@@ -88,7 +88,7 @@ char_t* string_formatting::output_int(const char_t* fmt)
 	char_t conv_buf[MAX_INT_CONV_BUF_LEN];
 	char_t* ch = conv_buf + MAX_INT_CONV_BUF_LEN - 1;
 
-	int number = va_arg(args, int);
+	int number = va_arg(ap, int);
 
 	for (;;)
 	{
@@ -106,7 +106,7 @@ char_t* string_formatting::output_int(const char_t* fmt)
 
 char_t* string_formatting::output_string(const char_t* fmt)
 {
-	const char_t* str = va_arg(args, const char_t*);
+	const char_t* str = va_arg(ap, const char_t*);
 
 	size_t len = b::calc_length(str);
 	acc_len += len;
@@ -166,20 +166,20 @@ string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 {
 	string_formatting formatting(alloc);
 
-	va_start(formatting.args, fmt);
+	va_start(formatting.ap, fmt);
 	const char_t* buffer = formatting.output_verbatim(fmt);
-	va_end(formatting.args);
+	va_end(formatting.ap);
 
 	return string_view(buffer, formatting.acc_len);
 }
 
-string_view format_buffer(allocator* alloc, const char_t* fmt, va_list args)
+string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
 {
 	string_formatting formatting(alloc);
 
-	B_VA_COPY(formatting.args, args);
+	B_VA_COPY(formatting.ap, ap);
 	const char_t* buffer = formatting.output_verbatim(fmt);
-	B_VA_COPY_END(formatting.args);
+	B_VA_COPY_END(formatting.ap);
 
 	return string_view(buffer, formatting.acc_len);
 }

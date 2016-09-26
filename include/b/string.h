@@ -233,15 +233,15 @@ public:
 public:
 	// Constructs a new string from a format string.
 	static string formatted(const char_t* fmt, ...);
-	static string formatted(const char_t* fmt, va_list args);
+	static string formatted_va(const char_t* fmt, va_list ap);
 
 	// Formats this string using the specified format.
 	void format(const char_t* fmt, ...);
-	void format(const char_t* fmt, va_list args);
+	void format_va(const char_t* fmt, va_list ap);
 
 	// Appends formatted data to this string.
 	void append_format(const char_t* fmt, ...);
-	void append_format(const char_t* fmt, va_list args);
+	void append_format_va(const char_t* fmt, va_list ap);
 
 // Searching
 public:

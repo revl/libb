@@ -65,11 +65,11 @@ const char* system_exception::what() const
 
 custom_exception::custom_exception(const char* fmt, ...)
 {
-	va_list args;
+	va_list ap;
 
-	va_start(args, fmt);
-	error_message.format(fmt, args);
-	va_end(args);
+	va_start(ap, fmt);
+	error_message.format_va(fmt, ap);
+	va_end(ap);
 }
 
 string custom_exception::message() const

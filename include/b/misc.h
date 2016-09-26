@@ -203,9 +203,9 @@ public:
 // Consequently, the amount of memory requested from the allocator
 // does not account for the terminating null character.
 string_view format_buffer(allocator* alloc, const char* fmt, ...);
-string_view format_buffer(allocator* alloc, const char* fmt, va_list args);
+string_view format_buffer_va(allocator* alloc, const char* fmt, va_list ap);
 wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, ...);
-wstring_view format_buffer(allocator* alloc, const wchar_t* fmt, va_list args);
+wstring_view format_buffer_va(allocator* alloc, const wchar_t* fmt, va_list ap);
 
 // Wildcard pattern matching.
 bool match_pattern(const char* input, const char* pattern);

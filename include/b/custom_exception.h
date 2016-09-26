@@ -47,7 +47,7 @@ public:
 
 	// Initializes the error message to be contained by this
 	// object using a format string and a va_list.
-	custom_exception(const char* fmt, va_list args);
+	custom_exception(const char* fmt, va_list ap);
 
 // Overridden
 public:
@@ -77,8 +77,8 @@ inline custom_exception::custom_exception(const string& msg) :
 {
 }
 
-inline custom_exception::custom_exception(const char* fmt, va_list args) :
-	error_message(string::formatted(fmt, args))
+inline custom_exception::custom_exception(const char* fmt, va_list ap) :
+	error_message(string::formatted_va(fmt, ap))
 {
 }
 
