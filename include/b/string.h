@@ -231,19 +231,16 @@ public:
 
 // Formatting
 public:
-	// Formats this string the way sprintf does.
-	void format(const char_t* fmt, ...);
+	// Constructs a new string from a format string.
+	static string formatted(const char_t* fmt, ...);
+	static string formatted(const char_t* fmt, va_list args);
 
-	// Formats this string the way vsprintf does.
-	// Appends formatted data to this string. Note the reverse
-	// parameter order to make the overload unambiguous.
+	// Formats this string using the specified format.
+	void format(const char_t* fmt, ...);
 	void format(const char_t* fmt, va_list args);
 
 	// Appends formatted data to this string.
 	void append_format(const char_t* fmt, ...);
-
-	// Appends formatted data to this string. Note the reverse
-	// parameter order to make the overload unambiguous.
 	void append_format(const char_t* fmt, va_list args);
 
 // Searching

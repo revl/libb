@@ -44,12 +44,8 @@ string system_exception::message() const
 {
 	try
 	{
-		string error_message;
-
-		error_message.format("%s: %s", exception_context.c_str(),
+		return string::formatted("%s: %s", exception_context.c_str(),
 			strerror(system_error_code));
-
-		return error_message;
 	}
 	catch (system_exception&)
 	{

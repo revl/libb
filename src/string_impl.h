@@ -367,6 +367,24 @@ void string::clear()
 		replace_buffer(empty_string());
 }
 
+string string::formatted(const char_t* fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	return formatted(fmt, args);
+	va_end(args);
+}
+
+string string::formatted(const char_t* fmt, va_list args)
+{
+	string result;
+
+	result.format(fmt, args);
+
+	return result;
+}
+
 void string::format(const char_t* fmt, ...)
 {
 	va_list args;

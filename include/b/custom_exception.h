@@ -77,9 +77,9 @@ inline custom_exception::custom_exception(const string& msg) :
 {
 }
 
-inline custom_exception::custom_exception(const char* fmt, va_list args)
+inline custom_exception::custom_exception(const char* fmt, va_list args) :
+	error_message(string::formatted(fmt, args))
 {
-	error_message.format(fmt, args);
 }
 
 B_END_NAMESPACE
