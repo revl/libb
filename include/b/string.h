@@ -47,7 +47,10 @@ public:
 	size_t capacity() const;
 
 	// Returns the string length in characters.
-	size_t length() const;
+	size_t length() const
+	{
+		return metadata()->length;
+	}
 
 	// Returns true if the string is empty.
 	bool is_empty() const;
@@ -82,7 +85,10 @@ public:
 
 	// Returns a constant pointer to the string contents.
 	// This method is a synonym for c_str().
-	const char_t* data() const;
+	const char_t* data() const
+	{
+		return chars;
+	}
 
 	// Fixes the buffer in memory disabling the memory reallocation.
 	char_t* lock();
@@ -282,8 +288,15 @@ private:
 
 	static char_t* alloc_buffer(size_t capacity, size_t length);
 
-	static buffer* metadata(const char_t* chars);
-	buffer* metadata() const;
+	static buffer* metadata(const char_t* chars)
+	{
+		return B_OUTERSTRUCT(buffer, first_char[0], chars);
+	}
+
+	buffer* metadata() const
+	{
+		return metadata(chars);
+	}
 
 	void replace_buffer(char_t* new_buffer_chars);
 
@@ -322,16 +335,6 @@ inline string::string(char_t source, size_t count) : chars(empty_string())
 	assign(source, count);
 }
 
-inline string::buffer* string::metadata(const char_t* chars)
-{
-	return B_OUTERSTRUCT(buffer, first_char[0], chars);
-}
-
-inline string::buffer* string::metadata() const
-{
-	return metadata(chars);
-}
-
 inline bool string::is_locked() const
 {
 	return metadata()->refs <= 0;
@@ -340,11 +343,6 @@ inline bool string::is_locked() const
 inline size_t string::capacity() const
 {
 	return metadata()->capacity;
-}
-
-inline size_t string::length() const
-{
-	return metadata()->length;
 }
 
 inline bool string::is_empty() const
@@ -378,11 +376,6 @@ inline void string::shrink_to_fit()
 }
 
 inline const char_t* string::c_str() const
-{
-	return chars;
-}
-
-inline const char_t* string::data() const
 {
 	return chars;
 }

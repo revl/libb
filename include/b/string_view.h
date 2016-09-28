@@ -46,10 +46,16 @@ public:
 // Data access
 public:
 	// Returns the buffer that this object points to.
-	const char_t* data() const;
+	const char_t* data() const
+	{
+		return view;
+	}
 
 	// Returns the length of this string_view in characters.
-	size_t length() const;
+	size_t length() const
+	{
+		return view_length;
+	}
 
 	// Returns true if the length of this string_view is zero.
 	bool is_empty() const;
@@ -183,16 +189,6 @@ inline string_view::string_view(const char_t* source, size_t len) :
 inline string_view::string_view(const string& str) :
 	view(str.data()), view_length(str.length())
 {
-}
-
-inline const char_t* string_view::data() const
-{
-	return view;
-}
-
-inline size_t string_view::length() const
-{
-	return view_length;
 }
 
 inline bool string_view::is_empty() const
