@@ -18,35 +18,24 @@
  *
  */
 
-#ifndef B_META_H
-#define B_META_H
+#ifndef B_ACCESS_NODE_H
+#define B_ACCESS_NODE_H
 
 #include "host.h"
 
 B_BEGIN_NAMESPACE
 
-template <class NODE>
-class InheritedNodeSelector
+// Returns the node that corresponds to the specified element of
+// an abstract data structure.
+// This default implementation assumes that either the node is a
+// base class of the element or the element defines a conversion
+// to Node&.
+template <class Node, class Element>
+Node* access_node(Element* element)
 {
-// Types
-public:
-	typedef typename NODE::Element Element;
-
-	typedef NODE Node;
-
-// Operations
-public:
-	static Node* GetNode(Element* element)
-	{
-		return static_cast<Node*>(element);
-	}
-
-	static const Node* GetNode(const Element* element)
-	{
-		return static_cast<const Node*>(element);
-	}
-};
+	return &static_cast<Node&>(*element);
+}
 
 B_END_NAMESPACE
 
-#endif /* !defined(B_META_H) */
+#endif /* !defined(B_ACCESS_NODE_H) */

@@ -22,6 +22,7 @@
 #define B_DOUBLY_LINKED_LIST_CONTAINER_H
 
 #include "doubly_linked_list.h"
+#include "memory.h"
 
 B_BEGIN_NAMESPACE
 

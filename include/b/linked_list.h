@@ -21,7 +21,7 @@
 #ifndef B_LINKED_LIST_H
 #define B_LINKED_LIST_H
 
-#include "misc.h"
+#include "access_node.h"
 
 B_BEGIN_NAMESPACE
 
@@ -54,16 +54,12 @@ protected:
 	Element* next;
 };
 
-template <class SELECTOR>
+template <class Node>
 class LinkedList
 {
 // Types
 public:
-	typedef typename SELECTOR::Element Element;
-
-	typedef typename SELECTOR::Node Node;
-
-	typedef SELECTOR NodeSelector;
+	typedef typename Node::Element Element;
 
 // Construction
 public:
@@ -102,19 +98,19 @@ public:
 public:
 	static Element* GetNext(Element* element)
 	{
-		return NodeSelector::GetNode(element)->GetNext();
+		return GetNode(element)->GetNext();
 	}
 
 	static const Element* GetNext(const Element* element)
 	{
-		return NodeSelector::GetNode(element)->GetNext();
+		return GetNode(element)->GetNext();
 	}
 
 	void AddHead(Element* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		NodeSelector::GetNode(new_element)->SetNext(head);
+		GetNode(new_element)->SetNext(head);
 
 		head = new_element;
 
@@ -126,10 +122,10 @@ public:
 	{
 		B_ASSERT(new_element != NULL);
 
-		NodeSelector::GetNode(new_element)->SetNext(NULL);
+		GetNode(new_element)->SetNext(NULL);
 
 		if (tail != NULL)
-			NodeSelector::GetNode(tail)->SetNext(new_element);
+			GetNode(tail)->SetNext(new_element);
 		else
 			head = new_element;
 
@@ -143,9 +139,9 @@ public:
 		if (element == tail)
 			tail = new_element;
 
-		Node* node = NodeSelector::GetNode(element);
+		Node* node = GetNode(element);
 
-		NodeSelector::GetNode(new_element)->SetNext(node->GetNext());
+		GetNode(new_element)->SetNext(node->GetNext());
 
 		node->SetNext(new_element);
 	}
@@ -154,7 +150,7 @@ public:
 	{
 		B_ASSERT(head != NULL);
 
-		if ((head = NodeSelector::GetNode(head)->GetNext()) == NULL)
+		if ((head = GetNode(head)->GetNext()) == NULL)
 			tail = NULL;
 	}
 
@@ -162,12 +158,12 @@ public:
 	{
 		B_ASSERT(head != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			NodeSelector::GetNode(prev)->GetNext()));
+			GetNode(prev)->GetNext()));
 
-		Element* next = NodeSelector::GetNode(element)->GetNext();
+		Element* next = GetNode(element)->GetNext();
 
 		if (prev != NULL)
-			NodeSelector::GetNode(prev)->SetNext(next);
+			GetNode(prev)->SetNext(next);
 		else
 			head = next;
 
@@ -184,15 +180,15 @@ public:
 	{
 		B_ASSERT(head != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			NodeSelector::GetNode(prev)->GetNext()));
+			GetNode(prev)->GetNext()));
 
 		if (prev != NULL)
 		{
-			Node* node = NodeSelector::GetNode(element);
+			Node* node = GetNode(element);
 
 			Element* next = node->GetNext();
 
-			NodeSelector::GetNode(prev)->SetNext(next);
+			GetNode(prev)->SetNext(next);
 
 			if (next == NULL)
 				tail = prev;
@@ -207,22 +203,22 @@ public:
 	{
 		B_ASSERT(tail != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			NodeSelector::GetNode(prev)->GetNext()));
+			GetNode(prev)->GetNext()));
 
-		Node* node = NodeSelector::GetNode(element);
+		Node* node = GetNode(element);
 
 		Element* next = node->GetNext();
 
 		if (next != NULL)
 		{
 			if (prev != NULL)
-				NodeSelector::GetNode(prev)->SetNext(next);
+				GetNode(prev)->SetNext(next);
 			else
 				head = node->GetNext();
 
 			node->SetNext(NULL);
 
-			NodeSelector::GetNode(tail)->SetNext(element);
+			GetNode(tail)->SetNext(element);
 			tail = element;
 		}
 	}
@@ -235,6 +231,17 @@ public:
 	}
 
 protected:
+	static Node* GetNode(Element* element)
+	{
+		return access_node<Node, Element>(element);
+	}
+
+	static const Node* GetNode(const Element* element)
+	{
+		return access_node<Node, Element>(
+			const_cast<Element*>(element));
+	}
+
 	Element* head;
 	Element* tail;
 };

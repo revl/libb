@@ -19,7 +19,6 @@
  */
 
 #include <b/doubly_linked_list_container.h>
-#include <b/meta.h>
 
 #include <b/object.h>
 
@@ -72,11 +71,8 @@ TestElement::~TestElement()
 	--object_count;
 }
 
-typedef InheritedNodeSelector<AscListNode> AscListNodeSelector;
-typedef InheritedNodeSelector<DescListNode> DescListNodeSelector;
-
-typedef LinkedList<AscListNodeSelector> AscList;
-typedef LinkedList<DescListNodeSelector> DescList;
+typedef LinkedList<AscListNode> AscList;
+typedef LinkedList<DescListNode> DescList;
 
 int TestObjectLists()
 {
