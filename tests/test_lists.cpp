@@ -19,79 +19,72 @@
  */
 
 #include <b/doubly_linked_list_container.h>
+#include <b/node_access_via_cast.h>
 
 #include <b/object.h>
 
-B_BEGIN_NAMESPACE
+#include "unit_test.h"
 
-class TestElement;
+class test_element;
 
-typedef LinkedListNode<TestElement> TestElementListNode;
+typedef b::linked_list_node<test_element> test_element_list_node;
 
-class AscListNode : public TestElementListNode
+class asc_list_node : public test_element_list_node
 {
 };
 
-class DescListNode : public TestElementListNode
+class desc_list_node : public test_element_list_node
 {
 };
 
 static int object_count = 0;
 
-class TestElement : public Object, public AscListNode, public DescListNode
+class test_element : public b::Object,
+	public asc_list_node,
+	public desc_list_node
 {
-// Construction
 public:
-	TestElement(int initial);
+	test_element(int number);
 
-// Attributes
-public:
-	int GetValue() const;
+	const int value;
 
-// Implementation
-protected:
-	virtual ~TestElement();
-
-private:
-	int value;
+	virtual ~test_element();
 };
 
-inline TestElement::TestElement(int initial_value) : value(initial_value)
+inline test_element::test_element(int number) : value(number)
 {
 	++object_count;
 }
 
-inline int TestElement::GetValue() const
-{
-	return value;
-}
-
-TestElement::~TestElement()
+test_element::~test_element()
 {
 	--object_count;
 }
 
-typedef LinkedList<AscListNode> AscList;
-typedef LinkedList<DescListNode> DescList;
+typedef b::node_access_via_cast<asc_list_node> asc_list_node_access;
+typedef b::node_access_via_cast<desc_list_node> desc_list_node_access;
 
-int TestObjectLists()
+typedef b::linked_list<asc_list_node_access> AscList;
+typedef b::linked_list<desc_list_node_access> DescList;
+
+B_TEST_CASE(test_object_lists)
 {
-	AscList asc_list;
-	DescList desc_list;
+	AscList asc_list = asc_list_node_access();
+	DescList desc_list = desc_list_node_access();
 
-	TestElement* element = new TestElement(2);
+	test_element* element = new test_element(2);
 
 	asc_list.AddHead(element);
 	desc_list.AddTail(element);
 	element->AddRef();
 
-	element = new TestElement(3);
+	element = new test_element(3);
 
 	asc_list.AddTail(element);
 	desc_list.AddHead(element);
 	element->AddRef();
 
-	element = new TestElement(1);
+	element = new test_element(1);
 
 	asc_list.AddHead(element);
 	desc_list.AddTail(element);
@@ -102,44 +95,40 @@ int TestObjectLists()
 	element = asc_list.GetHead();
 
 	do
-		if (element->GetValue() != ++i)
-			return 4;
-	while ((element = asc_list.GetNext(element)) != NULL);
+		B_CHECK(element->value == ++i);
+	while ((element = asc_list.next(element)) != NULL);
 
-	if ((element = desc_list.GetHead())->GetValue() != i)
-		return 5;
+	B_CHECK((element = desc_list.GetHead())->value == i);
 
 	do
-		if ((element = desc_list.GetNext(element))->GetValue() != --i)
-			return 6;
+		B_CHECK((element = desc_list.next(element))->value == --i);
 	while (element != desc_list.GetTail());
 
 	desc_list.MoveToTail(desc_list.GetHead(), NULL);
-	desc_list.MoveToHead(desc_list.GetNext(desc_list.GetHead()),
+	desc_list.MoveToHead(desc_list.next(desc_list.GetHead()),
 		desc_list.GetHead());
 
 	element = desc_list.GetHead();
 
 	while (!asc_list.IsEmpty())
 	{
-		if (asc_list.GetHead()->GetValue() != element->GetValue())
-			return 7;
+		B_CHECK(asc_list.GetHead()->value == element->value);
 
 		asc_list.RemoveHead();
 
-		TestElement* next = desc_list.GetNext(element);
+		test_element* next = desc_list.next(element);
 		element->Release();
 		element = next;
 	}
 
 	desc_list.RemoveAll();
 
-	return object_count;
+	B_CHECK(object_count == 0);
 }
 
-typedef DoublyLinkedListContainer<int> IntegerList;
+typedef b::doubly_linked_list_container<int> IntegerList;
 
-int TestIntegerList()
+B_TEST_CASE(test_integer_lists)
 {
 	IntegerList integer_list;
 
@@ -152,21 +141,6 @@ int TestIntegerList()
 	int i = 0;
 
 	do
-		if (*element != ++i)
-			return 8;
-	while ((element = integer_list.GetNext(element)) != NULL);
-
-	return 0;
-}
-
-B_END_NAMESPACE
-
-int main()
-{
-	int result = b::TestObjectLists();
-
-	if (result != 0)
-		return result;
-
-	return b::TestIntegerList();
+		B_CHECK(*element == ++i);
+	while ((element = integer_list.next(element)) != NULL);
 }

@@ -18,24 +18,33 @@
  *
  */
 
-#ifndef B_ACCESS_NODE_H
-#define B_ACCESS_NODE_H
+#ifndef B_NODE_ACCESS_VIA_CAST_H
+#define B_NODE_ACCESS_VIA_CAST_H
 
 #include "host.h"
 
 B_BEGIN_NAMESPACE
 
-// Returns the node that corresponds to the specified element of
-// an abstract data structure.
-// This default implementation assumes that either the node is a
-// base class of the element or the element defines a conversion
-// to Node&.
-template <class Node, class Element>
-Node* access_node(Element* element)
+// Class that helps find the node that corresponds to the
+// specified element of an abstract data structure.
+// This class assumes that either the node is a superclass
+// of the element or the element defines a conversion to 'Node&'.
+template <class Node>
+class node_access_via_cast
 {
-	return &static_cast<Node&>(*element);
-}
+public:
+	typedef Node node_type;
+
+	typedef typename Node::element_type element_type;
+
+	// Returns a pointer to the node that is associated
+	// with 'element'.
+	static node_type* node_for(element_type* element)
+	{
+		return &static_cast<node_type&>(*element);
+	}
+};
 
 B_END_NAMESPACE
 
-#endif /* !defined(B_ACCESS_NODE_H) */
+#endif /* !defined(B_NODE_ACCESS_VIA_CAST_H) */

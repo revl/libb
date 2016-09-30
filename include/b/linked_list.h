@@ -21,70 +21,73 @@
 #ifndef B_LINKED_LIST_H
 #define B_LINKED_LIST_H
 
-#include "access_node.h"
+#include "host.h"
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-class LinkedListNode
+template <class T>
+class linked_list_node
 {
 // Type
 public:
-	typedef TYPE Element;
+	typedef T element_type;
 
-// Attributes
+// Accessors
 public:
-	void SetNext(Element* new_next)
+	element_type* next()
 	{
-		next = new_next;
+		return next_element;
 	}
 
-	Element* GetNext()
+	const element_type* next() const
 	{
-		return next;
+		return next_element;
 	}
 
-	const Element* GetNext() const
+	void set_next(element_type* new_next)
 	{
-		return next;
+		next_element = new_next;
 	}
 
 // Implementation
 protected:
-	Element* next;
+	element_type* next_element;
 };
 
-template <class Node>
-class LinkedList
+template <class Node_access>
+class linked_list : public Node_access
 {
 // Types
 public:
-	typedef typename Node::Element Element;
+	typedef typename Node_access::element_type element_type;
+
+	typedef typename Node_access::node_type node_type;
 
 // Construction
 public:
-	LinkedList() : head(NULL), tail(NULL)
+	linked_list(const Node_access& node_access_inst) :
+		Node_access(node_access_inst), head(NULL), tail(NULL)
 	{
 	}
 
 // Attributes
 public:
-	Element* GetHead()
+	element_type* GetHead()
 	{
 		return head;
 	}
 
-	const Element* GetHead() const
+	const element_type* GetHead() const
 	{
 		return head;
 	}
 
-	Element* GetTail()
+	element_type* GetTail()
 	{
 		return tail;
 	}
 
-	const Element* GetTail() const
+	const element_type* GetTail() const
 	{
 		return tail;
 	}
@@ -96,21 +99,21 @@ public:
 
 // Operations
 public:
-	static Element* GetNext(Element* element)
+	static element_type* next(element_type* element)
 	{
-		return GetNode(element)->GetNext();
+		return GetNode(element)->next();
 	}
 
-	static const Element* GetNext(const Element* element)
+	static const element_type* next(const element_type* element)
 	{
-		return GetNode(element)->GetNext();
+		return GetNode(element)->next();
 	}
 
-	void AddHead(Element* new_element)
+	void AddHead(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		GetNode(new_element)->SetNext(head);
+		GetNode(new_element)->set_next(head);
 
 		head = new_element;
 
@@ -118,52 +121,52 @@ public:
 			tail = new_element;
 	}
 
-	void AddTail(Element* new_element)
+	void AddTail(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		GetNode(new_element)->SetNext(NULL);
+		GetNode(new_element)->set_next(NULL);
 
 		if (tail != NULL)
-			GetNode(tail)->SetNext(new_element);
+			GetNode(tail)->set_next(new_element);
 		else
 			head = new_element;
 
 		tail = new_element;
 	}
 
-	void InsertAfter(Element* element, Element* new_element)
+	void InsertAfter(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
 		if (element == tail)
 			tail = new_element;
 
-		Node* node = GetNode(element);
+		node_type* node = GetNode(element);
 
-		GetNode(new_element)->SetNext(node->GetNext());
+		GetNode(new_element)->set_next(node->next());
 
-		node->SetNext(new_element);
+		node->set_next(new_element);
 	}
 
 	void RemoveHead()
 	{
 		B_ASSERT(head != NULL);
 
-		if ((head = GetNode(head)->GetNext()) == NULL)
+		if ((head = GetNode(head)->next()) == NULL)
 			tail = NULL;
 	}
 
-	void Remove(Element* element, Element* prev)
+	void Remove(element_type* element, element_type* prev)
 	{
 		B_ASSERT(head != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			GetNode(prev)->GetNext()));
+			GetNode(prev)->next()));
 
-		Element* next = GetNode(element)->GetNext();
+		element_type* next = GetNode(element)->next();
 
 		if (prev != NULL)
-			GetNode(prev)->SetNext(next);
+			GetNode(prev)->set_next(next);
 		else
 			head = next;
 
@@ -176,74 +179,74 @@ public:
 		tail = head = NULL;
 	}
 
-	void MoveToHead(Element* element, Element* prev)
+	void MoveToHead(element_type* element, element_type* prev)
 	{
 		B_ASSERT(head != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			GetNode(prev)->GetNext()));
+			GetNode(prev)->next()));
 
 		if (prev != NULL)
 		{
-			Node* node = GetNode(element);
+			node_type* node = GetNode(element);
 
-			Element* next = node->GetNext();
+			element_type* next = node->next();
 
-			GetNode(prev)->SetNext(next);
+			GetNode(prev)->set_next(next);
 
 			if (next == NULL)
 				tail = prev;
 
-			node->SetNext(head);
+			node->set_next(head);
 
 			head = element;
 		}
 	}
 
-	void MoveToTail(Element* element, Element* prev)
+	void MoveToTail(element_type* element, element_type* prev)
 	{
 		B_ASSERT(tail != NULL && element != NULL &&
 			element == (prev == NULL ? head :
-			GetNode(prev)->GetNext()));
+			GetNode(prev)->next()));
 
-		Node* node = GetNode(element);
+		node_type* node = GetNode(element);
 
-		Element* next = node->GetNext();
+		element_type* next = node->next();
 
 		if (next != NULL)
 		{
 			if (prev != NULL)
-				GetNode(prev)->SetNext(next);
+				GetNode(prev)->set_next(next);
 			else
-				head = node->GetNext();
+				head = node->next();
 
-			node->SetNext(NULL);
+			node->set_next(NULL);
 
-			GetNode(tail)->SetNext(element);
+			GetNode(tail)->set_next(element);
 			tail = element;
 		}
 	}
 
 // Implementation
 public:
-	~LinkedList()
+	~linked_list()
 	{
 		RemoveAll();
 	}
 
 protected:
-	static Node* GetNode(Element* element)
+	static node_type* GetNode(element_type* element)
 	{
-		return access_node<Node, Element>(element);
+		return Node_access::node_for(element);
 	}
 
-	static const Node* GetNode(const Element* element)
+	static const node_type* GetNode(const element_type* element)
 	{
-		return access_node<Node, Element>(
-			const_cast<Element*>(element));
+		return Node_access::node_for(
+			const_cast<element_type*>(element));
 	}
 
-	Element* head;
-	Element* tail;
+	element_type* head;
+	element_type* tail;
 };
 
 B_END_NAMESPACE

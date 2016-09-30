@@ -63,17 +63,21 @@ B_END_NAMESPACE
 	void class_name::run()
 
 #define B_CHECK(condition) \
-	if (!(condition)) { \
-		++failed_checks; \
-		fputs("FAILED CHECK: " #condition "\n", stderr); \
-	}
+	do \
+		if (!(condition)) { \
+			++failed_checks; \
+			fputs("FAILED CHECK: " #condition "\n", stderr); \
+		} \
+	while (0)
 
 #define B_REQUIRE(condition) \
-	if (!(condition)) { \
-		++failed_checks; \
-		fputs("FAILED REQUIREMENT: " #condition "\n", stderr); \
-		return; \
-	}
+	do \
+		if (!(condition)) { \
+			++failed_checks; \
+			fputs("FAILED REQUIREMENT: " #condition "\n", stderr); \
+			return; \
+		} \
+	while (0)
 
 int main(int /*argc*/, char* /*argv*/[])
 {

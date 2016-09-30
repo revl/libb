@@ -26,159 +26,158 @@
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-class DoublyLinkedListContainer
+template <class T>
+class doubly_linked_list_container
 {
 // Attributes
 public:
-	TYPE* GetHead()
+	T* GetHead()
 	{
-		return list.GetHead();
+		return wrappers.GetHead();
 	}
 
-	const TYPE* GetHead() const
+	const T* GetHead() const
 	{
-		return list.GetHead();
+		return wrappers.GetHead();
 	}
 
-	TYPE* GetTail()
+	T* GetTail()
 	{
-		return list.GetTail();
+		return wrappers.GetTail();
 	}
 
-	const TYPE* GetTail() const
+	const T* GetTail() const
 	{
-		return list.GetTail();
+		return wrappers.GetTail();
 	}
 
 	bool IsEmpty() const
 	{
-		return list.IsEmpty();
+		return wrappers.IsEmpty();
 	}
 
 // Operations
 public:
-	static TYPE* GetNext(TYPE* element)
+	static T* next(T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetNext();
+		return wrapper_node_access::node_for(element)->next();
 	}
 
-	static const TYPE* GetNext(const TYPE* element)
+	static const T* next(const T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetNext();
+		return wrapper_node_access::node_for(element)->next();
 	}
 
-	static TYPE* GetPrev(TYPE* element)
+	static T* prev(T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetPrev();
+		return wrapper_node_access::node_for(element)->prev();
 	}
 
-	static const TYPE* GetPrev(const TYPE* element)
+	static const T* prev(const T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetPrev();
+		return wrapper_node_access::node_for(element)->prev();
 	}
 
-	TYPE* AddHead(const TYPE& new_element)
+	T* AddHead(const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.AddHead(copy);
+		wrappers.AddHead(copy);
 
 		return copy;
 	}
 
-	TYPE* AddTail(const TYPE& new_element)
+	T* AddTail(const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.AddTail(copy);
+		wrappers.AddTail(copy);
 
 		return copy;
 	}
 
-	TYPE* InsertAfter(TYPE* element, const TYPE& new_element)
+	T* InsertAfter(T* element, const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.InsertAfter(element, copy);
+		wrappers.InsertAfter(element, copy);
 
 		return copy;
 	}
 
-	TYPE* InsertBefore(TYPE* element, const TYPE& new_element)
+	T* InsertBefore(T* element, const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.InsertBefore(element, copy);
+		wrappers.InsertBefore(element, copy);
 
 		return copy;
 	}
 
 	void RemoveHead()
 	{
-		TYPE* head = list.GetHead();
+		T* head = wrappers.GetHead();
 
-		list.RemoveHead();
+		wrappers.RemoveHead();
 
-		delete Wrapper::GetNode(head);
+		delete wrapper_node_access::node_for(head);
 	}
 
 	void RemoveTail()
 	{
-		TYPE* tail = list.GetTail();
+		T* tail = wrappers.GetTail();
 
-		list.RemoveTail();
+		wrappers.RemoveTail();
 
-		delete Wrapper::GetNode(tail);
+		delete wrapper_node_access::node_for(tail);
 	}
 
-	void Remove(TYPE* element)
+	void Remove(T* element)
 	{
-		list.Remove(element);
+		wrappers.Remove(element);
 
-		delete Wrapper::GetNode(element);
+		delete wrapper_node_access::node_for(element);
 	}
 
 	void RemoveAll()
 	{
-		TYPE* element = list.GetHead();
+		T* element = wrappers.GetHead();
 
-		list.RemoveAll();
+		wrappers.RemoveAll();
 
 		while (element != NULL)
 		{
-			Wrapper* wrapper = Wrapper::GetNode(element);
+			element_wrapper* wrapper =
+				wrapper_node_access::node_for(element);
 
-			element = wrapper->GetNext();
+			element = wrapper->next();
 
 			delete wrapper;
 		}
 	}
 
-	void MoveToHead(TYPE* element)
+	void MoveToHead(T* element)
 	{
-		list.MoveToHead(element);
+		wrappers.MoveToHead(element);
 	}
 
-	void MoveToTail(TYPE* element)
+	void MoveToTail(T* element)
 	{
-		list.MoveToTail(element);
+		wrappers.MoveToTail(element);
 	}
 
 // Implementation
 private:
-	struct Wrapper : public DoublyLinkedListNode<TYPE>
+	struct element_wrapper : public doubly_linked_list_node<T>
 	{
-		typedef Wrapper Node;
-
 		static void* operator new(size_t size)
 		{
 			return Memory::Alloc(size);
@@ -189,24 +188,31 @@ private:
 			Memory::Free(address);
 		}
 
-		Wrapper(const TYPE& source) : element(source)
+		element_wrapper(const T& source) : element(source)
 		{
 		}
 
-		static Node* GetNode(TYPE* element)
-		{
-			return B_OUTERSTRUCT(Wrapper, element, element);
-		}
-
-		static const Node* GetNode(const TYPE* element)
-		{
-			return B_OUTERSTRUCT(Wrapper, element, element);
-		}
-
-		TYPE element;
+		T element;
 	};
 
-	DoublyLinkedList<Wrapper> list;
+	struct wrapper_node_access
+	{
+		typedef T element_type;
+
+		typedef element_wrapper node_type;
+
+		static node_type* node_for(T* element)
+		{
+			return B_OUTERSTRUCT(element_wrapper, element, element);
+		}
+	};
+
+	doubly_linked_list<wrapper_node_access> wrappers;
+
+public:
+	doubly_linked_list_container() : wrappers(wrapper_node_access())
+	{
+	}
 };
 
 B_END_NAMESPACE

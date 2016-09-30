@@ -22,130 +22,130 @@
 #define B_LINKED_LIST_CONTAINER_H
 
 #include "linked_list.h"
+#include "memory.h"
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-class LinkedListContainer
+template <class T>
+class linked_list_container
 {
 // Attributes
 public:
-	TYPE* GetHead()
+	T* GetHead()
 	{
-		return list.GetHead();
+		return wrappers.GetHead();
 	}
 
-	const TYPE* GetHead() const
+	const T* GetHead() const
 	{
-		return list.GetHead();
+		return wrappers.GetHead();
 	}
 
-	TYPE* GetTail()
+	T* GetTail()
 	{
-		return list.GetTail();
+		return wrappers.GetTail();
 	}
 
-	const TYPE* GetTail() const
+	const T* GetTail() const
 	{
-		return list.GetTail();
+		return wrappers.GetTail();
 	}
 
 	bool IsEmpty() const
 	{
-		return list.IsEmpty();
+		return wrappers.IsEmpty();
 	}
 
 // Operations
 public:
-	static TYPE* GetNext(TYPE* element)
+	static T* next(T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetNext();
+		return wrapper_node_access::node_for(element)->next();
 	}
 
-	static const TYPE* GetNext(const TYPE* element)
+	static const T* next(const T* element)
 	{
 		B_ASSERT(element != NULL);
 
-		return Wrapper::GetNode(element)->GetNext();
+		return wrapper_node_access::node_for(element)->next();
 	}
 
-	TYPE* AddHead(const TYPE& new_element)
+	T* AddHead(const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.AddHead(copy);
+		wrappers.AddHead(copy);
 
 		return copy;
 	}
 
-	TYPE* AddTail(const TYPE& new_element)
+	T* AddTail(const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.AddTail(copy);
+		wrappers.AddTail(copy);
 
 		return copy;
 	}
 
-	TYPE* InsertAfter(TYPE* element, const TYPE& new_element)
+	T* InsertAfter(T* element, const T& new_element)
 	{
-		TYPE* copy = &(new Wrapper(new_element))->element;
+		T* copy = &(new element_wrapper(new_element))->element;
 
-		list.InsertAfter(element, copy);
+		wrappers.InsertAfter(element, copy);
 
 		return copy;
 	}
 
 	void RemoveHead()
 	{
-		TYPE* head = list.GetHead();
+		T* head = wrappers.GetHead();
 
-		list.RemoveHead();
+		wrappers.RemoveHead();
 
-		delete Wrapper::GetNode(head);
+		delete wrapper_node_access::node_for(head);
 	}
 
-	void Remove(TYPE* element, TYPE* prev)
+	void Remove(T* element, T* prev)
 	{
-		list.Remove(element, prev);
+		wrappers.Remove(element, prev);
 
-		delete Wrapper::GetNode(element);
+		delete wrapper_node_access::node_for(element);
 	}
 
 	void RemoveAll()
 	{
-		TYPE* element = list.GetHead();
+		T* element = wrappers.GetHead();
 
-		list.RemoveAll();
+		wrappers.RemoveAll();
 
 		while (element != NULL)
 		{
-			Wrapper* wrapper = Wrapper::GetNode(element);
+			element_wrapper* wrapper =
+				wrapper_node_access::node_for(element);
 
-			element = wrapper->GetNext();
+			element = wrapper->next();
 
 			delete wrapper;
 		}
 	}
 
-	void MoveToHead(TYPE* element, TYPE* prev)
+	void MoveToHead(T* element, T* prev)
 	{
-		list.MoveToHead(element, prev);
+		wrappers.MoveToHead(element, prev);
 	}
 
-	void MoveToTail(TYPE* element, TYPE* prev)
+	void MoveToTail(T* element, T* prev)
 	{
-		list.MoveToTail(element, prev);
+		wrappers.MoveToTail(element, prev);
 	}
 
 // Implementation
 private:
-	struct Wrapper : public LinkedListNode<TYPE>
+	struct element_wrapper : public linked_list_node<T>
 	{
-		typedef Wrapper Node;
-
 		static void* operator new(size_t size)
 		{
 			return Memory::Alloc(size);
@@ -156,24 +156,31 @@ private:
 			Memory::Free(address);
 		}
 
-		Wrapper(const TYPE& source) : element(source)
+		element_wrapper(const T& source) : element(source)
 		{
 		}
 
-		static Node* GetNode(TYPE* element)
-		{
-			return B_OUTERSTRUCT(Wrapper, element, element);
-		}
-
-		static const Node* GetNode(const TYPE* element)
-		{
-			return B_OUTERSTRUCT(Wrapper, element, element);
-		}
-
-		TYPE element;
+		T element;
 	};
 
-	LinkedList<Wrapper> list;
+	struct wrapper_node_access
+	{
+		typedef T element_type;
+
+		typedef element_wrapper node_type;
+
+		static node_type* node_for(T* element)
+		{
+			return B_OUTERSTRUCT(element_wrapper, element, element);
+		}
+	};
+
+	linked_list<wrapper_node_access> wrappers;
+
+public:
+	linked_list_container() : wrappers(wrapper_node_access())
+	{
+	}
 };
 
 B_END_NAMESPACE

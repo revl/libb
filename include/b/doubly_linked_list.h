@@ -25,213 +25,217 @@
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-class DoublyLinkedListNode : public LinkedListNode<TYPE>
+template <class T>
+class doubly_linked_list_node : public linked_list_node<T>
 {
 // Type
 public:
-	typedef TYPE Element;
+	typedef T element_type;
 
-// Attributes
+// Accessors
 public:
-	void SetPrev(Element* new_prev)
+	element_type* prev()
 	{
-		prev = new_prev;
+		return prev_element;
 	}
 
-	Element* GetPrev()
+	const element_type* prev() const
 	{
-		return prev;
+		return prev_element;
 	}
 
-	const Element* GetPrev() const
+	void set_prev(element_type* new_prev)
 	{
-		return prev;
+		prev_element = new_prev;
 	}
 
 // Implementation
 protected:
-	Element* prev;
+	element_type* prev_element;
 };
 
-template <class SELECTOR>
-class DoublyLinkedList : public LinkedList<SELECTOR>
+template <class Node_access>
+class doubly_linked_list : public linked_list<Node_access>
 {
 // Types
 public:
-	typedef typename SELECTOR::Element Element;
+	typedef typename Node_access::element_type element_type;
 
-	typedef typename SELECTOR::Node Node;
+	typedef typename Node_access::node_type node_type;
 
-	typedef SELECTOR NodeSelector;
+	typedef linked_list<Node_access> base;
 
 // Operations
 public:
-	static Element* GetPrev(Element* element)
+	doubly_linked_list(const Node_access& node_access_inst) :
+		linked_list<Node_access>(node_access_inst)
 	{
-		return NodeSelector::GetNode(element)->GetPrev();
 	}
 
-	static const Element* GetPrev(const Element* element)
+	static element_type* prev(element_type* element)
 	{
-		return NodeSelector::GetNode(element)->GetPrev();
+		return base::GetNode(element)->prev();
 	}
 
-	void AddHead(Element* new_element)
+	static const element_type* prev(const element_type* element)
+	{
+		return base::GetNode(element)->prev();
+	}
+
+	void AddHead(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		Node* node = NodeSelector::GetNode(new_element);
+		node_type* node = base::GetNode(new_element);
 
-		node->SetNext(this->head);
-		node->SetPrev(NULL);
+		node->set_next(this->head);
+		node->set_prev(NULL);
 
 		if (this->head != NULL)
-			NodeSelector::GetNode(this->head)->SetPrev(new_element);
+			base::GetNode(this->head)->set_prev(new_element);
 		else
 			this->tail = new_element;
 
 		this->head = new_element;
 	}
 
-	void AddTail(Element* new_element)
+	void AddTail(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		Node* node = NodeSelector::GetNode(new_element);
+		node_type* node = base::GetNode(new_element);
 
-		node->SetNext(NULL);
-		node->SetPrev(this->tail);
+		node->set_next(NULL);
+		node->set_prev(this->tail);
 
 		if (this->tail != NULL)
-			NodeSelector::GetNode(this->tail)->SetNext(new_element);
+			base::GetNode(this->tail)->set_next(new_element);
 		else
 			this->head = new_element;
 
 		this->tail = new_element;
 	}
 
-	void InsertAfter(Element* element, Element* new_element)
+	void InsertAfter(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
-		Node* node = NodeSelector::GetNode(element);
+		node_type* node = base::GetNode(element);
 
-		Element* next = node->GetNext();
+		element_type* next = node->next();
 
-		node->SetNext(new_element);
+		node->set_next(new_element);
 
 		if (element == this->tail)
 			this->tail = new_element;
 		else
-			NodeSelector::GetNode(next)->SetPrev(new_element);
+			base::GetNode(next)->set_prev(new_element);
 
-		node = NodeSelector::GetNode(new_element);
+		node = base::GetNode(new_element);
 
-		node->SetNext(next);
-		node->SetPrev(element);
+		node->set_next(next);
+		node->set_prev(element);
 	}
 
-	void InsertBefore(Element* element, Element* new_element)
+	void InsertBefore(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
-		Node* node = NodeSelector::GetNode(element);
+		node_type* node = base::GetNode(element);
 
-		Element* prev = node->GetPrev();
+		element_type* prev = node->prev();
 
-		node->SetPrev(new_element);
+		node->set_prev(new_element);
 
 		if (element == this->head)
 			this->head = new_element;
 		else
-			NodeSelector::GetNode(prev)->SetNext(new_element);
+			base::GetNode(prev)->set_next(new_element);
 
-		node = NodeSelector::GetNode(new_element);
+		node = base::GetNode(new_element);
 
-		node->SetNext(element);
-		node->SetPrev(prev);
+		node->set_next(element);
+		node->set_prev(prev);
 	}
 
 	void RemoveTail()
 	{
 		B_ASSERT(this->tail != NULL);
 
-		if ((this->tail =
-			NodeSelector::GetNode(this->tail)->GetPrev()) == NULL)
+		if ((this->tail = base::GetNode(this->tail)->prev()) == NULL)
 			this->head = NULL;
 	}
 
-	void Remove(Element* element)
+	void Remove(element_type* element)
 	{
 		B_ASSERT(this->head != NULL && element != NULL);
 
-		Node* node = NodeSelector::GetNode(element);
+		node_type* node = base::GetNode(element);
 
-		Element* prev = node->GetPrev();
-		Element* next = node->GetNext();
+		element_type* prev = node->prev();
+		element_type* next = node->next();
 
 		if (prev != NULL)
-			NodeSelector::GetNode(prev)->SetNext(next);
+			base::GetNode(prev)->set_next(next);
 		else
 			this->head = next;
 
 		if (next != NULL)
-			NodeSelector::GetNode(next)->SetPrev(prev);
+			base::GetNode(next)->set_prev(prev);
 		else
 			this->tail = prev;
 	}
 
-	void MoveToHead(Element* element)
+	void MoveToHead(element_type* element)
 	{
 		B_ASSERT(this->head != NULL && element != NULL);
 
-		Node* node = NodeSelector::GetNode(element);
+		node_type* node = base::GetNode(element);
 
-		Element* prev = node->GetPrev();
+		element_type* prev = node->prev();
 
 		if (prev != NULL)
 		{
-			Element* next = node->GetNext();
+			element_type* next = node->next();
 
-			NodeSelector::GetNode(prev)->SetNext(next);
+			base::GetNode(prev)->set_next(next);
 
 			if (next != NULL)
-				NodeSelector::GetNode(next)->SetPrev(prev);
+				base::GetNode(next)->set_prev(prev);
 			else
 				this->tail = prev;
 
-			node->SetNext(this->head);
-			node->SetPrev(NULL);
+			node->set_next(this->head);
+			node->set_prev(NULL);
 
-			NodeSelector::GetNode(this->head)->SetPrev(element);
+			base::GetNode(this->head)->set_prev(element);
 			this->head = element;
 		}
 	}
 
-	void MoveToTail(Element* element)
+	void MoveToTail(element_type* element)
 	{
 		B_ASSERT(this->tail != NULL && element != NULL);
 
-		Node* node = NodeSelector::GetNode(element);
+		node_type* node = base::GetNode(element);
 
-		Element* next = node->GetNext();
+		element_type* next = node->next();
 
 		if (next != NULL)
 		{
-			Element* prev = node->GetPrev();
+			element_type* prev = node->prev();
 
-			NodeSelector::GetNode(next)->SetPrev(prev);
+			base::GetNode(next)->set_prev(prev);
 
 			if (prev != NULL)
-				NodeSelector::GetNode(prev)->SetNext(next);
+				base::GetNode(prev)->set_next(next);
 			else
 				this->head = next;
 
-			node->SetNext(NULL);
-			node->SetPrev(this->tail);
+			node->set_next(NULL);
+			node->set_prev(this->tail);
 
-			NodeSelector::GetNode(this->tail)->SetNext(element);
+			base::GetNode(this->tail)->set_next(element);
 			this->tail = element;
 		}
 	}
