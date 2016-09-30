@@ -22,6 +22,8 @@
 #define B_UNIT_TEST_H
 
 #include <b/runtime_exception.h>
+#include <b/linked_list.h>
+#include <b/node_access_via_cast.h>
 
 B_BEGIN_NAMESPACE
 
@@ -30,24 +32,31 @@ class test_case
 public:
 	virtual ~test_case() {}
 
-	test_case(const char* name);
+	test_case(const char* name) : test_name(name), failed_checks(0)
+	{
+		test_case::list.AddTail(this);
+	}
 
 	virtual void run() = 0;
 
 	const char* const test_name;
-	test_case* const next_test_case;
 	int failed_checks;
+
+	typedef b::linked_list_node<test_case> list_node_type;
+
+	list_node_type list_node;
+
+	operator list_node_type&()
+	{
+		return list_node;
+	}
+
+	typedef node_access_via_cast<list_node_type> node_access;
+
+	static linked_list<node_access> list;
 };
 
-test_case* first_test_case = NULL;
-
-inline test_case::test_case(const char* name) :
-	test_name(name),
-	next_test_case(first_test_case),
-	failed_checks(0)
-{
-	first_test_case = this;
-}
+linked_list<test_case::node_access> test_case::list = test_case::node_access();
 
 B_END_NAMESPACE
 
@@ -59,7 +68,7 @@ B_END_NAMESPACE
 		{ \
 		} \
 		virtual void run(); \
-	} class_name##_instance(#class_name); \
+	} static class_name##_instance(#class_name); \
 	void class_name::run()
 
 #define B_CHECK(condition) \
@@ -82,7 +91,7 @@ B_END_NAMESPACE
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
-	b::test_case* current_test_case = b::first_test_case;
+	b::test_case* current_test_case = b::test_case::list.GetHead();
 
 	while (current_test_case != NULL)
 	{
@@ -109,7 +118,7 @@ int main(int /*argc*/, char* /*argv*/[])
 				current_test_case->test_name);
 		}
 
-		current_test_case = current_test_case->next_test_case;
+		current_test_case = b::test_case::list.next(current_test_case);
 	}
 
 	return failed_tests;
