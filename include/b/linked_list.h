@@ -157,21 +157,21 @@ public:
 			tail = NULL;
 	}
 
-	void Remove(element_type* element, element_type* prev)
+	void Remove(element_type* element, element_type* prev_element)
 	{
 		B_ASSERT(head != NULL && element != NULL &&
-			element == (prev == NULL ? head :
-			GetNode(prev)->next()));
+			element == (prev_element == NULL ? head :
+			GetNode(prev_element)->next()));
 
-		element_type* next = GetNode(element)->next();
+		element_type* next_element = GetNode(element)->next();
 
-		if (prev != NULL)
-			GetNode(prev)->set_next(next);
+		if (prev_element != NULL)
+			GetNode(prev_element)->set_next(next_element);
 		else
-			head = next;
+			head = next_element;
 
-		if (next == NULL)
-			tail = prev;
+		if (next_element == NULL)
+			tail = prev_element;
 	}
 
 	void RemoveAll()
@@ -179,22 +179,22 @@ public:
 		tail = head = NULL;
 	}
 
-	void MoveToHead(element_type* element, element_type* prev)
+	void MoveToHead(element_type* element, element_type* prev_element)
 	{
 		B_ASSERT(head != NULL && element != NULL &&
-			element == (prev == NULL ? head :
-			GetNode(prev)->next()));
+			element == (prev_element == NULL ? head :
+			GetNode(prev_element)->next()));
 
-		if (prev != NULL)
+		if (prev_element != NULL)
 		{
 			node_type* node = GetNode(element);
 
-			element_type* next = node->next();
+			element_type* next_element = node->next();
 
-			GetNode(prev)->set_next(next);
+			GetNode(prev_element)->set_next(next_element);
 
-			if (next == NULL)
-				tail = prev;
+			if (next_element == NULL)
+				tail = prev_element;
 
 			node->set_next(head);
 
@@ -202,20 +202,20 @@ public:
 		}
 	}
 
-	void MoveToTail(element_type* element, element_type* prev)
+	void MoveToTail(element_type* element, element_type* prev_element)
 	{
 		B_ASSERT(tail != NULL && element != NULL &&
-			element == (prev == NULL ? head :
-			GetNode(prev)->next()));
+			element == (prev_element == NULL ? head :
+			GetNode(prev_element)->next()));
 
 		node_type* node = GetNode(element);
 
-		element_type* next = node->next();
+		element_type* next_element = node->next();
 
-		if (next != NULL)
+		if (next_element != NULL)
 		{
-			if (prev != NULL)
-				GetNode(prev)->set_next(next);
+			if (prev_element != NULL)
+				GetNode(prev_element)->set_next(next_element);
 			else
 				head = node->next();
 

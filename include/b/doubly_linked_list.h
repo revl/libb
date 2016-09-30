@@ -122,18 +122,18 @@ public:
 
 		node_type* node = base::GetNode(element);
 
-		element_type* next = node->next();
+		element_type* next_element = node->next();
 
 		node->set_next(new_element);
 
 		if (element == this->tail)
 			this->tail = new_element;
 		else
-			base::GetNode(next)->set_prev(new_element);
+			base::GetNode(next_element)->set_prev(new_element);
 
 		node = base::GetNode(new_element);
 
-		node->set_next(next);
+		node->set_next(next_element);
 		node->set_prev(element);
 	}
 
@@ -143,19 +143,19 @@ public:
 
 		node_type* node = base::GetNode(element);
 
-		element_type* prev = node->prev();
+		element_type* prev_element = node->prev();
 
 		node->set_prev(new_element);
 
 		if (element == this->head)
 			this->head = new_element;
 		else
-			base::GetNode(prev)->set_next(new_element);
+			base::GetNode(prev_element)->set_next(new_element);
 
 		node = base::GetNode(new_element);
 
 		node->set_next(element);
-		node->set_prev(prev);
+		node->set_prev(prev_element);
 	}
 
 	void RemoveTail()
@@ -172,18 +172,18 @@ public:
 
 		node_type* node = base::GetNode(element);
 
-		element_type* prev = node->prev();
-		element_type* next = node->next();
+		element_type* prev_element = node->prev();
+		element_type* next_element = node->next();
 
-		if (prev != NULL)
-			base::GetNode(prev)->set_next(next);
+		if (prev_element != NULL)
+			base::GetNode(prev_element)->set_next(next_element);
 		else
-			this->head = next;
+			this->head = next_element;
 
-		if (next != NULL)
-			base::GetNode(next)->set_prev(prev);
+		if (next_element != NULL)
+			base::GetNode(next_element)->set_prev(prev_element);
 		else
-			this->tail = prev;
+			this->tail = prev_element;
 	}
 
 	void MoveToHead(element_type* element)
@@ -192,18 +192,19 @@ public:
 
 		node_type* node = base::GetNode(element);
 
-		element_type* prev = node->prev();
+		element_type* prev_element = node->prev();
 
-		if (prev != NULL)
+		if (prev_element != NULL)
 		{
-			element_type* next = node->next();
+			element_type* next_element = node->next();
 
-			base::GetNode(prev)->set_next(next);
+			base::GetNode(prev_element)->set_next(next_element);
 
-			if (next != NULL)
-				base::GetNode(next)->set_prev(prev);
+			if (next_element != NULL)
+				base::GetNode(next_element)->
+					set_prev(prev_element);
 			else
-				this->tail = prev;
+				this->tail = prev_element;
 
 			node->set_next(this->head);
 			node->set_prev(NULL);
@@ -219,18 +220,19 @@ public:
 
 		node_type* node = base::GetNode(element);
 
-		element_type* next = node->next();
+		element_type* next_element = node->next();
 
-		if (next != NULL)
+		if (next_element != NULL)
 		{
-			element_type* prev = node->prev();
+			element_type* prev_element = node->prev();
 
-			base::GetNode(next)->set_prev(prev);
+			base::GetNode(next_element)->set_prev(prev_element);
 
-			if (prev != NULL)
-				base::GetNode(prev)->set_next(next);
+			if (prev_element != NULL)
+				base::GetNode(prev_element)->
+					set_next(next_element);
 			else
-				this->head = next;
+				this->head = next_element;
 
 			node->set_next(NULL);
 			node->set_prev(this->tail);
