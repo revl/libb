@@ -31,29 +31,29 @@ class linked_list_container
 {
 // Attributes
 public:
-	T* GetHead()
+	T* first()
 	{
-		return wrappers.GetHead();
+		return wrappers.first();
 	}
 
-	const T* GetHead() const
+	const T* first() const
 	{
-		return wrappers.GetHead();
+		return wrappers.first();
 	}
 
-	T* GetTail()
+	T* last()
 	{
-		return wrappers.GetTail();
+		return wrappers.last();
 	}
 
-	const T* GetTail() const
+	const T* last() const
 	{
-		return wrappers.GetTail();
+		return wrappers.last();
 	}
 
-	bool IsEmpty() const
+	bool is_empty() const
 	{
-		return wrappers.IsEmpty();
+		return wrappers.is_empty();
 	}
 
 // Operations
@@ -72,74 +72,74 @@ public:
 		return wrapper_node_access::node_for(element)->next();
 	}
 
-	T* AddHead(const T& new_element)
+	T* insert_first(const T& new_element)
 	{
 		T* copy = &(new element_wrapper(new_element))->element;
 
-		wrappers.AddHead(copy);
+		wrappers.insert_first(copy);
 
 		return copy;
 	}
 
-	T* AddTail(const T& new_element)
+	T* append(const T& new_element)
 	{
 		T* copy = &(new element_wrapper(new_element))->element;
 
-		wrappers.AddTail(copy);
+		wrappers.append(copy);
 
 		return copy;
 	}
 
-	T* InsertAfter(T* element, const T& new_element)
+	T* insert_after(T* element, const T& new_element)
 	{
 		T* copy = &(new element_wrapper(new_element))->element;
 
-		wrappers.InsertAfter(element, copy);
+		wrappers.insert_after(element, copy);
 
 		return copy;
 	}
 
-	void RemoveHead()
+	void remove_first()
 	{
-		T* head = wrappers.GetHead();
+		T* first = wrappers.first();
 
-		wrappers.RemoveHead();
+		wrappers.remove_first();
 
-		delete wrapper_node_access::node_for(head);
+		delete wrapper_node_access::node_for(first);
 	}
 
-	void Remove(T* element, T* prev)
+	void remove(T* element, T* prev)
 	{
-		wrappers.Remove(element, prev);
+		wrappers.remove(element, prev);
 
 		delete wrapper_node_access::node_for(element);
 	}
 
-	void RemoveAll()
+	void remove_all()
 	{
-		T* element = wrappers.GetHead();
+		T* current_element = wrappers.first();
 
-		wrappers.RemoveAll();
+		wrappers.remove_all();
 
-		while (element != NULL)
+		while (current_element != NULL)
 		{
 			element_wrapper* wrapper =
-				wrapper_node_access::node_for(element);
+				wrapper_node_access::node_for(current_element);
 
-			element = wrapper->next();
+			current_element = wrapper->next();
 
 			delete wrapper;
 		}
 	}
 
-	void MoveToHead(T* element, T* prev)
+	void move_to_front(T* element, T* prev)
 	{
-		wrappers.MoveToHead(element, prev);
+		wrappers.move_to_front(element, prev);
 	}
 
-	void MoveToTail(T* element, T* prev)
+	void move_to_back(T* element, T* prev)
 	{
-		wrappers.MoveToTail(element, prev);
+		wrappers.move_to_back(element, prev);
 	}
 
 // Implementation
@@ -166,10 +166,14 @@ private:
 	struct wrapper_node_access
 	{
 		typedef T element_type;
-
 		typedef element_wrapper node_type;
 
 		static node_type* node_for(T* element)
+		{
+			return B_OUTERSTRUCT(element_wrapper, element, element);
+		}
+
+		static const node_type* node_for(const T* element)
 		{
 			return B_OUTERSTRUCT(element_wrapper, element, element);
 		}

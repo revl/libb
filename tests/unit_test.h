@@ -34,7 +34,7 @@ public:
 
 	test_case(const char* name) : test_name(name), failed_checks(0)
 	{
-		test_case::list.AddTail(this);
+		test_case::list.append(this);
 	}
 
 	virtual void run() = 0;
@@ -91,7 +91,7 @@ B_END_NAMESPACE
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
-	b::test_case* current_test_case = b::test_case::list.GetHead();
+	b::test_case* current_test_case = b::test_case::list.first();
 
 	while (current_test_case != NULL)
 	{

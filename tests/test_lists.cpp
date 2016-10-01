@@ -27,13 +27,13 @@
 
 class test_element;
 
-typedef b::linked_list_node<test_element> test_element_list_node;
+typedef b::linked_list_node<test_element> list_node;
 
-class asc_list_node : public test_element_list_node
+class asc_list_node : public list_node
 {
 };
 
-class desc_list_node : public test_element_list_node
+class desc_list_node : public list_node
 {
 };
 
@@ -64,83 +64,83 @@ test_element::~test_element()
 typedef b::node_access_via_cast<asc_list_node> asc_list_node_access;
 typedef b::node_access_via_cast<desc_list_node> desc_list_node_access;
 
-typedef b::linked_list<asc_list_node_access> AscList;
-typedef b::linked_list<desc_list_node_access> DescList;
+typedef b::linked_list<asc_list_node_access> asc_test_element_list;
+typedef b::linked_list<desc_list_node_access> desc_test_element_list;
 
 B_TEST_CASE(test_object_lists)
 {
-	AscList asc_list = asc_list_node_access();
-	DescList desc_list = desc_list_node_access();
+	asc_test_element_list asc_list = asc_list_node_access();
+	desc_test_element_list desc_list = desc_list_node_access();
 
 	test_element* element = new test_element(2);
 
-	asc_list.AddHead(element);
-	desc_list.AddTail(element);
+	asc_list.insert_first(element);
+	desc_list.append(element);
 	element->AddRef();
 
 	element = new test_element(3);
 
-	asc_list.AddTail(element);
-	desc_list.AddHead(element);
+	asc_list.append(element);
+	desc_list.insert_first(element);
 	element->AddRef();
 
 	element = new test_element(1);
 
-	asc_list.AddHead(element);
-	desc_list.AddTail(element);
+	asc_list.insert_first(element);
+	desc_list.append(element);
 	element->AddRef();
 
 	int i = 0;
 
-	element = asc_list.GetHead();
+	element = asc_list.first();
 
 	do
 		B_CHECK(element->value == ++i);
 	while ((element = asc_list.next(element)) != NULL);
 
-	B_CHECK((element = desc_list.GetHead())->value == i);
+	B_CHECK((element = desc_list.first())->value == i);
 
 	do
 		B_CHECK((element = desc_list.next(element))->value == --i);
-	while (element != desc_list.GetTail());
+	while (element != desc_list.last());
 
-	desc_list.MoveToTail(desc_list.GetHead(), NULL);
-	desc_list.MoveToHead(desc_list.next(desc_list.GetHead()),
-		desc_list.GetHead());
+	desc_list.move_to_back(desc_list.first(), NULL);
+	desc_list.move_to_front(desc_list.next(desc_list.first()),
+		desc_list.first());
 
-	element = desc_list.GetHead();
+	element = desc_list.first();
 
-	while (!asc_list.IsEmpty())
+	while (!asc_list.is_empty())
 	{
-		B_CHECK(asc_list.GetHead()->value == element->value);
+		B_CHECK(asc_list.first()->value == element->value);
 
-		asc_list.RemoveHead();
+		asc_list.remove_first();
 
 		test_element* next = desc_list.next(element);
 		element->Release();
 		element = next;
 	}
 
-	desc_list.RemoveAll();
+	desc_list.remove_all();
 
 	B_CHECK(object_count == 0);
 }
 
-typedef b::doubly_linked_list_container<int> IntegerList;
+typedef b::doubly_linked_list_container<int> integer_list;
 
 B_TEST_CASE(test_integer_lists)
 {
-	IntegerList integer_list;
+	integer_list list;
 
-	int* element = integer_list.AddHead(2);
-	integer_list.InsertAfter(element, 3);
-	integer_list.AddHead(1);
+	int* element = list.insert_first(2);
+	list.insert_after(element, 3);
+	list.insert_first(1);
 
-	element = integer_list.GetHead();
+	element = list.first();
 
 	int i = 0;
 
 	do
 		B_CHECK(*element == ++i);
-	while ((element = integer_list.next(element)) != NULL);
+	while ((element = list.next(element)) != NULL);
 }

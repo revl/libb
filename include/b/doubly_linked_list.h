@@ -60,10 +60,7 @@ class doubly_linked_list : public linked_list<Node_access>
 // Types
 public:
 	typedef typename Node_access::element_type element_type;
-
 	typedef typename Node_access::node_type node_type;
-
-	typedef linked_list<Node_access> base;
 
 // Operations
 public:
@@ -74,123 +71,130 @@ public:
 
 	static element_type* prev(element_type* element)
 	{
-		return base::GetNode(element)->prev();
+		return Node_access::node_for(element)->prev();
 	}
 
 	static const element_type* prev(const element_type* element)
 	{
-		return base::GetNode(element)->prev();
+		return Node_access::node_for(element)->prev();
 	}
 
-	void AddHead(element_type* new_element)
+	void insert_first(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		node_type* node = base::GetNode(new_element);
+		node_type* node = Node_access::node_for(new_element);
 
-		node->set_next(this->head);
+		node->set_next(this->first_element);
 		node->set_prev(NULL);
 
-		if (this->head != NULL)
-			base::GetNode(this->head)->set_prev(new_element);
+		if (this->first_element != NULL)
+			Node_access::node_for(
+				this->first_element)->set_prev(new_element);
 		else
-			this->tail = new_element;
+			this->last_element = new_element;
 
-		this->head = new_element;
+		this->first_element = new_element;
 	}
 
-	void AddTail(element_type* new_element)
+	void append(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		node_type* node = base::GetNode(new_element);
+		node_type* node = Node_access::node_for(new_element);
 
 		node->set_next(NULL);
-		node->set_prev(this->tail);
+		node->set_prev(this->last_element);
 
-		if (this->tail != NULL)
-			base::GetNode(this->tail)->set_next(new_element);
+		if (this->last_element != NULL)
+			Node_access::node_for(
+				this->last_element)->set_next(new_element);
 		else
-			this->head = new_element;
+			this->first_element = new_element;
 
-		this->tail = new_element;
+		this->last_element = new_element;
 	}
 
-	void InsertAfter(element_type* element, element_type* new_element)
+	void insert_after(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
-		node_type* node = base::GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* next_element = node->next();
 
 		node->set_next(new_element);
 
-		if (element == this->tail)
-			this->tail = new_element;
+		if (element == this->last_element)
+			this->last_element = new_element;
 		else
-			base::GetNode(next_element)->set_prev(new_element);
+			Node_access::node_for(
+				next_element)->set_prev(new_element);
 
-		node = base::GetNode(new_element);
+		node = Node_access::node_for(new_element);
 
 		node->set_next(next_element);
 		node->set_prev(element);
 	}
 
-	void InsertBefore(element_type* element, element_type* new_element)
+	void insert_before(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
-		node_type* node = base::GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* prev_element = node->prev();
 
 		node->set_prev(new_element);
 
-		if (element == this->head)
-			this->head = new_element;
+		if (element == this->first_element)
+			this->first_element = new_element;
 		else
-			base::GetNode(prev_element)->set_next(new_element);
+			Node_access::node_for(
+				prev_element)->set_next(new_element);
 
-		node = base::GetNode(new_element);
+		node = Node_access::node_for(new_element);
 
 		node->set_next(element);
 		node->set_prev(prev_element);
 	}
 
-	void RemoveTail()
+	void remove_last()
 	{
-		B_ASSERT(this->tail != NULL);
+		B_ASSERT(this->last_element != NULL);
 
-		if ((this->tail = base::GetNode(this->tail)->prev()) == NULL)
-			this->head = NULL;
+		if ((this->last_element = Node_access::node_for(
+				this->last_element)->prev()) == NULL)
+			this->first_element = NULL;
 	}
 
-	void Remove(element_type* element)
+	void remove(element_type* element)
 	{
-		B_ASSERT(this->head != NULL && element != NULL);
+		B_ASSERT(this->first_element != NULL && element != NULL);
 
-		node_type* node = base::GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* prev_element = node->prev();
 		element_type* next_element = node->next();
 
 		if (prev_element != NULL)
-			base::GetNode(prev_element)->set_next(next_element);
+			Node_access::node_for(
+				prev_element)->set_next(next_element);
 		else
-			this->head = next_element;
+			this->first_element = next_element;
 
 		if (next_element != NULL)
-			base::GetNode(next_element)->set_prev(prev_element);
+			Node_access::node_for(
+				next_element)->set_prev(prev_element);
 		else
-			this->tail = prev_element;
+			this->last_element = prev_element;
 	}
 
-	void MoveToHead(element_type* element)
+	void move_to_front(element_type* element)
 	{
-		B_ASSERT(this->head != NULL && element != NULL);
+		B_ASSERT(this->first_element != NULL && element != NULL);
 
-		node_type* node = base::GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* prev_element = node->prev();
 
@@ -198,27 +202,29 @@ public:
 		{
 			element_type* next_element = node->next();
 
-			base::GetNode(prev_element)->set_next(next_element);
+			Node_access::node_for(
+				prev_element)->set_next(next_element);
 
 			if (next_element != NULL)
-				base::GetNode(next_element)->
+				Node_access::node_for(next_element)->
 					set_prev(prev_element);
 			else
-				this->tail = prev_element;
+				this->last_element = prev_element;
 
-			node->set_next(this->head);
+			node->set_next(this->first_element);
 			node->set_prev(NULL);
 
-			base::GetNode(this->head)->set_prev(element);
-			this->head = element;
+			Node_access::node_for(
+				this->first_element)->set_prev(element);
+			this->first_element = element;
 		}
 	}
 
-	void MoveToTail(element_type* element)
+	void move_to_back(element_type* element)
 	{
-		B_ASSERT(this->tail != NULL && element != NULL);
+		B_ASSERT(this->last_element != NULL && element != NULL);
 
-		node_type* node = base::GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* next_element = node->next();
 
@@ -226,19 +232,21 @@ public:
 		{
 			element_type* prev_element = node->prev();
 
-			base::GetNode(next_element)->set_prev(prev_element);
+			Node_access::node_for(
+				next_element)->set_prev(prev_element);
 
 			if (prev_element != NULL)
-				base::GetNode(prev_element)->
+				Node_access::node_for(prev_element)->
 					set_next(next_element);
 			else
-				this->head = next_element;
+				this->first_element = next_element;
 
 			node->set_next(NULL);
-			node->set_prev(this->tail);
+			node->set_prev(this->last_element);
 
-			base::GetNode(this->tail)->set_next(element);
-			this->tail = element;
+			Node_access::node_for(
+				this->last_element)->set_next(element);
+			this->last_element = element;
 		}
 	}
 };

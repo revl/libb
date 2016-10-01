@@ -60,169 +60,176 @@ class linked_list : public Node_access
 // Types
 public:
 	typedef typename Node_access::element_type element_type;
-
 	typedef typename Node_access::node_type node_type;
 
 // Construction
 public:
 	linked_list(const Node_access& node_access_inst) :
-		Node_access(node_access_inst), head(NULL), tail(NULL)
+		Node_access(node_access_inst),
+		first_element(NULL),
+		last_element(NULL)
 	{
 	}
 
-// Attributes
+// Accessors
 public:
-	element_type* GetHead()
+	element_type* first()
 	{
-		return head;
+		return first_element;
 	}
 
-	const element_type* GetHead() const
+	const element_type* first() const
 	{
-		return head;
+		return first_element;
 	}
 
-	element_type* GetTail()
+	element_type* last()
 	{
-		return tail;
+		return last_element;
 	}
 
-	const element_type* GetTail() const
+	const element_type* last() const
 	{
-		return tail;
+		return last_element;
 	}
 
-	bool IsEmpty() const
+	bool is_empty() const
 	{
-		return head == NULL;
+		return first_element == NULL;
 	}
 
 // Operations
 public:
 	static element_type* next(element_type* element)
 	{
-		return GetNode(element)->next();
+		return Node_access::node_for(element)->next();
 	}
 
 	static const element_type* next(const element_type* element)
 	{
-		return GetNode(element)->next();
+		return Node_access::node_for(element)->next();
 	}
 
-	void AddHead(element_type* new_element)
+	void insert_first(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		GetNode(new_element)->set_next(head);
+		Node_access::node_for(new_element)->set_next(first_element);
 
-		head = new_element;
+		first_element = new_element;
 
-		if (tail == NULL)
-			tail = new_element;
+		if (last_element == NULL)
+			last_element = new_element;
 	}
 
-	void AddTail(element_type* new_element)
+	void append(element_type* new_element)
 	{
 		B_ASSERT(new_element != NULL);
 
-		GetNode(new_element)->set_next(NULL);
+		Node_access::node_for(new_element)->set_next(NULL);
 
-		if (tail != NULL)
-			GetNode(tail)->set_next(new_element);
+		if (last_element != NULL)
+			Node_access::node_for(
+				last_element)->set_next(new_element);
 		else
-			head = new_element;
+			first_element = new_element;
 
-		tail = new_element;
+		last_element = new_element;
 	}
 
-	void InsertAfter(element_type* element, element_type* new_element)
+	void insert_after(element_type* element, element_type* new_element)
 	{
 		B_ASSERT(element != NULL && new_element != NULL);
 
-		if (element == tail)
-			tail = new_element;
+		if (element == last_element)
+			last_element = new_element;
 
-		node_type* node = GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
-		GetNode(new_element)->set_next(node->next());
+		Node_access::node_for(new_element)->set_next(node->next());
 
 		node->set_next(new_element);
 	}
 
-	void RemoveHead()
+	void remove_first()
 	{
-		B_ASSERT(head != NULL);
+		B_ASSERT(first_element != NULL);
 
-		if ((head = GetNode(head)->next()) == NULL)
-			tail = NULL;
+		if ((first_element = Node_access::node_for(
+				first_element)->next()) == NULL)
+			last_element = NULL;
 	}
 
-	void Remove(element_type* element, element_type* prev_element)
+	void remove(element_type* element, element_type* prev_element)
 	{
-		B_ASSERT(head != NULL && element != NULL &&
-			element == (prev_element == NULL ? head :
-			GetNode(prev_element)->next()));
+		B_ASSERT(first_element != NULL && element != NULL &&
+			element == (prev_element == NULL ? first_element :
+			Node_access::node_for(prev_element)->next()));
 
-		element_type* next_element = GetNode(element)->next();
+		element_type* next_element =
+			Node_access::node_for(element)->next();
 
 		if (prev_element != NULL)
-			GetNode(prev_element)->set_next(next_element);
+			Node_access::node_for(
+				prev_element)->set_next(next_element);
 		else
-			head = next_element;
+			first_element = next_element;
 
 		if (next_element == NULL)
-			tail = prev_element;
+			last_element = prev_element;
 	}
 
-	void RemoveAll()
+	void remove_all()
 	{
-		tail = head = NULL;
+		last_element = first_element = NULL;
 	}
 
-	void MoveToHead(element_type* element, element_type* prev_element)
+	void move_to_front(element_type* element, element_type* prev_element)
 	{
-		B_ASSERT(head != NULL && element != NULL &&
-			element == (prev_element == NULL ? head :
-			GetNode(prev_element)->next()));
+		B_ASSERT(first_element != NULL && element != NULL &&
+			element == (prev_element == NULL ? first_element :
+			Node_access::node_for(prev_element)->next()));
 
 		if (prev_element != NULL)
 		{
-			node_type* node = GetNode(element);
+			node_type* node = Node_access::node_for(element);
 
 			element_type* next_element = node->next();
 
-			GetNode(prev_element)->set_next(next_element);
+			Node_access::node_for(
+				prev_element)->set_next(next_element);
 
 			if (next_element == NULL)
-				tail = prev_element;
+				last_element = prev_element;
 
-			node->set_next(head);
+			node->set_next(first_element);
 
-			head = element;
+			first_element = element;
 		}
 	}
 
-	void MoveToTail(element_type* element, element_type* prev_element)
+	void move_to_back(element_type* element, element_type* prev_element)
 	{
-		B_ASSERT(tail != NULL && element != NULL &&
-			element == (prev_element == NULL ? head :
-			GetNode(prev_element)->next()));
+		B_ASSERT(last_element != NULL && element != NULL &&
+			element == (prev_element == NULL ? first_element :
+			Node_access::node_for(prev_element)->next()));
 
-		node_type* node = GetNode(element);
+		node_type* node = Node_access::node_for(element);
 
 		element_type* next_element = node->next();
 
 		if (next_element != NULL)
 		{
 			if (prev_element != NULL)
-				GetNode(prev_element)->set_next(next_element);
+				Node_access::node_for(
+					prev_element)->set_next(next_element);
 			else
-				head = node->next();
+				first_element = node->next();
 
 			node->set_next(NULL);
 
-			GetNode(tail)->set_next(element);
-			tail = element;
+			Node_access::node_for(last_element)->set_next(element);
+			last_element = element;
 		}
 	}
 
@@ -230,23 +237,12 @@ public:
 public:
 	~linked_list()
 	{
-		RemoveAll();
+		remove_all();
 	}
 
 protected:
-	static node_type* GetNode(element_type* element)
-	{
-		return Node_access::node_for(element);
-	}
-
-	static const node_type* GetNode(const element_type* element)
-	{
-		return Node_access::node_for(
-			const_cast<element_type*>(element));
-	}
-
-	element_type* head;
-	element_type* tail;
+	element_type* first_element;
+	element_type* last_element;
 };
 
 B_END_NAMESPACE

@@ -43,6 +43,11 @@ public:
 	{
 		return &static_cast<node_type&>(*element);
 	}
+
+	static const node_type* node_for(const element_type* element)
+	{
+		return &static_cast<node_type&>(*element);
+	}
 };
 
 B_END_NAMESPACE
