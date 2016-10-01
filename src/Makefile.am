@@ -34,6 +34,7 @@ sources = \
 	exceptions.cpp \
 	memory.cpp \
 	misc.cpp \
+	pathname.cpp \
 	string.cpp \
 	string_impl.h
 

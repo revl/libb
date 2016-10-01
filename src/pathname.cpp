@@ -22,88 +22,92 @@
 
 B_BEGIN_NAMESPACE
 
-void Pathname::AppendPathnameTo(String& pathname) const
+void pathname::AppendPathnameTo(string& path) const
 {
 	switch (up_dir_level)
 	{
-	case INT_MAX:
-		pathname.Append(B_PATH_SEPARATOR);
+	case UINT_MAX:
+		path.append(B_PATH_SEPARATOR);
 
-		if (!components.IsEmpty())
-			GetComponents(pathname);
+		if (!pathname_components.is_empty())
+			components(path);
 		break;
 
 	case 0:
-		if (!components.IsEmpty())
-			GetComponents(pathname);
+		if (!pathname_components.is_empty())
+			components(path);
 		else
-			pathname.Append('.');
+			path.append('.');
 		break;
 
 	default:
-		int i = up_dir_level;
+		unsigned i = up_dir_level;
 
-		if (!components.IsEmpty())
+		if (!pathname_components.is_empty())
 		{
 			while (--i >= 0)
-				pathname.Append(".."
+				path.append(".."
 					B_PATH_SEPARATOR_SZ, 3);
 
-			GetComponents(pathname);
+			components(path);
 		}
 		else
 		{
 			while (--i > 0)
-				pathname.Append(".."
+				path.append(".."
 					B_PATH_SEPARATOR_SZ, 3);
 
-			pathname.Append("..", 2);
+			path.append("..", 2);
 		}
 	}
 }
 
-void Pathname::ChDir(const Pathname& rhs)
+void pathname::ChDir(const pathname& rhs)
 {
 	switch (rhs.up_dir_level)
 	{
-	case INT_MAX:
+	case UINT_MAX:
 		*this = rhs;
 		break;
 
 	default:
-		if (rhs.up_dir_level <= components.GetSize())
-			components.RemoveAt(components.GetSize() -
+		if (rhs.up_dir_level <= pathname_components.size())
+			pathname_components.erase(pathname_components.size() -
 				rhs.up_dir_level,
 				rhs.up_dir_level);
 		else
 		{
-			up_dir_level += rhs.up_dir_level - components.GetSize();
+			up_dir_level += rhs.up_dir_level -
+				(unsigned) pathname_components.size();
 
-			components.RemoveAll();
+			pathname_components.clear();
 		}
 
 	case 0:
-		components.Append(rhs.components);
+		pathname_components.append(rhs.pathname_components);
 
 		can_be_filename = rhs.can_be_filename;
 	}
 }
 
-void Pathname::ChDir(const char* pathname, int count)
+void pathname::ChDir(const string_view& path)
 {
-	const char* component;
+	const char* current_char = path.data();
+	size_t remaining_len = path.length();
+
+	const char* component_start;
 	const char* suffix;
 
 	can_be_filename = false;
 
-	if (count == 0)
+	if (remaining_len == 0)
 		return;
 
-	switch (*pathname)
+	switch (*current_char)
 	{
 	case B_PATH_SEPARATOR:
-		components.RemoveAll();
-		up_dir_level = INT_MAX;
+		pathname_components.clear();
+		up_dir_level = UINT_MAX;
 
 		goto Slash;
 
@@ -112,58 +116,58 @@ void Pathname::ChDir(const char* pathname, int count)
 	}
 
 NextComponent:
-	component = pathname;
+	component_start = current_char;
 	suffix = NULL;
 
 Continue:
 	for (;;)
 	{
-		++pathname;
+		++current_char;
 
-		if (--count == 0)
+		if (--remaining_len == 0)
 		{
-			AddComponent(component, suffix, pathname);
+			AddComponent(component_start, suffix, current_char);
 
 			can_be_filename = true;
 
 			return;
 		}
 
-		switch (*pathname)
+		switch (*current_char)
 		{
 		case B_PATH_SEPARATOR:
-			AddComponent(component, suffix, pathname);
+			AddComponent(component_start, suffix, current_char);
 
 			goto Slash;
 
 		case '.':
-			suffix = pathname;
+			suffix = current_char;
 		}
 	}
 
 DotFirst:
-	if (--count == 0)
+	if (--remaining_len == 0)
 		return;
 
-	component = pathname;
+	component_start = current_char;
 	suffix = NULL;
 
-	switch (*++pathname)
+	switch (*++current_char)
 	{
 	case B_PATH_SEPARATOR:
 		goto Slash;
 
 	case '.':
-		suffix = pathname;
+		suffix = current_char;
 
-		if (--count == 0)
+		if (--remaining_len == 0)
 		{
 			GoUpDir();
 
 			return;
 		}
 
-		switch (*++pathname)
+		switch (*++current_char)
 		{
 		case B_PATH_SEPARATOR:
 			GoUpDir();
@@ -171,17 +175,17 @@ DotFirst:
 			goto Slash;
 
 		case '.':
-			suffix = pathname;
+			suffix = current_char;
 		}
 	}
 
 	goto Continue;
 
 Slash:
-	if (--count == 0)
+	if (--remaining_len == 0)
 		return;
 
-	switch (*++pathname)
+	switch (*++current_char)
 	{
 	case B_PATH_SEPARATOR:
 		goto Slash;
@@ -193,21 +197,21 @@ Slash:
 	goto NextComponent;
 }
 
-void Pathname::GetComponents(String& pathname) const
+void pathname::components(string& path) const
 {
-	int count = components.GetSize();
+	unsigned remaining_len = (unsigned) pathname_components.size();
 
-	if (count > 0)
+	if (remaining_len > 0)
 	{
-		const Component* component = components.GetBuffer();
+		const component* current_component = pathname_components.data();
 
-		component->AppendNameTo(pathname);
+		current_component->AppendNameTo(path);
 
-		while (--count > 0)
+		while (--remaining_len > 0)
 		{
-			pathname.Append(B_PATH_SEPARATOR);
+			path.append(B_PATH_SEPARATOR);
 
-			(++component)->AppendNameTo(pathname);
+			(++current_component)->AppendNameTo(path);
 		}
 	}
 }

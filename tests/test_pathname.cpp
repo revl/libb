@@ -20,36 +20,39 @@
 
 #include <b/pathname.h>
 
+#include <unistd.h>
+
 int main()
 {
-	b::String current_dir;
+	b::string current_dir;
 
-	current_dir.AllocExactly(MAX_PATH);
+	current_dir.reserve(1024);
 
-	getcwd(current_dir.LockBuffer(), current_dir.GetCapacity());
+	getcwd(current_dir.lock(), current_dir.capacity());
 
-	current_dir.UnlockBuffer(chars_written);
+	current_dir.unlock(b::calc_length(current_dir.data()));
 
-	printf("[%s]$ cd ", current_dir.GetBuffer());
+	printf("[%s]$ cd ", current_dir.c_str());
 
 	char buffer[1024];
 
-	while (fgets(buffer, sizeof(buffer), stdin))
+	//while (fgets(buffer, sizeof(buffer), stdin))
+	while (0)
 	{
-		b::Pathname path(current_dir, current_dir.GetLength());
+		b::pathname path(current_dir);
 
-		int buffer_length = b::CalcLength(buffer);
+		size_t buffer_length = b::calc_length(buffer);
 
-		path.ChDir(buffer, buffer_length > 0 &&
+		path.ChDir(b::string_view(buffer, buffer_length > 0 &&
 			buffer[buffer_length - 1] == '\n' ?
-			buffer_length - 1: buffer_length);
+			buffer_length - 1: buffer_length));
 
-		b::String new_dir;
+		b::string new_dir;
 		path.AppendPathnameTo(new_dir);
 
 		current_dir = new_dir;
 
-		printf("[%s]$ cd ", current_dir.GetBuffer());
+		printf("[%s]$ cd ", current_dir.c_str());
 	}
 
 	printf("\n");

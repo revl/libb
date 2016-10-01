@@ -28,6 +28,7 @@ TESTS = \
 	test_memory \
 	test_misc \
 	test_object \
+	test_pathname \
 	test_random \
 	test_make_path
 
@@ -41,6 +42,7 @@ check_PROGRAMS = \
 	test_memory \
 	test_misc \
 	test_object \
+	test_pathname \
 	test_random \
 	test_make_path
 
@@ -61,6 +63,8 @@ test_memory_SOURCES = test_memory.cpp
 test_misc_SOURCES = test_misc.cpp
 
 test_object_SOURCES = test_object.cpp
+
+test_pathname_SOURCES = test_pathname.cpp
 
 test_random_SOURCES = test_random.cpp
 
