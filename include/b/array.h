@@ -446,7 +446,7 @@ const T* array<T>::end() const
 template <class T>
 bool array<T>::is_shared() const
 {
-	return metadata()->refs > 0;
+	return metadata()->refs > 1;
 }
 
 template <class T>

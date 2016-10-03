@@ -32,6 +32,28 @@ B_TEST_CASE(test_shared)
 
 	// Both arrays must share the same buffer.
 	B_CHECK(a1.data() == a2.data());
+
+	a2 += 2;
+
+	// Now they must diverge.
+	B_CHECK(a1.data() != a2.data());
+}
+
+B_TEST_CASE(test_realloc)
+{
+	b::array<int> a(1, 1);
+
+	const int* original_buffer = a.data();
+
+	a += 2;
+
+	B_CHECK(a.data() == original_buffer);
+
+	a.alloc_and_copy(3);
+
+	B_CHECK(a.data() != original_buffer);
+	B_CHECK(a.size() == 2);
+	B_CHECK(a.capacity() == 3);
 }
 
 B_TEST_CASE(test_shrink_to_fit)
