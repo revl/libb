@@ -19,7 +19,7 @@
 AC_INIT([b], [1.0.1])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIRS([m4])
-AC_CONFIG_SRCDIR([src/string.cpp])
+AC_CONFIG_SRCDIR([src/string.cc])
 AM_INIT_AUTOMAKE
 
 library_version_info=3:0:0

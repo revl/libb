@@ -46,28 +46,28 @@ check_PROGRAMS = \
 	test_random \
 	test_make_path
 
-test_string_SOURCES = test_string.cpp
+test_string_SOURCES = test_string.cc
 
-test_string_formatting_SOURCES = test_string_formatting.cpp
+test_string_formatting_SOURCES = test_string_formatting.cc
 
-test_string_view_SOURCES = test_string_view.cpp
+test_string_view_SOURCES = test_string_view.cc
 
-test_array_SOURCES = test_array.cpp
+test_array_SOURCES = test_array.cc
 
-test_levenshtein_distance_SOURCES = test_levenshtein_distance.cpp
+test_levenshtein_distance_SOURCES = test_levenshtein_distance.cc
 
-test_lists_SOURCES = test_lists.cpp
+test_lists_SOURCES = test_lists.cc
 
-test_memory_SOURCES = test_memory.cpp
+test_memory_SOURCES = test_memory.cc
 
-test_misc_SOURCES = test_misc.cpp
+test_misc_SOURCES = test_misc.cc
 
-test_object_SOURCES = test_object.cpp
+test_object_SOURCES = test_object.cc
 
-test_pathname_SOURCES = test_pathname.cpp
+test_pathname_SOURCES = test_pathname.cc
 
-test_random_SOURCES = test_random.cpp
+test_random_SOURCES = test_random.cc
 
-test_make_path_SOURCES = test_make_path.cpp
+test_make_path_SOURCES = test_make_path.cc
 
 MAINTAINERCLEANFILES = Makefile.in
