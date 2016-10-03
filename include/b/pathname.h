@@ -134,11 +134,8 @@ inline string_view pathname::component::basename() const
 
 inline string_view pathname::component::suffix() const
 {
-	if (component_name_suffix == component_name_end)
-		return string_view();
-
-	return string_view(component_name_suffix + 1 /* skip the dot */,
-		component_name_end - (component_name_suffix + 1));
+	return string_view(component_name_suffix,
+		component_name_end - component_name_suffix);
 }
 
 inline pathname::pathname() :

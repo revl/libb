@@ -41,7 +41,7 @@ B_TEST_CASE(test_pathname_normalization)
 
 	B_CHECK(filename.name() == "f.n.sh");
 	B_CHECK(filename.basename() == "f.n");
-	B_CHECK(filename.suffix() == "sh");
+	B_CHECK(filename.suffix() == ".sh");
 }
 
 B_TEST_CASE(test_pathname_can_represent_file)
