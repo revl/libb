@@ -45,17 +45,15 @@ void pathname::AppendPathnameTo(string& path) const
 
 		if (!pathname_components.is_empty())
 		{
-			while (--i >= 0)
-				path.append(".."
-					B_PATH_SEPARATOR_SZ, 3);
+			for (; i > 0; --i)
+				path.append(".." B_PATH_SEPARATOR_SZ, 3);
 
 			components(path);
 		}
 		else
 		{
 			while (--i > 0)
-				path.append(".."
-					B_PATH_SEPARATOR_SZ, 3);
+				path.append(".." B_PATH_SEPARATOR_SZ, 3);
 
 			path.append("..", 2);
 		}
@@ -95,7 +93,7 @@ void pathname::ChDir(const string_view& path)
 	const char* current_char = path.data();
 	size_t remaining_len = path.length();
 
-	const char* component_start;
+	const char* component_name;
 	const char* suffix;
 
 	can_be_filename = false;
@@ -109,24 +107,24 @@ void pathname::ChDir(const string_view& path)
 		pathname_components.clear();
 		up_dir_level = UINT_MAX;
 
-		goto Slash;
+		goto slash;
 
 	case '.':
-		goto DotFirst;
+		goto starts_with_dot;
 	}
 
-NextComponent:
-	component_start = current_char;
+next_component:
+	component_name = current_char;
 	suffix = NULL;
 
-Continue:
+continue_parsing_component:
 	for (;;)
 	{
 		++current_char;
 
 		if (--remaining_len == 0)
 		{
-			AddComponent(component_start, suffix, current_char);
+			append_component(component_name, suffix, current_char);
 
 			can_be_filename = true;
 
@@ -136,33 +134,33 @@ Continue:
 		switch (*current_char)
 		{
 		case B_PATH_SEPARATOR:
-			AddComponent(component_start, suffix, current_char);
+			append_component(component_name, suffix, current_char);
 
-			goto Slash;
+			goto slash;
 
 		case '.':
 			suffix = current_char;
 		}
 	}
 
-DotFirst:
+starts_with_dot:
 	if (--remaining_len == 0)
 		return;
 
-	component_start = current_char;
+	component_name = current_char;
 	suffix = NULL;
 
 	switch (*++current_char)
 	{
 	case B_PATH_SEPARATOR:
-		goto Slash;
+		goto slash;
 
 	case '.':
 		suffix = current_char;
 
 		if (--remaining_len == 0)
 		{
-			GoUpDir();
+			go_one_level_up();
 
 			return;
 		}
@@ -170,48 +168,54 @@ DotFirst:
 		switch (*++current_char)
 		{
 		case B_PATH_SEPARATOR:
-			GoUpDir();
+			go_one_level_up();
 
-			goto Slash;
+			goto slash;
 
 		case '.':
 			suffix = current_char;
 		}
 	}
 
-	goto Continue;
+	goto continue_parsing_component;
 
-Slash:
+slash:
 	if (--remaining_len == 0)
 		return;
 
 	switch (*++current_char)
 	{
 	case B_PATH_SEPARATOR:
-		goto Slash;
+		goto slash;
 
 	case '.':
-		goto DotFirst;
+		goto starts_with_dot;
 	}
 
-	goto NextComponent;
+	goto next_component;
 }
 
 void pathname::components(string& path) const
 {
-	unsigned remaining_len = (unsigned) pathname_components.size();
+	size_t n = pathname_components.size();
 
-	if (remaining_len > 0)
+	if (n > 0)
 	{
 		const component* current_component = pathname_components.data();
 
-		current_component->AppendNameTo(path);
+		path.append(current_component->component_name,
+			current_component->component_name_end -
+			current_component->component_name);
 
-		while (--remaining_len > 0)
+		while (--n > 0)
 		{
+			++current_component;
+
 			path.append(B_PATH_SEPARATOR);
 
-			(++current_component)->AppendNameTo(path);
+			path.append(current_component->component_name,
+				current_component->component_name_end -
+				current_component->component_name);
 		}
 	}
 }

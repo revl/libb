@@ -28,39 +28,41 @@
 
 B_BEGIN_NAMESPACE
 
+// Pathname parsing and normalization with additional
+// modification operations.
 class pathname
 {
 // Types
 public:
 	class component
 	{
-	// Construction
+	// Accessors
 	public:
-		component(const char* name,
-			const char* suffix, const char* end);
+		// The full name of the component.
+		string_view name() const;
 
-	// Attributes
-	public:
-		void GetName(const char*& name,
-			const char*& end) const;
+		// Component name without the (optional) suffix.
+		// The returned value is equal to 'name()' if
+		// the component name does not contain a dot.
+		string_view basename() const;
 
-		void GetBasename(const char*& name,
-			const char*& suffix) const;
-
-		void GetSuffix(const char*& suffix,
-			const char*& end) const;
-
-		void AppendNameTo(string& path) const;
-
-		void AppendBasenameTo(string& path) const;
-
-		void AppendSuffixTo(string& path) const;
+		// The (optional) suffix. For a filename, the
+		// method returns its extension, which is the
+		// part that starts with the last dot.
+		// If the name of the component does not have
+		// a suffix, an empty string_view is returned.
+		string_view suffix() const;
 
 	// Implementation
 	private:
+		friend class pathname;
+
+		component(const char* name_arg,
+			const char* suffix_arg, const char* end_arg);
+
 		const char* component_name;
-		const char* component_suffix;
-		const char* component_end;
+		const char* component_name_suffix;
+		const char* component_name_end;
 	};
 
 	typedef array<component> component_array;
@@ -78,21 +80,24 @@ public:
 	bool IsAbsolute() const;
 	int GetUpDirLevel() const;
 
-	bool CanBeFilename() const;
+	// Returns true if this pathname can represent a file.
+	// A pathname cannot be a filename if it ends with a
+	// slash, '.', or '..'.
+	bool can_represent_file() const;
 
 	void AppendPathnameTo(string& path) const;
 
 // Operations
 public:
-	void Assign(const pathname& rhs);
+	void assign(const pathname& rhs);
 
-	void Assign(const string_view& path);
+	void assign(const string_view& path);
 
 	void ChDir(const pathname& rhs);
 
 	void ChDir(const string_view& path);
 
-	void GoUpDir();
+	void go_one_level_up();
 
 // Implementation
 private:
@@ -102,7 +107,7 @@ private:
 
 	bool can_be_filename;
 
-	void AddComponent(const char* name,
+	void append_component(const char* name,
 		const char* suffix, const char* end);
 
 	void components(string& path) const;
@@ -111,45 +116,29 @@ private:
 inline pathname::component::component(const char* name_arg,
 		const char* suffix_arg, const char* end_arg) :
 	component_name(name_arg),
-	component_suffix(suffix_arg),
-	component_end(end_arg)
+	component_name_suffix(suffix_arg),
+	component_name_end(end_arg)
 {
 }
 
-inline void pathname::component::GetName(const char*& name,
-	const char*& end) const
+inline string_view pathname::component::name() const
 {
-	name = this->component_name;
-	end = this->component_end;
+	return string_view(component_name, component_name_end - component_name);
 }
 
-inline void pathname::component::GetBasename(const char*& name,
-	const char*& suffix) const
+inline string_view pathname::component::basename() const
 {
-	name = this->component_name;
-	suffix = this->component_suffix;
+	return string_view(component_name,
+		component_name_suffix - component_name);
 }
 
-inline void pathname::component::GetSuffix(const char*& suffix,
-	const char*& end) const
+inline string_view pathname::component::suffix() const
 {
-	suffix = this->component_suffix;
-	end = this->component_end;
-}
+	if (component_name_suffix == component_name_end)
+		return string_view();
 
-inline void pathname::component::AppendNameTo(string& path) const
-{
-	path.append(component_name, component_end - component_name);
-}
-
-inline void pathname::component::AppendBasenameTo(string& path) const
-{
-	path.append(component_name, component_suffix - component_name);
-}
-
-inline void pathname::component::AppendSuffixTo(string& path) const
-{
-	path.append(component_suffix, component_end - component_suffix);
+	return string_view(component_name_suffix + 1 /* skip the dot */,
+		component_name_end - (component_name_suffix + 1));
 }
 
 inline pathname::pathname() :
@@ -178,17 +167,17 @@ inline int pathname::GetUpDirLevel() const
 	return up_dir_level;
 }
 
-inline bool pathname::CanBeFilename() const
+inline bool pathname::can_represent_file() const
 {
 	return can_be_filename;
 }
 
-inline void pathname::Assign(const pathname& rhs)
+inline void pathname::assign(const pathname& rhs)
 {
 	*this = rhs;
 }
 
-inline void pathname::Assign(const string_view& path)
+inline void pathname::assign(const string_view& path)
 {
 	pathname_components.clear();
 	up_dir_level = 0;
@@ -196,7 +185,7 @@ inline void pathname::Assign(const string_view& path)
 	ChDir(path);
 }
 
-inline void pathname::GoUpDir()
+inline void pathname::go_one_level_up()
 {
 	if (!pathname_components.is_empty())
 		pathname_components.erase(pathname_components.size() - 1);
@@ -205,7 +194,7 @@ inline void pathname::GoUpDir()
 			++up_dir_level;
 }
 
-inline void pathname::AddComponent(const char* name,
+inline void pathname::append_component(const char* name,
 	const char* suffix, const char* end)
 {
 	pathname_components.append(1, component(name,

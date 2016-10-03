@@ -20,42 +20,88 @@
 
 #include <b/pathname.h>
 
-#include <unistd.h>
+#include "unit_test.h"
 
-int main()
+B_TEST_CASE(test_pathname_normalization)
 {
-	b::string current_dir;
+	B_STATIC_CONST_STRING(with_double_dot, "d1/d2/../f.n.sh");
 
-	current_dir.reserve(1024);
+	b::pathname normalized_path(with_double_dot);
 
-	getcwd(current_dir.lock(), current_dir.capacity());
+	B_CHECK(normalized_path.can_represent_file());
 
-	current_dir.unlock(b::calc_length(current_dir.data()));
+	const b::pathname::component_array& components =
+		normalized_path.components();
 
-	printf("[%s]$ cd ", current_dir.c_str());
+	B_REQUIRE(components.size() == 2);
 
-	char buffer[1024];
+	B_CHECK(components.front().name() == "d1");
 
-	//while (fgets(buffer, sizeof(buffer), stdin))
-	while (0)
-	{
-		b::pathname path(current_dir);
+	const b::pathname::component& filename = components.back();
 
-		size_t buffer_length = b::calc_length(buffer);
+	B_CHECK(filename.name() == "f.n.sh");
+	B_CHECK(filename.basename() == "f.n");
+	B_CHECK(filename.suffix() == "sh");
+}
 
-		path.ChDir(b::string_view(buffer, buffer_length > 0 &&
-			buffer[buffer_length - 1] == '\n' ?
-			buffer_length - 1: buffer_length));
+B_TEST_CASE(test_pathname_can_represent_file)
+{
+	B_STATIC_CONST_STRING(file_or_dir, "dir/subdir_or_file");
 
-		b::string new_dir;
-		path.AppendPathnameTo(new_dir);
+	B_CHECK(b::pathname(file_or_dir).can_represent_file());
 
-		current_dir = new_dir;
+	B_STATIC_CONST_STRING(ending_with_slash, "dir/subdir/");
 
-		printf("[%s]$ cd ", current_dir.c_str());
-	}
+	B_CHECK(!b::pathname(ending_with_slash).can_represent_file());
 
-	printf("\n");
+	B_STATIC_CONST_STRING(ending_with_dot, "dir/.");
 
-	return 0;
+	B_CHECK(!b::pathname(ending_with_dot).can_represent_file());
+
+	B_STATIC_CONST_STRING(ending_with_double_dot, "dir/..");
+
+	B_CHECK(!b::pathname(ending_with_double_dot).can_represent_file());
+}
+
+B_TEST_CASE(test_absolute_pathnames)
+{
+	B_STATIC_CONST_STRING(absolute_path, "/absolute/path");
+
+	b::pathname path(absolute_path);
+
+	path.go_one_level_up();
+
+	b::string result;
+
+	path.AppendPathnameTo(result);
+
+	B_CHECK(result == "/absolute");
+}
+
+static b::string inc(b::pathname& path, const char* increment)
+{
+	path.ChDir(b::string_view(increment, b::calc_length(increment)));
+
+	b::string result;
+
+	path.AppendPathnameTo(result);
+
+	return  result;
+}
+
+B_TEST_CASE(test_pathname_increments)
+{
+	B_STATIC_CONST_STRING(initial_path, "dir/subdir");
+
+	b::pathname path(initial_path);
+
+	B_CHECK(inc(path, "..") == "dir");
+	B_CHECK(inc(path, "subdir") == initial_path);
+	B_CHECK(inc(path, "../..") == ".");
+	B_CHECK(inc(path, "../..") == "../..");
+	B_CHECK(inc(path, "/") == "/");
+	B_CHECK(inc(path, "root") == "/root");
+	B_CHECK(inc(path, "///usr") == "/usr");
+	B_CHECK(inc(path, "../var///lib") == "/var/lib");
+	B_CHECK(inc(path, "../../../../../srv/") == "/srv");
 }
