@@ -44,6 +44,17 @@ B_TEST_CASE(test_pathname_normalization)
 	B_CHECK(filename.suffix() == ".sh");
 }
 
+B_TEST_CASE(test_filename_with_empty_suffix)
+{
+	B_STATIC_CONST_STRING(no_suffix, "README");
+
+	B_CHECK(b::pathname(no_suffix).components().back().suffix().is_empty());
+
+	B_STATIC_CONST_STRING(ends_with_dot, "period.");
+
+	B_CHECK(b::pathname(ends_with_dot).components().back().suffix() == ".");
+}
+
 B_TEST_CASE(test_pathname_can_represent_file)
 {
 	B_STATIC_CONST_STRING(file_or_dir, "dir/subdir_or_file");
