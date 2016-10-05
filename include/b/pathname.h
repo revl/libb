@@ -77,7 +77,12 @@ public:
 public:
 	const component_array& components() const;
 
-	bool IsAbsolute() const;
+	// Returns true if the pathname starts with a slash.
+	bool is_absolute() const;
+
+	// Returns the number of double-dot components this
+	// pathname starts with. This method applies only to
+	// relative pathnames.
 	int GetUpDirLevel() const;
 
 	// Returns true if this pathname can represent a file.
@@ -154,7 +159,7 @@ inline const pathname::component_array& pathname::components() const
 	return pathname_components;
 }
 
-inline bool pathname::IsAbsolute() const
+inline bool pathname::is_absolute() const
 {
 	return up_dir_level == UINT_MAX;
 }

@@ -80,7 +80,11 @@ B_TEST_CASE(test_absolute_pathnames)
 
 	b::pathname path(absolute_path);
 
+	B_CHECK(path.is_absolute());
+
 	path.go_one_level_up();
+
+	B_CHECK(path.is_absolute());
 
 	b::string result;
 
