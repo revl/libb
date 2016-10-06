@@ -60,7 +60,7 @@ void pathname::AppendPathnameTo(string& path) const
 	}
 }
 
-void pathname::ChDir(const pathname& rhs)
+void pathname::append(const pathname& rhs)
 {
 	switch (rhs.up_dir_level)
 	{
@@ -88,7 +88,7 @@ void pathname::ChDir(const pathname& rhs)
 	}
 }
 
-void pathname::ChDir(const string_view& path)
+void pathname::append(const string_view& path)
 {
 	const char* current_char = path.data();
 	size_t remaining_len = path.length();
@@ -160,7 +160,7 @@ starts_with_dot:
 
 		if (--remaining_len == 0)
 		{
-			go_one_level_up();
+			go_up_one_level();
 
 			return;
 		}
@@ -168,7 +168,7 @@ starts_with_dot:
 		switch (*++current_char)
 		{
 		case B_PATH_SEPARATOR:
-			go_one_level_up();
+			go_up_one_level();
 
 			goto slash;
 

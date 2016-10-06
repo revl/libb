@@ -94,15 +94,24 @@ public:
 
 // Operations
 public:
+	// Copy the contents of 'rhs' into this object.
 	void assign(const pathname& rhs);
 
+	// Reinitialize this object with components from 'path'.
 	void assign(const string_view& path);
 
-	void ChDir(const pathname& rhs);
+	// Add components from 'rhs' to the current path.
+	void append(const pathname& rhs);
 
-	void ChDir(const string_view& path);
+	// Add components from 'path' to the current path.
+	void append(const string_view& path);
 
-	void go_one_level_up();
+	// Go one level up in the directory hierarchy.
+	void go_up_one_level();
+
+	// Go the specified number of levels up in the
+	// directory hierarchy.
+	void go_up(unsigned levels);
 
 // Implementation
 private:
@@ -151,7 +160,7 @@ inline pathname::pathname() :
 inline pathname::pathname(const string_view& path) :
 	up_dir_level(0), can_be_filename(false)
 {
-	ChDir(path);
+	append(path);
 }
 
 inline const pathname::component_array& pathname::components() const
@@ -184,16 +193,32 @@ inline void pathname::assign(const string_view& path)
 	pathname_components.clear();
 	up_dir_level = 0;
 
-	ChDir(path);
+	append(path);
 }
 
-inline void pathname::go_one_level_up()
+inline void pathname::go_up_one_level()
 {
 	if (!pathname_components.is_empty())
 		pathname_components.erase(pathname_components.size() - 1);
 	else
 		if (up_dir_level != UINT_MAX)
 			++up_dir_level;
+}
+
+inline void pathname::go_up(unsigned levels)
+{
+	if (pathname_components.size() >= levels)
+		pathname_components.erase(
+			pathname_components.size() - levels, levels);
+	else
+	{
+		levels -= (unsigned) pathname_components.size();
+
+		pathname_components.clear();
+
+		if (up_dir_level != UINT_MAX)
+			up_dir_level += levels;
+	}
 }
 
 inline void pathname::append_component(const char* name,
