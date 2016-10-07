@@ -22,8 +22,10 @@
 
 B_BEGIN_NAMESPACE
 
-void pathname::AppendPathnameTo(string& path) const
+string pathname::str() const
 {
+	string path;
+
 	switch (up_dir_level)
 	{
 	case UINT_MAX:
@@ -58,6 +60,8 @@ void pathname::AppendPathnameTo(string& path) const
 			path.append("..", 2);
 		}
 	}
+
+	return path;
 }
 
 void pathname::append(const pathname& rhs)

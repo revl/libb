@@ -86,22 +86,19 @@ B_TEST_CASE(test_absolute_pathnames)
 
 	B_CHECK(path.is_absolute());
 
-	b::string result;
+	B_CHECK(path.str() == "/absolute");
 
-	path.AppendPathnameTo(result);
+	path.go_up_one_level();
+	path.go_up_one_level();
 
-	B_CHECK(result == "/absolute");
+	B_CHECK(path.str() == "/");
 }
 
 static b::string inc(b::pathname& path, const char* increment)
 {
 	path.append(b::string_view(increment, b::calc_length(increment)));
 
-	b::string result;
-
-	path.AppendPathnameTo(result);
-
-	return  result;
+	return path.str();
 }
 
 B_TEST_CASE(test_pathname_increments)

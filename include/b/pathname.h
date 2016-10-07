@@ -75,6 +75,9 @@ public:
 
 // Attributes
 public:
+	// Returns the pathname as a string.
+	string str() const;
+
 	const component_array& components() const;
 
 	// Returns true if the pathname starts with a slash.
@@ -89,8 +92,6 @@ public:
 	// A pathname cannot be a filename if it ends with a
 	// slash, '.', or '..'.
 	bool can_represent_file() const;
-
-	void AppendPathnameTo(string& path) const;
 
 // Operations
 public:
