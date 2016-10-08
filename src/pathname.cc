@@ -32,7 +32,7 @@ string pathname::str() const
 
 	if (n == 0)
 	{
-		switch (up_dir_level)
+		switch (levels_up)
 		{
 		case UINT_MAX:
 			return slash;
@@ -43,7 +43,7 @@ string pathname::str() const
 
 		string path = double_dot;
 
-		for (unsigned i = up_dir_level; --i > 0; )
+		for (unsigned i = levels_up; --i > 0; )
 			path.append(B_PATH_SEPARATOR_SZ "..", 3);
 
 		return path;
@@ -51,7 +51,7 @@ string pathname::str() const
 
 	string path;
 
-	switch (up_dir_level)
+	switch (levels_up)
 	{
 	case UINT_MAX:
 		path = slash;
@@ -61,7 +61,7 @@ string pathname::str() const
 		break;
 
 	default:
-		for (unsigned i = up_dir_level; i > 0; --i)
+		for (unsigned i = levels_up; i > 0; --i)
 			path.append(".." B_PATH_SEPARATOR_SZ, 3);
 	}
 
@@ -85,20 +85,20 @@ string pathname::str() const
 
 void pathname::append(const pathname& rhs)
 {
-	switch (rhs.up_dir_level)
+	switch (rhs.levels_up)
 	{
 	case UINT_MAX:
 		*this = rhs;
 		break;
 
 	default:
-		if (rhs.up_dir_level <= pathname_components.size())
+		if (rhs.levels_up <= pathname_components.size())
 			pathname_components.erase(pathname_components.size() -
-				rhs.up_dir_level,
-				rhs.up_dir_level);
+				rhs.levels_up,
+				rhs.levels_up);
 		else
 		{
-			up_dir_level += rhs.up_dir_level -
+			levels_up += rhs.levels_up -
 				(unsigned) pathname_components.size();
 
 			pathname_components.clear();
@@ -128,7 +128,7 @@ void pathname::append(const string_view& path)
 	{
 	case B_PATH_SEPARATOR:
 		pathname_components.clear();
-		up_dir_level = UINT_MAX;
+		levels_up = UINT_MAX;
 
 		goto slash;
 

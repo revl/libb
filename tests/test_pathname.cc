@@ -89,9 +89,45 @@ B_TEST_CASE(test_absolute_pathnames)
 	B_CHECK(path.str() == "/absolute");
 
 	path.go_up_one_level();
+
+	B_CHECK(path.str() == "/");
+
 	path.go_up_one_level();
 
 	B_CHECK(path.str() == "/");
+}
+
+B_TEST_CASE(up_levels)
+{
+	B_STATIC_CONST_STRING(relative_path, "relative/path");
+
+	b::pathname path(relative_path);
+
+	path.append(b::string_view("..", 2));
+
+	B_CHECK(path.str() == "relative");
+	B_CHECK(path.number_of_levels_up() == 0);
+
+	path.go_up_one_level();
+
+	B_CHECK(path.str() == ".");
+	B_CHECK(path.number_of_levels_up() == 0);
+
+	path.go_up_one_level();
+
+	B_CHECK(path.str() == "..");
+	B_CHECK(path.number_of_levels_up() == 1);
+
+	path.assign(relative_path);
+	path.go_up(3);
+
+	B_CHECK(path.str() == "..");
+	B_CHECK(path.number_of_levels_up() == 1);
+
+	path.go_up(3);
+
+	B_CHECK(path.str() == "../../../..");
+	B_CHECK(path.number_of_levels_up() == 4);
 }
 
 static b::string inc(b::pathname& path, const char* increment)

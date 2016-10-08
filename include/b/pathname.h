@@ -80,6 +80,7 @@ public:
 	// Returns the normalized pathname as a string.
 	string str() const;
 
+	// Returns the array of pathname components.
 	const component_array& components() const;
 
 	// Returns true if the pathname starts with a slash.
@@ -87,8 +88,8 @@ public:
 
 	// Returns the number of double-dot components this
 	// pathname starts with. This method applies only to
-	// relative pathnames.
-	int GetUpDirLevel() const;
+	// relative (non-absolute) pathnames.
+	int number_of_levels_up() const;
 
 	// Returns true if this pathname can represent a file.
 	// A pathname cannot possibly be a filename if it ends
@@ -120,7 +121,7 @@ public:
 private:
 	component_array pathname_components;
 
-	unsigned up_dir_level;
+	unsigned levels_up;
 
 	bool can_be_filename;
 
@@ -154,12 +155,12 @@ inline string_view pathname::component::suffix() const
 }
 
 inline pathname::pathname() :
-	up_dir_level(0), can_be_filename(false)
+	levels_up(0), can_be_filename(false)
 {
 }
 
 inline pathname::pathname(const string_view& path) :
-	up_dir_level(0), can_be_filename(false)
+	levels_up(0), can_be_filename(false)
 {
 	append(path);
 }
@@ -171,12 +172,12 @@ inline const pathname::component_array& pathname::components() const
 
 inline bool pathname::is_absolute() const
 {
-	return up_dir_level == UINT_MAX;
+	return levels_up == UINT_MAX;
 }
 
-inline int pathname::GetUpDirLevel() const
+inline int pathname::number_of_levels_up() const
 {
-	return up_dir_level;
+	return levels_up;
 }
 
 inline bool pathname::can_represent_file() const
@@ -192,7 +193,7 @@ inline void pathname::assign(const pathname& rhs)
 inline void pathname::assign(const string_view& path)
 {
 	pathname_components.clear();
-	up_dir_level = 0;
+	levels_up = 0;
 
 	append(path);
 }
@@ -202,8 +203,8 @@ inline void pathname::go_up_one_level()
 	if (!pathname_components.is_empty())
 		pathname_components.erase(pathname_components.size() - 1);
 	else
-		if (up_dir_level != UINT_MAX)
-			++up_dir_level;
+		if (levels_up != UINT_MAX)
+			++levels_up;
 }
 
 inline void pathname::go_up(unsigned levels)
@@ -217,8 +218,8 @@ inline void pathname::go_up(unsigned levels)
 
 		pathname_components.clear();
 
-		if (up_dir_level != UINT_MAX)
-			up_dir_level += levels;
+		if (levels_up != UINT_MAX)
+			levels_up += levels;
 	}
 }
 
