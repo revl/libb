@@ -69,13 +69,15 @@ public:
 
 // Construction
 public:
+	// Constructs an empty pathname object.
 	pathname();
 
+	// Parses and normalizes the specified pathname.
 	pathname(const string_view& path);
 
 // Attributes
 public:
-	// Returns the pathname as a string.
+	// Returns the normalized pathname as a string.
 	string str() const;
 
 	const component_array& components() const;
@@ -89,8 +91,8 @@ public:
 	int GetUpDirLevel() const;
 
 	// Returns true if this pathname can represent a file.
-	// A pathname cannot be a filename if it ends with a
-	// slash, '.', or '..'.
+	// A pathname cannot possibly be a filename if it ends
+	// with a slash, '.', or '..'.
 	bool can_represent_file() const;
 
 // Operations
@@ -124,8 +126,6 @@ private:
 
 	void append_component(const char* name,
 		const char* suffix, const char* end);
-
-	void components(string& path) const;
 };
 
 inline pathname::component::component(const char* name_arg,

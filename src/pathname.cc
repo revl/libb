@@ -22,43 +22,62 @@
 
 B_BEGIN_NAMESPACE
 
+B_STATIC_CONST_STRING(slash, B_PATH_SEPARATOR_SZ);
+B_STATIC_CONST_STRING(dot, ".");
+B_STATIC_CONST_STRING(double_dot, "..");
+
 string pathname::str() const
 {
+	size_t n = pathname_components.size();
+
+	if (n == 0)
+	{
+		switch (up_dir_level)
+		{
+		case UINT_MAX:
+			return slash;
+
+		case 0:
+			return dot;
+		}
+
+		string path = double_dot;
+
+		for (unsigned i = up_dir_level; --i > 0; )
+			path.append(B_PATH_SEPARATOR_SZ "..", 3);
+
+		return path;
+	}
+
 	string path;
 
 	switch (up_dir_level)
 	{
 	case UINT_MAX:
-		path.append(B_PATH_SEPARATOR);
-
-		if (!pathname_components.is_empty())
-			components(path);
+		path = slash;
 		break;
 
 	case 0:
-		if (!pathname_components.is_empty())
-			components(path);
-		else
-			path.append('.');
 		break;
 
 	default:
-		unsigned i = up_dir_level;
+		for (unsigned i = up_dir_level; i > 0; --i)
+			path.append(".." B_PATH_SEPARATOR_SZ, 3);
+	}
 
-		if (!pathname_components.is_empty())
-		{
-			for (; i > 0; --i)
-				path.append(".." B_PATH_SEPARATOR_SZ, 3);
+	const component* comp = pathname_components.data();
 
-			components(path);
-		}
-		else
-		{
-			while (--i > 0)
-				path.append(".." B_PATH_SEPARATOR_SZ, 3);
+	path.append(comp->component_name,
+		comp->component_name_end - comp->component_name);
 
-			path.append("..", 2);
-		}
+	while (--n > 0)
+	{
+		++comp;
+
+		path.append(B_PATH_SEPARATOR);
+
+		path.append(comp->component_name,
+			comp->component_name_end - comp->component_name);
 	}
 
 	return path;
@@ -197,31 +216,6 @@ slash:
 	}
 
 	goto next_component;
-}
-
-void pathname::components(string& path) const
-{
-	size_t n = pathname_components.size();
-
-	if (n > 0)
-	{
-		const component* current_component = pathname_components.data();
-
-		path.append(current_component->component_name,
-			current_component->component_name_end -
-			current_component->component_name);
-
-		while (--n > 0)
-		{
-			++current_component;
-
-			path.append(B_PATH_SEPARATOR);
-
-			path.append(current_component->component_name,
-				current_component->component_name_end -
-				current_component->component_name);
-		}
-	}
 }
 
 B_END_NAMESPACE
