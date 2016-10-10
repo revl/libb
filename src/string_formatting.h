@@ -48,10 +48,28 @@ namespace
 
 		struct conversion_spec
 		{
-			//int flags;
-			//int min_width;
-			//int precision;
-			//int length_mod;
+			struct
+			{
+				bool space : 1;
+				bool hash : 1;
+				bool plus : 1;
+				bool minus : 1;
+				bool zero : 1;
+			} flags;
+			unsigned min_width;
+			unsigned precision;
+			enum
+			{
+				no_length_mod,
+				hh,
+				h,
+				l,
+				ll,
+				j,
+				z,
+				t,
+				L
+			} length_mod;
 		};
 
 		char_t* output_int(const char_t* fmt);
