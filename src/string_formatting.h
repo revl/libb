@@ -55,6 +55,8 @@ namespace
 				bool plus : 1;
 				bool minus : 1;
 				bool zero : 1;
+				bool min_width_defined : 1;
+				bool precision_defined : 1;
 			} flags;
 			unsigned min_width;
 			unsigned precision;
@@ -136,11 +138,114 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 {
 	const char_t* ch = fmt;
 
-	switch (*ch)
+	if (*ch == B_L_PREFIX('%'))
 	{
-	case B_L_PREFIX('%'):
 		++acc_len;
 		return copy(output_verbatim(ch + 1), ch, 1);
+	}
+
+	conversion_spec spec;
+
+	memset(&spec, 0, sizeof(spec));
+
+	// Parse flags
+	for (;; ++ch)
+	{
+		switch (*ch)
+		{
+		case B_L_PREFIX(' '):
+			B_ASSERT(!spec.flags.space && "duplicate ' ' flag");
+			spec.flags.space = true;
+			continue;
+		case B_L_PREFIX('#'):
+			B_ASSERT(!spec.flags.hash && "duplicate '#' flag");
+			spec.flags.hash = true;
+			continue;
+		case B_L_PREFIX('+'):
+			B_ASSERT(!spec.flags.plus && "duplicate '+' flag");
+			spec.flags.plus = true;
+			continue;
+		case B_L_PREFIX('-'):
+			B_ASSERT(!spec.flags.minus && "duplicate '-' flag");
+			spec.flags.minus = true;
+			continue;
+		case B_L_PREFIX('0'):
+			B_ASSERT(!spec.flags.zero && "duplicate '0' flag");
+			spec.flags.zero = true;
+			continue;
+		}
+		break;
+	}
+
+	// Parse min width
+	if (*ch > B_L_PREFIX('0') && *ch <= B_L_PREFIX('9'))
+	{
+		spec.min_width = unsigned(*ch) - unsigned(B_L_PREFIX('0'));
+
+		int digit;
+
+		while ((digit = int(*++ch) - int(B_L_PREFIX('0'))) >= 0 &&
+				digit <= 9)
+			spec.min_width = spec.min_width * 10 + unsigned(digit);
+
+		spec.flags.min_width_defined = true;
+	}
+	else
+		if (*ch == B_L_PREFIX('*'))
+		{
+			++ch;
+
+			int n = va_arg(ap, int);
+
+			if (n >= 0)
+				spec.min_width = n;
+			else
+			{
+				spec.min_width = -n;
+				spec.flags.minus = true;
+			}
+
+			spec.flags.min_width_defined = true;
+		}
+
+	// Parse precision
+	if (*ch == B_L_PREFIX('.'))
+	{
+		int digit = int(*++ch) - int(B_L_PREFIX('0'));
+
+		if (digit >= 0 && digit <= 9)
+		{
+			spec.precision = (unsigned) digit;
+
+			while ((digit = int(*++ch) -
+					int(B_L_PREFIX('0'))) >= 0 &&
+					digit <= 9)
+				spec.precision = spec.precision * 10 +
+					unsigned(digit);
+			spec.flags.precision_defined = true;
+		}
+		else
+			if (*ch == B_L_PREFIX('*'))
+			{
+				++ch;
+
+				int n = va_arg(ap, int);
+
+				if (n >= 0)
+				{
+					spec.precision = n;
+					spec.flags.min_width_defined = true;
+				}
+			}
+			else
+			{
+				spec.precision = 0;
+				spec.flags.precision_defined = true;
+			}
+	}
+
+	switch (*ch)
+	{
 	case B_L_PREFIX('d'):
 		return output_int(ch + 1);
 	case B_L_PREFIX('s'):
