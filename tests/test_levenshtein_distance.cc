@@ -20,29 +20,25 @@
 
 #include <b/levenshtein_distance.h>
 
-#define TEST_DIST(s1, s2, d) \
-	if (ld(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1) != d) \
-		++retval;
+#include "unit_test.h"
 
-int main()
+#define DIST(s1, s2) ld(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1)
+
+B_TEST_CASE(test_levenshtein_distance)
 {
 	b::levenshtein_distance ld;
 
-	int retval = 0;
+	B_CHECK(DIST("QWERTY", "WER") == 3);
 
-	TEST_DIST("QWERTY", "WER", 3);
+	B_CHECK(DIST("[pskdfbvjcv", "osdkfj") == 8);
 
-	TEST_DIST("[pskdfbvjcv", "osdkfj", 8);
+	B_CHECK(DIST("jksefuyrthber", "uwufuyvghseyfa") == 10);
 
-	TEST_DIST("jksefuyrthber", "uwufuyvghseyfa", 10);
+	B_CHECK(DIST("ASDF", "ASCDF") == 1);
 
-	TEST_DIST("ASDF", "ASCDF", 1);
+	B_CHECK(DIST("1234", "") == 4);
 
-	TEST_DIST("1234", "", 4);
+	B_CHECK(DIST("", "1234") == 4);
 
-	TEST_DIST("", "1234", 4);
-
-	TEST_DIST("string", "string", 0);
-
-	return retval;
+	B_CHECK(DIST("string", "string") == 0);
 }
