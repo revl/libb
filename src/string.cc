@@ -30,6 +30,13 @@
 #error Must implement B_VA_COPY for this platform
 #endif
 
+// A binary integer type of size S bytes takes up to
+// L = ceil(S * log10(256)) digits when represented in the
+// decimal numbering system. A convenient approximation of
+// log10(256) is 2.5: L = ceil((S * 5) / 2).
+// An additional byte is reserved for the sign.
+#define MAX_DECIMAL_BUF_LEN(type) ((sizeof(type) * 5 >> 1) + 1)
+
 #define string wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch

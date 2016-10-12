@@ -91,12 +91,10 @@ char_t* string_formatting::alloc_buffer()
 	return buffer + acc_len;
 }
 
-#define MAX_INT_CONV_BUF_LEN (sizeof(int) * 3 >> 1)
-
 char_t* string_formatting::output_int(const char_t* fmt)
 {
-	char_t conv_buf[MAX_INT_CONV_BUF_LEN];
-	char_t* ch = conv_buf + MAX_INT_CONV_BUF_LEN - 1;
+	char_t conv_buf[MAX_DECIMAL_BUF_LEN(int)];
+	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(int) - 1;
 
 	int number = va_arg(ap, int);
 
@@ -108,7 +106,7 @@ char_t* string_formatting::output_int(const char_t* fmt)
 		--ch;
 	}
 
-	size_t len = conv_buf + MAX_INT_CONV_BUF_LEN - ch;
+	size_t len = conv_buf + MAX_DECIMAL_BUF_LEN(int) - ch;
 	acc_len += len;
 
 	return copy(output_verbatim(fmt), ch, len);
