@@ -20,6 +20,16 @@
 
 #include <b/string.h>
 
+#if defined(va_copy)
+#define B_VA_COPY(dest_list, src_list) va_copy(dest_list, src_list)
+#define B_VA_COPY_END(list) va_end(list)
+#elif defined(__va_copy)
+#define B_VA_COPY(dest_list, src_list) __va_copy(dest_list, src_list)
+#define B_VA_COPY_END(list) va_end(list)
+#else
+#error Must implement B_VA_COPY for this platform
+#endif
+
 #define string wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
