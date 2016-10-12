@@ -246,6 +246,44 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 
 	switch (*ch)
 	{
+	case B_L_PREFIX('L'):
+		spec.length_mod = conversion_spec::L;
+		break;
+
+	case B_L_PREFIX('h'):
+		if (*++ch != B_L_PREFIX('h'))
+			spec.length_mod = conversion_spec::h;
+		else
+		{
+			++ch;
+			spec.length_mod = conversion_spec::hh;
+		}
+		break;
+
+	case B_L_PREFIX('j'):
+		spec.length_mod = conversion_spec::j;
+		break;
+
+	case B_L_PREFIX('l'):
+		if (*++ch != B_L_PREFIX('l'))
+			spec.length_mod = conversion_spec::l;
+		else
+		{
+			++ch;
+			spec.length_mod = conversion_spec::ll;
+		}
+		break;
+
+	case B_L_PREFIX('t'):
+		spec.length_mod = conversion_spec::t;
+		break;
+
+	case B_L_PREFIX('z'):
+		spec.length_mod = conversion_spec::z;
+	}
+
+	switch (*ch)
+	{
 	case B_L_PREFIX('d'):
 		return output_int(ch + 1);
 	case B_L_PREFIX('s'):
