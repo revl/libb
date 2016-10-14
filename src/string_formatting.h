@@ -74,8 +74,7 @@ namespace
 char_t* string_formatting::copy(char_t* dest, const char_t* source, size_t len)
 {
 	if (len > 0 && dest != NULL)
-		// TODO Use one of the global functions from misc
-		memcpy(dest -= len, source, len);
+		b::construct_copies(dest -= len, source, len);
 
 	return dest;
 }
@@ -134,7 +133,7 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 
 	conversion_spec spec;
 
-	memset(&spec, 0, sizeof(spec));
+	b::Memory::Zero(&spec, sizeof(spec));
 
 	// Parse flags
 	for (;; ++ch)
