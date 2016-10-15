@@ -21,9 +21,9 @@
 #ifndef B_RUNTIME_EXCEPTION_H
 #define B_RUNTIME_EXCEPTION_H
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__clang__)
 #pragma interface "b/runtime_exception.h"
-#endif /* defined(__GNUG__) */
+#endif /* defined(__GNUG__) && !defined(__clang__) */
 
 #include "exception.h"
 #include "string.h"

@@ -18,12 +18,12 @@
  *
  */
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__clang__)
 #pragma implementation "b/exception.h"
 #pragma implementation "b/runtime_exception.h"
 #pragma implementation "b/system_exception.h"
 #pragma implementation "b/custom_exception.h"
-#endif // __GNUG__
+#endif /* defined(__GNUG__) && !defined(__clang__) */
 
 #include <b/system_exception.h>
 #include <b/custom_exception.h>

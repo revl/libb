@@ -21,9 +21,9 @@
 #ifndef B_EXCEPTION_H
 #define B_EXCEPTION_H
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__clang__)
 #pragma interface "b/exception.h"
-#endif /* defined(__GNUG__) */
+#endif /* defined(__GNUG__) && !defined(__clang__) */
 
 #include "host.h"
 
