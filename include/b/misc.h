@@ -144,7 +144,8 @@ inline size_t calc_length(const char* string, size_t limit)
 {
 	const char* null_char_ptr = (const char*) memchr(string, 0, limit);
 
-	return null_char_ptr != NULL ? null_char_ptr - string : limit;
+	return null_char_ptr != NULL ?
+		(size_t) (null_char_ptr - string) : limit;
 }
 
 // Computes the length of a string either terminated by
@@ -153,7 +154,8 @@ inline size_t calc_length(const wchar_t* string, size_t limit)
 {
 	const wchar_t* null_char_ptr = wmemchr(string, L'\0', limit);
 
-	return null_char_ptr != NULL ? null_char_ptr - string : limit;
+	return null_char_ptr != NULL ?
+		(size_t) (null_char_ptr - string) : limit;
 }
 
 // Compares two null-terminated strings.

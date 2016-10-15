@@ -21,9 +21,9 @@
 #ifndef B_CUSTOM_EXCEPTION_H
 #define B_CUSTOM_EXCEPTION_H
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__clang__)
 #pragma interface "b/custom_exception.h"
-#endif /* defined(__GNUG__) */
+#endif /* defined(__GNUG__) && !defined(__clang__) */
 
 #include "runtime_exception.h"
 

@@ -105,7 +105,7 @@ char_t* string_formatting::output_int(const char_t* fmt)
 		--ch;
 	}
 
-	size_t len = conv_buf + MAX_DECIMAL_BUF_LEN(int) - ch;
+	size_t len = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(int) - ch);
 	acc_len += len;
 
 	return copy(output_verbatim(fmt), ch, len);
@@ -185,10 +185,10 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 			int n = va_arg(ap, int);
 
 			if (n >= 0)
-				spec.min_width = n;
+				spec.min_width = (unsigned) n;
 			else
 			{
-				spec.min_width = -n;
+				spec.min_width = (unsigned) -n;
 				spec.flags.minus = true;
 			}
 
@@ -220,7 +220,7 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 
 				if (n >= 0)
 				{
-					spec.precision = n;
+					spec.precision = (unsigned) n;
 					spec.flags.min_width_defined = true;
 				}
 			}

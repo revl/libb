@@ -89,7 +89,7 @@ public:
 	// Returns the number of double-dot components this
 	// pathname starts with. This method applies only to
 	// relative (non-absolute) pathnames.
-	int number_of_levels_up() const;
+	unsigned number_of_levels_up() const;
 
 	// Returns true if this pathname can represent a file.
 	// A pathname cannot possibly be a filename if it ends
@@ -139,19 +139,20 @@ inline pathname::component::component(const char* name_arg,
 
 inline string_view pathname::component::name() const
 {
-	return string_view(component_name, component_name_end - component_name);
+	return string_view(component_name,
+		(size_t) (component_name_end - component_name));
 }
 
 inline string_view pathname::component::basename() const
 {
 	return string_view(component_name,
-		component_name_suffix - component_name);
+		(size_t) (component_name_suffix - component_name));
 }
 
 inline string_view pathname::component::suffix() const
 {
 	return string_view(component_name_suffix,
-		component_name_end - component_name_suffix);
+		(size_t) (component_name_end - component_name_suffix));
 }
 
 inline pathname::pathname() :
@@ -175,7 +176,7 @@ inline bool pathname::is_absolute() const
 	return levels_up == UINT_MAX;
 }
 
-inline int pathname::number_of_levels_up() const
+inline unsigned pathname::number_of_levels_up() const
 {
 	return levels_up;
 }

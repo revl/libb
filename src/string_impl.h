@@ -487,7 +487,7 @@ void string::trim_right(const char_t* samples)
 	while (--end >= chars && find_char(samples, *end) != NULL)
 		;
 
-	size_t new_length = ++end - chars;
+	size_t new_length = (size_t) (++end - chars);
 
 	if (new_length < length())
 	{
@@ -517,7 +517,7 @@ void string::trim_left(const char_t* samples)
 
 	if (start > chars)
 	{
-		size_t new_length = chars + length() - start;
+		size_t new_length = (size_t) (chars + length() - start);
 
 		if (!is_shared())
 			assign_pairwise_backwards(chars, start, new_length + 1);

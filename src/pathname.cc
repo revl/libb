@@ -68,7 +68,7 @@ string pathname::str() const
 	const component* comp = pathname_components.data();
 
 	path.append(comp->component_name,
-		comp->component_name_end - comp->component_name);
+		(size_t) (comp->component_name_end - comp->component_name));
 
 	while (--n > 0)
 	{
@@ -77,7 +77,8 @@ string pathname::str() const
 		path.append(B_PATH_SEPARATOR);
 
 		path.append(comp->component_name,
-			comp->component_name_end - comp->component_name);
+			(size_t) (comp->component_name_end -
+				comp->component_name));
 	}
 
 	return path;
