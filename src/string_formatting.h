@@ -64,7 +64,8 @@ namespace
 			} length_mod;
 		};
 
-		char_t* output_int(const char_t* fmt);
+		char_t* output_int(const conversion_spec* spec,
+			const char_t* fmt);
 		char_t* output_string(const char_t* fmt);
 		char_t* output_conversion(const char_t* fmt);
 		char_t* output_verbatim(const char_t* fmt);
@@ -90,7 +91,8 @@ char_t* string_formatting::alloc_buffer()
 	return buffer + acc_len;
 }
 
-char_t* string_formatting::output_int(const char_t* fmt)
+char_t* string_formatting::output_int(const conversion_spec* spec,
+	const char_t* fmt)
 {
 	char_t conv_buf[MAX_DECIMAL_BUF_LEN(int)];
 	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(int) - 1;
@@ -106,9 +108,32 @@ char_t* string_formatting::output_int(const char_t* fmt)
 	}
 
 	size_t len = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(int) - ch);
-	acc_len += len;
 
-	return copy(output_verbatim(fmt), ch, len);
+	size_t len_with_zeros = spec->flags.precision_defined &&
+		spec->precision > len ? spec->precision : len;
+
+	size_t width = spec->flags.min_width_defined &&
+		spec->min_width > len_with_zeros ?
+			spec->min_width : len_with_zeros;
+
+	acc_len += width;
+
+	char_t* dest = output_verbatim(fmt);
+
+	if (dest != NULL)
+	{
+		dest = copy(dest, ch, len);
+		size_t zeros = len_with_zeros - len;
+		if (zeros > 0)
+			b::construct_identical_copies(dest -= zeros,
+				B_L_PREFIX('0'), zeros);
+		size_t spaces = width - len_with_zeros;
+		if (spaces > 0)
+			b::construct_identical_copies(dest -= spaces,
+				B_L_PREFIX(' '), spaces);
+	}
+
+	return dest;
 }
 
 char_t* string_formatting::output_string(const char_t* fmt)
@@ -272,7 +297,7 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 	switch (*ch)
 	{
 	case B_L_PREFIX('d'):
-		return output_int(ch + 1);
+		return output_int(&spec, ch + 1);
 	case B_L_PREFIX('s'):
 		return output_string(ch + 1);
 	default:

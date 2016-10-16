@@ -53,6 +53,16 @@ B_TEST_CASE(test_int_conversions)
 	B_CHECK(s == "verbatim 123 verbatim");
 }
 
+B_TEST_CASE(test_int_width_and_precision)
+{
+	B_CHECK(b::string::formatted("[%2.1d]", 100) == "[100]");
+	B_CHECK(b::string::formatted("[%3.0d]", 100) == "[100]");
+	B_CHECK(b::string::formatted("[%4.0d]", 100) == "[ 100]");
+	B_CHECK(b::string::formatted("[%4.3d]", 100) == "[ 100]");
+	B_CHECK(b::string::formatted("[%4.4d]", 100) == "[0100]");
+	B_CHECK(b::string::formatted("[%5.4d]", 100) == "[ 0100]");
+}
+
 struct static_buffer_allocator : public b::allocator
 {
 	static_buffer_allocator(char* pre_allocated, size_t size) :
