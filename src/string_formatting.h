@@ -64,7 +64,7 @@ namespace
 			} length_mod;
 		};
 
-		char_t* output_int(const conversion_spec* spec,
+		char_t* output_decimal(const conversion_spec* spec,
 			const char_t* fmt);
 		char_t* output_string(const char_t* fmt);
 		char_t* output_conversion(const char_t* fmt);
@@ -91,7 +91,7 @@ char_t* string_formatting::alloc_buffer()
 	return buffer + acc_len;
 }
 
-char_t* string_formatting::output_int(const conversion_spec* spec,
+char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	const char_t* fmt)
 {
 	char_t conv_buf[MAX_DECIMAL_BUF_LEN(int)];
@@ -297,7 +297,8 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 	switch (*ch)
 	{
 	case B_L_PREFIX('d'):
-		return output_int(&spec, ch + 1);
+	case B_L_PREFIX('i'):
+		return output_decimal(&spec, ch + 1);
 	case B_L_PREFIX('s'):
 		return output_string(ch + 1);
 	default:
