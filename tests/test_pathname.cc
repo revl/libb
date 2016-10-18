@@ -22,6 +22,15 @@
 
 #include "unit_test.h"
 
+B_TEST_CASE(test_empty_pathname)
+{
+	B_CHECK(b::pathname().components().is_empty());
+
+	b::pathname empty_path = b::string_view();
+
+	B_CHECK(empty_path.components().is_empty());
+}
+
 B_TEST_CASE(test_pathname_normalization)
 {
 	B_STATIC_CONST_STRING(with_double_dot, "d1/d2/../f.n.sh");
