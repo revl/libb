@@ -20,6 +20,8 @@
 
 #include <b/string.h>
 
+#include <stdint.h>
+
 #if defined(va_copy)
 #define B_VA_COPY(dest_list, src_list) va_copy(dest_list, src_list)
 #define B_VA_COPY_END(list) va_end(list)

@@ -64,6 +64,7 @@ namespace
 			} length_mod;
 		};
 
+		template <class T, class Arg>
 		char_t* output_decimal(const conversion_spec* spec,
 			const char_t* fmt);
 		char_t* output_string(const char_t* fmt);
@@ -91,23 +92,35 @@ char_t* string_formatting::alloc_buffer()
 	return buffer + acc_len;
 }
 
+template <class T, class Arg>
 char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	char_t conv_buf[MAX_DECIMAL_BUF_LEN(int)];
-	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(int) - 1;
+	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
+	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(T) - 1;
 
-	int number = va_arg(ap, int);
+	T number = (T) va_arg(ap, Arg);
 
-	for (;;)
-	{
-		*ch = (char_t) (B_L_PREFIX('0') + number % 10);
-		if ((number /= 10) == 0)
-			break;
-		--ch;
-	}
+	bool negative = number < 0;
 
-	size_t len = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(int) - ch);
+	if (!negative)
+		for (;;)
+		{
+			*ch = (char_t) (B_L_PREFIX('0') + number % 10);
+			if ((number /= 10) == 0)
+				break;
+			--ch;
+		}
+	else
+		for (;;)
+		{
+			*ch = (char_t) (B_L_PREFIX('0') - number % 10);
+			if ((number /= 10) == 0)
+				break;
+			--ch;
+		}
+
+	size_t len = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
 
 	size_t len_with_zeros = spec->flags.precision_defined &&
 		spec->precision > len ? spec->precision : len;
@@ -298,7 +311,28 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 	{
 	case B_L_PREFIX('d'):
 	case B_L_PREFIX('i'):
-		return output_decimal(&spec, ch + 1);
+		switch (spec.length_mod)
+		{
+		case conversion_spec::hh:
+			return output_decimal<signed char, int>(&spec, ch + 1);
+		case conversion_spec::h:
+			return output_decimal<short, int>(&spec, ch + 1);
+		case conversion_spec::l:
+			return output_decimal<long, long>(&spec, ch + 1);
+		case conversion_spec::j:
+			return output_decimal<intmax_t, intmax_t>(&spec,
+				ch + 1);
+		case conversion_spec::z:
+			return output_decimal<ssize_t, ssize_t>(&spec, ch + 1);
+		case conversion_spec::t:
+			return output_decimal<intmax_t, intmax_t>(&spec,
+				ch + 1);
+		case conversion_spec::ll:
+		case conversion_spec::L:
+			B_ASSERT("incompatible length modifier" && false);
+		default:
+			return output_decimal<int, int>(&spec, ch + 1);
+		}
 	case B_L_PREFIX('s'):
 		return output_string(ch + 1);
 	default:
