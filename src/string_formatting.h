@@ -125,9 +125,11 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	size_t len_with_zeros = spec->flags.precision_defined &&
 		spec->precision > len ? spec->precision : len;
 
+	size_t len_with_zeros_and_sign = len_with_zeros + negative;
+
 	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > len_with_zeros ?
-			spec->min_width : len_with_zeros;
+		spec->min_width > len_with_zeros_and_sign ?
+			spec->min_width : len_with_zeros_and_sign;
 
 	acc_len += width;
 
@@ -140,7 +142,9 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 		if (zeros > 0)
 			b::construct_identical_copies(dest -= zeros,
 				B_L_PREFIX('0'), zeros);
-		size_t spaces = width - len_with_zeros;
+		if (negative)
+			*--dest = B_L_PREFIX('-');
+		size_t spaces = width - len_with_zeros_and_sign;
 		if (spaces > 0)
 			b::construct_identical_copies(dest -= spaces,
 				B_L_PREFIX(' '), spaces);
