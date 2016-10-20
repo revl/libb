@@ -125,7 +125,29 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	size_t len_with_zeros = spec->flags.precision_defined &&
 		spec->precision > len ? spec->precision : len;
 
-	size_t len_with_zeros_and_sign = len_with_zeros + negative;
+	size_t len_with_zeros_and_sign = len_with_zeros;
+
+	char_t sign;
+
+	if (negative)
+	{
+		sign = B_L_PREFIX('-');
+		++len_with_zeros_and_sign;
+	}
+	else
+		if (spec->flags.plus)
+		{
+			sign = B_L_PREFIX('+');
+			++len_with_zeros_and_sign;
+		}
+		else
+			if (spec->flags.space)
+			{
+				sign = B_L_PREFIX(' ');
+				++len_with_zeros_and_sign;
+			}
+			else
+				sign = 0;
 
 	size_t width = spec->flags.min_width_defined &&
 		spec->min_width > len_with_zeros_and_sign ?
@@ -137,17 +159,46 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 
 	if (dest != NULL)
 	{
-		dest = copy(dest, ch, len);
 		size_t zeros = len_with_zeros - len;
-		if (zeros > 0)
-			b::construct_identical_copies(dest -= zeros,
-				B_L_PREFIX('0'), zeros);
-		if (negative)
-			*--dest = B_L_PREFIX('-');
 		size_t spaces = width - len_with_zeros_and_sign;
-		if (spaces > 0)
-			b::construct_identical_copies(dest -= spaces,
-				B_L_PREFIX(' '), spaces);
+
+		if (!spec->flags.minus)
+		{
+			dest = copy(dest, ch, len);
+			if (zeros > 0)
+				b::construct_identical_copies(dest -= zeros,
+					B_L_PREFIX('0'), zeros);
+			if (!spec->flags.zero)
+			{
+				if (sign)
+					*--dest = sign;
+				if (spaces > 0)
+					b::construct_identical_copies(
+						dest -= spaces,
+						B_L_PREFIX(' '), spaces);
+			}
+			else
+			{
+				if (spaces > 0)
+					b::construct_identical_copies(
+						dest -= spaces,
+						B_L_PREFIX('0'), spaces);
+				if (sign)
+					*--dest = sign;
+			}
+		}
+		else
+		{
+			if (spaces > 0)
+				b::construct_identical_copies(dest -= spaces,
+					B_L_PREFIX(' '), spaces);
+			dest = copy(dest, ch, len);
+			if (zeros > 0)
+				b::construct_identical_copies(dest -= zeros,
+					B_L_PREFIX('0'), zeros);
+			if (sign)
+				*--dest = sign;
+		}
 	}
 
 	return dest;
