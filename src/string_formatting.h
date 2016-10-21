@@ -42,6 +42,7 @@ namespace
 			{
 				bool space : 1;
 				bool hash : 1;
+				bool quote : 1;
 				bool plus : 1;
 				bool minus : 1;
 				bool zero : 1;
@@ -104,6 +105,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	T number = (T) va_arg(ap, Arg);
 
 	bool negative = number < 0;
+	unsigned sep = spec->flags.quote ? 3 : 0;
 
 	if (!negative)
 	{
@@ -115,6 +117,11 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 			*ch = (char_t) (B_L_PREFIX('0') + number % 10);
 			if ((number /= 10) == 0)
 				break;
+			if (sep != 0 && --sep == 0)
+			{
+				sep = 3;
+				*--ch = B_L_PREFIX(',');
+			}
 			--ch;
 		}
 	}
@@ -127,6 +134,11 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 			*ch = (char_t) (B_L_PREFIX('0') - number % 10);
 			if ((number /= 10) == 0)
 				break;
+			if (sep != 0 && --sep == 0)
+			{
+				sep = 3;
+				*--ch = B_L_PREFIX(',');
+			}
 			--ch;
 		}
 	}
@@ -137,7 +149,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 		spec->precision > digits ? spec->precision : digits;
 
 	size_t digits_zeros_and_sign =
-		!sign ? digits_and_zeros : digits_and_zeros + 1;
+		sign == 0 ? digits_and_zeros : digits_and_zeros + 1;
 
 	size_t width = spec->flags.min_width_defined &&
 		spec->min_width > digits_zeros_and_sign ?
@@ -160,7 +172,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 					B_L_PREFIX('0'), zeros);
 			if (!spec->flags.zero)
 			{
-				if (sign)
+				if (sign != 0)
 					*--dest = sign;
 				if (spaces > 0)
 					b::construct_identical_copies(
@@ -173,7 +185,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 					b::construct_identical_copies(
 						dest -= spaces,
 						B_L_PREFIX('0'), spaces);
-				if (sign)
+				if (sign != 0)
 					*--dest = sign;
 			}
 		}
@@ -186,7 +198,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 			if (zeros > 0)
 				b::construct_identical_copies(dest -= zeros,
 					B_L_PREFIX('0'), zeros);
-			if (sign)
+			if (sign != 0)
 				*--dest = sign;
 		}
 	}
@@ -224,23 +236,22 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 		switch (*ch)
 		{
 		case B_L_PREFIX(' '):
-			B_ASSERT(!spec.flags.space && "duplicate ' ' flag");
 			spec.flags.space = true;
 			continue;
 		case B_L_PREFIX('#'):
-			B_ASSERT(!spec.flags.hash && "duplicate '#' flag");
 			spec.flags.hash = true;
 			continue;
+		case B_L_PREFIX('\''):
+		case B_L_PREFIX(','):
+			spec.flags.quote = true;
+			continue;
 		case B_L_PREFIX('+'):
-			B_ASSERT(!spec.flags.plus && "duplicate '+' flag");
 			spec.flags.plus = true;
 			continue;
 		case B_L_PREFIX('-'):
-			B_ASSERT(!spec.flags.minus && "duplicate '-' flag");
 			spec.flags.minus = true;
 			continue;
 		case B_L_PREFIX('0'):
-			B_ASSERT(!spec.flags.zero && "duplicate '0' flag");
 			spec.flags.zero = true;
 			continue;
 		}
