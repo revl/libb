@@ -34,7 +34,7 @@ public:
 
 	test_case(const char* name) : test_name(name), failed_checks(0)
 	{
-		test_case::list.append(this);
+		test_case::test_case_list.append(this);
 	}
 
 	virtual void run() = 0;
@@ -53,10 +53,11 @@ public:
 
 	typedef node_access_via_cast<list_node_type> node_access;
 
-	static linked_list<node_access> list;
+	static linked_list<node_access> test_case_list;
 };
 
-linked_list<test_case::node_access> test_case::list = test_case::node_access();
+linked_list<test_case::node_access> test_case::test_case_list =
+	test_case::node_access();
 
 B_END_NAMESPACE
 
@@ -91,7 +92,7 @@ B_END_NAMESPACE
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
-	b::test_case* current_test_case = b::test_case::list.first();
+	b::test_case* current_test_case = b::test_case::test_case_list.first();
 
 	while (current_test_case != NULL)
 	{
@@ -118,7 +119,8 @@ int main(int /*argc*/, char* /*argv*/[])
 				current_test_case->test_name);
 		}
 
-		current_test_case = b::test_case::list.next(current_test_case);
+		current_test_case =
+			b::test_case::test_case_list.next(current_test_case);
 	}
 
 	return failed_tests;

@@ -124,20 +124,20 @@ public:
 
 	void remove_first()
 	{
-		T* first = wrappers.first();
+		T* element = wrappers.first();
 
 		wrappers.remove_first();
 
-		delete wrapper_node_access::node_for(first);
+		delete wrapper_node_access::node_for(element);
 	}
 
 	void remove_last()
 	{
-		T* tail = wrappers.last();
+		T* element = wrappers.last();
 
 		wrappers.remove_last();
 
-		delete wrapper_node_access::node_for(tail);
+		delete wrapper_node_access::node_for(element);
 	}
 
 	void remove(T* element)
