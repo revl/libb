@@ -99,11 +99,17 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
 	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(T) - 1;
 
+	char_t sign;
+
 	T number = (T) va_arg(ap, Arg);
 
 	bool negative = number < 0;
 
 	if (!negative)
+	{
+		sign = spec->flags.plus ? B_L_PREFIX('+') :
+			spec->flags.space ? B_L_PREFIX(' ') : 0;
+
 		for (;;)
 		{
 			*ch = (char_t) (B_L_PREFIX('0') + number % 10);
@@ -111,7 +117,11 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 				break;
 			--ch;
 		}
+	}
 	else
+	{
+		sign = B_L_PREFIX('-');
+
 		for (;;)
 		{
 			*ch = (char_t) (B_L_PREFIX('0') - number % 10);
@@ -119,39 +129,19 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 				break;
 			--ch;
 		}
-
-	size_t len = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
-
-	size_t len_with_zeros = spec->flags.precision_defined &&
-		spec->precision > len ? spec->precision : len;
-
-	size_t len_with_zeros_and_sign = len_with_zeros;
-
-	char_t sign;
-
-	if (negative)
-	{
-		sign = B_L_PREFIX('-');
-		++len_with_zeros_and_sign;
 	}
-	else
-		if (spec->flags.plus)
-		{
-			sign = B_L_PREFIX('+');
-			++len_with_zeros_and_sign;
-		}
-		else
-			if (spec->flags.space)
-			{
-				sign = B_L_PREFIX(' ');
-				++len_with_zeros_and_sign;
-			}
-			else
-				sign = 0;
+
+	size_t digits = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
+
+	size_t digits_and_zeros = spec->flags.precision_defined &&
+		spec->precision > digits ? spec->precision : digits;
+
+	size_t digits_zeros_and_sign =
+		!sign ? digits_and_zeros : digits_and_zeros + 1;
 
 	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > len_with_zeros_and_sign ?
-			spec->min_width : len_with_zeros_and_sign;
+		spec->min_width > digits_zeros_and_sign ?
+			spec->min_width : digits_zeros_and_sign;
 
 	acc_len += width;
 
@@ -159,12 +149,12 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 
 	if (dest != NULL)
 	{
-		size_t zeros = len_with_zeros - len;
-		size_t spaces = width - len_with_zeros_and_sign;
+		size_t zeros = digits_and_zeros - digits;
+		size_t spaces = width - digits_zeros_and_sign;
 
 		if (!spec->flags.minus)
 		{
-			dest = copy(dest, ch, len);
+			dest = copy(dest, ch, digits);
 			if (zeros > 0)
 				b::construct_identical_copies(dest -= zeros,
 					B_L_PREFIX('0'), zeros);
@@ -192,7 +182,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 			if (spaces > 0)
 				b::construct_identical_copies(dest -= spaces,
 					B_L_PREFIX(' '), spaces);
-			dest = copy(dest, ch, len);
+			dest = copy(dest, ch, digits);
 			if (zeros > 0)
 				b::construct_identical_copies(dest -= zeros,
 					B_L_PREFIX('0'), zeros);
