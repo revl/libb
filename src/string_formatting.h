@@ -25,6 +25,7 @@ namespace
 		b::allocator* buffer_allocator;
 		va_list ap;
 		size_t acc_len;
+		char_t* dest;
 
 		string_formatting(b::allocator* alloc) :
 			buffer_allocator(alloc),
@@ -32,9 +33,33 @@ namespace
 		{
 		}
 
-		char_t* copy(char_t* dest, const char_t* source, size_t len);
+		void output_string(const char_t* source, size_t len)
+		{
+			if (len > 0)
+				b::construct_copies(dest -= len, source, len);
+		}
 
-		char_t* alloc_buffer();
+		void output_chars(char_t filler, size_t len)
+		{
+			if (len > 0)
+				b::construct_identical_copies(dest -= len,
+					filler, len);
+		}
+
+		void output_char(char_t ch)
+		{
+			*--dest = ch;
+		}
+
+		void alloc_buffer()
+		{
+			dest = reinterpret_cast<char_t*>(
+				buffer_allocator->allocate(
+					acc_len * sizeof(char_t)));
+
+			if (dest != NULL)
+				dest += acc_len;
+		}
 
 		struct conversion_spec
 		{
@@ -66,38 +91,19 @@ namespace
 		};
 
 		template <class T, class Arg>
-		char_t* output_decimal(const conversion_spec* spec,
+		void process_decimal(const conversion_spec* spec,
 			const char_t* fmt);
 		template <class T, class Arg>
-		char_t* output_unsigned(const conversion_spec* spec,
+		char_t* process_unsigned(const conversion_spec* spec,
 			const char_t* fmt);
-		char_t* output_string(const char_t* fmt);
-		char_t* output_conversion(const char_t* fmt);
-		char_t* output_verbatim(const char_t* fmt);
+		void process_string(const char_t* fmt);
+		void process_conversion(const char_t* fmt);
+		void process_verbatim(const char_t* fmt);
 	};
 }
 
-char_t* string_formatting::copy(char_t* dest, const char_t* source, size_t len)
-{
-	if (len > 0 && dest != NULL)
-		b::construct_copies(dest -= len, source, len);
-
-	return dest;
-}
-
-char_t* string_formatting::alloc_buffer()
-{
-	char_t* buffer = reinterpret_cast<char_t*>(
-		buffer_allocator->allocate(acc_len * sizeof(char_t)));
-
-	if (buffer == NULL)
-		return NULL;
-
-	return buffer + acc_len;
-}
-
 template <class T, class Arg>
-char_t* string_formatting::output_decimal(const conversion_spec* spec,
+void string_formatting::process_decimal(const conversion_spec* spec,
 	const char_t* fmt)
 {
 	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
@@ -107,10 +113,9 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 
 	T number = (T) va_arg(ap, Arg);
 
-	bool negative = number < 0;
 	unsigned sep = spec->flags.quote ? 3 : 0;
 
-	if (!negative)
+	if (number >= 0)
 	{
 		sign = spec->flags.plus ? B_L_PREFIX('+') :
 			spec->flags.space ? B_L_PREFIX(' ') : 0;
@@ -160,7 +165,7 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 
 	acc_len += width;
 
-	char_t* dest = output_verbatim(fmt);
+	process_verbatim(fmt);
 
 	if (dest != NULL)
 	{
@@ -169,52 +174,38 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			dest = copy(dest, ch, digits);
-			if (zeros > 0)
-				b::construct_identical_copies(dest -= zeros,
-					B_L_PREFIX('0'), zeros);
+			output_string(ch, digits);
+			output_chars(B_L_PREFIX('0'), zeros);
 			if (!spec->flags.zero)
 			{
 				if (sign != 0)
-					*--dest = sign;
-				if (spaces > 0)
-					b::construct_identical_copies(
-						dest -= spaces,
-						B_L_PREFIX(' '), spaces);
+					output_char(sign);
+				output_chars(B_L_PREFIX(' '), spaces);
 			}
 			else
 			{
-				if (spaces > 0)
-					b::construct_identical_copies(
-						dest -= spaces,
-						B_L_PREFIX('0'), spaces);
+				output_chars(B_L_PREFIX('0'), spaces);
 				if (sign != 0)
-					*--dest = sign;
+					output_char(sign);
 			}
 		}
 		else
 		{
-			if (spaces > 0)
-				b::construct_identical_copies(dest -= spaces,
-					B_L_PREFIX(' '), spaces);
-			dest = copy(dest, ch, digits);
-			if (zeros > 0)
-				b::construct_identical_copies(dest -= zeros,
-					B_L_PREFIX('0'), zeros);
+			output_chars(B_L_PREFIX(' '), spaces);
+			output_string(ch, digits);
+			output_chars(B_L_PREFIX('0'), zeros);
 			if (sign != 0)
-				*--dest = sign;
+				output_char(sign);
 		}
 	}
-
-	return dest;
 }
 
 template <class T, class Arg>
-char_t* string_formatting::output_unsigned(const conversion_spec* spec,
+char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
-	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(T) - 1;
+	char_t conv_buf[MAX_UNSIGNED_BUF_LEN(T)];
+	char_t* ch = conv_buf + MAX_UNSIGNED_BUF_LEN(T) - 1;
 
 	T number = (T) va_arg(ap, Arg);
 
@@ -233,7 +224,7 @@ char_t* string_formatting::output_unsigned(const conversion_spec* spec,
 		--ch;
 	}
 
-	size_t digits = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
+	size_t digits = (size_t) (conv_buf + MAX_UNSIGNED_BUF_LEN(T) - ch);
 
 	size_t digits_and_zeros = spec->flags.precision_defined &&
 		spec->precision > digits ? spec->precision : digits;
@@ -244,7 +235,7 @@ char_t* string_formatting::output_unsigned(const conversion_spec* spec,
 
 	acc_len += width;
 
-	char_t* dest = output_verbatim(fmt);
+	process_verbatim(fmt);
 
 	if (dest != NULL)
 	{
@@ -253,48 +244,49 @@ char_t* string_formatting::output_unsigned(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			dest = copy(dest, ch, digits);
-			if (zeros > 0)
-				b::construct_identical_copies(dest -= zeros,
-					B_L_PREFIX('0'), zeros);
-			if (spaces > 0)
-				b::construct_identical_copies(dest -= spaces,
-					!spec->flags.zero ? B_L_PREFIX(' ') :
-					B_L_PREFIX('0'), spaces);
+			output_string(ch, digits);
+			if (spec->flags.zero)
+				output_chars(B_L_PREFIX('0'), zeros + spaces);
+			else
+			{
+				output_chars(B_L_PREFIX('0'), zeros);
+				output_chars(B_L_PREFIX(' '), spaces);
+			}
 		}
 		else
 		{
-			if (spaces > 0)
-				b::construct_identical_copies(dest -= spaces,
-					B_L_PREFIX(' '), spaces);
-			dest = copy(dest, ch, digits);
-			if (zeros > 0)
-				b::construct_identical_copies(dest -= zeros,
-					B_L_PREFIX('0'), zeros);
+			output_chars(B_L_PREFIX(' '), spaces);
+			output_string(ch, digits);
+			output_chars(B_L_PREFIX('0'), zeros);
 		}
 	}
 
 	return dest;
 }
 
-char_t* string_formatting::output_string(const char_t* fmt)
+void string_formatting::process_string(const char_t* fmt)
 {
 	const char_t* str = va_arg(ap, const char_t*);
 
 	size_t len = b::calc_length(str);
 	acc_len += len;
 
-	return copy(output_verbatim(fmt), str, len);
+	process_verbatim(fmt);
+
+	if (dest != NULL)
+		output_string(str, len);
 }
 
-char_t* string_formatting::output_conversion(const char_t* fmt)
+void string_formatting::process_conversion(const char_t* fmt)
 {
 	const char_t* ch = fmt;
 
 	if (*ch == B_L_PREFIX('%'))
 	{
 		++acc_len;
-		return copy(output_verbatim(ch + 1), ch, 1);
+		process_verbatim(ch + 1);
+		output_char(B_L_PREFIX('%'));
+		return;
 	}
 
 	conversion_spec spec;
@@ -441,60 +433,74 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			return output_decimal<signed char, int>(&spec, ch + 1);
+			process_decimal<signed char, int>(&spec, ch + 1);
+			break;
 		case conversion_spec::h:
-			return output_decimal<short, int>(&spec, ch + 1);
+			process_decimal<short, int>(&spec, ch + 1);
+			break;
 		case conversion_spec::l:
-			return output_decimal<long, long>(&spec, ch + 1);
+			process_decimal<long, long>(&spec, ch + 1);
+			break;
 		case conversion_spec::j:
-			return output_decimal<intmax_t, intmax_t>(&spec,
+			process_decimal<intmax_t, intmax_t>(&spec,
 				ch + 1);
+			break;
 		case conversion_spec::z:
-			return output_decimal<ssize_t, ssize_t>(&spec, ch + 1);
+			process_decimal<ssize_t, ssize_t>(&spec, ch + 1);
+			break;
 		case conversion_spec::t:
-			return output_decimal<ptrdiff_t, ptrdiff_t>(&spec,
+			process_decimal<ptrdiff_t, ptrdiff_t>(&spec,
 				ch + 1);
+			break;
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			return output_decimal<int, int>(&spec, ch + 1);
+			process_decimal<int, int>(&spec, ch + 1);
 		}
+		break;
 	case B_L_PREFIX('u'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			return output_unsigned<unsigned char, unsigned>(
+			process_unsigned<unsigned char, unsigned>(
 				&spec, ch + 1);
+			break;
 		case conversion_spec::h:
-			return output_unsigned<unsigned short, unsigned>(
+			process_unsigned<unsigned short, unsigned>(
 				&spec, ch + 1);
+			break;
 		case conversion_spec::l:
-			return output_unsigned<unsigned long, unsigned long>(
+			process_unsigned<unsigned long, unsigned long>(
 				&spec, ch + 1);
+			break;
 		case conversion_spec::j:
-			return output_unsigned<uintmax_t, uintmax_t>(
+			process_unsigned<uintmax_t, uintmax_t>(
 				&spec, ch + 1);
+			break;
 		case conversion_spec::z:
-			return output_unsigned<size_t, size_t>(&spec, ch + 1);
+			process_unsigned<size_t, size_t>(&spec, ch + 1);
+			break;
 		case conversion_spec::t:
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			return output_unsigned<unsigned, unsigned>(
+			process_unsigned<unsigned, unsigned>(
 				&spec, ch + 1);
 		}
+		break;
 	case B_L_PREFIX('s'):
-		return output_string(ch + 1);
+		process_string(ch + 1);
+		break;
 	default:
 		B_ASSERT("unknown conversion type character" && false);
 		acc_len = (size_t) -1;
-		return NULL;
+		dest = NULL;
 	}
 }
 
-char_t* string_formatting::output_verbatim(const char_t* fmt)
+void string_formatting::process_verbatim(const char_t* fmt)
 {
 	const char_t* ch = fmt;
 	size_t len = 0;
@@ -504,13 +510,15 @@ char_t* string_formatting::output_verbatim(const char_t* fmt)
 		if (*ch == B_L_PREFIX('%'))
 		{
 			acc_len += len;
-			return copy(output_conversion(++ch), fmt, len);
+			process_conversion(++ch);
+			break;
 		}
 		else
 			if (*ch == B_L_PREFIX('\0'))
 			{
 				acc_len += len;
-				return copy(alloc_buffer(), fmt, len);
+				alloc_buffer();
+				break;
 			}
 			else
 			{
@@ -518,6 +526,9 @@ char_t* string_formatting::output_verbatim(const char_t* fmt)
 				++len;
 			}
 	}
+
+	if (dest != NULL)
+		output_string(fmt, len);
 }
 
 B_BEGIN_NAMESPACE
@@ -527,10 +538,10 @@ string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 	string_formatting formatting(alloc);
 
 	va_start(formatting.ap, fmt);
-	const char_t* buffer = formatting.output_verbatim(fmt);
+	formatting.process_verbatim(fmt);
 	va_end(formatting.ap);
 
-	return string_view(buffer, formatting.acc_len);
+	return string_view(formatting.dest, formatting.acc_len);
 }
 
 string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
@@ -538,10 +549,10 @@ string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
 	string_formatting formatting(alloc);
 
 	B_VA_COPY(formatting.ap, ap);
-	const char_t* buffer = formatting.output_verbatim(fmt);
+	formatting.process_verbatim(fmt);
 	B_VA_COPY_END(formatting.ap);
 
-	return string_view(buffer, formatting.acc_len);
+	return string_view(formatting.dest, formatting.acc_len);
 }
 
 B_END_NAMESPACE

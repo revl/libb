@@ -33,7 +33,7 @@
 #endif
 
 // Maximum number of characters required to print
-// an integer type.
+// an unsigned integer.
 //
 // A binary integer type of size S bytes takes up to
 // L = ceil(S * log10(256)) digits when represented in the
@@ -41,8 +41,13 @@
 // log10(256) is 2.5: L = ceil((S * 5) / 2).
 // The result is multiplied by 4/3 to accommodate for
 // the thousand dividers.
+#define MAX_UNSIGNED_BUF_LEN(type) ((((sizeof(type) * 5 + 1) / 2)) * 4 / 3)
+
+// Maximum number of characters required to print
+// an integer of the specified type.
+//
 // An additional byte is reserved for the sign.
-#define MAX_DECIMAL_BUF_LEN(type) (((((sizeof(type) * 5 + 1) / 2)) * 4 / 3) + 1)
+#define MAX_DECIMAL_BUF_LEN(type) (MAX_UNSIGNED_BUF_LEN(type) + 1)
 
 #define string wstring
 #define char_t wchar_t
