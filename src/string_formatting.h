@@ -68,6 +68,9 @@ namespace
 		template <class T, class Arg>
 		char_t* output_decimal(const conversion_spec* spec,
 			const char_t* fmt);
+		template <class T, class Arg>
+		char_t* output_unsigned(const conversion_spec* spec,
+			const char_t* fmt);
 		char_t* output_string(const char_t* fmt);
 		char_t* output_conversion(const char_t* fmt);
 		char_t* output_verbatim(const char_t* fmt);
@@ -200,6 +203,74 @@ char_t* string_formatting::output_decimal(const conversion_spec* spec,
 					B_L_PREFIX('0'), zeros);
 			if (sign != 0)
 				*--dest = sign;
+		}
+	}
+
+	return dest;
+}
+
+template <class T, class Arg>
+char_t* string_formatting::output_unsigned(const conversion_spec* spec,
+	const char_t* fmt)
+{
+	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
+	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(T) - 1;
+
+	T number = (T) va_arg(ap, Arg);
+
+	unsigned sep = spec->flags.quote ? 3 : 0;
+
+	for (;;)
+	{
+		*ch = (char_t) (B_L_PREFIX('0') + number % 10);
+		if ((number /= 10) == 0)
+			break;
+		if (sep != 0 && --sep == 0)
+		{
+			sep = 3;
+			*--ch = B_L_PREFIX(',');
+		}
+		--ch;
+	}
+
+	size_t digits = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
+
+	size_t digits_and_zeros = spec->flags.precision_defined &&
+		spec->precision > digits ? spec->precision : digits;
+
+	size_t width = spec->flags.min_width_defined &&
+		spec->min_width > digits_and_zeros ?
+			spec->min_width : digits_and_zeros;
+
+	acc_len += width;
+
+	char_t* dest = output_verbatim(fmt);
+
+	if (dest != NULL)
+	{
+		size_t zeros = digits_and_zeros - digits;
+		size_t spaces = width - digits_and_zeros;
+
+		if (!spec->flags.minus)
+		{
+			dest = copy(dest, ch, digits);
+			if (zeros > 0)
+				b::construct_identical_copies(dest -= zeros,
+					B_L_PREFIX('0'), zeros);
+			if (spaces > 0)
+				b::construct_identical_copies(dest -= spaces,
+					!spec->flags.zero ? B_L_PREFIX(' ') :
+					B_L_PREFIX('0'), spaces);
+		}
+		else
+		{
+			if (spaces > 0)
+				b::construct_identical_copies(dest -= spaces,
+					B_L_PREFIX(' '), spaces);
+			dest = copy(dest, ch, digits);
+			if (zeros > 0)
+				b::construct_identical_copies(dest -= zeros,
+					B_L_PREFIX('0'), zeros);
 		}
 	}
 
@@ -381,13 +452,38 @@ char_t* string_formatting::output_conversion(const char_t* fmt)
 		case conversion_spec::z:
 			return output_decimal<ssize_t, ssize_t>(&spec, ch + 1);
 		case conversion_spec::t:
-			return output_decimal<intmax_t, intmax_t>(&spec,
+			return output_decimal<ptrdiff_t, ptrdiff_t>(&spec,
 				ch + 1);
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			return output_decimal<int, int>(&spec, ch + 1);
+		}
+	case B_L_PREFIX('u'):
+		switch (spec.length_mod)
+		{
+		case conversion_spec::hh:
+			return output_unsigned<unsigned char, unsigned>(
+				&spec, ch + 1);
+		case conversion_spec::h:
+			return output_unsigned<unsigned short, unsigned>(
+				&spec, ch + 1);
+		case conversion_spec::l:
+			return output_unsigned<unsigned long, unsigned long>(
+				&spec, ch + 1);
+		case conversion_spec::j:
+			return output_unsigned<uintmax_t, uintmax_t>(
+				&spec, ch + 1);
+		case conversion_spec::z:
+			return output_unsigned<size_t, size_t>(&spec, ch + 1);
+		case conversion_spec::t:
+		case conversion_spec::ll:
+		case conversion_spec::L:
+			B_ASSERT("incompatible length modifier" && false);
+		default:
+			return output_unsigned<unsigned, unsigned>(
+				&spec, ch + 1);
 		}
 	case B_L_PREFIX('s'):
 		return output_string(ch + 1);

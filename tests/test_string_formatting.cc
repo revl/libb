@@ -99,7 +99,7 @@ B_TEST_CASE(test_custom_allocator)
 	B_CHECK(formatted.length() == 39);
 }
 
-B_TEST_CASE(test_percent_output)
+B_TEST_CASE(test_percent_sign_escaping)
 {
 	b::string s;
 
