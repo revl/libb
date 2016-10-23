@@ -20,70 +20,19 @@
 
 #include <b/memory.h>
 
-struct SizeAlignmentTestCase
-{
-	size_t value;
-	size_t alignment;
-	size_t expected_result;
+#include "unit_test.h"
 
-	bool Test() const;
-};
-
-inline bool SizeAlignmentTestCase::Test() const
+B_TEST_CASE(test_size_alignment)
 {
-	return b::Memory::Align(value, alignment) == expected_result;
+	B_CHECK(b::Memory::Align((size_t) 6, 4) == (size_t) 8);
+	B_CHECK(b::Memory::Align((size_t) 7, 1) == (size_t) 7);
+	B_CHECK(b::Memory::Align((size_t) 8, 4) == (size_t) 8);
+	B_CHECK(b::Memory::Align((size_t) 9, 8) == (size_t) 16);
 }
 
-static const SizeAlignmentTestCase size_alignment_test_cases[] =
+B_TEST_CASE(test_pointer_alignment)
 {
-	{6, 4, 8},
-	{7, 1, 7},
-	{8, 4, 8},
-	{9, 8, 16}
-};
-
-struct PtrAlignmentTestCase
-{
-	void* value;
-	size_t alignment;
-	void* expected_result;
-
-	bool Test() const;
-};
-
-inline bool PtrAlignmentTestCase::Test() const
-{
-	return b::Memory::Align(value, alignment) == expected_result;
-}
-
-static const PtrAlignmentTestCase ptr_alignment_test_cases[] =
-{
-	{(void*) 9, 8, (void*) 16},
-	{(void*) 0, 16, (void*) 0},
-	{(void*) 1, 32, (void*) 32}
-};
-
-int main()
-{
-	int index = sizeof(size_alignment_test_cases) /
-		sizeof(*size_alignment_test_cases);
-
-	const SizeAlignmentTestCase* size_alignment_test_case =
-		size_alignment_test_cases;
-
-	while (--index >= 0)
-		if (!size_alignment_test_case++->Test())
-			return 1;
-
-	index = sizeof(ptr_alignment_test_cases) /
-		sizeof(*ptr_alignment_test_cases);
-
-	const PtrAlignmentTestCase* ptr_alignment_test_case =
-		ptr_alignment_test_cases;
-
-	while (--index >= 0)
-		if (!ptr_alignment_test_case++->Test())
-			return 2;
-
-	return 0;
+	B_CHECK(b::Memory::Align((void*) 9, 8) == (void*) 16);
+	B_CHECK(b::Memory::Align((void*) 0, 16) == (void*) 0);
+	B_CHECK(b::Memory::Align((void*) 1, 32) == (void*) 32);
 }
