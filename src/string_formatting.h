@@ -90,6 +90,28 @@ namespace
 			} length_mod;
 		};
 
+		template <size_t Max_buf_len>
+		struct int_conv_buffer
+		{
+			char_t buffer[Max_buf_len];
+			char_t* pos;
+
+			int_conv_buffer() : pos(buffer + Max_buf_len)
+			{
+			}
+
+			template <class Char_type>
+			void operator <<(Char_type ch)
+			{
+				*--pos = (char_t) ch;
+			}
+
+			size_t len() const
+			{
+				return (size_t) (buffer + Max_buf_len - pos);
+			}
+		};
+
 		template <class T, class Arg>
 		void process_decimal(const conversion_spec* spec,
 			const char_t* fmt);
@@ -106,52 +128,65 @@ template <class T, class Arg>
 void string_formatting::process_decimal(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	char_t conv_buf[MAX_DECIMAL_BUF_LEN(T)];
-	char_t* ch = conv_buf + MAX_DECIMAL_BUF_LEN(T) - 1;
+	int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
 
 	char_t sign;
 
 	T number = (T) va_arg(ap, Arg);
-
-	unsigned sep = spec->flags.quote ? 3 : 0;
 
 	if (number >= 0)
 	{
 		sign = spec->flags.plus ? B_L_PREFIX('+') :
 			spec->flags.space ? B_L_PREFIX(' ') : 0;
 
-		for (;;)
+		if (!spec->flags.quote)
+			do
+				buffer << B_L_PREFIX('0') + number % 10;
+			while ((number /= 10) != 0);
+		else
 		{
-			*ch = (char_t) (B_L_PREFIX('0') + number % 10);
-			if ((number /= 10) == 0)
-				break;
-			if (sep != 0 && --sep == 0)
+			unsigned countdown_to_comma = 3;
+
+			for (;;)
 			{
-				sep = 3;
-				*--ch = B_L_PREFIX(',');
+				buffer << B_L_PREFIX('0') + number % 10;
+				if ((number /= 10) == 0)
+					break;
+				if (--countdown_to_comma == 0)
+				{
+					countdown_to_comma = 3;
+					buffer << B_L_PREFIX(',');
+				}
 			}
-			--ch;
 		}
 	}
 	else
 	{
 		sign = B_L_PREFIX('-');
 
-		for (;;)
+		if (!spec->flags.quote)
+			do
+				buffer << B_L_PREFIX('0') - number % 10;
+			while ((number /= 10) != 0);
+		else
 		{
-			*ch = (char_t) (B_L_PREFIX('0') - number % 10);
-			if ((number /= 10) == 0)
-				break;
-			if (sep != 0 && --sep == 0)
+			unsigned countdown_to_comma = 3;
+
+			for (;;)
 			{
-				sep = 3;
-				*--ch = B_L_PREFIX(',');
+				buffer << B_L_PREFIX('0') - number % 10;
+				if ((number /= 10) == 0)
+					break;
+				if (--countdown_to_comma == 0)
+				{
+					countdown_to_comma = 3;
+					buffer << B_L_PREFIX(',');
+				}
 			}
-			--ch;
 		}
 	}
 
-	size_t digits = (size_t) (conv_buf + MAX_DECIMAL_BUF_LEN(T) - ch);
+	size_t digits = buffer.len();
 
 	size_t digits_and_zeros = spec->flags.precision_defined &&
 		spec->precision > digits ? spec->precision : digits;
@@ -174,7 +209,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			output_string(ch, digits);
+			output_string(buffer.pos, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
 			if (!spec->flags.zero)
 			{
@@ -192,7 +227,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 		else
 		{
 			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(ch, digits);
+			output_string(buffer.pos, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
 			if (sign != 0)
 				output_char(sign);
@@ -204,27 +239,32 @@ template <class T, class Arg>
 char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	char_t conv_buf[MAX_UNSIGNED_BUF_LEN(T)];
-	char_t* ch = conv_buf + MAX_UNSIGNED_BUF_LEN(T) - 1;
+	int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
 
 	T number = (T) va_arg(ap, Arg);
 
-	unsigned sep = spec->flags.quote ? 3 : 0;
-
-	for (;;)
+	if (!spec->flags.quote)
+		do
+			buffer << B_L_PREFIX('0') + number % 10;
+		while ((number /= 10) != 0);
+	else
 	{
-		*ch = (char_t) (B_L_PREFIX('0') + number % 10);
-		if ((number /= 10) == 0)
-			break;
-		if (sep != 0 && --sep == 0)
+		unsigned countdown_to_comma = 3;
+
+		for (;;)
 		{
-			sep = 3;
-			*--ch = B_L_PREFIX(',');
+			buffer << B_L_PREFIX('0') + number % 10;
+			if ((number /= 10) == 0)
+				break;
+			if (--countdown_to_comma == 0)
+			{
+				countdown_to_comma = 3;
+				buffer << B_L_PREFIX(',');
+			}
 		}
-		--ch;
 	}
 
-	size_t digits = (size_t) (conv_buf + MAX_UNSIGNED_BUF_LEN(T) - ch);
+	size_t digits = buffer.len();
 
 	size_t digits_and_zeros = spec->flags.precision_defined &&
 		spec->precision > digits ? spec->precision : digits;
@@ -244,7 +284,7 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			output_string(ch, digits);
+			output_string(buffer.pos, digits);
 			if (spec->flags.zero)
 				output_chars(B_L_PREFIX('0'), zeros + spaces);
 			else
@@ -256,7 +296,7 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 		else
 		{
 			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(ch, digits);
+			output_string(buffer.pos, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
 		}
 	}
