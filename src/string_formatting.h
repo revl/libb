@@ -139,26 +139,31 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 		sign = spec->flags.plus ? B_L_PREFIX('+') :
 			spec->flags.space ? B_L_PREFIX(' ') : 0;
 
-		if (!spec->flags.quote)
-			do
-				buffer << B_L_PREFIX('0') + number % 10;
-			while ((number /= 10) != 0);
-		else
-		{
-			unsigned countdown_to_comma = 3;
-
-			for (;;)
+		if (number > 0)
+			if (!spec->flags.quote)
+				do
+					buffer << B_L_PREFIX('0') + number % 10;
+				while ((number /= 10) != 0);
+			else
 			{
-				buffer << B_L_PREFIX('0') + number % 10;
-				if ((number /= 10) == 0)
-					break;
-				if (--countdown_to_comma == 0)
+				unsigned countdown_to_comma = 3;
+
+				for (;;)
 				{
-					countdown_to_comma = 3;
-					buffer << B_L_PREFIX(',');
+					buffer << B_L_PREFIX('0') + number % 10;
+					if ((number /= 10) == 0)
+						break;
+					if (--countdown_to_comma == 0)
+					{
+						countdown_to_comma = 3;
+						buffer << B_L_PREFIX(',');
+					}
 				}
 			}
-		}
+		else
+			if (!spec->flags.precision_defined ||
+					spec->precision != 0)
+				buffer << B_L_PREFIX('0');
 	}
 	else
 	{
@@ -243,26 +248,30 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 
 	T number = (T) va_arg(ap, Arg);
 
-	if (!spec->flags.quote)
-		do
-			buffer << B_L_PREFIX('0') + number % 10;
-		while ((number /= 10) != 0);
-	else
-	{
-		unsigned countdown_to_comma = 3;
-
-		for (;;)
+	if (number > 0)
+		if (!spec->flags.quote)
+			do
+				buffer << B_L_PREFIX('0') + number % 10;
+			while ((number /= 10) != 0);
+		else
 		{
-			buffer << B_L_PREFIX('0') + number % 10;
-			if ((number /= 10) == 0)
-				break;
-			if (--countdown_to_comma == 0)
+			unsigned countdown_to_comma = 3;
+
+			for (;;)
 			{
-				countdown_to_comma = 3;
-				buffer << B_L_PREFIX(',');
+				buffer << B_L_PREFIX('0') + number % 10;
+				if ((number /= 10) == 0)
+					break;
+				if (--countdown_to_comma == 0)
+				{
+					countdown_to_comma = 3;
+					buffer << B_L_PREFIX(',');
+				}
 			}
 		}
-	}
+	else
+		if (!spec->flags.precision_defined || spec->precision != 0)
+			buffer << B_L_PREFIX('0');
 
 	size_t digits = buffer.len();
 
@@ -418,7 +427,7 @@ void string_formatting::process_conversion(const char_t* fmt)
 				if (n >= 0)
 				{
 					spec.precision = (unsigned) n;
-					spec.flags.min_width_defined = true;
+					spec.flags.precision_defined = true;
 				}
 			}
 			else
