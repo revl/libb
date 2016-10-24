@@ -59,7 +59,25 @@ B_TEST_CASE(test_int_width_and_precision)
 	B_CHECK(b::string::formatted("[%4.3d]", 100) == "[ 100]");
 	B_CHECK(b::string::formatted("[%4.4d]", 100) == "[0100]");
 	B_CHECK(b::string::formatted("[%5.4d]", 100) == "[ 0100]");
-	B_CHECK(b::string::formatted("[%+2d]", 0) == "[+0]");
+}
+
+B_TEST_CASE(sign_is_required)
+{
+	B_CHECK(b::string::formatted("[% d]", 1) == "[ 1]");
+	B_CHECK(b::string::formatted("[% 2d]", 1) == "[ 1]");
+	B_CHECK(b::string::formatted("[% 3d]", 1) == "[  1]");
+
+	B_CHECK(b::string::formatted("[%+d]", 1) == "[+1]");
+	B_CHECK(b::string::formatted("[%+2d]", 1) == "[+1]");
+	B_CHECK(b::string::formatted("[%+3d]", 1) == "[ +1]");
+
+	B_CHECK(b::string::formatted("[%+d]", 0) == "[ 0]");
+	B_CHECK(b::string::formatted("[%+2d]", 0) == "[ 0]");
+	B_CHECK(b::string::formatted("[%+3d]", 0) == "[  0]");
+
+	B_CHECK(b::string::formatted("[%+4.2d]", 0) == "[  00]");
+	B_CHECK(b::string::formatted("[%+4.2d]", 1) == "[ +01]");
+	B_CHECK(b::string::formatted("[% 4.2d]", 1) == "[  01]");
 }
 
 B_TEST_CASE(test_zero_precision)
@@ -79,8 +97,10 @@ B_TEST_CASE(test_zero_precision)
 	B_CHECK(b::string::formatted("[%.0d]", 0) == "[]");
 	B_CHECK(b::string::formatted("[%.*d]", 0, 0) == "[]");
 
-	B_CHECK(b::string::formatted("[%+.0d]", 0) == "[+]");
-	B_CHECK(b::string::formatted("[% .0d]", 0) == "[ ]");
+	B_CHECK(b::string::formatted("[%+.0d]", 0) == "[]");
+	B_CHECK(b::string::formatted("[% .0d]", 0) == "[]");
+	B_CHECK(b::string::formatted("[%+1.0d]", 0) == "[ ]");
+	B_CHECK(b::string::formatted("[% 1.0d]", 0) == "[ ]");
 
 	B_CHECK(b::string::formatted("[%.0u]", 0) == "[]");
 	B_CHECK(b::string::formatted("[%.*u]", 0, 0) == "[]");

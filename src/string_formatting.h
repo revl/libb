@@ -136,10 +136,11 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 
 	if (number >= 0)
 	{
-		sign = spec->flags.plus ? B_L_PREFIX('+') :
-			spec->flags.space ? B_L_PREFIX(' ') : 0;
-
 		if (number > 0)
+		{
+			sign = spec->flags.plus ? B_L_PREFIX('+') :
+				spec->flags.space ? B_L_PREFIX(' ') : 0;
+
 			if (!spec->flags.quote)
 				do
 					buffer << B_L_PREFIX('0') + number % 10;
@@ -160,10 +161,18 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 					}
 				}
 			}
+		}
 		else
 			if (!spec->flags.precision_defined ||
 					spec->precision != 0)
+			{
+				sign = spec->flags.plus || spec->flags.space ?
+					B_L_PREFIX(' ') : 0;
+
 				buffer << B_L_PREFIX('0');
+			}
+			else
+				sign = 0;
 	}
 	else
 	{
