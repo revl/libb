@@ -32,9 +32,7 @@
 #error Must implement B_VA_COPY for this platform
 #endif
 
-// Maximum number of characters required to print
-// an unsigned integer.
-//
+// Maximum number of characters required to print an unsigned integer.
 // A binary integer type of size S bytes takes up to
 // L = ceil(S * log10(256)) digits when represented in the
 // decimal numbering system. A convenient approximation of
@@ -45,9 +43,12 @@
 
 // Maximum number of characters required to print
 // an integer of the specified type.
-//
 // An additional byte is reserved for the sign.
 #define MAX_DECIMAL_BUF_LEN(type) (MAX_UNSIGNED_BUF_LEN(type) + 1)
+
+// Maximum number of characters required to represent an integer
+// in the octal numbering system.
+#define MAX_OCTAL_BUF_LEN(type) ((sizeof(type) * 8 + 2) / 3)
 
 #define string wstring
 #define char_t wchar_t

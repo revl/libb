@@ -115,9 +115,19 @@ namespace
 		template <class T, class Arg>
 		void process_decimal(const conversion_spec* spec,
 			const char_t* fmt);
+
 		template <class T, class Arg>
 		char_t* process_unsigned(const conversion_spec* spec,
 			const char_t* fmt);
+
+		char_t* output_unsigned(const conversion_spec* spec,
+			const char_t* fmt, const char_t* buffer, size_t digits,
+			size_t digits_and_zeros);
+
+		template <class T, class Arg>
+		char_t* process_octal(const conversion_spec* spec,
+			const char_t* fmt);
+
 		void process_string(const char_t* fmt);
 		void process_conversion(const char_t* fmt);
 		void process_verbatim(const char_t* fmt);
@@ -284,9 +294,15 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 
 	size_t digits = buffer.len();
 
-	size_t digits_and_zeros = spec->flags.precision_defined &&
-		spec->precision > digits ? spec->precision : digits;
+	return output_unsigned(spec, fmt, buffer.pos, digits,
+		/*digits_and_zeros=*/ spec->flags.precision_defined &&
+			spec->precision > digits ? spec->precision : digits);
+}
 
+char_t* string_formatting::output_unsigned(const conversion_spec* spec,
+	const char_t* fmt, const char_t* buffer, size_t digits,
+	size_t digits_and_zeros)
+{
 	size_t width = spec->flags.min_width_defined &&
 		spec->min_width > digits_and_zeros ?
 			spec->min_width : digits_and_zeros;
@@ -302,7 +318,7 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			output_string(buffer.pos, digits);
+			output_string(buffer, digits);
 			if (spec->flags.zero)
 				output_chars(B_L_PREFIX('0'), zeros + spaces);
 			else
@@ -314,12 +330,36 @@ char_t* string_formatting::process_unsigned(const conversion_spec* spec,
 		else
 		{
 			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(buffer.pos, digits);
+			output_string(buffer, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
 		}
 	}
 
 	return dest;
+}
+
+template <class T, class Arg>
+char_t* string_formatting::process_octal(const conversion_spec* spec,
+	const char_t* fmt)
+{
+	int_conv_buffer<MAX_OCTAL_BUF_LEN(T)> buffer;
+
+	T number = (T) va_arg(ap, Arg);
+
+	if (number > 0)
+		do
+			buffer << B_L_PREFIX('0') + number % 8;
+		while ((number /= 8) != 0);
+	else
+		if (!spec->flags.precision_defined || spec->precision != 0)
+			buffer << B_L_PREFIX('0');
+
+	size_t digits = buffer.len();
+
+	return output_unsigned(spec, fmt, buffer.pos, digits,
+		/*digits_and_zeros=*/ spec->flags.precision_defined &&
+		spec->precision > digits ? spec->precision :
+		!spec->flags.hash ? digits : digits + 1);
 }
 
 void string_formatting::process_string(const char_t* fmt)
@@ -533,8 +573,7 @@ void string_formatting::process_conversion(const char_t* fmt)
 				&spec, ch + 1);
 			break;
 		case conversion_spec::j:
-			process_unsigned<uintmax_t, uintmax_t>(
-				&spec, ch + 1);
+			process_unsigned<uintmax_t, uintmax_t>(&spec, ch + 1);
 			break;
 		case conversion_spec::z:
 			process_unsigned<size_t, size_t>(&spec, ch + 1);
@@ -544,8 +583,34 @@ void string_formatting::process_conversion(const char_t* fmt)
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_unsigned<unsigned, unsigned>(
+			process_unsigned<unsigned, unsigned>(&spec, ch + 1);
+		}
+		break;
+	case B_L_PREFIX('o'):
+		switch (spec.length_mod)
+		{
+		case conversion_spec::hh:
+			process_octal<unsigned char, unsigned>(&spec, ch + 1);
+			break;
+		case conversion_spec::h:
+			process_octal<unsigned short, unsigned>(&spec, ch + 1);
+			break;
+		case conversion_spec::l:
+			process_octal<unsigned long, unsigned long>(
 				&spec, ch + 1);
+			break;
+		case conversion_spec::j:
+			process_octal<uintmax_t, uintmax_t>(&spec, ch + 1);
+			break;
+		case conversion_spec::z:
+			process_octal<size_t, size_t>(&spec, ch + 1);
+			break;
+		case conversion_spec::t:
+		case conversion_spec::ll:
+		case conversion_spec::L:
+			B_ASSERT("incompatible length modifier" && false);
+		default:
+			process_octal<unsigned, unsigned>(&spec, ch + 1);
 		}
 		break;
 	case B_L_PREFIX('s'):
