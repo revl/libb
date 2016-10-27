@@ -90,20 +90,30 @@ namespace
 			} length_mod;
 		};
 
-		template <size_t Max_buf_len>
-		struct int_conv_buffer
+		struct int_conv_pos
 		{
-			char_t buffer[Max_buf_len];
 			char_t* pos;
 
-			int_conv_buffer() : pos(buffer + Max_buf_len)
+			void add_char(char_t ch)
 			{
+				*--pos = ch;
 			}
 
-			template <class Char_type>
-			void operator <<(Char_type ch)
+			template <class T>
+			void add_digit(T digit)
 			{
-				*--pos = (char_t) ch;
+				*--pos = (char_t) (B_L_PREFIX('0') + digit);
+			}
+		};
+
+		template <size_t Max_buf_len>
+		struct int_conv_buffer : public int_conv_pos
+		{
+			char_t buffer[Max_buf_len];
+
+			int_conv_buffer()
+			{
+				pos = buffer + Max_buf_len;
 			}
 
 			size_t len() const
@@ -112,7 +122,34 @@ namespace
 			}
 		};
 
-		template <class T, class Arg>
+		template <class T>
+		void convert_positive_to_decimal(const conversion_spec* spec,
+			T number, int_conv_pos* buffer)
+		{
+			if (!spec->flags.quote)
+				do
+					buffer->add_digit(number % 10);
+				while ((number /= 10) != 0);
+			else
+			{
+				unsigned countdown_to_comma = 3;
+
+				for (;;)
+				{
+					buffer->add_digit(number % 10);
+					if ((number /= 10) == 0)
+						break;
+					if (--countdown_to_comma == 0)
+					{
+						countdown_to_comma = 3;
+						buffer->add_char(
+							B_L_PREFIX(','));
+					}
+				}
+			}
+		}
+
+		template <class T, class U, class Arg>
 		void process_decimal(const conversion_spec* spec,
 			const char_t* fmt);
 
@@ -141,7 +178,7 @@ namespace
 	};
 }
 
-template <class T, class Arg>
+template <class T, class U, class Arg>
 void string_formatting::process_decimal(const conversion_spec* spec,
 	const char_t* fmt)
 {
@@ -158,26 +195,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 			sign = spec->flags.plus ? B_L_PREFIX('+') :
 				spec->flags.space ? B_L_PREFIX(' ') : 0;
 
-			if (!spec->flags.quote)
-				do
-					buffer << B_L_PREFIX('0') + number % 10;
-				while ((number /= 10) != 0);
-			else
-			{
-				unsigned countdown_to_comma = 3;
-
-				for (;;)
-				{
-					buffer << B_L_PREFIX('0') + number % 10;
-					if ((number /= 10) == 0)
-						break;
-					if (--countdown_to_comma == 0)
-					{
-						countdown_to_comma = 3;
-						buffer << B_L_PREFIX(',');
-					}
-				}
-			}
+			convert_positive_to_decimal(spec, number, &buffer);
 		}
 		else
 			if (!spec->flags.precision_defined ||
@@ -186,7 +204,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 				sign = spec->flags.plus || spec->flags.space ?
 					B_L_PREFIX(' ') : 0;
 
-				buffer << B_L_PREFIX('0');
+				buffer.add_char(B_L_PREFIX('0'));
 			}
 			else
 				sign = 0;
@@ -195,26 +213,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 	{
 		sign = B_L_PREFIX('-');
 
-		if (!spec->flags.quote)
-			do
-				buffer << B_L_PREFIX('0') - number % 10;
-			while ((number /= 10) != 0);
-		else
-		{
-			unsigned countdown_to_comma = 3;
-
-			for (;;)
-			{
-				buffer << B_L_PREFIX('0') - number % 10;
-				if ((number /= 10) == 0)
-					break;
-				if (--countdown_to_comma == 0)
-				{
-					countdown_to_comma = 3;
-					buffer << B_L_PREFIX(',');
-				}
-			}
-		}
+		convert_positive_to_decimal(spec, (U) -number, &buffer);
 	}
 
 	size_t digits = buffer.len();
@@ -275,29 +274,10 @@ void string_formatting::process_unsigned(const conversion_spec* spec,
 	T number = (T) va_arg(ap, Arg);
 
 	if (number > 0)
-		if (!spec->flags.quote)
-			do
-				buffer << B_L_PREFIX('0') + number % 10;
-			while ((number /= 10) != 0);
-		else
-		{
-			unsigned countdown_to_comma = 3;
-
-			for (;;)
-			{
-				buffer << B_L_PREFIX('0') + number % 10;
-				if ((number /= 10) == 0)
-					break;
-				if (--countdown_to_comma == 0)
-				{
-					countdown_to_comma = 3;
-					buffer << B_L_PREFIX(',');
-				}
-			}
-		}
+		convert_positive_to_decimal(spec, number, &buffer);
 	else
 		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer << B_L_PREFIX('0');
+			buffer.add_char(B_L_PREFIX('0'));
 
 	size_t digits = buffer.len();
 
@@ -353,11 +333,11 @@ void string_formatting::process_octal(const conversion_spec* spec,
 
 	if (number > 0)
 		do
-			buffer << B_L_PREFIX('0') + number % 8;
+			buffer.add_digit(number % 8);
 		while ((number /= 8) != 0);
 	else
 		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer << B_L_PREFIX('0');
+			buffer.add_char(B_L_PREFIX('0'));
 
 	size_t digits = buffer.len();
 
@@ -377,11 +357,11 @@ void string_formatting::process_hex(const conversion_spec* spec,
 
 	if (number > 0)
 		do
-			buffer << digit_chars[number % 16];
+			buffer.add_char(digit_chars[number % 16]);
 		while ((number /= 16) != 0);
 	else
 		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer << B_L_PREFIX('0');
+			buffer.add_char(B_L_PREFIX('0'));
 
 	size_t digits = buffer.len();
 
@@ -601,30 +581,34 @@ void string_formatting::process_conversion(const char_t* fmt)
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_decimal<signed char, int>(&spec, ch + 1);
+			process_decimal<signed char, unsigned char, int>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::h:
-			process_decimal<short, int>(&spec, ch + 1);
+			process_decimal<short, unsigned short, int>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::l:
-			process_decimal<long, long>(&spec, ch + 1);
+			process_decimal<long, unsigned long, long>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::j:
-			process_decimal<intmax_t, intmax_t>(&spec,
-				ch + 1);
+			process_decimal<intmax_t, uintmax_t, intmax_t>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::z:
-			process_decimal<ssize_t, ssize_t>(&spec, ch + 1);
+			process_decimal<ssize_t, size_t, ssize_t>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::t:
-			process_decimal<ptrdiff_t, ptrdiff_t>(&spec,
-				ch + 1);
+			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(
+				&spec, ch + 1);
 			break;
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_decimal<int, int>(&spec, ch + 1);
+			process_decimal<int, unsigned, int>(&spec, ch + 1);
 		}
 		break;
 	case B_L_PREFIX('u'):
