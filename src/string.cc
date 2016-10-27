@@ -35,7 +35,7 @@
 // Maximum number of characters required to print an unsigned integer.
 // A binary integer type of size S bytes takes up to
 // L = ceil(S * log10(256)) digits when represented in the
-// decimal numbering system. A convenient approximation of
+// decimal numeral system. A convenient approximation of
 // log10(256) is 2.5: L = ceil((S * 5) / 2).
 // The result is multiplied by 4/3 to accommodate for
 // the thousand dividers.
@@ -47,8 +47,12 @@
 #define MAX_DECIMAL_BUF_LEN(type) (MAX_UNSIGNED_BUF_LEN(type) + 1)
 
 // Maximum number of characters required to represent an integer
-// in the octal numbering system.
+// in the octal numeral system.
 #define MAX_OCTAL_BUF_LEN(type) ((sizeof(type) * 8 + 2) / 3)
+
+// Maximum number of characters required to represent an integer
+// in the hexadecimal numeral system.
+#define MAX_HEX_BUF_LEN(type) (sizeof(type) * 2)
 
 #define string wstring
 #define char_t wchar_t
