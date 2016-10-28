@@ -157,10 +157,6 @@ namespace
 		void process_unsigned(const conversion_spec* spec,
 			const char_t* fmt);
 
-		void output_unsigned(const conversion_spec* spec,
-			const char_t* fmt, const char_t* buffer, size_t digits,
-			size_t digits_and_zeros);
-
 		template <class T, class Arg>
 		void process_octal(const conversion_spec* spec,
 			const char_t* fmt);
@@ -281,15 +277,9 @@ void string_formatting::process_unsigned(const conversion_spec* spec,
 
 	size_t digits = buffer.len();
 
-	output_unsigned(spec, fmt, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-			spec->precision > digits ? spec->precision : digits);
-}
+	size_t digits_and_zeros = spec->flags.precision_defined &&
+		spec->precision > digits ? spec->precision : digits;
 
-void string_formatting::output_unsigned(const conversion_spec* spec,
-	const char_t* fmt, const char_t* buffer, size_t digits,
-	size_t digits_and_zeros)
-{
 	size_t width = spec->flags.min_width_defined &&
 		spec->min_width > digits_and_zeros ?
 			spec->min_width : digits_and_zeros;
@@ -305,7 +295,7 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 
 		if (!spec->flags.minus)
 		{
-			output_string(buffer, digits);
+			output_string(buffer.pos, digits);
 			if (spec->flags.zero)
 				output_chars(B_L_PREFIX('0'), zeros + spaces);
 			else
@@ -317,7 +307,7 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 		else
 		{
 			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(buffer, digits);
+			output_string(buffer.pos, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
 		}
 	}
@@ -327,24 +317,78 @@ template <class T, class Arg>
 void string_formatting::process_octal(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	int_conv_buffer<MAX_OCTAL_BUF_LEN(T)> buffer;
-
 	T number = (T) va_arg(ap, Arg);
 
 	if (number > 0)
+	{
+		int_conv_buffer<MAX_OCTAL_BUF_LEN(T)> buffer;
+
 		do
 			buffer.add_digit(number % 8);
 		while ((number /= 8) != 0);
+
+		size_t digits = buffer.len();
+
+		size_t digits_and_zeros = spec->flags.precision_defined &&
+			spec->precision > digits ? spec->precision :
+			!spec->flags.hash ? digits : digits + 1;
+
+		size_t width = spec->flags.min_width_defined &&
+			spec->min_width > digits_and_zeros ?
+				spec->min_width : digits_and_zeros;
+
+		acc_len += width;
+
+		process_verbatim(fmt);
+
+		if (dest != NULL)
+		{
+			size_t zeros = digits_and_zeros - digits;
+			size_t spaces = width - digits_and_zeros;
+
+			if (!spec->flags.minus)
+			{
+				output_string(buffer.pos, digits);
+				output_chars(B_L_PREFIX('0'), zeros);
+				output_chars(B_L_PREFIX(' '), spaces);
+			}
+			else
+			{
+				output_chars(B_L_PREFIX(' '), spaces);
+				output_string(buffer.pos, digits);
+				output_chars(B_L_PREFIX('0'), zeros);
+			}
+		}
+	}
 	else
-		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer.add_char(B_L_PREFIX('0'));
+	{
+		size_t zeros = !spec->flags.precision_defined ? 1 :
+			spec->precision == 0 ? 0 :
+			spec->precision > 0 ? spec->precision : 1;
 
-	size_t digits = buffer.len();
+		size_t width = spec->flags.min_width_defined &&
+			spec->min_width > zeros ? spec->min_width : zeros;
 
-	output_unsigned(spec, fmt, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-		spec->precision > digits ? spec->precision :
-		!spec->flags.hash ? digits : digits + 1);
+		acc_len += width;
+
+		process_verbatim(fmt);
+
+		if (dest != NULL)
+		{
+			size_t spaces = width - zeros;
+
+			if (!spec->flags.minus)
+			{
+				output_chars(B_L_PREFIX('0'), zeros);
+				output_chars(B_L_PREFIX(' '), spaces);
+			}
+			else
+			{
+				output_chars(B_L_PREFIX(' '), spaces);
+				output_chars(B_L_PREFIX('0'), zeros);
+			}
+		}
+	}
 }
 
 template <class T, class Arg>
