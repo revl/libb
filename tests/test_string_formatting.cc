@@ -80,7 +80,7 @@ B_TEST_CASE(sign_is_required)
 	B_CHECK(b::string::formatted("[% 4.2d]", 1) == "[  01]");
 }
 
-B_TEST_CASE(test_zero_precision)
+B_TEST_CASE(zero_precision)
 {
 	B_CHECK(b::string::formatted("[%3.0d]", -100) == "[-100]");
 	B_CHECK(b::string::formatted("[%4.0d]", -100) == "[-100]");
@@ -104,6 +104,17 @@ B_TEST_CASE(test_zero_precision)
 
 	B_CHECK(b::string::formatted("[%.0u]", 0) == "[]");
 	B_CHECK(b::string::formatted("[%.*u]", 0, 0) == "[]");
+
+	B_CHECK(b::string::formatted("[%.0o]", 0) == "[]");
+	B_CHECK(b::string::formatted("[%#.0o]", 0) == "[]");
+
+	B_CHECK(b::string::formatted("[%.0X]", 0x0) == "[]");
+	B_CHECK(b::string::formatted("[%#.0X]", 0x0) == "[]");
+}
+
+B_TEST_CASE(hexadecimal_conversion)
+{
+	B_CHECK(b::string::formatted("[%#5.4X]", 0xA) == "[0x000A]");
 }
 
 struct static_buffer_allocator : public b::allocator
