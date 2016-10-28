@@ -327,24 +327,31 @@ template <class T, class Arg>
 void string_formatting::process_octal(const conversion_spec* spec,
 	const char_t* fmt)
 {
-	int_conv_buffer<MAX_OCTAL_BUF_LEN(T)> buffer;
-
 	T number = (T) va_arg(ap, Arg);
 
 	if (number > 0)
+	{
+		int_conv_buffer<MAX_OCTAL_BUF_LEN(T)> buffer;
+
 		do
 			buffer.add_digit(number % 8);
 		while ((number /= 8) != 0);
+
+		size_t digits = buffer.len();
+
+		output_unsigned(spec, fmt, buffer.pos, digits,
+			/*digits_and_zeros=*/ spec->flags.precision_defined &&
+				spec->precision > digits ? spec->precision :
+				!spec->flags.hash ? digits : digits + 1);
+	}
 	else
-		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer.add_char(B_L_PREFIX('0'));
-
-	size_t digits = buffer.len();
-
-	output_unsigned(spec, fmt, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-		spec->precision > digits ? spec->precision :
-		!spec->flags.hash ? digits : digits + 1);
+	{
+		output_unsigned(spec, fmt, /*buffer=*/ NULL, /*digits=*/ 0,
+			/*digits_and_zeros=*/
+				!spec->flags.precision_defined ? 1 :
+				spec->precision == 0 ? 0 :
+				spec->precision > 0 ? spec->precision : 1);
+	}
 }
 
 template <class T, class Arg>
