@@ -349,8 +349,13 @@ void string_formatting::process_octal(const conversion_spec* spec,
 			if (!spec->flags.minus)
 			{
 				output_string(buffer.pos, digits);
-				output_chars(B_L_PREFIX('0'), zeros);
-				output_chars(B_L_PREFIX(' '), spaces);
+				if (spec->flags.zero)
+					output_chars(B_L_PREFIX('0'), zeros + spaces);
+				else
+				{
+					output_chars(B_L_PREFIX('0'), zeros);
+					output_chars(B_L_PREFIX(' '), spaces);
+				}
 			}
 			else
 			{
