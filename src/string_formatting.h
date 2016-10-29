@@ -362,6 +362,8 @@ void string_formatting::process_hex(const conversion_spec* spec,
 
 	T number = (T) va_arg(ap, Arg);
 
+	bool use_prefix = spec->flags.hash;
+
 	if (number > 0)
 		do
 			buffer.add_char(digit_chars[number % 16]);
@@ -369,18 +371,20 @@ void string_formatting::process_hex(const conversion_spec* spec,
 	else
 		if (!spec->flags.precision_defined || spec->precision != 0)
 			buffer.add_char(B_L_PREFIX('0'));
+		else
+			use_prefix = false;
 
 	size_t digits = buffer.len();
 
 	size_t digits_and_zeros = spec->flags.precision_defined &&
 		spec->precision > digits ? spec->precision : digits;
 
-	size_t digits_zeros_and_0x =
-		!spec->flags.hash ? digits_and_zeros : digits_and_zeros + 2;
+	size_t digits_zeros_and_prefix =
+		!use_prefix ? digits_and_zeros : digits_and_zeros + 2;
 
 	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > digits_zeros_and_0x ?
-			spec->min_width : digits_zeros_and_0x;
+		spec->min_width > digits_zeros_and_prefix ?
+			spec->min_width : digits_zeros_and_prefix;
 
 	acc_len += width;
 
@@ -389,7 +393,7 @@ void string_formatting::process_hex(const conversion_spec* spec,
 	if (dest != NULL)
 	{
 		size_t zeros = digits_and_zeros - digits;
-		size_t spaces = width - digits_zeros_and_0x;
+		size_t spaces = width - digits_zeros_and_prefix;
 
 		if (!spec->flags.minus)
 		{
@@ -397,14 +401,14 @@ void string_formatting::process_hex(const conversion_spec* spec,
 			output_chars(B_L_PREFIX('0'), zeros);
 			if (!spec->flags.zero)
 			{
-				if (spec->flags.hash)
+				if (use_prefix)
 					output_string(B_L_PREFIX("0x"), 2);
 				output_chars(B_L_PREFIX(' '), spaces);
 			}
 			else
 			{
 				output_chars(B_L_PREFIX('0'), spaces);
-				if (spec->flags.hash)
+				if (use_prefix)
 					output_string(B_L_PREFIX("0x"), 2);
 			}
 		}
@@ -413,7 +417,7 @@ void string_formatting::process_hex(const conversion_spec* spec,
 			output_chars(B_L_PREFIX(' '), spaces);
 			output_string(buffer.pos, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
-			if (spec->flags.hash)
+			if (use_prefix)
 				output_string(B_L_PREFIX("0x"), 2);
 		}
 	}
