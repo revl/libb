@@ -159,7 +159,7 @@ namespace
 
 		void output_unsigned(const conversion_spec* spec,
 			const char_t* fmt, const char_t* buffer, size_t digits,
-			size_t digits_and_zeros);
+			size_t digits_and_zeros, const char_t* prefix = NULL);
 
 		template <class T, class Arg>
 		void process_octal(const conversion_spec* spec,
@@ -288,11 +288,14 @@ void string_formatting::process_unsigned(const conversion_spec* spec,
 
 void string_formatting::output_unsigned(const conversion_spec* spec,
 	const char_t* fmt, const char_t* buffer, size_t digits,
-	size_t digits_and_zeros)
+	size_t digits_and_zeros, const char_t* prefix)
 {
+	size_t digits_zeros_and_prefix = prefix == NULL ?
+		digits_and_zeros : digits_and_zeros + 2;
+
 	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > digits_and_zeros ?
-			spec->min_width : digits_and_zeros;
+		spec->min_width > digits_zeros_and_prefix ?
+			spec->min_width : digits_zeros_and_prefix;
 
 	acc_len += width;
 
@@ -301,17 +304,24 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 	if (dest != NULL)
 	{
 		size_t zeros = digits_and_zeros - digits;
-		size_t spaces = width - digits_and_zeros;
+		size_t spaces = width - digits_zeros_and_prefix;
 
 		if (!spec->flags.minus)
 		{
 			output_string(buffer, digits);
-			if (spec->flags.zero)
-				output_chars(B_L_PREFIX('0'), zeros + spaces);
-			else
+
+			if (!spec->flags.zero)
 			{
 				output_chars(B_L_PREFIX('0'), zeros);
+				if (prefix != NULL)
+					output_string(prefix, 2);
 				output_chars(B_L_PREFIX(' '), spaces);
+			}
+			else
+			{
+				output_chars(B_L_PREFIX('0'), zeros + spaces);
+				if (prefix != NULL)
+					output_string(prefix, 2);
 			}
 		}
 		else
@@ -319,6 +329,8 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 			output_chars(B_L_PREFIX(' '), spaces);
 			output_string(buffer, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
+			if (prefix != NULL)
+				output_string(prefix, 2);
 		}
 	}
 }
@@ -345,13 +357,9 @@ void string_formatting::process_octal(const conversion_spec* spec,
 				!spec->flags.hash ? digits : digits + 1);
 	}
 	else
-	{
 		output_unsigned(spec, fmt, /*buffer=*/ NULL, /*digits=*/ 0,
-			/*digits_and_zeros=*/
-				!spec->flags.precision_defined ? 1 :
-				spec->precision == 0 ? 0 :
-				spec->precision > 0 ? spec->precision : 1);
-	}
+			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
+				1 : spec->precision);
 }
 
 template <class T, class Arg>
@@ -362,65 +370,36 @@ void string_formatting::process_hex(const conversion_spec* spec,
 
 	T number = (T) va_arg(ap, Arg);
 
-	bool use_prefix = spec->flags.hash;
-
 	if (number > 0)
+	{
 		do
 			buffer.add_char(digit_chars[number % 16]);
 		while ((number /= 16) != 0);
-	else
-		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer.add_char(B_L_PREFIX('0'));
-		else
-			use_prefix = false;
 
-	size_t digits = buffer.len();
+		size_t digits = buffer.len();
 
-	size_t digits_and_zeros = spec->flags.precision_defined &&
-		spec->precision > digits ? spec->precision : digits;
+		size_t digits_and_zeros = spec->flags.precision_defined &&
+			spec->precision > digits ? spec->precision : digits;
 
-	size_t digits_zeros_and_prefix =
-		!use_prefix ? digits_and_zeros : digits_and_zeros + 2;
-
-	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > digits_zeros_and_prefix ?
-			spec->min_width : digits_zeros_and_prefix;
-
-	acc_len += width;
-
-	process_verbatim(fmt);
-
-	if (dest != NULL)
-	{
-		size_t zeros = digits_and_zeros - digits;
-		size_t spaces = width - digits_zeros_and_prefix;
-
-		if (!spec->flags.minus)
-		{
-			output_string(buffer.pos, digits);
-			output_chars(B_L_PREFIX('0'), zeros);
-			if (!spec->flags.zero)
-			{
-				if (use_prefix)
-					output_string(B_L_PREFIX("0x"), 2);
-				output_chars(B_L_PREFIX(' '), spaces);
-			}
-			else
-			{
-				output_chars(B_L_PREFIX('0'), spaces);
-				if (use_prefix)
-					output_string(B_L_PREFIX("0x"), 2);
-			}
-		}
-		else
-		{
-			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(buffer.pos, digits);
-			output_chars(B_L_PREFIX('0'), zeros);
-			if (use_prefix)
-				output_string(B_L_PREFIX("0x"), 2);
-		}
+		output_unsigned(spec, fmt, buffer.pos, digits, digits_and_zeros,
+			/*prefix=*/ spec->flags.hash ? B_L_PREFIX("0x") : NULL);
 	}
+	else
+		if (spec->flags.precision_defined)
+			output_unsigned(spec, fmt,
+				/*buffer=*/ NULL,
+				/*digits=*/ 0,
+				/*digits_and_zeros=*/ spec->precision,
+				/*prefix=*/ spec->precision > 0 &&
+					spec->flags.hash ?
+					B_L_PREFIX("0x") : NULL);
+		else
+			output_unsigned(spec, fmt,
+				/*buffer=*/ NULL,
+				/*digits=*/ 0,
+				/*digits_and_zeros=*/ 1,
+				/*prefix=*/ spec->flags.hash ?
+					B_L_PREFIX("0x") : NULL);
 }
 
 void string_formatting::process_string(const char_t* fmt)
