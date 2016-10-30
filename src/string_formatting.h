@@ -525,6 +525,7 @@ void string_formatting::process_conversion()
 	switch (*fmt)
 	{
 	case B_L_PREFIX('L'):
+		++fmt;
 		spec.length_mod = conversion_spec::L;
 		break;
 
@@ -539,6 +540,7 @@ void string_formatting::process_conversion()
 		break;
 
 	case B_L_PREFIX('j'):
+		++fmt;
 		spec.length_mod = conversion_spec::j;
 		break;
 
@@ -553,10 +555,12 @@ void string_formatting::process_conversion()
 		break;
 
 	case B_L_PREFIX('t'):
+		++fmt;
 		spec.length_mod = conversion_spec::t;
 		break;
 
 	case B_L_PREFIX('z'):
+		++fmt;
 		spec.length_mod = conversion_spec::z;
 	}
 
@@ -704,7 +708,7 @@ void string_formatting::process_conversion()
 		break;
 	default:
 		B_ASSERT("unknown conversion type character" && false);
-		acc_len = (size_t) -1;
+		acc_len = 0;
 		dest = NULL;
 	}
 }
