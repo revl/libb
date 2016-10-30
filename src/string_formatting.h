@@ -23,12 +23,14 @@ namespace
 	struct string_formatting
 	{
 		b::allocator* buffer_allocator;
+		const char_t* fmt;
 		va_list ap;
 		size_t acc_len;
 		char_t* dest;
 
-		string_formatting(b::allocator* alloc) :
+		string_formatting(b::allocator* alloc, const char_t* fmt_arg) :
 			buffer_allocator(alloc),
+			fmt(fmt_arg),
 			acc_len(0)
 		{
 		}
@@ -150,28 +152,25 @@ namespace
 		}
 
 		template <class T, class U, class Arg>
-		void process_decimal(const conversion_spec* spec,
-			const char_t* fmt);
+		void process_decimal(const conversion_spec* spec);
 
 		template <class T, class Arg>
-		void process_unsigned(const conversion_spec* spec,
-			const char_t* fmt);
+		void process_unsigned(const conversion_spec* spec);
 
 		void output_unsigned(const conversion_spec* spec,
-			const char_t* fmt, const char_t* buffer, size_t digits,
+			const char_t* buffer, size_t digits,
 			size_t digits_and_zeros, const char_t* prefix = NULL);
 
 		template <class T, class Arg>
-		void process_octal(const conversion_spec* spec,
-			const char_t* fmt);
+		void process_octal(const conversion_spec* spec);
 
 		template <class T, class Arg>
 		void process_hex(const conversion_spec* spec,
-			const char_t* fmt, const char_t* digit_chars);
+			const char_t* digit_chars);
 
-		void process_string(const char_t* fmt);
-		void process_conversion(const char_t* fmt);
-		void process_verbatim(const char_t* fmt);
+		void process_string();
+		void process_conversion();
+		void process_verbatim();
 
 		static char_t lcase_hex[17];
 		static char_t ucase_hex[17];
@@ -179,8 +178,7 @@ namespace
 }
 
 template <class T, class U, class Arg>
-void string_formatting::process_decimal(const conversion_spec* spec,
-	const char_t* fmt)
+void string_formatting::process_decimal(const conversion_spec* spec)
 {
 	int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
 
@@ -230,7 +228,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 
 	acc_len += width;
 
-	process_verbatim(fmt);
+	process_verbatim();
 
 	if (dest != NULL)
 	{
@@ -266,8 +264,7 @@ void string_formatting::process_decimal(const conversion_spec* spec,
 }
 
 template <class T, class Arg>
-void string_formatting::process_unsigned(const conversion_spec* spec,
-	const char_t* fmt)
+void string_formatting::process_unsigned(const conversion_spec* spec)
 {
 	int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
 
@@ -281,13 +278,13 @@ void string_formatting::process_unsigned(const conversion_spec* spec,
 
 	size_t digits = buffer.len();
 
-	output_unsigned(spec, fmt, buffer.pos, digits,
+	output_unsigned(spec, buffer.pos, digits,
 		/*digits_and_zeros=*/ spec->flags.precision_defined &&
 			spec->precision > digits ? spec->precision : digits);
 }
 
 void string_formatting::output_unsigned(const conversion_spec* spec,
-	const char_t* fmt, const char_t* buffer, size_t digits,
+	const char_t* buffer, size_t digits,
 	size_t digits_and_zeros, const char_t* prefix)
 {
 	size_t digits_zeros_and_prefix = prefix == NULL ?
@@ -299,7 +296,7 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 
 	acc_len += width;
 
-	process_verbatim(fmt);
+	process_verbatim();
 
 	if (dest != NULL)
 	{
@@ -336,8 +333,7 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 }
 
 template <class T, class Arg>
-void string_formatting::process_octal(const conversion_spec* spec,
-	const char_t* fmt)
+void string_formatting::process_octal(const conversion_spec* spec)
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -351,20 +347,20 @@ void string_formatting::process_octal(const conversion_spec* spec,
 
 		size_t digits = buffer.len();
 
-		output_unsigned(spec, fmt, buffer.pos, digits,
+		output_unsigned(spec, buffer.pos, digits,
 			/*digits_and_zeros=*/ spec->flags.precision_defined &&
 				spec->precision > digits ? spec->precision :
 				!spec->flags.hash ? digits : digits + 1);
 	}
 	else
-		output_unsigned(spec, fmt, /*buffer=*/ NULL, /*digits=*/ 0,
+		output_unsigned(spec, /*buffer=*/ NULL, /*digits=*/ 0,
 			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
 				1 : spec->precision);
 }
 
 template <class T, class Arg>
 void string_formatting::process_hex(const conversion_spec* spec,
-	const char_t* fmt, const char_t* digit_chars)
+	const char_t* digit_chars)
 {
 	int_conv_buffer<MAX_HEX_BUF_LEN(T)> buffer;
 
@@ -381,12 +377,12 @@ void string_formatting::process_hex(const conversion_spec* spec,
 		size_t digits_and_zeros = spec->flags.precision_defined &&
 			spec->precision > digits ? spec->precision : digits;
 
-		output_unsigned(spec, fmt, buffer.pos, digits, digits_and_zeros,
+		output_unsigned(spec, buffer.pos, digits, digits_and_zeros,
 			/*prefix=*/ spec->flags.hash ? B_L_PREFIX("0x") : NULL);
 	}
 	else
 		if (spec->flags.precision_defined)
-			output_unsigned(spec, fmt,
+			output_unsigned(spec,
 				/*buffer=*/ NULL,
 				/*digits=*/ 0,
 				/*digits_and_zeros=*/ spec->precision,
@@ -394,7 +390,7 @@ void string_formatting::process_hex(const conversion_spec* spec,
 					spec->flags.hash ?
 					B_L_PREFIX("0x") : NULL);
 		else
-			output_unsigned(spec, fmt,
+			output_unsigned(spec,
 				/*buffer=*/ NULL,
 				/*digits=*/ 0,
 				/*digits_and_zeros=*/ 1,
@@ -402,28 +398,28 @@ void string_formatting::process_hex(const conversion_spec* spec,
 					B_L_PREFIX("0x") : NULL);
 }
 
-void string_formatting::process_string(const char_t* fmt)
+void string_formatting::process_string()
 {
 	const char_t* str = va_arg(ap, const char_t*);
 
 	size_t len = b::calc_length(str);
 	acc_len += len;
 
-	process_verbatim(fmt);
+	process_verbatim();
 
 	if (dest != NULL)
 		output_string(str, len);
 }
 
-void string_formatting::process_conversion(const char_t* fmt)
+void string_formatting::process_conversion()
 {
-	const char_t* ch = fmt;
-
-	if (*ch == B_L_PREFIX('%'))
+	if (*fmt == B_L_PREFIX('%'))
 	{
+		++fmt;
 		++acc_len;
-		process_verbatim(ch + 1);
-		output_char(B_L_PREFIX('%'));
+		process_verbatim();
+		if (dest != NULL)
+			output_char(B_L_PREFIX('%'));
 		return;
 	}
 
@@ -432,9 +428,9 @@ void string_formatting::process_conversion(const char_t* fmt)
 	b::Memory::Zero(&spec, sizeof(spec));
 
 	// Parse flags
-	for (;; ++ch)
+	for (;; ++fmt)
 	{
-		switch (*ch)
+		switch (*fmt)
 		{
 		case B_L_PREFIX(' '):
 			spec.flags.space = true;
@@ -460,22 +456,22 @@ void string_formatting::process_conversion(const char_t* fmt)
 	}
 
 	// Parse min width
-	if (*ch > B_L_PREFIX('0') && *ch <= B_L_PREFIX('9'))
+	if (*fmt > B_L_PREFIX('0') && *fmt <= B_L_PREFIX('9'))
 	{
-		spec.min_width = unsigned(*ch) - unsigned(B_L_PREFIX('0'));
+		spec.min_width = unsigned(*fmt) - unsigned(B_L_PREFIX('0'));
 
 		int digit;
 
-		while ((digit = int(*++ch) - int(B_L_PREFIX('0'))) >= 0 &&
+		while ((digit = int(*++fmt) - int(B_L_PREFIX('0'))) >= 0 &&
 				digit <= 9)
 			spec.min_width = spec.min_width * 10 + unsigned(digit);
 
 		spec.flags.min_width_defined = true;
 	}
 	else
-		if (*ch == B_L_PREFIX('*'))
+		if (*fmt == B_L_PREFIX('*'))
 		{
-			++ch;
+			++fmt;
 
 			int n = va_arg(ap, int);
 
@@ -491,15 +487,15 @@ void string_formatting::process_conversion(const char_t* fmt)
 		}
 
 	// Parse precision
-	if (*ch == B_L_PREFIX('.'))
+	if (*fmt == B_L_PREFIX('.'))
 	{
-		int digit = int(*++ch) - int(B_L_PREFIX('0'));
+		int digit = int(*++fmt) - int(B_L_PREFIX('0'));
 
 		if (digit >= 0 && digit <= 9)
 		{
 			spec.precision = (unsigned) digit;
 
-			while ((digit = int(*++ch) -
+			while ((digit = int(*++fmt) -
 					int(B_L_PREFIX('0'))) >= 0 &&
 					digit <= 9)
 				spec.precision = spec.precision * 10 +
@@ -507,9 +503,9 @@ void string_formatting::process_conversion(const char_t* fmt)
 			spec.flags.precision_defined = true;
 		}
 		else
-			if (*ch == B_L_PREFIX('*'))
+			if (*fmt == B_L_PREFIX('*'))
 			{
-				++ch;
+				++fmt;
 
 				int n = va_arg(ap, int);
 
@@ -526,18 +522,18 @@ void string_formatting::process_conversion(const char_t* fmt)
 			}
 	}
 
-	switch (*ch)
+	switch (*fmt)
 	{
 	case B_L_PREFIX('L'):
 		spec.length_mod = conversion_spec::L;
 		break;
 
 	case B_L_PREFIX('h'):
-		if (*++ch != B_L_PREFIX('h'))
+		if (*++fmt != B_L_PREFIX('h'))
 			spec.length_mod = conversion_spec::h;
 		else
 		{
-			++ch;
+			++fmt;
 			spec.length_mod = conversion_spec::hh;
 		}
 		break;
@@ -547,11 +543,11 @@ void string_formatting::process_conversion(const char_t* fmt)
 		break;
 
 	case B_L_PREFIX('l'):
-		if (*++ch != B_L_PREFIX('l'))
+		if (*++fmt != B_L_PREFIX('l'))
 			spec.length_mod = conversion_spec::l;
 		else
 		{
-			++ch;
+			++fmt;
 			spec.length_mod = conversion_spec::ll;
 		}
 		break;
@@ -564,165 +560,147 @@ void string_formatting::process_conversion(const char_t* fmt)
 		spec.length_mod = conversion_spec::z;
 	}
 
-	switch (*ch)
+	switch (*fmt++)
 	{
 	case B_L_PREFIX('d'):
 	case B_L_PREFIX('i'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_decimal<signed char, unsigned char, int>(
-				&spec, ch + 1);
+			process_decimal<signed char, unsigned char, int>(&spec);
 			break;
 		case conversion_spec::h:
-			process_decimal<short, unsigned short, int>(
-				&spec, ch + 1);
+			process_decimal<short, unsigned short, int>(&spec);
 			break;
 		case conversion_spec::l:
-			process_decimal<long, unsigned long, long>(
-				&spec, ch + 1);
+			process_decimal<long, unsigned long, long>(&spec);
 			break;
 		case conversion_spec::j:
-			process_decimal<intmax_t, uintmax_t, intmax_t>(
-				&spec, ch + 1);
+			process_decimal<intmax_t, uintmax_t, intmax_t>(&spec);
 			break;
 		case conversion_spec::z:
-			process_decimal<ssize_t, size_t, ssize_t>(
-				&spec, ch + 1);
+			process_decimal<ssize_t, size_t, ssize_t>(&spec);
 			break;
 		case conversion_spec::t:
-			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(
-				&spec, ch + 1);
+			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(&spec);
 			break;
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_decimal<int, unsigned, int>(&spec, ch + 1);
+			process_decimal<int, unsigned, int>(&spec);
 		}
 		break;
 	case B_L_PREFIX('u'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_unsigned<unsigned char, unsigned>(
-				&spec, ch + 1);
+			process_unsigned<unsigned char, unsigned>(&spec);
 			break;
 		case conversion_spec::h:
-			process_unsigned<unsigned short, unsigned>(
-				&spec, ch + 1);
+			process_unsigned<unsigned short, unsigned>(&spec);
 			break;
 		case conversion_spec::l:
 			process_unsigned<unsigned long, unsigned long>(
-				&spec, ch + 1);
+				&spec);
 			break;
 		case conversion_spec::j:
-			process_unsigned<uintmax_t, uintmax_t>(&spec, ch + 1);
+			process_unsigned<uintmax_t, uintmax_t>(&spec);
 			break;
 		case conversion_spec::z:
-			process_unsigned<size_t, size_t>(&spec, ch + 1);
+			process_unsigned<size_t, size_t>(&spec);
 			break;
 		case conversion_spec::t:
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_unsigned<unsigned, unsigned>(&spec, ch + 1);
+			process_unsigned<unsigned, unsigned>(&spec);
 		}
 		break;
 	case B_L_PREFIX('o'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_octal<unsigned char, unsigned>(&spec, ch + 1);
+			process_octal<unsigned char, unsigned>(&spec);
 			break;
 		case conversion_spec::h:
-			process_octal<unsigned short, unsigned>(&spec, ch + 1);
+			process_octal<unsigned short, unsigned>(&spec);
 			break;
 		case conversion_spec::l:
 			process_octal<unsigned long, unsigned long>(
-				&spec, ch + 1);
+				&spec);
 			break;
 		case conversion_spec::j:
-			process_octal<uintmax_t, uintmax_t>(&spec, ch + 1);
+			process_octal<uintmax_t, uintmax_t>(&spec);
 			break;
 		case conversion_spec::z:
-			process_octal<size_t, size_t>(&spec, ch + 1);
+			process_octal<size_t, size_t>(&spec);
 			break;
 		case conversion_spec::t:
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_octal<unsigned, unsigned>(&spec, ch + 1);
+			process_octal<unsigned, unsigned>(&spec);
 		}
 		break;
 	case B_L_PREFIX('X'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_hex<unsigned char, unsigned>(&spec, ch + 1,
-				ucase_hex);
+			process_hex<unsigned char, unsigned>(&spec, ucase_hex);
 			break;
 		case conversion_spec::h:
-			process_hex<unsigned short, unsigned>(&spec, ch + 1,
-				ucase_hex);
+			process_hex<unsigned short, unsigned>(&spec, ucase_hex);
 			break;
 		case conversion_spec::l:
-			process_hex<unsigned long, unsigned long>(&spec, ch + 1,
+			process_hex<unsigned long, unsigned long>(&spec,
 				ucase_hex);
 			break;
 		case conversion_spec::j:
-			process_hex<uintmax_t, uintmax_t>(&spec, ch + 1,
-				ucase_hex);
+			process_hex<uintmax_t, uintmax_t>(&spec, ucase_hex);
 			break;
 		case conversion_spec::z:
-			process_hex<size_t, size_t>(&spec, ch + 1,
-				ucase_hex);
+			process_hex<size_t, size_t>(&spec, ucase_hex);
 			break;
 		case conversion_spec::t:
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_hex<unsigned, unsigned>(&spec, ch + 1,
-				ucase_hex);
+			process_hex<unsigned, unsigned>(&spec, ucase_hex);
 		}
 		break;
 	case B_L_PREFIX('x'):
 		switch (spec.length_mod)
 		{
 		case conversion_spec::hh:
-			process_hex<unsigned char, unsigned>(&spec, ch + 1,
-				lcase_hex);
+			process_hex<unsigned char, unsigned>(&spec, lcase_hex);
 			break;
 		case conversion_spec::h:
-			process_hex<unsigned short, unsigned>(&spec, ch + 1,
-				lcase_hex);
+			process_hex<unsigned short, unsigned>(&spec, lcase_hex);
 			break;
 		case conversion_spec::l:
-			process_hex<unsigned long, unsigned long>(&spec, ch + 1,
+			process_hex<unsigned long, unsigned long>(&spec,
 				lcase_hex);
 			break;
 		case conversion_spec::j:
-			process_hex<uintmax_t, uintmax_t>(&spec, ch + 1,
-				lcase_hex);
+			process_hex<uintmax_t, uintmax_t>(&spec, lcase_hex);
 			break;
 		case conversion_spec::z:
-			process_hex<size_t, size_t>(&spec, ch + 1,
-				lcase_hex);
+			process_hex<size_t, size_t>(&spec, lcase_hex);
 			break;
 		case conversion_spec::t:
 		case conversion_spec::ll:
 		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
-			process_hex<unsigned, unsigned>(&spec, ch + 1,
-				lcase_hex);
+			process_hex<unsigned, unsigned>(&spec, lcase_hex);
 		}
 		break;
 	case B_L_PREFIX('s'):
-		process_string(ch + 1);
+		process_string();
 		break;
 	default:
 		B_ASSERT("unknown conversion type character" && false);
@@ -731,35 +709,34 @@ void string_formatting::process_conversion(const char_t* fmt)
 	}
 }
 
-void string_formatting::process_verbatim(const char_t* fmt)
+void string_formatting::process_verbatim()
 {
-	const char_t* ch = fmt;
+	const char_t* start = fmt;
 	size_t len = 0;
 
 	for (;;)
 	{
-		if (*ch == B_L_PREFIX('%'))
+		if (*fmt == B_L_PREFIX('%'))
 		{
 			acc_len += len;
-			process_conversion(++ch);
+			++fmt;
+			process_conversion();
 			break;
 		}
-		else
-			if (*ch == B_L_PREFIX('\0'))
-			{
-				acc_len += len;
-				alloc_buffer();
-				break;
-			}
-			else
-			{
-				++ch;
-				++len;
-			}
+
+		if (*fmt == B_L_PREFIX('\0'))
+		{
+			acc_len += len;
+			alloc_buffer();
+			break;
+		}
+
+		++fmt;
+		++len;
 	}
 
 	if (dest != NULL)
-		output_string(fmt, len);
+		output_string(start, len);
 }
 
 char_t string_formatting::lcase_hex[17] = B_L_PREFIX("0123456789abcdef");
@@ -769,10 +746,10 @@ B_BEGIN_NAMESPACE
 
 string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 {
-	string_formatting formatting(alloc);
+	string_formatting formatting(alloc, fmt);
 
 	va_start(formatting.ap, fmt);
-	formatting.process_verbatim(fmt);
+	formatting.process_verbatim();
 	va_end(formatting.ap);
 
 	return string_view(formatting.dest, formatting.acc_len);
@@ -780,10 +757,10 @@ string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 
 string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
 {
-	string_formatting formatting(alloc);
+	string_formatting formatting(alloc, fmt);
 
 	B_VA_COPY(formatting.ap, ap);
-	formatting.process_verbatim(fmt);
+	formatting.process_verbatim();
 	B_VA_COPY_END(formatting.ap);
 
 	return string_view(formatting.dest, formatting.acc_len);
