@@ -159,31 +159,31 @@ inline size_t calc_length(const wchar_t* string, size_t limit)
 }
 
 // Compares two null-terminated strings.
-inline int compare_strings(const char* c_str1, const char* c_str2)
+inline int compare_strings(const char* lhs, const char* rhs)
 {
-	return ::strcmp(c_str1, c_str2);
+	return ::strcmp(lhs, rhs);
 }
 
 // Compares two null-terminated strings. Only the first (at most)
 // 'max_len' characters are compared.
-inline int compare_strings(const char* c_str1, const char* c_str2,
+inline int compare_strings(const char* lhs, const char* rhs,
 	size_t max_len)
 {
-	return ::strncmp(c_str1, c_str2, max_len);
+	return ::strncmp(lhs, rhs, max_len);
 }
 
 // Compares two strings.
-inline int compare_strings(const wchar_t* c_str1, const wchar_t* c_str2)
+inline int compare_strings(const wchar_t* lhs, const wchar_t* rhs)
 {
-	return ::wcscmp(c_str1, c_str2);
+	return ::wcscmp(lhs, rhs);
 }
 
 // Compares two null-terminated strings. Only the first (at most)
 // 'max_len' characters are compared.
-inline int compare_strings(const wchar_t* c_str1, const wchar_t* c_str2,
+inline int compare_strings(const wchar_t* lhs, const wchar_t* rhs,
 	size_t max_len)
 {
-	return ::wcsncmp(c_str1, c_str2, max_len);
+	return ::wcsncmp(lhs, rhs, max_len);
 }
 
 // Custom allocator interface.

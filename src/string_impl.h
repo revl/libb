@@ -77,7 +77,7 @@ void string::assign(const string& source)
 	}
 	else
 		if (chars != source.chars)
-			assign(source.c_str(), source.length());
+			assign(source.data(), source.length());
 }
 
 void string::assign(const char_t* source, size_t count)

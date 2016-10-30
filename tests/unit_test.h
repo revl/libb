@@ -109,7 +109,7 @@ int main(int /*argc*/, char* /*argv*/[])
 
 			fprintf(stderr, "Exception in %s: %s\n",
 				current_test_case->test_name,
-				e.message().c_str());
+				e.message().data());
 		}
 		catch (...)
 		{

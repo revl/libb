@@ -44,7 +44,7 @@ string system_exception::message() const
 {
 	try
 	{
-		return string::formatted("%s: %s", exception_context.c_str(),
+		return string::formatted("%s: %s", exception_context.data(),
 			strerror(system_error_code));
 	}
 	catch (system_exception&)
@@ -59,7 +59,7 @@ const char* system_exception::what() const
 {
 	message_buffer = message();
 
-	return message_buffer.c_str();
+	return message_buffer.data();
 }
 #endif // B_USE_STL
 
@@ -81,7 +81,7 @@ string custom_exception::message() const
 const char* custom_exception::what() const
 	throw ()
 {
-	return error_message.c_str();
+	return error_message.data();
 }
 #endif // B_USE_STL
 

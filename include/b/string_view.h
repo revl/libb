@@ -345,34 +345,34 @@ inline void string_view::trim(const char_t* samples)
 	trim_left(samples);
 }
 
-inline bool operator ==(const char_t* c_str, const string_view& str)
+inline bool operator ==(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) == 0;
+	return str.compare(chars) == 0;
 }
 
-inline bool operator !=(const char_t* c_str, const string_view& str)
+inline bool operator !=(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) != 0;
+	return str.compare(chars) != 0;
 }
 
-inline bool operator <(const char_t* c_str, const string_view& str)
+inline bool operator <(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) > 0;
+	return str.compare(chars) > 0;
 }
 
-inline bool operator >(const char_t* c_str, const string_view& str)
+inline bool operator >(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) < 0;
+	return str.compare(chars) < 0;
 }
 
-inline bool operator <=(const char_t* c_str, const string_view& str)
+inline bool operator <=(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) >= 0;
+	return str.compare(chars) >= 0;
 }
 
-inline bool operator >=(const char_t* c_str, const string_view& str)
+inline bool operator >=(const char_t* chars, const string_view& str)
 {
-	return str.compare(c_str) <= 0;
+	return str.compare(chars) <= 0;
 }
 
 B_END_NAMESPACE

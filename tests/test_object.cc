@@ -122,7 +122,7 @@ static int TestObject()
 	}
 	catch (runtime_exception& e)
 	{
-		fprintf(stderr, "Error: %s\n", e.message().c_str());
+		fprintf(stderr, "Error: %s\n", e.message().data());
 
 		return 5;
 	}

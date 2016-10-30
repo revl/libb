@@ -81,10 +81,6 @@ public:
 public:
 	// Returns a constant pointer to the null-terminated
 	// array of characters that this string contains.
-	const char_t* c_str() const;
-
-	// Returns a constant pointer to the string contents.
-	// This method is a synonym for c_str().
 	const char_t* data() const
 	{
 		return chars;
@@ -375,11 +371,6 @@ inline void string::shrink_to_fit()
 	}
 }
 
-inline const char_t* string::c_str() const
-{
-	return chars;
-}
-
 inline void string::isolate()
 {
 	if (is_shared())
@@ -493,17 +484,17 @@ inline string& string::operator =(char_t source)
 
 inline void string::insert(size_t index, const string& source)
 {
-	insert(index, source.c_str(), source.length());
+	insert(index, source.data(), source.length());
 }
 
 inline void string::append(const string& source)
 {
-	append(source.c_str(), source.length());
+	append(source.data(), source.length());
 }
 
 inline string& string::operator +=(const string& source)
 {
-	append(source.c_str(), source.length());
+	append(source.data(), source.length());
 	return *this;
 }
 
@@ -526,7 +517,7 @@ inline int string::compare(const char_t* rhs) const
 
 inline bool string::operator ==(const string& rhs) const
 {
-	return compare(rhs.c_str()) == 0;
+	return compare(rhs.data()) == 0;
 }
 
 inline bool string::operator ==(const char_t* rhs) const
@@ -536,7 +527,7 @@ inline bool string::operator ==(const char_t* rhs) const
 
 inline bool string::operator !=(const string& rhs) const
 {
-	return compare(rhs.c_str()) != 0;
+	return compare(rhs.data()) != 0;
 }
 
 inline bool string::operator !=(const char_t* rhs) const
@@ -546,7 +537,7 @@ inline bool string::operator !=(const char_t* rhs) const
 
 inline bool string::operator <(const string& rhs) const
 {
-	return compare(rhs.c_str()) < 0;
+	return compare(rhs.data()) < 0;
 }
 
 inline bool string::operator <(const char_t* rhs) const
@@ -556,7 +547,7 @@ inline bool string::operator <(const char_t* rhs) const
 
 inline bool string::operator >(const string& rhs) const
 {
-	return compare(rhs.c_str()) > 0;
+	return compare(rhs.data()) > 0;
 }
 
 inline bool string::operator >(const char_t* rhs) const
@@ -566,7 +557,7 @@ inline bool string::operator >(const char_t* rhs) const
 
 inline bool string::operator <=(const string& rhs) const
 {
-	return compare(rhs.c_str()) <= 0;
+	return compare(rhs.data()) <= 0;
 }
 
 inline bool string::operator <=(const char_t* rhs) const
@@ -576,7 +567,7 @@ inline bool string::operator <=(const char_t* rhs) const
 
 inline bool string::operator >=(const string& rhs) const
 {
-	return compare(rhs.c_str()) >= 0;
+	return compare(rhs.data()) >= 0;
 }
 
 inline bool string::operator >=(const char_t* rhs) const
@@ -599,40 +590,40 @@ inline string operator +(char_t ch, const string& str)
 	char_t* chars = result.lock();
 
 	*chars = ch;
-	assign_pairwise(chars + 1, str.c_str(), length);
+	assign_pairwise(chars + 1, str.data(), length);
 
 	result.unlock(length + 1);
 	return result;
 }
 
-inline bool operator ==(const char_t* c_str, const string& str)
+inline bool operator ==(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) == 0;
+	return str.compare(chars) == 0;
 }
 
-inline bool operator !=(const char_t* c_str, const string& str)
+inline bool operator !=(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) != 0;
+	return str.compare(chars) != 0;
 }
 
-inline bool operator <(const char_t* c_str, const string& str)
+inline bool operator <(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) > 0;
+	return str.compare(chars) > 0;
 }
 
-inline bool operator >(const char_t* c_str, const string& str)
+inline bool operator >(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) < 0;
+	return str.compare(chars) < 0;
 }
 
-inline bool operator <=(const char_t* c_str, const string& str)
+inline bool operator <=(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) >= 0;
+	return str.compare(chars) >= 0;
 }
 
-inline bool operator >=(const char_t* c_str, const string& str)
+inline bool operator >=(const char_t* chars, const string& str)
 {
-	return str.compare(c_str) <= 0;
+	return str.compare(chars) <= 0;
 }
 
 // Finds the first occurrence of character 'c' in 'input'.
