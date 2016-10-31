@@ -37,8 +37,16 @@ namespace
 
 		void output_string(const char_t* source, size_t len)
 		{
-			if (len > 0)
+			switch (len)
+			{
+			case 0:
+				break;
+			case 1:
+				*--dest = *source;
+				break;
+			default:
 				b::construct_copies(dest -= len, source, len);
+			}
 		}
 
 		void output_chars(char_t filler, size_t len)
@@ -151,15 +159,31 @@ namespace
 			}
 		}
 
+		// Offset within the string containing all possible prefixes.
+		// The offset has the property that, when shifted right by 3
+		// bits, it gives the lengths of the prefix.
+		enum prefix_offset
+		{
+			no_prefix = 0,
+			// Prefixes of length 1
+			prefix_space = 8,
+			prefix_plus = 10,
+			prefix_minus = 12,
+			// Prefixes of length 2
+			prefix_0b = 16,
+			prefix_0x = 18
+		};
+
+		void output_int(const conversion_spec* spec,
+			const char_t* buffer, size_t digits,
+			size_t digits_and_zeros,
+			prefix_offset prefix = no_prefix);
+
 		template <class T, class U, class Arg>
 		void process_decimal(const conversion_spec* spec);
 
 		template <class T, class Arg>
 		void process_unsigned(const conversion_spec* spec);
-
-		void output_unsigned(const conversion_spec* spec,
-			const char_t* buffer, size_t digits,
-			size_t digits_and_zeros, const char_t* prefix = NULL);
 
 		template <class T, class Arg>
 		void process_octal(const conversion_spec* spec);
@@ -177,118 +201,17 @@ namespace
 	};
 }
 
-template <class T, class U, class Arg>
-void string_formatting::process_decimal(const conversion_spec* spec)
-{
-	int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
-
-	char_t sign;
-
-	T number = (T) va_arg(ap, Arg);
-
-	if (number >= 0)
-	{
-		if (number > 0)
-		{
-			sign = spec->flags.plus ? B_L_PREFIX('+') :
-				spec->flags.space ? B_L_PREFIX(' ') : 0;
-
-			convert_positive_to_decimal(spec, number, &buffer);
-		}
-		else
-			if (!spec->flags.precision_defined ||
-					spec->precision != 0)
-			{
-				sign = spec->flags.plus || spec->flags.space ?
-					B_L_PREFIX(' ') : 0;
-
-				buffer.add_char(B_L_PREFIX('0'));
-			}
-			else
-				sign = 0;
-	}
-	else
-	{
-		sign = B_L_PREFIX('-');
-
-		convert_positive_to_decimal(spec, (U) -number, &buffer);
-	}
-
-	size_t digits = buffer.len();
-
-	size_t digits_and_zeros = spec->flags.precision_defined &&
-		spec->precision > digits ? spec->precision : digits;
-
-	size_t digits_zeros_and_sign =
-		sign == 0 ? digits_and_zeros : digits_and_zeros + 1;
-
-	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > digits_zeros_and_sign ?
-			spec->min_width : digits_zeros_and_sign;
-
-	acc_len += width;
-
-	process_verbatim();
-
-	if (dest != NULL)
-	{
-		size_t zeros = digits_and_zeros - digits;
-		size_t spaces = width - digits_zeros_and_sign;
-
-		if (!spec->flags.minus)
-		{
-			output_string(buffer.pos, digits);
-			output_chars(B_L_PREFIX('0'), zeros);
-			if (!spec->flags.zero)
-			{
-				if (sign != 0)
-					output_char(sign);
-				output_chars(B_L_PREFIX(' '), spaces);
-			}
-			else
-			{
-				output_chars(B_L_PREFIX('0'), spaces);
-				if (sign != 0)
-					output_char(sign);
-			}
-		}
-		else
-		{
-			output_chars(B_L_PREFIX(' '), spaces);
-			output_string(buffer.pos, digits);
-			output_chars(B_L_PREFIX('0'), zeros);
-			if (sign != 0)
-				output_char(sign);
-		}
-	}
-}
-
-template <class T, class Arg>
-void string_formatting::process_unsigned(const conversion_spec* spec)
-{
-	int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
-
-	T number = (T) va_arg(ap, Arg);
-
-	if (number > 0)
-		convert_positive_to_decimal(spec, number, &buffer);
-	else
-		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer.add_char(B_L_PREFIX('0'));
-
-	size_t digits = buffer.len();
-
-	output_unsigned(spec, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-			spec->precision > digits ? spec->precision : digits);
-}
-
-void string_formatting::output_unsigned(const conversion_spec* spec,
+void string_formatting::output_int(const conversion_spec* spec,
 	const char_t* buffer, size_t digits,
-	size_t digits_and_zeros, const char_t* prefix)
+	size_t digits_and_zeros, prefix_offset prefix)
 {
-	size_t digits_zeros_and_prefix = prefix == NULL ?
-		digits_and_zeros : digits_and_zeros + 2;
+	static const char_t prefix_chars[21] =
+		B_L_PREFIX("          + -   0b0x");
+
+	unsigned prefix_length = prefix >> 3;
+
+	size_t digits_zeros_and_prefix = prefix_length > 0 ?
+		digits_and_zeros + prefix_length : digits_and_zeros;
 
 	size_t width = spec->flags.min_width_defined &&
 		spec->min_width > digits_zeros_and_prefix ?
@@ -310,15 +233,15 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 			if (!spec->flags.zero)
 			{
 				output_chars(B_L_PREFIX('0'), zeros);
-				if (prefix != NULL)
-					output_string(prefix, 2);
+				output_string(prefix_chars + prefix,
+					prefix_length);
 				output_chars(B_L_PREFIX(' '), spaces);
 			}
 			else
 			{
 				output_chars(B_L_PREFIX('0'), zeros + spaces);
-				if (prefix != NULL)
-					output_string(prefix, 2);
+				output_string(prefix_chars + prefix,
+					prefix_length);
 			}
 		}
 		else
@@ -326,10 +249,74 @@ void string_formatting::output_unsigned(const conversion_spec* spec,
 			output_chars(B_L_PREFIX(' '), spaces);
 			output_string(buffer, digits);
 			output_chars(B_L_PREFIX('0'), zeros);
-			if (prefix != NULL)
-				output_string(prefix, 2);
+			output_string(prefix_chars + prefix, prefix_length);
 		}
 	}
+}
+
+template <class T, class U, class Arg>
+void string_formatting::process_decimal(const conversion_spec* spec)
+{
+	int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
+
+	prefix_offset prefix;
+
+	T number = (T) va_arg(ap, Arg);
+
+	if (number >= 0)
+	{
+		if (number > 0)
+		{
+			prefix = spec->flags.plus ? prefix_plus :
+				spec->flags.space ? prefix_space : no_prefix;
+
+			convert_positive_to_decimal(spec, number, &buffer);
+		}
+		else
+			if (!spec->flags.precision_defined ||
+					spec->precision != 0)
+			{
+				prefix = spec->flags.plus || spec->flags.space ?
+					prefix_space : no_prefix;
+
+				buffer.add_char(B_L_PREFIX('0'));
+			}
+			else
+				prefix = no_prefix;
+	}
+	else
+	{
+		prefix = prefix_minus;
+
+		convert_positive_to_decimal(spec, (U) -number, &buffer);
+	}
+
+	size_t digits = buffer.len();
+
+	output_int(spec, buffer.pos, digits,
+		/*digits_and_zeros=*/ spec->flags.precision_defined &&
+			spec->precision > digits ? spec->precision : digits,
+		prefix);
+}
+
+template <class T, class Arg>
+void string_formatting::process_unsigned(const conversion_spec* spec)
+{
+	int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
+
+	T number = (T) va_arg(ap, Arg);
+
+	if (number > 0)
+		convert_positive_to_decimal(spec, number, &buffer);
+	else
+		if (!spec->flags.precision_defined || spec->precision != 0)
+			buffer.add_char(B_L_PREFIX('0'));
+
+	size_t digits = buffer.len();
+
+	output_int(spec, buffer.pos, digits,
+		/*digits_and_zeros=*/ spec->flags.precision_defined &&
+			spec->precision > digits ? spec->precision : digits);
 }
 
 template <class T, class Arg>
@@ -347,13 +334,13 @@ void string_formatting::process_octal(const conversion_spec* spec)
 
 		size_t digits = buffer.len();
 
-		output_unsigned(spec, buffer.pos, digits,
+		output_int(spec, buffer.pos, digits,
 			/*digits_and_zeros=*/ spec->flags.precision_defined &&
 				spec->precision > digits ? spec->precision :
 				!spec->flags.hash ? digits : digits + 1);
 	}
 	else
-		output_unsigned(spec, /*buffer=*/ NULL, /*digits=*/ 0,
+		output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
 			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
 				1 : spec->precision);
 }
@@ -377,25 +364,21 @@ void string_formatting::process_hex(const conversion_spec* spec,
 		size_t digits_and_zeros = spec->flags.precision_defined &&
 			spec->precision > digits ? spec->precision : digits;
 
-		output_unsigned(spec, buffer.pos, digits, digits_and_zeros,
-			/*prefix=*/ spec->flags.hash ? B_L_PREFIX("0x") : NULL);
+		output_int(spec, buffer.pos, digits, digits_and_zeros,
+			/*prefix=*/ spec->flags.hash ? prefix_0x : no_prefix);
 	}
 	else
 		if (spec->flags.precision_defined)
-			output_unsigned(spec,
-				/*buffer=*/ NULL,
-				/*digits=*/ 0,
+			output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
 				/*digits_and_zeros=*/ spec->precision,
 				/*prefix=*/ spec->precision > 0 &&
 					spec->flags.hash ?
-					B_L_PREFIX("0x") : NULL);
+					prefix_0x : no_prefix);
 		else
-			output_unsigned(spec,
-				/*buffer=*/ NULL,
-				/*digits=*/ 0,
+			output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
 				/*digits_and_zeros=*/ 1,
 				/*prefix=*/ spec->flags.hash ?
-					B_L_PREFIX("0x") : NULL);
+					prefix_0x : no_prefix);
 }
 
 void string_formatting::process_string()
