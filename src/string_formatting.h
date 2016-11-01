@@ -257,14 +257,29 @@ void string_formatting::output_int(const conversion_spec* spec,
 template <class T, class U, class Arg>
 void string_formatting::process_decimal(const conversion_spec* spec)
 {
-	int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
-
-	prefix_offset prefix;
-
 	T number = (T) va_arg(ap, Arg);
 
-	if (number >= 0)
+	if (number == 0)
+		if (spec->flags.precision_defined)
+			output_int(spec, /*buffer=*/ NULL,
+				/*digits=*/ 0,
+				/*digits_and_zeros=*/ spec->precision,
+				/*prefix=*/ spec->precision > 0 &&
+					(spec->flags.plus ||
+						spec->flags.space) ?
+					prefix_space : no_prefix);
+		else
+			output_int(spec, /*buffer=*/ NULL, 0,
+				/*digits_and_zeros=*/ 1,
+				/*prefix=*/ spec->flags.plus ||
+					spec->flags.space ?
+					prefix_space : no_prefix);
+	else
 	{
+		int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
+
+		prefix_offset prefix;
+
 		if (number > 0)
 		{
 			prefix = spec->flags.plus ? prefix_plus :
@@ -273,50 +288,44 @@ void string_formatting::process_decimal(const conversion_spec* spec)
 			convert_positive_to_decimal(spec, number, &buffer);
 		}
 		else
-			if (!spec->flags.precision_defined ||
-					spec->precision != 0)
-			{
-				prefix = spec->flags.plus || spec->flags.space ?
-					prefix_space : no_prefix;
+		{
+			prefix = prefix_minus;
 
-				buffer.add_char(B_L_PREFIX('0'));
-			}
-			else
-				prefix = no_prefix;
+			convert_positive_to_decimal(spec, (U) -number, &buffer);
+		}
+
+		size_t digits = buffer.len();
+
+		output_int(spec, buffer.pos, digits,
+			/*digits_and_zeros=*/ spec->flags.precision_defined &&
+				spec->precision > digits ?
+				spec->precision : digits,
+			prefix);
 	}
-	else
-	{
-		prefix = prefix_minus;
-
-		convert_positive_to_decimal(spec, (U) -number, &buffer);
-	}
-
-	size_t digits = buffer.len();
-
-	output_int(spec, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-			spec->precision > digits ? spec->precision : digits,
-		prefix);
 }
 
 template <class T, class Arg>
 void string_formatting::process_unsigned(const conversion_spec* spec)
 {
-	int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
-
 	T number = (T) va_arg(ap, Arg);
 
 	if (number > 0)
+	{
+		int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
+
 		convert_positive_to_decimal(spec, number, &buffer);
+
+		size_t digits = buffer.len();
+
+		output_int(spec, buffer.pos, digits,
+			/*digits_and_zeros=*/ spec->flags.precision_defined &&
+				spec->precision > digits ?
+				spec->precision : digits);
+	}
 	else
-		if (!spec->flags.precision_defined || spec->precision != 0)
-			buffer.add_char(B_L_PREFIX('0'));
-
-	size_t digits = buffer.len();
-
-	output_int(spec, buffer.pos, digits,
-		/*digits_and_zeros=*/ spec->flags.precision_defined &&
-			spec->precision > digits ? spec->precision : digits);
+		output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
+			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
+				1 : spec->precision);
 }
 
 template <class T, class Arg>
