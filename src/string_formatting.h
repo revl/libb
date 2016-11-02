@@ -177,7 +177,43 @@ namespace
 		void output_int(const conversion_spec* spec,
 			const char_t* buffer, size_t digits,
 			size_t digits_and_zeros,
-			prefix_offset prefix = no_prefix);
+			prefix_offset prefix);
+
+		void output_non_zero_int(const conversion_spec* spec,
+			const char_t* buffer, size_t digits,
+			prefix_offset prefix)
+		{
+			output_int(spec, buffer, digits,
+				/*digits_and_zeros=*/
+					spec->flags.precision_defined &&
+						spec->precision > digits ?
+					spec->precision : digits,
+				prefix);
+		}
+
+		void output_zero_int(const conversion_spec* spec)
+		{
+			output_int(spec, /*buffer=*/ NULL,
+				/*digits=*/ 0,
+				/*digits_and_zeros=*/
+					!spec->flags.precision_defined ?
+						1 : spec->precision, no_prefix);
+		}
+
+		void output_zero_int(const conversion_spec* spec,
+			prefix_offset prefix)
+		{
+			if (spec->flags.precision_defined)
+				output_int(spec, /*buffer=*/ NULL,
+					/*digits=*/ 0,
+					/*digits_and_zeros=*/ spec->precision,
+					spec->precision > 0 ?
+						prefix : no_prefix);
+			else
+				output_int(spec, /*buffer=*/ NULL,
+					/*digits=*/ 0,
+					/*digits_and_zeros=*/ 1, prefix);
+		}
 
 		template <class T, class U, class Arg>
 		void process_decimal(const conversion_spec* spec);
@@ -260,47 +296,27 @@ void string_formatting::process_decimal(const conversion_spec* spec)
 	T number = (T) va_arg(ap, Arg);
 
 	if (number == 0)
-		if (spec->flags.precision_defined)
-			output_int(spec, /*buffer=*/ NULL,
-				/*digits=*/ 0,
-				/*digits_and_zeros=*/ spec->precision,
-				/*prefix=*/ spec->precision > 0 &&
-					(spec->flags.plus ||
-						spec->flags.space) ?
-					prefix_space : no_prefix);
-		else
-			output_int(spec, /*buffer=*/ NULL, 0,
-				/*digits_and_zeros=*/ 1,
-				/*prefix=*/ spec->flags.plus ||
-					spec->flags.space ?
-					prefix_space : no_prefix);
+		output_zero_int(spec, spec->flags.plus || spec->flags.space ?
+			prefix_space : no_prefix);
 	else
 	{
 		int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
 
-		prefix_offset prefix;
-
 		if (number > 0)
 		{
-			prefix = spec->flags.plus ? prefix_plus :
-				spec->flags.space ? prefix_space : no_prefix;
-
 			convert_positive_to_decimal(spec, number, &buffer);
+
+			output_non_zero_int(spec, buffer.pos, buffer.len(),
+				spec->flags.plus ? prefix_plus :
+				spec->flags.space ? prefix_space : no_prefix);
 		}
 		else
 		{
-			prefix = prefix_minus;
-
 			convert_positive_to_decimal(spec, (U) -number, &buffer);
+
+			output_non_zero_int(spec, buffer.pos, buffer.len(),
+				prefix_minus);
 		}
-
-		size_t digits = buffer.len();
-
-		output_int(spec, buffer.pos, digits,
-			/*digits_and_zeros=*/ spec->flags.precision_defined &&
-				spec->precision > digits ?
-				spec->precision : digits,
-			prefix);
 	}
 }
 
@@ -315,17 +331,10 @@ void string_formatting::process_unsigned(const conversion_spec* spec)
 
 		convert_positive_to_decimal(spec, number, &buffer);
 
-		size_t digits = buffer.len();
-
-		output_int(spec, buffer.pos, digits,
-			/*digits_and_zeros=*/ spec->flags.precision_defined &&
-				spec->precision > digits ?
-				spec->precision : digits);
+		output_non_zero_int(spec, buffer.pos, buffer.len(), no_prefix);
 	}
 	else
-		output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
-			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
-				1 : spec->precision);
+		output_zero_int(spec);
 }
 
 template <class T, class Arg>
@@ -346,12 +355,11 @@ void string_formatting::process_octal(const conversion_spec* spec)
 		output_int(spec, buffer.pos, digits,
 			/*digits_and_zeros=*/ spec->flags.precision_defined &&
 				spec->precision > digits ? spec->precision :
-				!spec->flags.hash ? digits : digits + 1);
+				!spec->flags.hash ? digits : digits + 1,
+				no_prefix);
 	}
 	else
-		output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
-			/*digits_and_zeros=*/ !spec->flags.precision_defined ?
-				1 : spec->precision);
+		output_zero_int(spec);
 }
 
 template <class T, class Arg>
@@ -368,26 +376,11 @@ void string_formatting::process_hex(const conversion_spec* spec,
 			buffer.add_char(digit_chars[number % 16]);
 		while ((number /= 16) != 0);
 
-		size_t digits = buffer.len();
-
-		size_t digits_and_zeros = spec->flags.precision_defined &&
-			spec->precision > digits ? spec->precision : digits;
-
-		output_int(spec, buffer.pos, digits, digits_and_zeros,
-			/*prefix=*/ spec->flags.hash ? prefix_0x : no_prefix);
+		output_non_zero_int(spec, buffer.pos, buffer.len(),
+			spec->flags.hash ? prefix_0x : no_prefix);
 	}
 	else
-		if (spec->flags.precision_defined)
-			output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
-				/*digits_and_zeros=*/ spec->precision,
-				/*prefix=*/ spec->precision > 0 &&
-					spec->flags.hash ?
-					prefix_0x : no_prefix);
-		else
-			output_int(spec, /*buffer=*/ NULL, /*digits=*/ 0,
-				/*digits_and_zeros=*/ 1,
-				/*prefix=*/ spec->flags.hash ?
-					prefix_0x : no_prefix);
+		output_zero_int(spec, spec->flags.hash ? prefix_0x : no_prefix);
 }
 
 void string_formatting::process_string()
