@@ -160,6 +160,10 @@ public:
 	// both ends of this string_view.
 	void trim(const char_t* samples);
 
+// Utility methods
+public:
+	string repeat(size_t times) const;
+
 // Implementation
 private:
 	const char_t* view;

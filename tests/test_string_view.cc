@@ -65,3 +65,21 @@ B_TEST_CASE(test_string_view)
 
 	B_CHECK(sv2 > padded);
 }
+
+B_TEST_CASE(string_view_repeat)
+{
+	b::string_view empty;
+
+	B_CHECK(empty.repeat(10).is_empty());
+
+	b::string_view x("x", 1);
+
+	B_CHECK(x.repeat(3) == "xxx");
+
+	b::string_view abc("abc", 3);
+
+	B_CHECK(abc.repeat(0).is_empty());
+	B_CHECK(abc.repeat(1) == "abc");
+	B_CHECK(abc.repeat(2) == "abcabc");
+	B_CHECK(abc.repeat(3) == "abcabcabc");
+}
