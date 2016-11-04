@@ -24,6 +24,8 @@
 
 #include <b/custom_exception.h>
 
+#include <limits.h>
+
 struct save_length_allocator : public b::allocator
 {
 	virtual void* allocate(size_t size);
@@ -164,4 +166,63 @@ B_TEST_CASE(test_percent_sign_escaping)
 	s.format("%d%% done", 100);
 
 	B_CHECK(s == "100% done");
+}
+
+#define B_DEC_BUF_LEN (sizeof(long) * 3)
+
+static b::string int_to_str(unsigned long n)
+{
+	char buffer[B_DEC_BUF_LEN];
+
+	char* const buffer_end = buffer + sizeof(buffer) / sizeof(*buffer);
+	char* ptr = buffer_end;
+
+	do
+	{
+		*--ptr = char('0' + n % 10);
+		n /= 10;
+	}
+	while (n > 0);
+
+	return b::string(ptr, buffer_end - ptr);
+}
+
+static b::string spaces(size_t len)
+{
+	return b::string_view(" ", 1).repeat(len);
+}
+
+B_STATIC_CONST_STRING(opening_bracket, "[");
+B_STATIC_CONST_STRING(closing_bracket, "]");
+
+template <class T>
+static b::string format(const b::string& flags, unsigned width,
+	unsigned precision, const b::string& conversion, T value)
+{
+	b::string result(opening_bracket);
+
+	b::string format_str = b::string('%', 1) + flags +
+		int_to_str(width) + '.' + int_to_str(precision) +
+		conversion + closing_bracket;
+
+	result.append_format(format_str.data(), value);
+
+	return result;
+}
+
+B_STATIC_CONST_STRING(ld_conv, "ld");
+
+B_TEST_CASE(decimal_conversions)
+{
+	const unsigned width = B_DEC_BUF_LEN + 10;
+
+	b::string formatted = format(b::string(), width, 4, ld_conv, LONG_MAX);
+
+	b::string long_max_str = int_to_str(LONG_MAX);
+
+	b::string expected = opening_bracket +
+		spaces(width - long_max_str.length()) + long_max_str +
+		closing_bracket;
+
+	B_CHECK(formatted == expected);
 }
