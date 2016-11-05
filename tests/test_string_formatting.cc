@@ -170,8 +170,10 @@ B_TEST_CASE(test_percent_sign_escaping)
 
 #define B_DEC_BUF_LEN (sizeof(long) * 3)
 
-static b::string int_to_str(unsigned long n)
+static b::string int_to_str(unsigned long n, unsigned base = 10)
 {
+	static const char hex_digits[17] = "0123456789ABCDEF";
+
 	char buffer[B_DEC_BUF_LEN];
 
 	char* const buffer_end = buffer + sizeof(buffer) / sizeof(*buffer);
@@ -179,12 +181,51 @@ static b::string int_to_str(unsigned long n)
 
 	do
 	{
-		*--ptr = char('0' + n % 10);
-		n /= 10;
+		*--ptr = hex_digits[n % base];
+		n /= base;
 	}
 	while (n > 0);
 
 	return b::string(ptr, buffer_end - ptr);
+}
+
+B_STATIC_CONST_STRING(minus, "-");
+B_STATIC_CONST_STRING(zero, "0");
+B_STATIC_CONST_STRING(hex_prefix, "0x");
+
+B_TEST_CASE(min_max_numbers)
+{
+	B_CHECK(b::string::formatted("%lu", ULONG_MAX) ==
+		int_to_str(ULONG_MAX));
+
+	B_CHECK(b::string::formatted("%ld", LONG_MAX) ==
+		int_to_str((unsigned long) LONG_MAX));
+	B_CHECK(b::string::formatted("%ld", LONG_MIN) == minus +
+		int_to_str((unsigned long) -LONG_MIN));
+
+	B_CHECK(b::string::formatted("%u", UINT_MAX) == int_to_str(UINT_MAX));
+
+	B_CHECK(b::string::formatted("%d", INT_MAX) ==
+		int_to_str((unsigned) INT_MAX));
+	B_CHECK(b::string::formatted("%d", INT_MIN) == minus +
+		int_to_str((unsigned) -INT_MIN));
+
+	B_CHECK(b::string::formatted("%hu", UINT_MAX) == "65535");
+
+	B_CHECK(b::string::formatted("%hd", 0x7FFF) == "32767");
+	B_CHECK(b::string::formatted("%hd", 0x8000) == "-32768");
+
+	B_CHECK(b::string::formatted("%#lX", ULONG_MAX) == hex_prefix +
+		int_to_str(ULONG_MAX, 16));
+	B_CHECK(b::string::formatted("%#X", UINT_MAX) == hex_prefix +
+		int_to_str(UINT_MAX, 16));
+	B_CHECK(b::string::formatted("%#hX", 0xFFFF) == "0xFFFF");
+
+	B_CHECK(b::string::formatted("%#lo", ULONG_MAX) == zero +
+		int_to_str(ULONG_MAX, 8));
+	B_CHECK(b::string::formatted("%#o", UINT_MAX) == zero +
+		int_to_str(UINT_MAX, 8));
+	B_CHECK(b::string::formatted("%#ho", 0177777) == "0177777");
 }
 
 static b::string spaces(size_t len)
@@ -219,7 +260,6 @@ B_STATIC_CONST_STRING(ld_conv, "ld");
 
 B_STATIC_CONST_STRING(space, " ");
 B_STATIC_CONST_STRING(plus, "+");
-B_STATIC_CONST_STRING(zero, "0");
 
 B_TEST_CASE(decimal_conversions)
 {
