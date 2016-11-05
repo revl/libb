@@ -192,6 +192,11 @@ static b::string spaces(size_t len)
 	return b::string_view(" ", 1).repeat(len);
 }
 
+static b::string zeros(size_t len)
+{
+	return b::string_view("0", 1).repeat(len);
+}
+
 B_STATIC_CONST_STRING(opening_bracket, "[");
 B_STATIC_CONST_STRING(closing_bracket, "]");
 
@@ -212,6 +217,10 @@ static b::string format(const b::string& flags, unsigned width,
 
 B_STATIC_CONST_STRING(ld_conv, "ld");
 
+B_STATIC_CONST_STRING(space, " ");
+B_STATIC_CONST_STRING(plus, "+");
+B_STATIC_CONST_STRING(zero, "0");
+
 B_TEST_CASE(decimal_conversions)
 {
 	const unsigned width = B_DEC_BUF_LEN + 10;
@@ -223,6 +232,26 @@ B_TEST_CASE(decimal_conversions)
 	b::string expected = opening_bracket +
 		spaces(width - long_max_str.length()) + long_max_str +
 		closing_bracket;
+
+	B_CHECK(formatted == expected);
+
+	formatted = format(space, width, 4, ld_conv, LONG_MAX);
+
+	B_CHECK(formatted == expected);
+
+	formatted = format(plus, width, 4, ld_conv, LONG_MAX);
+
+	expected = opening_bracket +
+		spaces(width - long_max_str.length() - 1) + plus +
+		long_max_str + closing_bracket;
+
+	B_CHECK(formatted == expected);
+
+	formatted = format(plus + zero, width, 4, ld_conv, LONG_MAX);
+
+	expected = opening_bracket + plus +
+		zeros(width - long_max_str.length() - 1) +
+		long_max_str + closing_bracket;
 
 	B_CHECK(formatted == expected);
 }
