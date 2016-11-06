@@ -20,6 +20,34 @@
 
 B_BEGIN_NAMESPACE
 
+string::string(const char_t* source, size_t count, size_t repeat)
+{
+	size_t length = count * repeat;
+
+	if (length == 0)
+		chars = empty_string();
+	else
+	{
+		chars = alloc_buffer(extra_capacity(length), length);
+
+		if (count == 1)
+			assign_value(chars, repeat, *source);
+		else
+		{
+			char_t* dest = chars;
+
+			do
+			{
+				assign_pairwise(dest, source, count);
+				dest += count;
+			}
+			while (--repeat > 0);
+		}
+
+		chars[length] = 0;
+	}
+}
+
 void string::discard_and_alloc(size_t new_capacity)
 {
 	B_ASSERT(!is_locked());

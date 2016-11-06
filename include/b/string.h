@@ -38,6 +38,10 @@ public:
 	// Constructs a string from a linear character array.
 	string(const char_t* source, size_t count);
 
+	// Constructs a string from a linear character array
+	// repeated multiple times.
+	string(const char_t* source, size_t count, size_t repeat);
+
 	// Creates a string of <count> copies of source.
 	explicit string(char_t source, size_t count = 1);
 
@@ -181,6 +185,10 @@ public:
 	// Constructs a new string from the concatenation of
 	// this one and character <source>.
 	string operator +(char_t source) const;
+
+	// Concatenates 'times' copies of this string and
+	// returns the result.
+	string repeat(size_t times) const;
 
 // Deletion
 public:
@@ -510,6 +518,14 @@ inline string string::operator +(char_t source) const
 	return result += source;
 }
 
+inline string string::repeat(size_t times) const
+{
+	if (times == 1)
+		return *this;
+
+	return string(chars, length(), times);
+}
+
 inline int string::compare(const char_t* rhs) const
 {
 	return compare_strings(chars, rhs);
@@ -669,11 +685,13 @@ B_END_NAMESPACE
 #define B_STRING_INLINE
 
 #define string wstring
+#define string_view wstring_view
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
 #include "string.h"
 #undef B_L_PREFIX
 #undef char_t
+#undef string_view
 #undef string
 
 #define char_t char

@@ -67,37 +67,4 @@ void string_view::trim_left(const char_t* samples)
 	}
 }
 
-string string_view::repeat(size_t times) const
-{
-	if (times == 0)
-		return string();
-
-	switch (view_length)
-	{
-	case 0:
-		return string();
-	case 1:
-		return string(*view, times);
-	}
-
-	string result;
-
-	size_t result_length = view_length * times;
-
-	result.reserve(result_length);
-
-	char_t* dest = result.lock();
-
-	do
-	{
-		construct_copies(dest, view, view_length);
-		dest += view_length;
-	}
-	while (--times > 0);
-
-	result.unlock(result_length);
-
-	return result;
-}
-
 B_END_NAMESPACE

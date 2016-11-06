@@ -349,6 +349,11 @@ inline void string_view::trim(const char_t* samples)
 	trim_left(samples);
 }
 
+inline string string_view::repeat(size_t times) const
+{
+	return string(view, view_length, times);
+}
+
 inline bool operator ==(const char_t* chars, const string_view& str)
 {
 	return str.compare(chars) == 0;
