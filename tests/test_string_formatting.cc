@@ -189,99 +189,87 @@ static b::string int_to_str(unsigned long n, unsigned base = 10)
 	return b::string(ptr, buffer_end - ptr);
 }
 
-B_STATIC_CONST_STRING(minus, "-");
+B_STATIC_CONST_STRING(space, " ");
 B_STATIC_CONST_STRING(zero, "0");
-B_STATIC_CONST_STRING(hex_prefix, "0x");
-
-B_TEST_CASE(min_max_numbers)
-{
-	B_CHECK(b::string::formatted("%lu", ULONG_MAX) ==
-		int_to_str(ULONG_MAX));
-
-	B_CHECK(b::string::formatted("%ld", LONG_MAX) ==
-		int_to_str((unsigned long) LONG_MAX));
-	B_CHECK(b::string::formatted("%ld", LONG_MIN) == minus +
-		int_to_str((unsigned long) -LONG_MIN));
-
-	B_CHECK(b::string::formatted("%u", UINT_MAX) == int_to_str(UINT_MAX));
-
-	B_CHECK(b::string::formatted("%d", INT_MAX) ==
-		int_to_str((unsigned) INT_MAX));
-	B_CHECK(b::string::formatted("%d", INT_MIN) == minus +
-		int_to_str((unsigned) -INT_MIN));
-
-	B_CHECK(b::string::formatted("%hu", UINT_MAX) == "65535");
-
-	B_CHECK(b::string::formatted("%hd", 0x7FFF) == "32767");
-	B_CHECK(b::string::formatted("%hd", 0x8000) == "-32768");
-
-	B_CHECK(b::string::formatted("%#lX", ULONG_MAX) == hex_prefix +
-		int_to_str(ULONG_MAX, 16));
-	B_CHECK(b::string::formatted("%#X", UINT_MAX) == hex_prefix +
-		int_to_str(UINT_MAX, 16));
-	B_CHECK(b::string::formatted("%#hX", 0xFFFF) == "0xFFFF");
-
-	B_CHECK(b::string::formatted("%#lo", ULONG_MAX) == zero +
-		int_to_str(ULONG_MAX, 8));
-	B_CHECK(b::string::formatted("%#o", UINT_MAX) == zero +
-		int_to_str(UINT_MAX, 8));
-	B_CHECK(b::string::formatted("%#ho", 0177777) == "0177777");
-}
-
-B_STATIC_CONST_STRING(opening_bracket, "[");
-B_STATIC_CONST_STRING(closing_bracket, "]");
 
 template <class T>
-static b::string format(const b::string& flags, unsigned width,
-	unsigned precision, const b::string& conversion, T value)
+static b::string format(T value, const char* conversion,
+	const char* flags = NULL, ssize_t width = 0, int precision = -1)
 {
-	b::string result(opening_bracket);
+	b::string result('[', 1);
 
-	b::string format_str = b::string('%', 1) + flags +
-		int_to_str(width) + '.' + int_to_str(precision) +
-		conversion + closing_bracket;
+	b::string format_str = b::string::formatted("%%");
+	if (flags != NULL)
+		format_str.append_format("%s", flags);
+	if (width > 0)
+		format_str.append_format("%u", (unsigned) width);
+	if (precision >= 0)
+		format_str.append_format(".%d", precision);
+	format_str.append_format("%s", conversion);
+	format_str.append_format("]");
 
 	result.append_format(format_str.data(), value);
 
 	return result;
 }
 
-B_STATIC_CONST_STRING(ld_conv, "ld");
+static b::string expect(unsigned leading_spaces, const char* prefix,
+	unsigned zeros, unsigned long value, unsigned base = 10,
+	unsigned trailing_spaces = 0)
+{
+	return b::string::formatted("[%s%s%s%s%s]",
+		space.repeat(leading_spaces).data(),
+		prefix,
+		zero.repeat(zeros).data(),
+		int_to_str((unsigned long) value, base).data(),
+		space.repeat(trailing_spaces).data());
+}
 
-B_STATIC_CONST_STRING(space, " ");
-B_STATIC_CONST_STRING(plus, "+");
+B_TEST_CASE(min_max_numbers)
+{
+	B_CHECK(format(ULONG_MAX, "lu") == expect(0, "", 0, ULONG_MAX));
+
+	B_CHECK(format(LONG_MAX, "ld") ==
+		expect(0, "", 0, (unsigned long) LONG_MAX));
+	B_CHECK(format(LONG_MIN, "ld") ==
+		expect(0, "-", 0, (unsigned long) LONG_MIN));
+
+	B_CHECK(format(UINT_MAX, "u") == expect(0, "", 0, UINT_MAX));
+
+	B_CHECK(format(INT_MAX, "d") == expect(0, "", 0, (unsigned) INT_MAX));
+	B_CHECK(format(INT_MIN, "d") == expect(0, "-", 0, (unsigned) INT_MIN));
+
+	B_CHECK(format(UINT_MAX, "u", "h") == "[65535]");
+
+	B_CHECK(format(0x7FFF, "d", "h") == "[32767]");
+	B_CHECK(format(0x8000, "d", "h") == "[-32768]");
+
+	B_CHECK(format(ULONG_MAX, "lX", "#") ==
+		expect(0, "0x", 0, ULONG_MAX, 16));
+	B_CHECK(format(UINT_MAX, "X", "#") == expect(0, "0x", 0, UINT_MAX, 16));
+	B_CHECK(format(0xFFFF, "hX", "#") == "[0xFFFF]");
+
+	B_CHECK(format(ULONG_MAX, "lo", "#") == expect(0, "", 1, ULONG_MAX, 8));
+	B_CHECK(format(UINT_MAX, "lo", "#") == expect(0, "", 1, UINT_MAX, 8));
+	B_CHECK(format(0177777, "ho", "#") == "[0177777]");
+}
 
 B_TEST_CASE(decimal_conversions)
 {
-	const unsigned width = B_DEC_BUF_LEN + 10;
+	const size_t width = B_DEC_BUF_LEN + 10;
 
-	b::string formatted = format(b::string(), width, 4, ld_conv, LONG_MAX);
+	const unsigned long billion = 1000 * 1000 * 1000;
+	const size_t billion_str_len = 10;
 
-	b::string long_max_str = int_to_str(LONG_MAX);
+	B_CHECK(format(billion, "ld", NULL, width, 4) ==
+		expect(width - billion_str_len, "", 0, billion));
 
-	b::string expected = opening_bracket +
-		space.repeat(width - long_max_str.length()) + long_max_str +
-		closing_bracket;
+	B_CHECK(format(billion, "ld", " ", width, 4) ==
+		expect(width - billion_str_len, "", 0, billion));
 
-	B_CHECK(formatted == expected);
+	B_CHECK(format(billion, "ld", "+", width, 4) ==
+		expect(width - billion_str_len - 1, "+", 0, billion));
 
-	formatted = format(space, width, 4, ld_conv, LONG_MAX);
-
-	B_CHECK(formatted == expected);
-
-	formatted = format(plus, width, 4, ld_conv, LONG_MAX);
-
-	expected = opening_bracket +
-		space.repeat(width - long_max_str.length() - 1) + plus +
-		long_max_str + closing_bracket;
-
-	B_CHECK(formatted == expected);
-
-	formatted = format(plus + zero, width, 4, ld_conv, LONG_MAX);
-
-	expected = opening_bracket + plus +
-		zero.repeat(width - long_max_str.length() - 1) +
-		long_max_str + closing_bracket;
-
-	B_CHECK(formatted == expected);
+	B_CHECK(format(billion, "ld", "+0", width, 4) ==
+		expect(0, "+", width - billion_str_len - 1, billion));
 }
