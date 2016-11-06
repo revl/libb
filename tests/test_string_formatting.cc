@@ -228,16 +228,6 @@ B_TEST_CASE(min_max_numbers)
 	B_CHECK(b::string::formatted("%#ho", 0177777) == "0177777");
 }
 
-static b::string spaces(size_t len)
-{
-	return b::string_view(" ", 1).repeat(len);
-}
-
-static b::string zeros(size_t len)
-{
-	return b::string_view("0", 1).repeat(len);
-}
-
 B_STATIC_CONST_STRING(opening_bracket, "[");
 B_STATIC_CONST_STRING(closing_bracket, "]");
 
@@ -270,7 +260,7 @@ B_TEST_CASE(decimal_conversions)
 	b::string long_max_str = int_to_str(LONG_MAX);
 
 	b::string expected = opening_bracket +
-		spaces(width - long_max_str.length()) + long_max_str +
+		space.repeat(width - long_max_str.length()) + long_max_str +
 		closing_bracket;
 
 	B_CHECK(formatted == expected);
@@ -282,7 +272,7 @@ B_TEST_CASE(decimal_conversions)
 	formatted = format(plus, width, 4, ld_conv, LONG_MAX);
 
 	expected = opening_bracket +
-		spaces(width - long_max_str.length() - 1) + plus +
+		space.repeat(width - long_max_str.length() - 1) + plus +
 		long_max_str + closing_bracket;
 
 	B_CHECK(formatted == expected);
@@ -290,7 +280,7 @@ B_TEST_CASE(decimal_conversions)
 	formatted = format(plus + zero, width, 4, ld_conv, LONG_MAX);
 
 	expected = opening_bracket + plus +
-		zeros(width - long_max_str.length() - 1) +
+		zero.repeat(width - long_max_str.length() - 1) +
 		long_max_str + closing_bracket;
 
 	B_CHECK(formatted == expected);
