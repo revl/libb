@@ -266,7 +266,7 @@ void string_formatting::output_int(const conversion_spec* spec,
 		{
 			output_string(buffer, digits);
 
-			if (!spec->flags.zero)
+			if (!spec->flags.zero || spec->flags.precision_defined)
 			{
 				output_chars(B_L_PREFIX('0'), zeros);
 				output_string(prefix_chars + prefix,

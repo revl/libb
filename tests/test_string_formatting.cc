@@ -256,20 +256,44 @@ B_TEST_CASE(min_max_numbers)
 
 B_TEST_CASE(decimal_conversions)
 {
+	const unsigned long billion = 1000 * 1000 * 1000;
+
+	B_CHECK(format(billion, "ld", "'") == "[1,000,000,000]");
+	B_CHECK(format(billion, "ld", "'+") == "[+1,000,000,000]");
+	B_CHECK(format(billion, "ld", "+'") == "[+1,000,000,000]");
+
+	const size_t digits_in_billion = 10;
+
+	B_CHECK(format(billion, "ld", "", 0,
+		digits_in_billion + 2) == "[001000000000]");
+
+	B_CHECK(format(billion, "ld", "", digits_in_billion + 4,
+		digits_in_billion + 2) == "[  001000000000]");
+
 	const size_t width = B_DEC_BUF_LEN + 10;
 
-	const unsigned long billion = 1000 * 1000 * 1000;
-	const size_t billion_str_len = 10;
-
 	B_CHECK(format(billion, "ld", NULL, width, 4) ==
-		expect(width - billion_str_len, "", 0, billion));
+		expect(width - digits_in_billion, "", 0, billion));
 
 	B_CHECK(format(billion, "ld", " ", width, 4) ==
-		expect(width - billion_str_len, "", 0, billion));
+		expect(width - digits_in_billion, "", 0, billion));
 
 	B_CHECK(format(billion, "ld", "+", width, 4) ==
-		expect(width - billion_str_len - 1, "+", 0, billion));
+		expect(width - digits_in_billion - 1, "+", 0, billion));
 
 	B_CHECK(format(billion, "ld", "+0", width, 4) ==
-		expect(0, "+", width - billion_str_len - 1, billion));
+		expect(width - digits_in_billion - 1, "+", 0, billion));
+
+	B_CHECK(format(1000, "d", "+", 100, 3) == expect(95, "+", 0, 1000));
+	B_CHECK(format(1000, "d", " ", 100, 3) == expect(96, "", 0, 1000));
+	B_CHECK(format(-1000, "d", "+", 100, 3) == expect(95, "-", 0, 1000));
+
+	B_CHECK(format(-1000, "d", "", 234, 100) == expect(133, "-", 96, 1000));
+	B_CHECK(format(1000, "d", "+", 234, 100) == expect(133, "+", 96, 1000));
+	B_CHECK(format(1000, "d", " ", 234, 100) == expect(134, "", 96, 1000));
+	B_CHECK(format(1000, "d", "+0", 234) == expect(0, "+", 229, 1000));
+	B_CHECK(format(1000, "d", "+0", 234, 14) == expect(219, "+", 10, 1000));
+
+	B_CHECK(format(1000, "u", "", 234, 100) == expect(134, "", 96, 1000));
+	B_CHECK(format(1000, "u", "0", 234) == expect(0, "", 230, 1000));
 }
