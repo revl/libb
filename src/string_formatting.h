@@ -89,14 +89,11 @@ namespace
 			enum
 			{
 				no_length_mod,
-				hh,
 				h,
 				l,
-				ll,
 				j,
 				z,
-				t,
-				L
+				t
 			} length_mod;
 		};
 
@@ -509,19 +506,9 @@ void string_formatting::process_conversion()
 
 	switch (*fmt)
 	{
-	case B_L_PREFIX('L'):
-		++fmt;
-		spec.length_mod = conversion_spec::L;
-		break;
-
 	case B_L_PREFIX('h'):
-		if (*++fmt != B_L_PREFIX('h'))
-			spec.length_mod = conversion_spec::h;
-		else
-		{
-			++fmt;
-			spec.length_mod = conversion_spec::hh;
-		}
+		++fmt;
+		spec.length_mod = conversion_spec::h;
 		break;
 
 	case B_L_PREFIX('j'):
@@ -530,13 +517,8 @@ void string_formatting::process_conversion()
 		break;
 
 	case B_L_PREFIX('l'):
-		if (*++fmt != B_L_PREFIX('l'))
-			spec.length_mod = conversion_spec::l;
-		else
-		{
-			++fmt;
-			spec.length_mod = conversion_spec::ll;
-		}
+		++fmt;
+		spec.length_mod = conversion_spec::l;
 		break;
 
 	case B_L_PREFIX('t'):
@@ -555,9 +537,6 @@ void string_formatting::process_conversion()
 	case B_L_PREFIX('i'):
 		switch (spec.length_mod)
 		{
-		case conversion_spec::hh:
-			process_decimal<signed char, unsigned char, int>(&spec);
-			break;
 		case conversion_spec::h:
 			process_decimal<short, unsigned short, int>(&spec);
 			break;
@@ -573,9 +552,6 @@ void string_formatting::process_conversion()
 		case conversion_spec::t:
 			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(&spec);
 			break;
-		case conversion_spec::ll:
-		case conversion_spec::L:
-			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_decimal<int, unsigned, int>(&spec);
 		}
@@ -583,9 +559,6 @@ void string_formatting::process_conversion()
 	case B_L_PREFIX('u'):
 		switch (spec.length_mod)
 		{
-		case conversion_spec::hh:
-			process_unsigned<unsigned char, unsigned>(&spec);
-			break;
 		case conversion_spec::h:
 			process_unsigned<unsigned short, unsigned>(&spec);
 			break;
@@ -600,8 +573,6 @@ void string_formatting::process_conversion()
 			process_unsigned<size_t, size_t>(&spec);
 			break;
 		case conversion_spec::t:
-		case conversion_spec::ll:
-		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_unsigned<unsigned, unsigned>(&spec);
@@ -610,9 +581,6 @@ void string_formatting::process_conversion()
 	case B_L_PREFIX('o'):
 		switch (spec.length_mod)
 		{
-		case conversion_spec::hh:
-			process_octal<unsigned char, unsigned>(&spec);
-			break;
 		case conversion_spec::h:
 			process_octal<unsigned short, unsigned>(&spec);
 			break;
@@ -627,8 +595,6 @@ void string_formatting::process_conversion()
 			process_octal<size_t, size_t>(&spec);
 			break;
 		case conversion_spec::t:
-		case conversion_spec::ll:
-		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_octal<unsigned, unsigned>(&spec);
@@ -637,9 +603,6 @@ void string_formatting::process_conversion()
 	case B_L_PREFIX('X'):
 		switch (spec.length_mod)
 		{
-		case conversion_spec::hh:
-			process_hex<unsigned char, unsigned>(&spec, ucase_hex);
-			break;
 		case conversion_spec::h:
 			process_hex<unsigned short, unsigned>(&spec, ucase_hex);
 			break;
@@ -654,8 +617,6 @@ void string_formatting::process_conversion()
 			process_hex<size_t, size_t>(&spec, ucase_hex);
 			break;
 		case conversion_spec::t:
-		case conversion_spec::ll:
-		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_hex<unsigned, unsigned>(&spec, ucase_hex);
@@ -664,9 +625,6 @@ void string_formatting::process_conversion()
 	case B_L_PREFIX('x'):
 		switch (spec.length_mod)
 		{
-		case conversion_spec::hh:
-			process_hex<unsigned char, unsigned>(&spec, lcase_hex);
-			break;
 		case conversion_spec::h:
 			process_hex<unsigned short, unsigned>(&spec, lcase_hex);
 			break;
@@ -681,8 +639,6 @@ void string_formatting::process_conversion()
 			process_hex<size_t, size_t>(&spec, lcase_hex);
 			break;
 		case conversion_spec::t:
-		case conversion_spec::ll:
-		case conversion_spec::L:
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_hex<unsigned, unsigned>(&spec, lcase_hex);
