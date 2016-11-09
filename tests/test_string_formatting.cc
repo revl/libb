@@ -201,8 +201,8 @@ static b::string format(T value, const char* conversion,
 	b::string format_str = b::string::formatted("%%");
 	if (flags != NULL)
 		format_str.append_format("%s", flags);
-	if (width > 0)
-		format_str.append_format("%u", (unsigned) width);
+	if (width != 0)
+		format_str.append_format("%ld", (long) width);
 	if (precision >= 0)
 		format_str.append_format(".%d", precision);
 	format_str.append_format("%s", conversion);
@@ -256,7 +256,7 @@ B_TEST_CASE(min_max_numbers)
 
 B_TEST_CASE(decimal_conversions)
 {
-	const unsigned long billion = 1000 * 1000 * 1000;
+	const long billion = 1000 * 1000 * 1000;
 
 	B_CHECK(format(billion, "ld", "'") == "[1,000,000,000]");
 	B_CHECK(format(billion, "ld", "'+") == "[+1,000,000,000]");
@@ -289,10 +289,29 @@ B_TEST_CASE(decimal_conversions)
 	B_CHECK(format(-1000, "d", "+", 100, 3) == expect(95, "-", 0, 1000));
 
 	B_CHECK(format(-1000, "d", "", 234, 100) == expect(133, "-", 96, 1000));
+	B_CHECK(format(-1000, "d", "+", 50, 10) == expect(39, "-", 6, 1000));
 	B_CHECK(format(1000, "d", "+", 234, 100) == expect(133, "+", 96, 1000));
 	B_CHECK(format(1000, "d", " ", 234, 100) == expect(134, "", 96, 1000));
 	B_CHECK(format(1000, "d", "+0", 234) == expect(0, "+", 229, 1000));
 	B_CHECK(format(1000, "d", "+0", 234, 14) == expect(219, "+", 10, 1000));
+
+	B_CHECK(format(-123, "d", "", -10) == "[-123      ]");
+	B_CHECK(format(123, "d", "", -10) == "[123       ]");
+	B_CHECK(format(-123, "d", "", -10, 6) == "[-000123   ]");
+	B_CHECK(format(123, "d", "", -10, 6) == "[000123    ]");
+	B_CHECK(format(-123, "d", "0", 10) == "[-000000123]");
+	B_CHECK(format(123, "d", "0", 10) == "[0000000123]");
+	B_CHECK(format(-123, "d", " 0", 10) == "[-000000123]");
+	B_CHECK(format(123, "d", " 0", 10) == "[ 000000123]");
+	B_CHECK(format(-123, "d", "+0", 10) == "[-000000123]");
+	B_CHECK(format(123, "d", "+0", 10) == "[+000000123]");
+}
+
+B_TEST_CASE(unsigned_conversions)
+{
+	const unsigned long billion = 1000 * 1000 * 1000;
+
+	B_CHECK(format(billion, "lu", "'") == "[1,000,000,000]");
 
 	B_CHECK(format(1000, "u", "", 234, 100) == expect(134, "", 96, 1000));
 	B_CHECK(format(1000, "u", "0", 234) == expect(0, "", 230, 1000));
