@@ -254,6 +254,43 @@ B_TEST_CASE(min_max_numbers)
 	B_CHECK(format(0177777, "ho", "#") == "[0177777]");
 }
 
+B_TEST_CASE(zero_value)
+{
+	B_CHECK(format(0, "d", "", -10) == "[0         ]");
+	B_CHECK(format(0, "d", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0, "d", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0, "d", "0", 10) == "[0000000000]");
+
+	B_CHECK(format(0, "d", " ", -10) == "[ 0        ]");
+	B_CHECK(format(0, "d", "+", -10) == "[ 0        ]");
+	B_CHECK(format(0, "d", " ", -10, 5) == "[ 00000    ]");
+	B_CHECK(format(0, "d", " ", 10) == "[         0]");
+	B_CHECK(format(0, "d", " 0", 10) == "[ 000000000]");
+	B_CHECK(format(0, "d", "+0", 10) == "[ 000000000]");
+
+	B_CHECK(format(0, "u", "", -10) == "[0         ]");
+	B_CHECK(format(0, "u", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0, "u", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0, "u", "0", 10) == "[0000000000]");
+
+	B_CHECK(format(0, "o", "", -10) == "[0         ]");
+	B_CHECK(format(0, "o", "#", -10) == "[0         ]");
+	B_CHECK(format(0, "o", "", 10) == "[         0]");
+	B_CHECK(format(0, "o", "#", 10) == "[         0]");
+	B_CHECK(format(0, "o", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0, "o", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0, "o", "0", 10) == "[0000000000]");
+
+	B_CHECK(format(0, "x", "", -8) == "[0       ]");
+	B_CHECK(format(0, "x", "#", -10) == "[0x0       ]");
+	B_CHECK(format(0, "x", "#", -10, 4) == "[0x0000    ]");
+	B_CHECK(format(0, "x", "", 8) == "[       0]");
+	B_CHECK(format(0, "x", "#", 10) == "[       0x0]");
+	B_CHECK(format(0, "x", "", -8, 4) == "[0000    ]");
+	B_CHECK(format(0, "x", "", 8, 4) == "[    0000]");
+	B_CHECK(format(0, "x", "0", 8) == "[00000000]");
+}
+
 B_TEST_CASE(decimal_conversions)
 {
 	const long billion = 1000 * 1000 * 1000;
