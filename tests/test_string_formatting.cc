@@ -256,39 +256,39 @@ B_TEST_CASE(min_max_numbers)
 
 B_TEST_CASE(zero_value)
 {
-	B_CHECK(format(0, "d", "", -10) == "[0         ]");
-	B_CHECK(format(0, "d", "", -10, 5) == "[00000     ]");
-	B_CHECK(format(0, "d", "", 10, 5) == "[     00000]");
-	B_CHECK(format(0, "d", "0", 10) == "[0000000000]");
+	B_CHECK(format(0u, "d", "", -10) == "[0         ]");
+	B_CHECK(format(0u, "d", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0u, "d", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0u, "d", "0", 10) == "[0000000000]");
 
-	B_CHECK(format(0, "d", " ", -10) == "[ 0        ]");
-	B_CHECK(format(0, "d", "+", -10) == "[ 0        ]");
-	B_CHECK(format(0, "d", " ", -10, 5) == "[ 00000    ]");
-	B_CHECK(format(0, "d", " ", 10) == "[         0]");
-	B_CHECK(format(0, "d", " 0", 10) == "[ 000000000]");
-	B_CHECK(format(0, "d", "+0", 10) == "[ 000000000]");
+	B_CHECK(format(0u, "d", " ", -10) == "[ 0        ]");
+	B_CHECK(format(0u, "d", "+", -10) == "[ 0        ]");
+	B_CHECK(format(0u, "d", " ", -10, 5) == "[ 00000    ]");
+	B_CHECK(format(0u, "d", " ", 10) == "[         0]");
+	B_CHECK(format(0u, "d", " 0", 10) == "[ 000000000]");
+	B_CHECK(format(0u, "d", "+0", 10) == "[ 000000000]");
 
-	B_CHECK(format(0, "u", "", -10) == "[0         ]");
-	B_CHECK(format(0, "u", "", -10, 5) == "[00000     ]");
-	B_CHECK(format(0, "u", "", 10, 5) == "[     00000]");
-	B_CHECK(format(0, "u", "0", 10) == "[0000000000]");
+	B_CHECK(format(0u, "u", "", -10) == "[0         ]");
+	B_CHECK(format(0u, "u", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0u, "u", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0u, "u", "0", 10) == "[0000000000]");
 
-	B_CHECK(format(0, "o", "", -10) == "[0         ]");
-	B_CHECK(format(0, "o", "#", -10) == "[0         ]");
-	B_CHECK(format(0, "o", "", 10) == "[         0]");
-	B_CHECK(format(0, "o", "#", 10) == "[         0]");
-	B_CHECK(format(0, "o", "", -10, 5) == "[00000     ]");
-	B_CHECK(format(0, "o", "", 10, 5) == "[     00000]");
-	B_CHECK(format(0, "o", "0", 10) == "[0000000000]");
+	B_CHECK(format(0u, "o", "", -10) == "[0         ]");
+	B_CHECK(format(0u, "o", "#", -10) == "[0         ]");
+	B_CHECK(format(0u, "o", "", 10) == "[         0]");
+	B_CHECK(format(0u, "o", "#", 10) == "[         0]");
+	B_CHECK(format(0u, "o", "", -10, 5) == "[00000     ]");
+	B_CHECK(format(0u, "o", "", 10, 5) == "[     00000]");
+	B_CHECK(format(0u, "o", "0", 10) == "[0000000000]");
 
-	B_CHECK(format(0, "x", "", -8) == "[0       ]");
-	B_CHECK(format(0, "x", "#", -10) == "[0x0       ]");
-	B_CHECK(format(0, "x", "#", -10, 4) == "[0x0000    ]");
-	B_CHECK(format(0, "x", "", 8) == "[       0]");
-	B_CHECK(format(0, "x", "#", 10) == "[       0x0]");
-	B_CHECK(format(0, "x", "", -8, 4) == "[0000    ]");
-	B_CHECK(format(0, "x", "", 8, 4) == "[    0000]");
-	B_CHECK(format(0, "x", "0", 8) == "[00000000]");
+	B_CHECK(format(0u, "x", "", -8) == "[0       ]");
+	B_CHECK(format(0u, "x", "#", -10) == "[0x0       ]");
+	B_CHECK(format(0u, "x", "#", -10, 4) == "[0x0000    ]");
+	B_CHECK(format(0u, "x", "", 8) == "[       0]");
+	B_CHECK(format(0u, "x", "#", 10) == "[       0x0]");
+	B_CHECK(format(0u, "x", "", -8, 4) == "[0000    ]");
+	B_CHECK(format(0u, "x", "", 8, 4) == "[    0000]");
+	B_CHECK(format(0u, "x", "0", 8) == "[00000000]");
 }
 
 B_TEST_CASE(decimal_conversions)
@@ -333,15 +333,29 @@ B_TEST_CASE(decimal_conversions)
 	B_CHECK(format(1000, "d", "+0", 234, 14) == expect(219, "+", 10, 1000));
 
 	B_CHECK(format(-123, "d", "", -10) == "[-123      ]");
-	B_CHECK(format(123, "d", "", -10) == "[123       ]");
+	B_CHECK(format(123, "d", "", -10, 2) == "[123       ]");
+	B_CHECK(format(123, "d", "+", -10, 3) == "[+123      ]");
+	B_CHECK(format(123, "d", " ", -10, 4) == "[ 0123     ]");
 	B_CHECK(format(-123, "d", "", -10, 6) == "[-000123   ]");
 	B_CHECK(format(123, "d", "", -10, 6) == "[000123    ]");
+	B_CHECK(format(123, "d", "+", -10, 6) == "[+000123   ]");
+	B_CHECK(format(123, "d", " ", -10, 6) == "[ 000123   ]");
+
+	B_CHECK(format(-123, "d", "", 10) == "[      -123]");
+	B_CHECK(format(123, "d", "", 10, 2) == "[       123]");
+	B_CHECK(format(123, "d", "+", 10, 3) == "[      +123]");
+	B_CHECK(format(123, "d", " ", 10) == "[       123]");
+	B_CHECK(format(-123, "d", "+", 10, 4) == "[     -0123]");
 	B_CHECK(format(-123, "d", "0", 10) == "[-000000123]");
 	B_CHECK(format(123, "d", "0", 10) == "[0000000123]");
 	B_CHECK(format(-123, "d", " 0", 10) == "[-000000123]");
 	B_CHECK(format(123, "d", " 0", 10) == "[ 000000123]");
 	B_CHECK(format(-123, "d", "+0", 10) == "[-000000123]");
 	B_CHECK(format(123, "d", "+0", 10) == "[+000000123]");
+	B_CHECK(format(12345, "d", "", 1, 5) == "[12345]");
+	B_CHECK(format(1234, "d", "", 1, 5) == "[01234]");
+	B_CHECK(format(-12345, "d", "", 1, 5) == "[-12345]");
+	B_CHECK(format(-1234, "d", "", 1, 5) == "[-01234]");
 }
 
 B_TEST_CASE(unsigned_conversions)
@@ -350,6 +364,46 @@ B_TEST_CASE(unsigned_conversions)
 
 	B_CHECK(format(billion, "lu", "'") == "[1,000,000,000]");
 
-	B_CHECK(format(1000, "u", "", 234, 100) == expect(134, "", 96, 1000));
-	B_CHECK(format(1000, "u", "0", 234) == expect(0, "", 230, 1000));
+	B_CHECK(format(1000u, "u", "", 234, 100) == expect(134, "", 96, 1000));
+	B_CHECK(format(1000u, "u", "0", 234) == expect(0, "", 230, 1000));
+
+	B_CHECK(format(123u, "u", "", -10, 2) == "[123       ]");
+	B_CHECK(format(123u, "u", "", -10, 6) == "[000123    ]");
+
+	B_CHECK(format(123u, "u", "", 10, 2) == "[       123]");
+	B_CHECK(format(123u, "u", "0", 10) == "[0000000123]");
+	B_CHECK(format(12345u, "u", "", 1, 5) == "[12345]");
+	B_CHECK(format(1234u, "u", "", 1, 5) == "[01234]");
+}
+
+B_TEST_CASE(octal_conversions)
+{
+	B_CHECK(format(0777u, "o", "", -10, 2) == "[777       ]");
+	B_CHECK(format(0777u, "o", "#", -10, 2) == "[0777      ]");
+	B_CHECK(format(0777u, "o", "", -10, 6) == "[000777    ]");
+	B_CHECK(format(0777u, "o", "#", -10, 6) == "[000777    ]");
+
+	B_CHECK(format(0777u, "o", "", 10, 2) == "[       777]");
+	B_CHECK(format(0777u, "o", "#", 10, 2) == "[      0777]");
+	B_CHECK(format(0777u, "o", "0", 10) == "[0000000777]");
+	B_CHECK(format(012345u, "o", "", 1, 5) == "[12345]");
+	B_CHECK(format(012345u, "o", "#", 1, 5) == "[012345]");
+	B_CHECK(format(01234u, "o", "", 1, 5) == "[01234]");
+	B_CHECK(format(01234u, "o", "#", 1, 5) == "[01234]");
+}
+
+B_TEST_CASE(hex_conversions)
+{
+	B_CHECK(format(0xFFFFu, "x", "", -10, 2) == "[ffff      ]");
+	B_CHECK(format(0xFFFFu, "x", "#", -10, 2) == "[0xffff    ]");
+	B_CHECK(format(0xFFFFu, "x", "", -10, 6) == "[00ffff    ]");
+	B_CHECK(format(0xFFFFu, "x", "#", -10, 6) == "[0x00ffff  ]");
+
+	B_CHECK(format(0xFFFFu, "x", "", 10, 2) == "[      ffff]");
+	B_CHECK(format(0xFFFFu, "x", "#", 10, 2) == "[    0xffff]");
+	B_CHECK(format(0xFFFFu, "x", "0", 10) == "[000000ffff]");
+	B_CHECK(format(0x12345u, "x", "", 1, 5) == "[12345]");
+	B_CHECK(format(0x12345u, "x", "#", 1, 5) == "[0x12345]");
+	B_CHECK(format(0x1234u, "x", "", 1, 5) == "[01234]");
+	B_CHECK(format(0x1234u, "x", "#", 1, 5) == "[0x01234]");
 }
