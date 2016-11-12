@@ -407,3 +407,19 @@ B_TEST_CASE(hex_conversions)
 	B_CHECK(format(0x1234u, "x", "", 1, 5) == "[01234]");
 	B_CHECK(format(0x1234u, "x", "#", 1, 5) == "[0x01234]");
 }
+
+B_TEST_CASE(binary_conversions)
+{
+	B_CHECK(format(0x0Fu, "b", "", -10, 2) == "[1111      ]");
+	B_CHECK(format(0x0Fu, "b", "#", -10, 2) == "[0b1111    ]");
+	B_CHECK(format(0x0Fu, "b", "", -10, 6) == "[001111    ]");
+	B_CHECK(format(0x0Fu, "b", "#", -10, 6) == "[0b001111  ]");
+
+	B_CHECK(format(0x0Fu, "b", "", 10, 2) == "[      1111]");
+	B_CHECK(format(0x0Fu, "b", "#", 10, 2) == "[    0b1111]");
+	B_CHECK(format(0x0Fu, "b", "0", 10) == "[0000001111]");
+	B_CHECK(format(0x1Fu, "b", "", 1, 5) == "[11111]");
+	B_CHECK(format(0x1Fu, "b", "#", 1, 5) == "[0b11111]");
+	B_CHECK(format(0x0Fu, "b", "", 1, 5) == "[01111]");
+	B_CHECK(format(0x0Fu, "b", "#", 1, 5) == "[0b01111]");
+}

@@ -225,6 +225,9 @@ namespace
 		void process_hex(const conversion_spec* spec,
 			const char_t* digit_chars);
 
+		template <class T, class Arg>
+		void process_binary(const conversion_spec* spec);
+
 		void process_string();
 		void process_conversion();
 		void process_verbatim();
@@ -378,6 +381,26 @@ void string_formatting::process_hex(const conversion_spec* spec,
 	}
 	else
 		output_zero_int(spec, spec->flags.hash ? prefix_0x : no_prefix);
+}
+
+template <class T, class Arg>
+void string_formatting::process_binary(const conversion_spec* spec)
+{
+	int_conv_buffer<MAX_BINARY_BUF_LEN(T)> buffer;
+
+	T number = (T) va_arg(ap, Arg);
+
+	if (number > 0)
+	{
+		do
+			buffer.add_digit(number % 2);
+		while ((number /= 2) != 0);
+
+		output_non_zero_int(spec, buffer.pos, buffer.len(),
+			spec->flags.hash ? prefix_0b : no_prefix);
+	}
+	else
+		output_zero_int(spec, spec->flags.hash ? prefix_0b : no_prefix);
 }
 
 void string_formatting::process_string()
@@ -642,6 +665,27 @@ void string_formatting::process_conversion()
 			B_ASSERT("incompatible length modifier" && false);
 		default:
 			process_hex<unsigned, unsigned>(&spec, lcase_hex);
+		}
+		break;
+	case B_L_PREFIX('b'):
+		switch (spec.length_mod)
+		{
+		case conversion_spec::h:
+			process_binary<unsigned short, unsigned>(&spec);
+			break;
+		case conversion_spec::l:
+			process_binary<unsigned long, unsigned long>(&spec);
+			break;
+		case conversion_spec::j:
+			process_binary<uintmax_t, uintmax_t>(&spec);
+			break;
+		case conversion_spec::z:
+			process_binary<size_t, size_t>(&spec);
+			break;
+		case conversion_spec::t:
+			B_ASSERT("incompatible length modifier" && false);
+		default:
+			process_binary<unsigned, unsigned>(&spec);
 		}
 		break;
 	case B_L_PREFIX('s'):

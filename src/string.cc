@@ -54,6 +54,9 @@
 // in the hexadecimal numeral system.
 #define MAX_HEX_BUF_LEN(type) (sizeof(type) * 2)
 
+// The number of bits in an integer type.
+#define MAX_BINARY_BUF_LEN(type) (sizeof(type) * 8)
+
 #define string wstring
 #define char_t wchar_t
 #define B_L_PREFIX(ch) L##ch
