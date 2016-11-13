@@ -86,15 +86,6 @@ namespace
 			} flags;
 			unsigned min_width;
 			unsigned precision;
-			enum
-			{
-				no_length_mod,
-				h,
-				l,
-				j,
-				z,
-				t
-			} length_mod;
 		};
 
 		struct int_conv_pos
@@ -527,175 +518,162 @@ void string_formatting::process_conversion()
 			}
 	}
 
-	switch (*fmt)
+	switch (*fmt++)
 	{
 	case B_L_PREFIX('h'):
-		++fmt;
-		spec.length_mod = conversion_spec::h;
+		switch (*fmt++)
+		{
+		case B_L_PREFIX('d'):
+		case B_L_PREFIX('i'):
+			process_decimal<short, unsigned short, int>(&spec);
+			return;
+		case B_L_PREFIX('u'):
+			process_unsigned<unsigned short, unsigned>(&spec);
+			return;
+		case B_L_PREFIX('o'):
+			process_octal<unsigned short, unsigned>(&spec);
+			return;
+		case B_L_PREFIX('X'):
+			process_hex<unsigned short, unsigned>(&spec, ucase_hex);
+			return;
+		case B_L_PREFIX('x'):
+			process_hex<unsigned short, unsigned>(&spec, lcase_hex);
+			return;
+		case B_L_PREFIX('b'):
+			process_binary<unsigned short, unsigned>(&spec);
+			return;
+		}
 		break;
 
 	case B_L_PREFIX('j'):
-		++fmt;
-		spec.length_mod = conversion_spec::j;
+		switch (*fmt++)
+		{
+		case B_L_PREFIX('d'):
+		case B_L_PREFIX('i'):
+			process_decimal<intmax_t, uintmax_t, intmax_t>(&spec);
+			return;
+		case B_L_PREFIX('u'):
+			process_unsigned<uintmax_t, uintmax_t>(&spec);
+			return;
+		case B_L_PREFIX('o'):
+			process_octal<uintmax_t, uintmax_t>(&spec);
+			return;
+		case B_L_PREFIX('X'):
+			process_hex<uintmax_t, uintmax_t>(&spec, ucase_hex);
+			return;
+		case B_L_PREFIX('x'):
+			process_hex<uintmax_t, uintmax_t>(&spec, lcase_hex);
+			return;
+		case B_L_PREFIX('b'):
+			process_binary<uintmax_t, uintmax_t>(&spec);
+			return;
+		}
 		break;
 
 	case B_L_PREFIX('l'):
-		++fmt;
-		spec.length_mod = conversion_spec::l;
+		switch (*fmt++)
+		{
+		case B_L_PREFIX('d'):
+		case B_L_PREFIX('i'):
+			process_decimal<long, unsigned long, long>(&spec);
+			return;
+		case B_L_PREFIX('u'):
+			process_unsigned<unsigned long, unsigned long>(
+				&spec);
+			return;
+		case B_L_PREFIX('o'):
+			process_octal<unsigned long, unsigned long>(
+				&spec);
+			return;
+		case B_L_PREFIX('X'):
+			process_hex<unsigned long, unsigned long>(&spec,
+				ucase_hex);
+			return;
+		case B_L_PREFIX('x'):
+			process_hex<unsigned long, unsigned long>(&spec,
+				lcase_hex);
+			return;
+		case B_L_PREFIX('b'):
+			process_binary<unsigned long, unsigned long>(&spec);
+			return;
+		}
 		break;
 
 	case B_L_PREFIX('t'):
-		++fmt;
-		spec.length_mod = conversion_spec::t;
+		switch (*fmt++)
+		{
+		case B_L_PREFIX('d'):
+		case B_L_PREFIX('i'):
+			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(&spec);
+			return;
+		case B_L_PREFIX('b'):
+		case B_L_PREFIX('o'):
+		case B_L_PREFIX('u'):
+		case B_L_PREFIX('X'):
+		case B_L_PREFIX('x'):
+			B_ASSERT("incompatible length modifier" && false);
+			return;
+		}
 		break;
 
 	case B_L_PREFIX('z'):
-		++fmt;
-		spec.length_mod = conversion_spec::z;
-	}
+		switch (*fmt++)
+		{
+		case B_L_PREFIX('d'):
+		case B_L_PREFIX('i'):
+			process_decimal<ssize_t, size_t, ssize_t>(&spec);
+			return;
+		case B_L_PREFIX('u'):
+			process_unsigned<size_t, size_t>(&spec);
+			return;
+		case B_L_PREFIX('o'):
+			process_octal<size_t, size_t>(&spec);
+			return;
+		case B_L_PREFIX('X'):
+			process_hex<size_t, size_t>(&spec, ucase_hex);
+			return;
+		case B_L_PREFIX('x'):
+			process_hex<size_t, size_t>(&spec, lcase_hex);
+			return;
+		case B_L_PREFIX('b'):
+			process_binary<size_t, size_t>(&spec);
+			return;
+		}
+		break;
 
-	switch (*fmt++)
-	{
 	case B_L_PREFIX('d'):
 	case B_L_PREFIX('i'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_decimal<short, unsigned short, int>(&spec);
-			break;
-		case conversion_spec::l:
-			process_decimal<long, unsigned long, long>(&spec);
-			break;
-		case conversion_spec::j:
-			process_decimal<intmax_t, uintmax_t, intmax_t>(&spec);
-			break;
-		case conversion_spec::z:
-			process_decimal<ssize_t, size_t, ssize_t>(&spec);
-			break;
-		case conversion_spec::t:
-			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(&spec);
-			break;
-		default:
-			process_decimal<int, unsigned, int>(&spec);
-		}
-		break;
+		process_decimal<int, unsigned, int>(&spec);
+		return;
+
 	case B_L_PREFIX('u'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_unsigned<unsigned short, unsigned>(&spec);
-			break;
-		case conversion_spec::l:
-			process_unsigned<unsigned long, unsigned long>(
-				&spec);
-			break;
-		case conversion_spec::j:
-			process_unsigned<uintmax_t, uintmax_t>(&spec);
-			break;
-		case conversion_spec::z:
-			process_unsigned<size_t, size_t>(&spec);
-			break;
-		case conversion_spec::t:
-			B_ASSERT("incompatible length modifier" && false);
-		default:
-			process_unsigned<unsigned, unsigned>(&spec);
-		}
-		break;
+		process_unsigned<unsigned, unsigned>(&spec);
+		return;
+
 	case B_L_PREFIX('o'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_octal<unsigned short, unsigned>(&spec);
-			break;
-		case conversion_spec::l:
-			process_octal<unsigned long, unsigned long>(
-				&spec);
-			break;
-		case conversion_spec::j:
-			process_octal<uintmax_t, uintmax_t>(&spec);
-			break;
-		case conversion_spec::z:
-			process_octal<size_t, size_t>(&spec);
-			break;
-		case conversion_spec::t:
-			B_ASSERT("incompatible length modifier" && false);
-		default:
-			process_octal<unsigned, unsigned>(&spec);
-		}
-		break;
+		process_octal<unsigned, unsigned>(&spec);
+		return;
+
 	case B_L_PREFIX('X'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_hex<unsigned short, unsigned>(&spec, ucase_hex);
-			break;
-		case conversion_spec::l:
-			process_hex<unsigned long, unsigned long>(&spec,
-				ucase_hex);
-			break;
-		case conversion_spec::j:
-			process_hex<uintmax_t, uintmax_t>(&spec, ucase_hex);
-			break;
-		case conversion_spec::z:
-			process_hex<size_t, size_t>(&spec, ucase_hex);
-			break;
-		case conversion_spec::t:
-			B_ASSERT("incompatible length modifier" && false);
-		default:
-			process_hex<unsigned, unsigned>(&spec, ucase_hex);
-		}
-		break;
+		process_hex<unsigned, unsigned>(&spec, ucase_hex);
+		return;
+
 	case B_L_PREFIX('x'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_hex<unsigned short, unsigned>(&spec, lcase_hex);
-			break;
-		case conversion_spec::l:
-			process_hex<unsigned long, unsigned long>(&spec,
-				lcase_hex);
-			break;
-		case conversion_spec::j:
-			process_hex<uintmax_t, uintmax_t>(&spec, lcase_hex);
-			break;
-		case conversion_spec::z:
-			process_hex<size_t, size_t>(&spec, lcase_hex);
-			break;
-		case conversion_spec::t:
-			B_ASSERT("incompatible length modifier" && false);
-		default:
-			process_hex<unsigned, unsigned>(&spec, lcase_hex);
-		}
-		break;
+		process_hex<unsigned, unsigned>(&spec, lcase_hex);
+		return;
+
 	case B_L_PREFIX('b'):
-		switch (spec.length_mod)
-		{
-		case conversion_spec::h:
-			process_binary<unsigned short, unsigned>(&spec);
-			break;
-		case conversion_spec::l:
-			process_binary<unsigned long, unsigned long>(&spec);
-			break;
-		case conversion_spec::j:
-			process_binary<uintmax_t, uintmax_t>(&spec);
-			break;
-		case conversion_spec::z:
-			process_binary<size_t, size_t>(&spec);
-			break;
-		case conversion_spec::t:
-			B_ASSERT("incompatible length modifier" && false);
-		default:
-			process_binary<unsigned, unsigned>(&spec);
-		}
-		break;
+		process_binary<unsigned, unsigned>(&spec);
+		return;
+
 	case B_L_PREFIX('s'):
 		process_string();
-		break;
-	default:
-		B_ASSERT("unknown conversion type character" && false);
-		acc_len = 0;
-		dest = NULL;
+		return;
 	}
+
+	B_ASSERT("unknown conversion type character" && false);
+	acc_len = 0;
+	dest = NULL;
 }
 
 void string_formatting::process_verbatim()
