@@ -26,6 +26,7 @@ namespace
 		const char_t* fmt;
 		va_list ap;
 		size_t acc_len;
+		char_t* allocated;
 		char_t* dest;
 
 		string_formatting(b::allocator* alloc, const char_t* fmt_arg) :
@@ -63,12 +64,11 @@ namespace
 
 		void alloc_buffer()
 		{
-			dest = reinterpret_cast<char_t*>(
+			allocated = reinterpret_cast<char_t*>(
 				buffer_allocator->allocate(
 					acc_len * sizeof(char_t)));
 
-			if (dest != NULL)
-				dest += acc_len;
+			dest = allocated != NULL ? allocated + acc_len : NULL;
 		}
 
 		struct conversion_spec
@@ -218,6 +218,9 @@ namespace
 
 		template <class T, class Arg>
 		void process_binary(const conversion_spec* spec);
+
+		template <class T>
+		void process_n();
 
 		void process_string();
 		void process_conversion();
@@ -394,6 +397,16 @@ void string_formatting::process_binary(const conversion_spec* spec)
 		output_zero_int(spec, spec->flags.hash ? prefix_0b : no_prefix);
 }
 
+template <class T>
+void string_formatting::process_n()
+{
+	T* pos = va_arg(ap, T*);
+
+	process_verbatim();
+
+	*pos = (T) (dest - allocated);
+}
+
 void string_formatting::process_string()
 {
 	const char_t* str = va_arg(ap, const char_t*);
@@ -542,6 +555,9 @@ void string_formatting::process_conversion()
 		case B_L_PREFIX('b'):
 			process_binary<unsigned short, unsigned>(&spec);
 			return;
+		case B_L_PREFIX('n'):
+			process_n<short>();
+			return;
 		}
 		break;
 
@@ -566,6 +582,9 @@ void string_formatting::process_conversion()
 			return;
 		case B_L_PREFIX('b'):
 			process_binary<uintmax_t, uintmax_t>(&spec);
+			return;
+		case B_L_PREFIX('n'):
+			process_n<intmax_t>();
 			return;
 		}
 		break;
@@ -596,6 +615,9 @@ void string_formatting::process_conversion()
 		case B_L_PREFIX('b'):
 			process_binary<unsigned long, unsigned long>(&spec);
 			return;
+		case B_L_PREFIX('n'):
+			process_n<long>();
+			return;
 		}
 		break;
 
@@ -612,6 +634,9 @@ void string_formatting::process_conversion()
 		case B_L_PREFIX('X'):
 		case B_L_PREFIX('x'):
 			B_ASSERT("incompatible length modifier" && false);
+			return;
+		case B_L_PREFIX('n'):
+			process_n<ptrdiff_t>();
 			return;
 		}
 		break;
@@ -637,6 +662,9 @@ void string_formatting::process_conversion()
 			return;
 		case B_L_PREFIX('b'):
 			process_binary<size_t, size_t>(&spec);
+			return;
+		case B_L_PREFIX('n'):
+			process_n<size_t>();
 			return;
 		}
 		break;
@@ -664,6 +692,10 @@ void string_formatting::process_conversion()
 
 	case B_L_PREFIX('b'):
 		process_binary<unsigned, unsigned>(&spec);
+		return;
+
+	case B_L_PREFIX('n'):
+		process_n<int>();
 		return;
 
 	case B_L_PREFIX('s'):
@@ -719,6 +751,8 @@ string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 	formatting.process_verbatim();
 	va_end(formatting.ap);
 
+	B_ASSERT(formatting.dest == formatting.allocated);
+
 	return string_view(formatting.dest, formatting.acc_len);
 }
 
@@ -729,6 +763,8 @@ string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
 	B_VA_COPY(formatting.ap, ap);
 	formatting.process_verbatim();
 	B_VA_COPY_END(formatting.ap);
+
+	B_ASSERT(formatting.dest == formatting.allocated);
 
 	return string_view(formatting.dest, formatting.acc_len);
 }

@@ -423,3 +423,13 @@ B_TEST_CASE(binary_conversions)
 	B_CHECK(format(0x0Fu, "b", "", 1, 5) == "[01111]");
 	B_CHECK(format(0x0Fu, "b", "#", 1, 5) == "[0b01111]");
 }
+
+B_TEST_CASE(n_conversion)
+{
+	int number_of_chars;
+
+	B_CHECK(b::string::formatted("123%s%n<-67%s", "45",
+		&number_of_chars, "89") == "12345<-6789");
+
+	B_CHECK(number_of_chars == 5);
+}
