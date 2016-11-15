@@ -226,8 +226,8 @@ namespace
 		void process_conversion();
 		void process_verbatim();
 
-		static char_t lcase_hex[17];
-		static char_t ucase_hex[17];
+		static const char_t lcase_hex[17];
+		static const char_t ucase_hex[17];
 	};
 }
 
@@ -738,8 +738,8 @@ void string_formatting::process_verbatim()
 		output_string(start, len);
 }
 
-char_t string_formatting::lcase_hex[17] = B_L_PREFIX("0123456789abcdef");
-char_t string_formatting::ucase_hex[17] = B_L_PREFIX("0123456789ABCDEF");
+const char_t string_formatting::lcase_hex[17] = B_L_PREFIX("0123456789abcdef");
+const char_t string_formatting::ucase_hex[17] = B_L_PREFIX("0123456789ABCDEF");
 
 B_BEGIN_NAMESPACE
 
