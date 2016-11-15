@@ -186,7 +186,7 @@ static b::string int_to_str(unsigned long n, unsigned base = 10)
 	}
 	while (n > 0);
 
-	return b::string(ptr, buffer_end - ptr);
+	return b::string(ptr, (size_t) (buffer_end - ptr));
 }
 
 B_STATIC_CONST_STRING(space, " ");
