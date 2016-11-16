@@ -432,4 +432,20 @@ B_TEST_CASE(n_conversion)
 		&number_of_chars, "89") == "12345<-6789");
 
 	B_CHECK(number_of_chars == 5);
+
+	union
+	{
+		short words[4];
+		char mold[sizeof(words)];
+	};
+
+	b::Memory::Fill(mold, sizeof(mold), (char) -1);
+	words[1] = 5;
+
+	char expected[sizeof(mold)];
+	b::Memory::Copy(expected, mold, sizeof(expected));
+
+	B_CHECK(b::string::formatted("hello%hn", words + 1) == "hello");
+
+	B_CHECK(b::Memory::Compare(mold, expected, sizeof(expected)) == 0);
 }
