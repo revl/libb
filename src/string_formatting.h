@@ -204,26 +204,28 @@ namespace
 		}
 
 		template <class T, class U, class Arg>
-		void process_decimal(const conversion_spec* spec);
+		void process_d_conversion(const conversion_spec* spec);
 
 		template <class T, class Arg>
-		void process_unsigned(const conversion_spec* spec);
+		void process_u_conversion(const conversion_spec* spec);
 
 		template <class T, class Arg>
-		void process_octal(const conversion_spec* spec);
+		void process_o_conversion(const conversion_spec* spec);
 
 		template <class T, class Arg>
-		void process_hex(const conversion_spec* spec,
+		void process_x_conversion(const conversion_spec* spec,
 			const char_t* digit_chars);
 
 		template <class T, class Arg>
-		void process_binary(const conversion_spec* spec);
+		void process_b_conversion(const conversion_spec* spec);
 
 		template <class T>
-		void process_n();
+		void process_n_conversion();
 
-		void process_string();
+		void process_s_conversion();
+
 		void process_conversion();
+
 		void process_verbatim();
 
 		static const char_t lcase_hex[17];
@@ -285,7 +287,7 @@ void string_formatting::output_int(const conversion_spec* spec,
 }
 
 template <class T, class U, class Arg>
-void string_formatting::process_decimal(const conversion_spec* spec)
+void string_formatting::process_d_conversion(const conversion_spec* spec)
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -315,7 +317,7 @@ void string_formatting::process_decimal(const conversion_spec* spec)
 }
 
 template <class T, class Arg>
-void string_formatting::process_unsigned(const conversion_spec* spec)
+void string_formatting::process_u_conversion(const conversion_spec* spec)
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -332,7 +334,7 @@ void string_formatting::process_unsigned(const conversion_spec* spec)
 }
 
 template <class T, class Arg>
-void string_formatting::process_octal(const conversion_spec* spec)
+void string_formatting::process_o_conversion(const conversion_spec* spec)
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -357,7 +359,7 @@ void string_formatting::process_octal(const conversion_spec* spec)
 }
 
 template <class T, class Arg>
-void string_formatting::process_hex(const conversion_spec* spec,
+void string_formatting::process_x_conversion(const conversion_spec* spec,
 	const char_t* digit_chars)
 {
 	int_conv_buffer<MAX_HEX_BUF_LEN(T)> buffer;
@@ -378,7 +380,7 @@ void string_formatting::process_hex(const conversion_spec* spec,
 }
 
 template <class T, class Arg>
-void string_formatting::process_binary(const conversion_spec* spec)
+void string_formatting::process_b_conversion(const conversion_spec* spec)
 {
 	int_conv_buffer<MAX_BINARY_BUF_LEN(T)> buffer;
 
@@ -398,7 +400,7 @@ void string_formatting::process_binary(const conversion_spec* spec)
 }
 
 template <class T>
-void string_formatting::process_n()
+void string_formatting::process_n_conversion()
 {
 	T* pos = va_arg(ap, T*);
 
@@ -407,7 +409,7 @@ void string_formatting::process_n()
 	*pos = (T) (dest - allocated);
 }
 
-void string_formatting::process_string()
+void string_formatting::process_s_conversion()
 {
 	const char_t* str = va_arg(ap, const char_t*);
 
@@ -538,25 +540,27 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_decimal<short, unsigned short, int>(&spec);
+			process_d_conversion<short, unsigned short, int>(&spec);
 			return;
 		case B_L_PREFIX('u'):
-			process_unsigned<unsigned short, unsigned>(&spec);
+			process_u_conversion<unsigned short, unsigned>(&spec);
 			return;
 		case B_L_PREFIX('o'):
-			process_octal<unsigned short, unsigned>(&spec);
+			process_o_conversion<unsigned short, unsigned>(&spec);
 			return;
 		case B_L_PREFIX('X'):
-			process_hex<unsigned short, unsigned>(&spec, ucase_hex);
+			process_x_conversion<unsigned short, unsigned>(
+				&spec, ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_hex<unsigned short, unsigned>(&spec, lcase_hex);
+			process_x_conversion<unsigned short, unsigned>(
+				&spec, lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_binary<unsigned short, unsigned>(&spec);
+			process_b_conversion<unsigned short, unsigned>(&spec);
 			return;
 		case B_L_PREFIX('n'):
-			process_n<short>();
+			process_n_conversion<short>();
 			return;
 		}
 		break;
@@ -566,25 +570,28 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_decimal<intmax_t, uintmax_t, intmax_t>(&spec);
+			process_d_conversion<intmax_t, uintmax_t, intmax_t>(
+				&spec);
 			return;
 		case B_L_PREFIX('u'):
-			process_unsigned<uintmax_t, uintmax_t>(&spec);
+			process_u_conversion<uintmax_t, uintmax_t>(&spec);
 			return;
 		case B_L_PREFIX('o'):
-			process_octal<uintmax_t, uintmax_t>(&spec);
+			process_o_conversion<uintmax_t, uintmax_t>(&spec);
 			return;
 		case B_L_PREFIX('X'):
-			process_hex<uintmax_t, uintmax_t>(&spec, ucase_hex);
+			process_x_conversion<uintmax_t, uintmax_t>(
+				&spec, ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_hex<uintmax_t, uintmax_t>(&spec, lcase_hex);
+			process_x_conversion<uintmax_t, uintmax_t>(
+				&spec, lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_binary<uintmax_t, uintmax_t>(&spec);
+			process_b_conversion<uintmax_t, uintmax_t>(&spec);
 			return;
 		case B_L_PREFIX('n'):
-			process_n<intmax_t>();
+			process_n_conversion<intmax_t>();
 			return;
 		}
 		break;
@@ -594,29 +601,30 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_decimal<long, unsigned long, long>(&spec);
+			process_d_conversion<long, unsigned long, long>(&spec);
 			return;
 		case B_L_PREFIX('u'):
-			process_unsigned<unsigned long, unsigned long>(
+			process_u_conversion<unsigned long, unsigned long>(
 				&spec);
 			return;
 		case B_L_PREFIX('o'):
-			process_octal<unsigned long, unsigned long>(
+			process_o_conversion<unsigned long, unsigned long>(
 				&spec);
 			return;
 		case B_L_PREFIX('X'):
-			process_hex<unsigned long, unsigned long>(&spec,
-				ucase_hex);
+			process_x_conversion<unsigned long, unsigned long>(
+				&spec, ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_hex<unsigned long, unsigned long>(&spec,
-				lcase_hex);
+			process_x_conversion<unsigned long, unsigned long>(
+				&spec, lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_binary<unsigned long, unsigned long>(&spec);
+			process_b_conversion<unsigned long, unsigned long>(
+				&spec);
 			return;
 		case B_L_PREFIX('n'):
-			process_n<long>();
+			process_n_conversion<long>();
 			return;
 		}
 		break;
@@ -626,7 +634,8 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_decimal<ptrdiff_t, size_t, ptrdiff_t>(&spec);
+			process_d_conversion<ptrdiff_t, size_t, ptrdiff_t>(
+				&spec);
 			return;
 		case B_L_PREFIX('b'):
 		case B_L_PREFIX('o'):
@@ -636,7 +645,7 @@ void string_formatting::process_conversion()
 			B_ASSERT("incompatible length modifier" && false);
 			return;
 		case B_L_PREFIX('n'):
-			process_n<ptrdiff_t>();
+			process_n_conversion<ptrdiff_t>();
 			return;
 		}
 		break;
@@ -646,60 +655,60 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_decimal<ssize_t, size_t, ssize_t>(&spec);
+			process_d_conversion<ssize_t, size_t, ssize_t>(&spec);
 			return;
 		case B_L_PREFIX('u'):
-			process_unsigned<size_t, size_t>(&spec);
+			process_u_conversion<size_t, size_t>(&spec);
 			return;
 		case B_L_PREFIX('o'):
-			process_octal<size_t, size_t>(&spec);
+			process_o_conversion<size_t, size_t>(&spec);
 			return;
 		case B_L_PREFIX('X'):
-			process_hex<size_t, size_t>(&spec, ucase_hex);
+			process_x_conversion<size_t, size_t>(&spec, ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_hex<size_t, size_t>(&spec, lcase_hex);
+			process_x_conversion<size_t, size_t>(&spec, lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_binary<size_t, size_t>(&spec);
+			process_b_conversion<size_t, size_t>(&spec);
 			return;
 		case B_L_PREFIX('n'):
-			process_n<size_t>();
+			process_n_conversion<size_t>();
 			return;
 		}
 		break;
 
 	case B_L_PREFIX('d'):
 	case B_L_PREFIX('i'):
-		process_decimal<int, unsigned, int>(&spec);
+		process_d_conversion<int, unsigned, int>(&spec);
 		return;
 
 	case B_L_PREFIX('u'):
-		process_unsigned<unsigned, unsigned>(&spec);
+		process_u_conversion<unsigned, unsigned>(&spec);
 		return;
 
 	case B_L_PREFIX('o'):
-		process_octal<unsigned, unsigned>(&spec);
+		process_o_conversion<unsigned, unsigned>(&spec);
 		return;
 
 	case B_L_PREFIX('X'):
-		process_hex<unsigned, unsigned>(&spec, ucase_hex);
+		process_x_conversion<unsigned, unsigned>(&spec, ucase_hex);
 		return;
 
 	case B_L_PREFIX('x'):
-		process_hex<unsigned, unsigned>(&spec, lcase_hex);
+		process_x_conversion<unsigned, unsigned>(&spec, lcase_hex);
 		return;
 
 	case B_L_PREFIX('b'):
-		process_binary<unsigned, unsigned>(&spec);
+		process_b_conversion<unsigned, unsigned>(&spec);
 		return;
 
 	case B_L_PREFIX('n'):
-		process_n<int>();
+		process_n_conversion<int>();
 		return;
 
 	case B_L_PREFIX('s'):
-		process_string();
+		process_s_conversion();
 		return;
 	}
 
