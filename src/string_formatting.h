@@ -162,16 +162,17 @@ namespace
 			prefix_0x = 18
 		};
 
-		void output_int(const conversion_spec* spec,
+		void recurse_then_output_int(const conversion_spec* spec,
 			const char_t* buffer, size_t digits,
 			size_t digits_and_zeros,
 			prefix_offset prefix);
 
-		void output_non_zero_int(const conversion_spec* spec,
+		void recurse_then_output_non_zero_int(
+			const conversion_spec* spec,
 			const char_t* buffer, size_t digits,
 			prefix_offset prefix)
 		{
-			output_int(spec, buffer, digits,
+			recurse_then_output_int(spec, buffer, digits,
 				/*digits_and_zeros=*/
 					spec->flags.precision_defined &&
 						spec->precision > digits ?
@@ -179,26 +180,26 @@ namespace
 				prefix);
 		}
 
-		void output_zero_int(const conversion_spec* spec)
+		void recurse_then_output_zero_int(const conversion_spec* spec)
 		{
-			output_int(spec, /*buffer=*/ NULL,
+			recurse_then_output_int(spec, /*buffer=*/ NULL,
 				/*digits=*/ 0,
 				/*digits_and_zeros=*/
 					!spec->flags.precision_defined ?
 						1 : spec->precision, no_prefix);
 		}
 
-		void output_zero_int(const conversion_spec* spec,
+		void recurse_then_output_zero_int(const conversion_spec* spec,
 			prefix_offset prefix)
 		{
 			if (spec->flags.precision_defined)
-				output_int(spec, /*buffer=*/ NULL,
+				recurse_then_output_int(spec, /*buffer=*/ NULL,
 					/*digits=*/ 0,
 					/*digits_and_zeros=*/ spec->precision,
 					spec->precision > 0 ?
 						prefix : no_prefix);
 			else
-				output_int(spec, /*buffer=*/ NULL,
+				recurse_then_output_int(spec, /*buffer=*/ NULL,
 					/*digits=*/ 0,
 					/*digits_and_zeros=*/ 1, prefix);
 		}
@@ -226,14 +227,14 @@ namespace
 
 		void process_conversion();
 
-		void process_verbatim();
+		void recurse();
 
 		static const char_t lcase_hex[17];
 		static const char_t ucase_hex[17];
 	};
 }
 
-void string_formatting::output_int(const conversion_spec* spec,
+void string_formatting::recurse_then_output_int(const conversion_spec* spec,
 	const char_t* buffer, size_t digits,
 	size_t digits_and_zeros, prefix_offset prefix)
 {
@@ -251,7 +252,7 @@ void string_formatting::output_int(const conversion_spec* spec,
 
 	acc_len += width;
 
-	process_verbatim();
+	recurse();
 
 	if (dest != NULL)
 	{
@@ -292,8 +293,9 @@ void string_formatting::process_d_conversion(const conversion_spec* spec)
 	T number = (T) va_arg(ap, Arg);
 
 	if (number == 0)
-		output_zero_int(spec, spec->flags.plus || spec->flags.space ?
-			prefix_space : no_prefix);
+		recurse_then_output_zero_int(spec,
+			spec->flags.plus || spec->flags.space ?
+				prefix_space : no_prefix);
 	else
 	{
 		int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
@@ -302,7 +304,8 @@ void string_formatting::process_d_conversion(const conversion_spec* spec)
 		{
 			convert_positive_to_decimal(spec, number, &buffer);
 
-			output_non_zero_int(spec, buffer.pos, buffer.len(),
+			recurse_then_output_non_zero_int(spec,
+				buffer.pos, buffer.len(),
 				spec->flags.plus ? prefix_plus :
 				spec->flags.space ? prefix_space : no_prefix);
 		}
@@ -310,8 +313,8 @@ void string_formatting::process_d_conversion(const conversion_spec* spec)
 		{
 			convert_positive_to_decimal(spec, (U) -number, &buffer);
 
-			output_non_zero_int(spec, buffer.pos, buffer.len(),
-				prefix_minus);
+			recurse_then_output_non_zero_int(spec,
+				buffer.pos, buffer.len(), prefix_minus);
 		}
 	}
 }
@@ -327,10 +330,11 @@ void string_formatting::process_u_conversion(const conversion_spec* spec)
 
 		convert_positive_to_decimal(spec, number, &buffer);
 
-		output_non_zero_int(spec, buffer.pos, buffer.len(), no_prefix);
+		recurse_then_output_non_zero_int(spec,
+			buffer.pos, buffer.len(), no_prefix);
 	}
 	else
-		output_zero_int(spec);
+		recurse_then_output_zero_int(spec);
 }
 
 template <class T, class Arg>
@@ -348,14 +352,14 @@ void string_formatting::process_o_conversion(const conversion_spec* spec)
 
 		size_t digits = buffer.len();
 
-		output_int(spec, buffer.pos, digits,
+		recurse_then_output_int(spec, buffer.pos, digits,
 			/*digits_and_zeros=*/ spec->flags.precision_defined &&
 				spec->precision > digits ? spec->precision :
 				!spec->flags.hash ? digits : digits + 1,
 				no_prefix);
 	}
 	else
-		output_zero_int(spec);
+		recurse_then_output_zero_int(spec);
 }
 
 template <class T, class Arg>
@@ -372,11 +376,12 @@ void string_formatting::process_x_conversion(const conversion_spec* spec,
 			buffer.add_char(digit_chars[number % 16]);
 		while ((number /= 16) != 0);
 
-		output_non_zero_int(spec, buffer.pos, buffer.len(),
+		recurse_then_output_non_zero_int(spec, buffer.pos, buffer.len(),
 			spec->flags.hash ? prefix_0x : no_prefix);
 	}
 	else
-		output_zero_int(spec, spec->flags.hash ? prefix_0x : no_prefix);
+		recurse_then_output_zero_int(spec,
+			spec->flags.hash ? prefix_0x : no_prefix);
 }
 
 template <class T, class Arg>
@@ -392,11 +397,12 @@ void string_formatting::process_b_conversion(const conversion_spec* spec)
 			buffer.add_digit(number % 2);
 		while ((number /= 2) != 0);
 
-		output_non_zero_int(spec, buffer.pos, buffer.len(),
+		recurse_then_output_non_zero_int(spec, buffer.pos, buffer.len(),
 			spec->flags.hash ? prefix_0b : no_prefix);
 	}
 	else
-		output_zero_int(spec, spec->flags.hash ? prefix_0b : no_prefix);
+		recurse_then_output_zero_int(spec,
+			spec->flags.hash ? prefix_0b : no_prefix);
 }
 
 template <class T>
@@ -404,7 +410,7 @@ void string_formatting::process_n_conversion()
 {
 	T* pos = va_arg(ap, T*);
 
-	process_verbatim();
+	recurse();
 
 	*pos = (T) (dest - allocated);
 }
@@ -416,7 +422,7 @@ void string_formatting::process_s_conversion()
 	size_t len = b::calc_length(str);
 	acc_len += len;
 
-	process_verbatim();
+	recurse();
 
 	if (dest != NULL)
 		output_string(str, len);
@@ -428,7 +434,7 @@ void string_formatting::process_conversion()
 	{
 		++fmt;
 		++acc_len;
-		process_verbatim();
+		recurse();
 		if (dest != NULL)
 			output_char(B_L_PREFIX('%'));
 		return;
@@ -717,7 +723,7 @@ void string_formatting::process_conversion()
 	dest = NULL;
 }
 
-void string_formatting::process_verbatim()
+void string_formatting::recurse()
 {
 	const char_t* start = fmt;
 	size_t len = 0;
@@ -757,7 +763,7 @@ string_view format_buffer(allocator* alloc, const char_t* fmt, ...)
 	string_formatting formatting(alloc, fmt);
 
 	va_start(formatting.ap, fmt);
-	formatting.process_verbatim();
+	formatting.recurse();
 	va_end(formatting.ap);
 
 	B_ASSERT(formatting.dest == formatting.allocated);
@@ -770,7 +776,7 @@ string_view format_buffer_va(allocator* alloc, const char_t* fmt, va_list ap)
 	string_formatting formatting(alloc, fmt);
 
 	B_VA_COPY(formatting.ap, ap);
-	formatting.process_verbatim();
+	formatting.recurse();
 	B_VA_COPY_END(formatting.ap);
 
 	B_ASSERT(formatting.dest == formatting.allocated);
