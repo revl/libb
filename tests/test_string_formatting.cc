@@ -114,11 +114,6 @@ B_TEST_CASE(zero_precision)
 	B_CHECK(b::string::formatted("[%#.0X]", 0x0) == "[]");
 }
 
-B_TEST_CASE(hexadecimal_conversion)
-{
-	B_CHECK(b::string::formatted("[%#5.4X]", 0xA) == "[0x000A]");
-}
-
 struct static_buffer_allocator : public b::allocator
 {
 	static_buffer_allocator(char* pre_allocated, size_t size) :
@@ -394,6 +389,8 @@ B_TEST_CASE(octal_conversions)
 
 B_TEST_CASE(hex_conversions)
 {
+	B_CHECK(format(0xAu, "X", "#", 5, 4) == "[0x000A]");
+
 	B_CHECK(format(0xFFFFu, "x", "", -10, 2) == "[ffff      ]");
 	B_CHECK(format(0xFFFFu, "x", "#", -10, 2) == "[0xffff    ]");
 	B_CHECK(format(0xFFFFu, "x", "", -10, 6) == "[00ffff    ]");
@@ -464,4 +461,19 @@ B_TEST_CASE(p_conversion)
 
 	B_CHECK(format((void*) 0x12345678, "p", NULL, -256, 128) ==
 		expect(0, "0x", 128 - 8, 0x12345678, 16, 256 - 2 - 128));
+}
+
+B_TEST_CASE(s_conversions)
+{
+	B_CHECK(b::string::formatted("[%8.0s]", "testing") == "[        ]");
+
+	B_CHECK(b::string::formatted("[%8.8s]", "testing") == "[ testing]");
+	B_CHECK(b::string::formatted("[%8.4s]", "testing") == "[    test]");
+
+	B_CHECK(b::string::formatted("[%-8.8s]", "testing") == "[testing ]");
+	B_CHECK(b::string::formatted("[%-8.4s]", "testing") == "[test    ]");
+
+	B_CHECK(b::string::formatted("[%8.16s]", "testing") == "[ testing]");
+	B_CHECK(b::string::formatted("[%4.8s]", "testing") == "[testing]");
+	B_CHECK(b::string::formatted("[%2.4s]", "testing") == "[test]");
 }

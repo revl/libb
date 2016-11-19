@@ -223,7 +223,7 @@ namespace
 		template <class T>
 		void process_n_conversion();
 
-		void process_s_conversion();
+		void process_s_conversion(const conversion_spec* spec);
 
 		void process_conversion();
 
@@ -415,17 +415,35 @@ void string_formatting::process_n_conversion()
 	*pos = (T) (dest - allocated);
 }
 
-void string_formatting::process_s_conversion()
+void string_formatting::process_s_conversion(const conversion_spec* spec)
 {
 	const char_t* str = va_arg(ap, const char_t*);
 
-	size_t len = b::calc_length(str);
-	acc_len += len;
+	size_t str_len = spec->flags.precision_defined ?
+		b::calc_length(str, spec->precision) : b::calc_length(str);
+
+	size_t width = spec->flags.min_width_defined &&
+		spec->min_width > str_len ? spec->min_width : str_len;
+
+	acc_len += width;
 
 	recurse();
 
 	if (dest != NULL)
-		output_string(str, len);
+	{
+		size_t spaces = width - str_len;
+
+		if (!spec->flags.minus)
+		{
+			output_string(str, str_len);
+			output_chars(B_L_PREFIX(' '), spaces);
+		}
+		else
+		{
+			output_chars(B_L_PREFIX(' '), spaces);
+			output_string(str, str_len);
+		}
+	}
 }
 
 void string_formatting::process_conversion()
@@ -726,7 +744,7 @@ void string_formatting::process_conversion()
 		return;
 
 	case B_L_PREFIX('s'):
-		process_s_conversion();
+		process_s_conversion(&spec);
 		return;
 	}
 
