@@ -62,15 +62,15 @@ linked_list<test_case::node_access> test_case::test_case_list =
 B_END_NAMESPACE
 
 #define B_TEST_CASE(class_name) \
-	class class_name : public b::test_case \
+	class test_##class_name : public b::test_case \
 	{ \
 	public: \
-		class_name(const char* name) : b::test_case(name) \
+		test_##class_name(const char* name) : b::test_case(name) \
 		{ \
 		} \
 		virtual void run(); \
-	} static class_name##_instance(#class_name); \
-	void class_name::run()
+	} static test_##class_name##_instance(#class_name); \
+	void test_##class_name::run()
 
 #define B_CHECK(condition) \
 	do \
