@@ -40,11 +40,12 @@ void* save_length_allocator::allocate(size_t size)
 	return NULL;
 }
 
-B_TEST_CASE(test_int_conversions)
+B_TEST_CASE(allocator_returns_null)
 {
 	save_length_allocator length_saver;
 
-	b::format_buffer(&length_saver, L"int: %d and int: %d", 0, 100);
+	B_CHECK(b::format_buffer(&length_saver,
+		L"int: %d and int: %d", 0, 100).is_empty());
 
 	B_CHECK(length_saver.saved_length == 19);
 

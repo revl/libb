@@ -64,11 +64,22 @@ namespace
 
 		void alloc_buffer()
 		{
-			allocated = reinterpret_cast<char_t*>(
-				buffer_allocator->allocate(
-					acc_len * sizeof(char_t)));
+			if (acc_len > 0)
+			{
+				allocated = reinterpret_cast<char_t*>(
+					buffer_allocator->allocate(
+						acc_len * sizeof(char_t)));
 
-			dest = allocated != NULL ? allocated + acc_len : NULL;
+				if (allocated != NULL)
+					dest = allocated + acc_len;
+				else
+				{
+					acc_len = 0;
+					dest = NULL;
+				}
+			}
+			else
+				allocated = dest = NULL;
 		}
 
 		struct conversion_spec
@@ -412,7 +423,8 @@ void string_formatting::process_n_conversion()
 
 	recurse();
 
-	*pos = (T) (dest - allocated);
+	if (dest != NULL)
+		*pos = (T) (dest - allocated);
 }
 
 void string_formatting::process_s_conversion(const conversion_spec* spec)
