@@ -449,3 +449,19 @@ B_TEST_CASE(n_conversion)
 
 	B_CHECK(b::Memory::Compare(mold, expected, sizeof(expected)) == 0);
 }
+
+B_TEST_CASE(p_conversion)
+{
+	B_CHECK(format((void*) 0x12345678, "p") ==
+		expect(0, "0x", sizeof(void*) * 2 - 8, 0x12345678, 16));
+
+	B_CHECK(format((void*) 0x12345678, "p", NULL, 128) ==
+		expect(128 - 2 - sizeof(void*) * 2, "0x",
+			sizeof(void*) * 2 - 8, 0x12345678, 16));
+
+	B_CHECK(format((void*) 0x12345678, "p", NULL, 256, 128) ==
+		expect(256 - 2 - 128, "0x", 128 - 8, 0x12345678, 16));
+
+	B_CHECK(format((void*) 0x12345678, "p", NULL, -256, 128) ==
+		expect(0, "0x", 128 - 8, 0x12345678, 16, 256 - 2 - 128));
+}

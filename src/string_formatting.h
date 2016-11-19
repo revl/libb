@@ -713,6 +713,18 @@ void string_formatting::process_conversion()
 		process_n_conversion<int>();
 		return;
 
+	case B_L_PREFIX('p'):
+		spec.flags.hash = true;
+
+		if (!spec.flags.precision_defined)
+		{
+			spec.flags.precision_defined = true;
+			spec.precision = sizeof(void*) * 2;
+		}
+
+		process_x_conversion<size_t, void*>(&spec, ucase_hex);
+		return;
+
 	case B_L_PREFIX('s'):
 		process_s_conversion();
 		return;
