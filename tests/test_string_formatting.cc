@@ -55,14 +55,6 @@ B_TEST_CASE(test_int_conversions)
 	B_CHECK(s == "verbatim 123 verbatim");
 }
 
-B_TEST_CASE(test_int_width_and_precision)
-{
-	B_CHECK(b::string::formatted("[%2.1d]", 100) == "[100]");
-	B_CHECK(b::string::formatted("[%4.3d]", 100) == "[ 100]");
-	B_CHECK(b::string::formatted("[%4.4d]", 100) == "[0100]");
-	B_CHECK(b::string::formatted("[%5.4d]", 100) == "[ 0100]");
-}
-
 B_TEST_CASE(sign_is_required)
 {
 	B_CHECK(b::string::formatted("[% d]", 1) == "[ 1]");
@@ -137,7 +129,7 @@ void* static_buffer_allocator::allocate(size_t size)
 	return buffer;
 }
 
-B_TEST_CASE(test_custom_allocator)
+B_TEST_CASE(custom_allocator)
 {
 	static char buffer[1024];
 
@@ -150,7 +142,7 @@ B_TEST_CASE(test_custom_allocator)
 	B_CHECK(formatted.length() == 39);
 }
 
-B_TEST_CASE(test_percent_sign_escaping)
+B_TEST_CASE(percent_sign_escaping)
 {
 	b::string s;
 
@@ -286,8 +278,13 @@ B_TEST_CASE(zero_value)
 	B_CHECK(format(0u, "x", "0", 8) == "[00000000]");
 }
 
-B_TEST_CASE(decimal_conversions)
+B_TEST_CASE(d_conversions)
 {
+	B_CHECK(b::string::formatted("[%2.1d]", 100) == "[100]");
+	B_CHECK(b::string::formatted("[%4.3d]", 100) == "[ 100]");
+	B_CHECK(b::string::formatted("[%4.4d]", 100) == "[0100]");
+	B_CHECK(b::string::formatted("[%5.4d]", 100) == "[ 0100]");
+
 	const long billion = 1000 * 1000 * 1000;
 
 	B_CHECK(format(billion, "ld", "'") == "[1,000,000,000]");
@@ -353,7 +350,7 @@ B_TEST_CASE(decimal_conversions)
 	B_CHECK(format(-1234, "d", "", 1, 5) == "[-01234]");
 }
 
-B_TEST_CASE(unsigned_conversions)
+B_TEST_CASE(u_conversions)
 {
 	const unsigned long billion = 1000 * 1000 * 1000;
 
@@ -371,7 +368,7 @@ B_TEST_CASE(unsigned_conversions)
 	B_CHECK(format(1234u, "u", "", 1, 5) == "[01234]");
 }
 
-B_TEST_CASE(octal_conversions)
+B_TEST_CASE(o_conversions)
 {
 	B_CHECK(format(0777u, "o", "", -10, 2) == "[777       ]");
 	B_CHECK(format(0777u, "o", "#", -10, 2) == "[0777      ]");
@@ -387,7 +384,7 @@ B_TEST_CASE(octal_conversions)
 	B_CHECK(format(01234u, "o", "#", 1, 5) == "[01234]");
 }
 
-B_TEST_CASE(hex_conversions)
+B_TEST_CASE(x_conversions)
 {
 	B_CHECK(format(0xAu, "X", "#", 5, 4) == "[0x000A]");
 
@@ -405,7 +402,7 @@ B_TEST_CASE(hex_conversions)
 	B_CHECK(format(0x1234u, "x", "#", 1, 5) == "[0x01234]");
 }
 
-B_TEST_CASE(binary_conversions)
+B_TEST_CASE(b_conversions)
 {
 	B_CHECK(format(0x0Fu, "b", "", -10, 2) == "[1111      ]");
 	B_CHECK(format(0x0Fu, "b", "#", -10, 2) == "[0b1111    ]");
@@ -421,7 +418,7 @@ B_TEST_CASE(binary_conversions)
 	B_CHECK(format(0x0Fu, "b", "#", 1, 5) == "[0b01111]");
 }
 
-B_TEST_CASE(n_conversion)
+B_TEST_CASE(n_conversions)
 {
 	int number_of_chars;
 
@@ -447,7 +444,7 @@ B_TEST_CASE(n_conversion)
 	B_CHECK(b::Memory::Compare(mold, expected, sizeof(expected)) == 0);
 }
 
-B_TEST_CASE(p_conversion)
+B_TEST_CASE(p_conversions)
 {
 	B_CHECK(format((void*) 0x12345678, "p") ==
 		expect(0, "0x", sizeof(void*) * 2 - 8, 0x12345678, 16));
