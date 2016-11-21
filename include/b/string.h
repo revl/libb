@@ -40,7 +40,7 @@ public:
 
 	// Constructs a string from a linear character array
 	// repeated multiple times.
-	string(const char_t* source, size_t count, size_t repeat);
+	string(const char_t* source, size_t count, size_t times);
 
 	// Creates a string of <count> copies of source.
 	explicit string(char_t source, size_t count = 1);

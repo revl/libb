@@ -20,18 +20,18 @@
 
 B_BEGIN_NAMESPACE
 
-string::string(const char_t* source, size_t count, size_t repeat)
+string::string(const char_t* source, size_t count, size_t times)
 {
-	size_t length = count * repeat;
+	size_t total_count = count * times;
 
-	if (length == 0)
+	if (total_count == 0)
 		chars = empty_string();
 	else
 	{
-		chars = alloc_buffer(extra_capacity(length), length);
+		chars = alloc_buffer(extra_capacity(total_count), total_count);
 
 		if (count == 1)
-			assign_value(chars, repeat, *source);
+			assign_value(chars, times, *source);
 		else
 		{
 			char_t* dest = chars;
@@ -41,10 +41,10 @@ string::string(const char_t* source, size_t count, size_t repeat)
 				assign_pairwise(dest, source, count);
 				dest += count;
 			}
-			while (--repeat > 0);
+			while (--times > 0);
 		}
 
-		chars[length] = 0;
+		chars[total_count] = 0;
 	}
 }
 

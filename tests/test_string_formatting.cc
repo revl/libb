@@ -431,7 +431,7 @@ B_TEST_CASE(n_conversions)
 	union
 	{
 		short words[4];
-		char mold[sizeof(words)];
+		char mold[sizeof(short[4])];
 	};
 
 	b::Memory::Fill(mold, sizeof(mold), (char) -1);
