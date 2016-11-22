@@ -82,22 +82,21 @@ namespace
 				allocated = dest = NULL;
 		}
 
-		struct conversion_spec
+		struct conversion_flags
 		{
-			struct
-			{
-				bool space : 1;
-				bool hash : 1;
-				bool quote : 1;
-				bool plus : 1;
-				bool minus : 1;
-				bool zero : 1;
-				bool min_width_defined : 1;
-				bool precision_defined : 1;
-			} flags;
-			unsigned min_width;
-			unsigned precision;
+			bool space : 1;
+			bool hash : 1;
+			bool quote : 1;
+			bool plus : 1;
+			bool minus : 1;
+			bool zero : 1;
+			bool min_width_defined : 1;
+			bool precision_defined : 1;
 		};
+
+		conversion_flags flags;
+		unsigned min_width;
+		unsigned precision;
 
 		struct int_conv_pos
 		{
@@ -132,10 +131,9 @@ namespace
 		};
 
 		template <class T>
-		void convert_positive_to_decimal(const conversion_spec* spec,
-			T number, int_conv_pos* buffer)
+		void convert_positive_to_decimal(T number, int_conv_pos* buffer)
 		{
-			if (!spec->flags.quote)
+			if (!flags.quote)
 				do
 					buffer->add_digit(number % 10);
 				while ((number /= 10) != 0);
@@ -173,68 +171,59 @@ namespace
 			prefix_0x = 18
 		};
 
-		void recurse_then_output_int(const conversion_spec* spec,
-			const char_t* buffer, size_t digits,
-			size_t digits_and_zeros,
+		void recurse_then_output_int(const char_t* buffer,
+			size_t digits, size_t digits_and_zeros,
 			prefix_offset prefix);
 
-		void recurse_then_output_non_zero_int(
-			const conversion_spec* spec,
-			const char_t* buffer, size_t digits,
-			prefix_offset prefix)
+		void recurse_then_output_non_zero_int(const char_t* buffer,
+			size_t digits, prefix_offset prefix)
 		{
-			recurse_then_output_int(spec, buffer, digits,
-				/*digits_and_zeros=*/
-					spec->flags.precision_defined &&
-						spec->precision > digits ?
-					spec->precision : digits,
+			recurse_then_output_int(buffer, digits,
+				/*digits_and_zeros=*/ flags.precision_defined &&
+					precision > digits ? precision : digits,
 				prefix);
 		}
 
-		void recurse_then_output_zero_int(const conversion_spec* spec)
+		void recurse_then_output_zero_int()
 		{
-			recurse_then_output_int(spec, /*buffer=*/ NULL,
+			recurse_then_output_int(/*buffer=*/ NULL,
 				/*digits=*/ 0,
-				/*digits_and_zeros=*/
-					!spec->flags.precision_defined ?
-						1 : spec->precision, no_prefix);
+				/*digits_and_zeros=*/ !flags.precision_defined ?
+					1 : precision, no_prefix);
 		}
 
-		void recurse_then_output_zero_int(const conversion_spec* spec,
-			prefix_offset prefix)
+		void recurse_then_output_zero_int(prefix_offset prefix)
 		{
-			if (spec->flags.precision_defined)
-				recurse_then_output_int(spec, /*buffer=*/ NULL,
+			if (flags.precision_defined)
+				recurse_then_output_int(/*buffer=*/ NULL,
 					/*digits=*/ 0,
-					/*digits_and_zeros=*/ spec->precision,
-					spec->precision > 0 ?
-						prefix : no_prefix);
+					/*digits_and_zeros=*/ precision,
+					precision > 0 ? prefix : no_prefix);
 			else
-				recurse_then_output_int(spec, /*buffer=*/ NULL,
+				recurse_then_output_int(/*buffer=*/ NULL,
 					/*digits=*/ 0,
 					/*digits_and_zeros=*/ 1, prefix);
 		}
 
 		template <class T, class U, class Arg>
-		void process_d_conversion(const conversion_spec* spec);
+		void process_d_conversion();
 
 		template <class T, class Arg>
-		void process_u_conversion(const conversion_spec* spec);
+		void process_u_conversion();
 
 		template <class T, class Arg>
-		void process_o_conversion(const conversion_spec* spec);
+		void process_o_conversion();
 
 		template <class T, class Arg>
-		void process_x_conversion(const conversion_spec* spec,
-			const char_t* digit_chars);
+		void process_x_conversion(const char_t* digit_chars);
 
 		template <class T, class Arg>
-		void process_b_conversion(const conversion_spec* spec);
+		void process_b_conversion();
 
 		template <class T>
 		void process_n_conversion();
 
-		void process_s_conversion(const conversion_spec* spec);
+		void process_s_conversion();
 
 		void process_conversion();
 
@@ -245,9 +234,8 @@ namespace
 	};
 }
 
-void string_formatting::recurse_then_output_int(const conversion_spec* spec,
-	const char_t* buffer, size_t digits,
-	size_t digits_and_zeros, prefix_offset prefix)
+void string_formatting::recurse_then_output_int(const char_t* buffer,
+	size_t digits, size_t digits_and_zeros, prefix_offset prefix)
 {
 	static const char_t prefix_chars[21] =
 		B_L_PREFIX("          + -   0b0x");
@@ -257,9 +245,13 @@ void string_formatting::recurse_then_output_int(const conversion_spec* spec,
 	size_t digits_zeros_and_prefix = prefix_length > 0 ?
 		digits_and_zeros + prefix_length : digits_and_zeros;
 
-	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > digits_zeros_and_prefix ?
-			spec->min_width : digits_zeros_and_prefix;
+	// Preserve the contents of the 'flags' member variable,
+	// which will be overwritten by the 'recurse()' call below.
+	conversion_flags saved_flags = flags;
+
+	size_t width = saved_flags.min_width_defined &&
+		min_width > digits_zeros_and_prefix ?
+			min_width : digits_zeros_and_prefix;
 
 	acc_len += width;
 
@@ -270,11 +262,11 @@ void string_formatting::recurse_then_output_int(const conversion_spec* spec,
 		size_t zeros = digits_and_zeros - digits;
 		size_t spaces = width - digits_zeros_and_prefix;
 
-		if (!spec->flags.minus)
+		if (!saved_flags.minus)
 		{
 			output_string(buffer, digits);
 
-			if (!spec->flags.zero || spec->flags.precision_defined)
+			if (!saved_flags.zero || saved_flags.precision_defined)
 			{
 				output_chars(B_L_PREFIX('0'), zeros);
 				output_string(prefix_chars + prefix,
@@ -299,39 +291,37 @@ void string_formatting::recurse_then_output_int(const conversion_spec* spec,
 }
 
 template <class T, class U, class Arg>
-void string_formatting::process_d_conversion(const conversion_spec* spec)
+void string_formatting::process_d_conversion()
 {
 	T number = (T) va_arg(ap, Arg);
 
 	if (number == 0)
-		recurse_then_output_zero_int(spec,
-			spec->flags.plus || spec->flags.space ?
-				prefix_space : no_prefix);
+		recurse_then_output_zero_int(flags.plus || flags.space ?
+			prefix_space : no_prefix);
 	else
 	{
 		int_conv_buffer<MAX_DECIMAL_BUF_LEN(T)> buffer;
 
 		if (number > 0)
 		{
-			convert_positive_to_decimal(spec, number, &buffer);
+			convert_positive_to_decimal(number, &buffer);
 
-			recurse_then_output_non_zero_int(spec,
-				buffer.pos, buffer.len(),
-				spec->flags.plus ? prefix_plus :
-				spec->flags.space ? prefix_space : no_prefix);
+			recurse_then_output_non_zero_int(buffer.pos,
+				buffer.len(), flags.plus ? prefix_plus :
+					flags.space ? prefix_space : no_prefix);
 		}
 		else
 		{
-			convert_positive_to_decimal(spec, (U) -number, &buffer);
+			convert_positive_to_decimal((U) -number, &buffer);
 
-			recurse_then_output_non_zero_int(spec,
-				buffer.pos, buffer.len(), prefix_minus);
+			recurse_then_output_non_zero_int(buffer.pos,
+				buffer.len(), prefix_minus);
 		}
 	}
 }
 
 template <class T, class Arg>
-void string_formatting::process_u_conversion(const conversion_spec* spec)
+void string_formatting::process_u_conversion()
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -339,17 +329,17 @@ void string_formatting::process_u_conversion(const conversion_spec* spec)
 	{
 		int_conv_buffer<MAX_UNSIGNED_BUF_LEN(T)> buffer;
 
-		convert_positive_to_decimal(spec, number, &buffer);
+		convert_positive_to_decimal(number, &buffer);
 
-		recurse_then_output_non_zero_int(spec,
-			buffer.pos, buffer.len(), no_prefix);
+		recurse_then_output_non_zero_int(buffer.pos,
+			buffer.len(), no_prefix);
 	}
 	else
-		recurse_then_output_zero_int(spec);
+		recurse_then_output_zero_int();
 }
 
 template <class T, class Arg>
-void string_formatting::process_o_conversion(const conversion_spec* spec)
+void string_formatting::process_o_conversion()
 {
 	T number = (T) va_arg(ap, Arg);
 
@@ -363,19 +353,17 @@ void string_formatting::process_o_conversion(const conversion_spec* spec)
 
 		size_t digits = buffer.len();
 
-		recurse_then_output_int(spec, buffer.pos, digits,
-			/*digits_and_zeros=*/ spec->flags.precision_defined &&
-				spec->precision > digits ? spec->precision :
-				!spec->flags.hash ? digits : digits + 1,
-				no_prefix);
+		recurse_then_output_int(buffer.pos, digits,
+			/*digits_and_zeros=*/ flags.precision_defined &&
+				precision > digits ? precision :
+				!flags.hash ? digits : digits + 1, no_prefix);
 	}
 	else
-		recurse_then_output_zero_int(spec);
+		recurse_then_output_zero_int();
 }
 
 template <class T, class Arg>
-void string_formatting::process_x_conversion(const conversion_spec* spec,
-	const char_t* digit_chars)
+void string_formatting::process_x_conversion(const char_t* digit_chars)
 {
 	int_conv_buffer<MAX_HEX_BUF_LEN(T)> buffer;
 
@@ -387,16 +375,16 @@ void string_formatting::process_x_conversion(const conversion_spec* spec,
 			buffer.add_char(digit_chars[number % 16]);
 		while ((number /= 16) != 0);
 
-		recurse_then_output_non_zero_int(spec, buffer.pos, buffer.len(),
-			spec->flags.hash ? prefix_0x : no_prefix);
+		recurse_then_output_non_zero_int(buffer.pos, buffer.len(),
+			flags.hash ? prefix_0x : no_prefix);
 	}
 	else
-		recurse_then_output_zero_int(spec,
-			spec->flags.hash ? prefix_0x : no_prefix);
+		recurse_then_output_zero_int(
+			flags.hash ? prefix_0x : no_prefix);
 }
 
 template <class T, class Arg>
-void string_formatting::process_b_conversion(const conversion_spec* spec)
+void string_formatting::process_b_conversion()
 {
 	int_conv_buffer<MAX_BINARY_BUF_LEN(T)> buffer;
 
@@ -408,12 +396,12 @@ void string_formatting::process_b_conversion(const conversion_spec* spec)
 			buffer.add_digit(number % 2);
 		while ((number /= 2) != 0);
 
-		recurse_then_output_non_zero_int(spec, buffer.pos, buffer.len(),
-			spec->flags.hash ? prefix_0b : no_prefix);
+		recurse_then_output_non_zero_int(buffer.pos, buffer.len(),
+			flags.hash ? prefix_0b : no_prefix);
 	}
 	else
-		recurse_then_output_zero_int(spec,
-			spec->flags.hash ? prefix_0b : no_prefix);
+		recurse_then_output_zero_int(
+			flags.hash ? prefix_0b : no_prefix);
 }
 
 template <class T>
@@ -427,15 +415,19 @@ void string_formatting::process_n_conversion()
 		*pos = (T) (dest - allocated);
 }
 
-void string_formatting::process_s_conversion(const conversion_spec* spec)
+void string_formatting::process_s_conversion()
 {
 	const char_t* str = va_arg(ap, const char_t*);
 
-	size_t str_len = spec->flags.precision_defined ?
-		b::calc_length(str, spec->precision) : b::calc_length(str);
+	// The 'flags' member variable will be overwritten by the
+	// 'recurse()' call below. Make a local copy.
+	conversion_flags saved_flags = flags;
 
-	size_t width = spec->flags.min_width_defined &&
-		spec->min_width > str_len ? spec->min_width : str_len;
+	size_t str_len = saved_flags.precision_defined ?
+		b::calc_length(str, precision) : b::calc_length(str);
+
+	size_t width = saved_flags.min_width_defined &&
+		min_width > str_len ? min_width : str_len;
 
 	acc_len += width;
 
@@ -445,7 +437,7 @@ void string_formatting::process_s_conversion(const conversion_spec* spec)
 	{
 		size_t spaces = width - str_len;
 
-		if (!spec->flags.minus)
+		if (!saved_flags.minus)
 		{
 			output_string(str, str_len);
 			output_chars(B_L_PREFIX(' '), spaces);
@@ -470,9 +462,7 @@ void string_formatting::process_conversion()
 		return;
 	}
 
-	conversion_spec spec;
-
-	b::Memory::Zero(&spec, sizeof(spec));
+	b::Memory::Zero(&flags, sizeof(flags));
 
 	// Parse flags
 	for (;; ++fmt)
@@ -480,23 +470,23 @@ void string_formatting::process_conversion()
 		switch (*fmt)
 		{
 		case B_L_PREFIX(' '):
-			spec.flags.space = true;
+			flags.space = true;
 			continue;
 		case B_L_PREFIX('#'):
-			spec.flags.hash = true;
+			flags.hash = true;
 			continue;
 		case B_L_PREFIX('\''):
 		case B_L_PREFIX(','):
-			spec.flags.quote = true;
+			flags.quote = true;
 			continue;
 		case B_L_PREFIX('+'):
-			spec.flags.plus = true;
+			flags.plus = true;
 			continue;
 		case B_L_PREFIX('-'):
-			spec.flags.minus = true;
+			flags.minus = true;
 			continue;
 		case B_L_PREFIX('0'):
-			spec.flags.zero = true;
+			flags.zero = true;
 			continue;
 		}
 		break;
@@ -505,15 +495,15 @@ void string_formatting::process_conversion()
 	// Parse min width
 	if (*fmt > B_L_PREFIX('0') && *fmt <= B_L_PREFIX('9'))
 	{
-		spec.min_width = unsigned(*fmt) - unsigned(B_L_PREFIX('0'));
+		min_width = unsigned(*fmt) - unsigned(B_L_PREFIX('0'));
 
 		int digit;
 
 		while ((digit = int(*++fmt) - int(B_L_PREFIX('0'))) >= 0 &&
 				digit <= 9)
-			spec.min_width = spec.min_width * 10 + unsigned(digit);
+			min_width = min_width * 10 + unsigned(digit);
 
-		spec.flags.min_width_defined = true;
+		flags.min_width_defined = true;
 	}
 	else
 		if (*fmt == B_L_PREFIX('*'))
@@ -523,14 +513,14 @@ void string_formatting::process_conversion()
 			int n = va_arg(ap, int);
 
 			if (n >= 0)
-				spec.min_width = (unsigned) n;
+				min_width = (unsigned) n;
 			else
 			{
-				spec.min_width = (unsigned) -n;
-				spec.flags.minus = true;
+				min_width = (unsigned) -n;
+				flags.minus = true;
 			}
 
-			spec.flags.min_width_defined = true;
+			flags.min_width_defined = true;
 		}
 
 	// Parse precision
@@ -540,14 +530,14 @@ void string_formatting::process_conversion()
 
 		if (digit >= 0 && digit <= 9)
 		{
-			spec.precision = (unsigned) digit;
+			precision = (unsigned) digit;
 
 			while ((digit = int(*++fmt) -
 					int(B_L_PREFIX('0'))) >= 0 &&
 					digit <= 9)
-				spec.precision = spec.precision * 10 +
+				precision = precision * 10 +
 					unsigned(digit);
-			spec.flags.precision_defined = true;
+			flags.precision_defined = true;
 		}
 		else
 			if (*fmt == B_L_PREFIX('*'))
@@ -558,14 +548,14 @@ void string_formatting::process_conversion()
 
 				if (n >= 0)
 				{
-					spec.precision = (unsigned) n;
-					spec.flags.precision_defined = true;
+					precision = (unsigned) n;
+					flags.precision_defined = true;
 				}
 			}
 			else
 			{
-				spec.precision = 0;
-				spec.flags.precision_defined = true;
+				precision = 0;
+				flags.precision_defined = true;
 			}
 	}
 
@@ -576,24 +566,24 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_d_conversion<short, unsigned short, int>(&spec);
+			process_d_conversion<short, unsigned short, int>();
 			return;
 		case B_L_PREFIX('u'):
-			process_u_conversion<unsigned short, unsigned>(&spec);
+			process_u_conversion<unsigned short, unsigned>();
 			return;
 		case B_L_PREFIX('o'):
-			process_o_conversion<unsigned short, unsigned>(&spec);
+			process_o_conversion<unsigned short, unsigned>();
 			return;
 		case B_L_PREFIX('X'):
 			process_x_conversion<unsigned short, unsigned>(
-				&spec, ucase_hex);
+				ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
 			process_x_conversion<unsigned short, unsigned>(
-				&spec, lcase_hex);
+				lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_b_conversion<unsigned short, unsigned>(&spec);
+			process_b_conversion<unsigned short, unsigned>();
 			return;
 		case B_L_PREFIX('n'):
 			process_n_conversion<short>();
@@ -606,25 +596,22 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_d_conversion<intmax_t, uintmax_t, intmax_t>(
-				&spec);
+			process_d_conversion<intmax_t, uintmax_t, intmax_t>();
 			return;
 		case B_L_PREFIX('u'):
-			process_u_conversion<uintmax_t, uintmax_t>(&spec);
+			process_u_conversion<uintmax_t, uintmax_t>();
 			return;
 		case B_L_PREFIX('o'):
-			process_o_conversion<uintmax_t, uintmax_t>(&spec);
+			process_o_conversion<uintmax_t, uintmax_t>();
 			return;
 		case B_L_PREFIX('X'):
-			process_x_conversion<uintmax_t, uintmax_t>(
-				&spec, ucase_hex);
+			process_x_conversion<uintmax_t, uintmax_t>(ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_x_conversion<uintmax_t, uintmax_t>(
-				&spec, lcase_hex);
+			process_x_conversion<uintmax_t, uintmax_t>(lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_b_conversion<uintmax_t, uintmax_t>(&spec);
+			process_b_conversion<uintmax_t, uintmax_t>();
 			return;
 		case B_L_PREFIX('n'):
 			process_n_conversion<intmax_t>();
@@ -637,27 +624,24 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_d_conversion<long, unsigned long, long>(&spec);
+			process_d_conversion<long, unsigned long, long>();
 			return;
 		case B_L_PREFIX('u'):
-			process_u_conversion<unsigned long, unsigned long>(
-				&spec);
+			process_u_conversion<unsigned long, unsigned long>();
 			return;
 		case B_L_PREFIX('o'):
-			process_o_conversion<unsigned long, unsigned long>(
-				&spec);
+			process_o_conversion<unsigned long, unsigned long>();
 			return;
 		case B_L_PREFIX('X'):
 			process_x_conversion<unsigned long, unsigned long>(
-				&spec, ucase_hex);
+				ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
 			process_x_conversion<unsigned long, unsigned long>(
-				&spec, lcase_hex);
+				lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_b_conversion<unsigned long, unsigned long>(
-				&spec);
+			process_b_conversion<unsigned long, unsigned long>();
 			return;
 		case B_L_PREFIX('n'):
 			process_n_conversion<long>();
@@ -670,8 +654,7 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_d_conversion<ptrdiff_t, size_t, ptrdiff_t>(
-				&spec);
+			process_d_conversion<ptrdiff_t, size_t, ptrdiff_t>();
 			return;
 		case B_L_PREFIX('b'):
 		case B_L_PREFIX('o'):
@@ -691,22 +674,22 @@ void string_formatting::process_conversion()
 		{
 		case B_L_PREFIX('d'):
 		case B_L_PREFIX('i'):
-			process_d_conversion<ssize_t, size_t, ssize_t>(&spec);
+			process_d_conversion<ssize_t, size_t, ssize_t>();
 			return;
 		case B_L_PREFIX('u'):
-			process_u_conversion<size_t, size_t>(&spec);
+			process_u_conversion<size_t, size_t>();
 			return;
 		case B_L_PREFIX('o'):
-			process_o_conversion<size_t, size_t>(&spec);
+			process_o_conversion<size_t, size_t>();
 			return;
 		case B_L_PREFIX('X'):
-			process_x_conversion<size_t, size_t>(&spec, ucase_hex);
+			process_x_conversion<size_t, size_t>(ucase_hex);
 			return;
 		case B_L_PREFIX('x'):
-			process_x_conversion<size_t, size_t>(&spec, lcase_hex);
+			process_x_conversion<size_t, size_t>(lcase_hex);
 			return;
 		case B_L_PREFIX('b'):
-			process_b_conversion<size_t, size_t>(&spec);
+			process_b_conversion<size_t, size_t>();
 			return;
 		case B_L_PREFIX('n'):
 			process_n_conversion<size_t>();
@@ -716,27 +699,27 @@ void string_formatting::process_conversion()
 
 	case B_L_PREFIX('d'):
 	case B_L_PREFIX('i'):
-		process_d_conversion<int, unsigned, int>(&spec);
+		process_d_conversion<int, unsigned, int>();
 		return;
 
 	case B_L_PREFIX('u'):
-		process_u_conversion<unsigned, unsigned>(&spec);
+		process_u_conversion<unsigned, unsigned>();
 		return;
 
 	case B_L_PREFIX('o'):
-		process_o_conversion<unsigned, unsigned>(&spec);
+		process_o_conversion<unsigned, unsigned>();
 		return;
 
 	case B_L_PREFIX('X'):
-		process_x_conversion<unsigned, unsigned>(&spec, ucase_hex);
+		process_x_conversion<unsigned, unsigned>(ucase_hex);
 		return;
 
 	case B_L_PREFIX('x'):
-		process_x_conversion<unsigned, unsigned>(&spec, lcase_hex);
+		process_x_conversion<unsigned, unsigned>(lcase_hex);
 		return;
 
 	case B_L_PREFIX('b'):
-		process_b_conversion<unsigned, unsigned>(&spec);
+		process_b_conversion<unsigned, unsigned>();
 		return;
 
 	case B_L_PREFIX('n'):
@@ -744,19 +727,19 @@ void string_formatting::process_conversion()
 		return;
 
 	case B_L_PREFIX('p'):
-		spec.flags.hash = true;
+		flags.hash = true;
 
-		if (!spec.flags.precision_defined)
+		if (!flags.precision_defined)
 		{
-			spec.flags.precision_defined = true;
-			spec.precision = sizeof(void*) * 2;
+			flags.precision_defined = true;
+			precision = sizeof(void*) * 2;
 		}
 
-		process_x_conversion<size_t, void*>(&spec, ucase_hex);
+		process_x_conversion<size_t, void*>(ucase_hex);
 		return;
 
 	case B_L_PREFIX('s'):
-		process_s_conversion(&spec);
+		process_s_conversion();
 		return;
 	}
 
