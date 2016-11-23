@@ -22,13 +22,13 @@
 
 int main()
 {
-	b::Random r1(1), r2(1), r3;
+	b::random r1(1), r2(1), r3;
 
-	bool test = r1.GetNext() == r2.GetNext();
+	bool test = r1.next() == r2.next();
 
-	test &= r2.GetNext() != r3.GetNext();
+	test &= r2.next() != r3.next();
 
-	test &= r1.GetNext() != r2.GetNext();
+	test &= r1.next() != r2.next();
 
 	return !test;
 }

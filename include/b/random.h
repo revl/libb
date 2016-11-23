@@ -26,66 +26,66 @@
 B_BEGIN_NAMESPACE
 
 // A simple pseudo-random number generator.
-class Random
+class random
 {
 // Construction
 public:
 	typedef unsigned value_type;
 
 	// Initializes this instance with the system time.
-	Random();
+	random();
 
 	// Initializes this instance with the <seed> value.
-	Random(value_type seed);
+	random(value_type seed);
 
 // Attributes
 public:
 	// Sets the seed of this generator to the <seed> value.
-	void SetSeed(value_type seed);
+	void set_seed(value_type seed);
 
 // Operations
 public:
 	// Sets the seed of this generator to the system time.
-	void Randomize();
+	void randomize();
 
 	// Returns a pseudo-random number in range 0 to 0x7FFF.
-	value_type GetNext();
+	value_type next();
 
 	// Returns a pseudo-random number in range 0 to <limit>.
-	value_type GetNext(value_type limit);
+	value_type next(value_type limit);
 
 // Implementation
 private:
 	value_type seed;
 };
 
-inline Random::Random() :
-	seed((Random::value_type) ::time(NULL))
+inline random::random() :
+	seed((random::value_type) ::time(NULL))
 {
 }
 
-inline Random::Random(value_type initial_seed) : seed(initial_seed)
+inline random::random(value_type initial_seed) : seed(initial_seed)
 {
 }
 
-inline void Random::SetSeed(value_type new_seed)
+inline void random::set_seed(value_type new_seed)
 {
 	seed = new_seed;
 }
 
-inline void Random::Randomize()
+inline void random::randomize()
 {
 	seed = (value_type) ::time(NULL);
 }
 
-inline Random::value_type Random::GetNext()
+inline random::value_type random::next()
 {
 	return ((seed = seed * 0x41C64E6D + 0x3039) >> 0x10) & 0x7FFF;
 }
 
-inline Random::value_type Random::GetNext(Random::value_type limit)
+inline random::value_type random::next(random::value_type limit)
 {
-	return (GetNext() * limit) / 0x7FFF;
+	return (next() * limit) / 0x7FFF;
 }
 
 B_END_NAMESPACE

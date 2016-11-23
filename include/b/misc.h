@@ -100,7 +100,7 @@ inline void shuffle(T* objects, size_t count)
 	size_t i;
 
 	for (i = 1; i < count; i++)
-		swap(objects[i], objects[Random(i)]);
+		swap(objects[i], objects[random(i)]);
 }
 
 // Compares two objects. Returns zero, if objects are equal;
