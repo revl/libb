@@ -20,11 +20,11 @@
 
 // This file contains implementation of the printf-style string
 // formatting functions format_buffer() and format_buffer_va(),
-// which are also used by the string::format family of functions.
+// which are also used by the string::format family of methods.
 //
 // The reason for implementing string formatting from scratch was
 // to avoid dealing with missing runtime library functions on
-// different systems as well as to have a single implementation
+// different platforms as well as to have a single implementation
 // with known, predictable characteristics.
 //
 // Implementation notes:
@@ -36,10 +36,10 @@
 // The 'string_formatting' structure below is what implements this goal.
 // Its methods call each other recursively to parse the format string
 // and estimate the length of the result string. Each recursive call
-// creates intermediate data on the stack. The deepest call allocates
-// the exact amount of memory needed to contain the entire result string.
-// When the recursion is then unwinded, each recursive call copies its
-// data to the designated place in that target buffer.
+// saves its intermediate data on the stack. The deepest call allocates
+// the exact amount of memory needed for the target buffer.
+// When the recursion unwinds, each recursive call copies its data to
+// the designated place in that target buffer.
 
 namespace
 {
