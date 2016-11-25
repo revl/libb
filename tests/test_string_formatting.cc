@@ -56,6 +56,15 @@ B_TEST_CASE(allocator_returns_null)
 	B_CHECK(s == "verbatim 123 verbatim");
 }
 
+B_TEST_CASE(wchar_string_formatting)
+{
+	B_CHECK(b::wstring::formatted(L"Hello, %s!", L"World") ==
+		L"Hello, World!");
+
+	B_CHECK(b::wstring::formatted(L"%d inches in a foot", 12) ==
+		L"12 inches in a foot");
+}
+
 B_TEST_CASE(sign_is_required)
 {
 	B_CHECK(b::string::formatted("[% d]", 1) == "[ 1]");
