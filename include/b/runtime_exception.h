@@ -18,6 +18,8 @@
  *
  */
 
+#include "string.h"
+
 #ifndef B_RUNTIME_EXCEPTION_H
 #define B_RUNTIME_EXCEPTION_H
 
@@ -26,7 +28,6 @@
 #endif /* defined(__GNUG__) && !defined(__clang__) */
 
 #include "exception.h"
-#include "string.h"
 
 B_BEGIN_NAMESPACE
 

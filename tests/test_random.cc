@@ -20,15 +20,20 @@
 
 #include <b/random.h>
 
-int main()
+#include "unit_test.h"
+
+B_TEST_CASE(test_seed_1000)
 {
-	b::random r1(1), r2(1), r3;
+	b::random seed_1000(1000);
 
-	bool test = r1.next() == r2.next();
+	static const b::random::value_type values[] =
+	{
+		28322, 7943, 4653, 8133, 31660,
+		22230, 1785, 18381, 6181, 10155
+	};
 
-	test &= r2.next() != r3.next();
+	const size_t number_of_values = sizeof(values) / sizeof(*values);
 
-	test &= r1.next() != r2.next();
-
-	return !test;
+	for (size_t i = 0; i < number_of_values; ++i)
+		B_CHECK(values[i] == seed_1000.next());
 }
