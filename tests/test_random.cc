@@ -22,14 +22,14 @@
 
 #include "unit_test.h"
 
-B_TEST_CASE(test_seed_1000)
+B_TEST_CASE(seed_1000)
 {
 	b::random seed_1000(1000);
 
 	static const b::random::value_type values[] =
 	{
-		28322, 7943, 4653, 8133, 31660,
-		22230, 1785, 18381, 6181, 10155
+		1856145921, 520568998, 304958183, 533034644, 2074920253,
+		1456914738, 117026435, 1204643840, 405108793, 665566846
 	};
 
 	const size_t number_of_values = sizeof(values) / sizeof(*values);
