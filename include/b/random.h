@@ -46,7 +46,11 @@ public:
 
 // Operations
 public:
-	// Returns a pseudo-random number in range 0 to 0x7FFF.
+	// Returns the maximum value the next() method can return.
+	// This implementation always returns 0x7FFF.
+	static value_type max();
+
+	// Returns a pseudo-random number in range 0 to max().
 	value_type next();
 
 	// Returns a pseudo-random number in range 0 to 'limit'
@@ -75,6 +79,11 @@ inline void random::set_seed(value_type new_seed)
 inline void random::randomize()
 {
 	seed = (value_type) ::time(NULL);
+}
+
+inline random::value_type random::max()
+{
+	return 0x7FFF;
 }
 
 inline random::value_type random::next()
