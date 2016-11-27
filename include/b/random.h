@@ -28,7 +28,7 @@ B_BEGIN_NAMESPACE
 // A simple pseudo-random number generator.
 class random
 {
-// Construction
+// Initialization
 public:
 	typedef unsigned value_type;
 
@@ -38,20 +38,19 @@ public:
 	// Initializes this instance with the <seed> value.
 	random(value_type seed);
 
-// Attributes
-public:
 	// Sets the seed of this generator to the <seed> value.
 	void set_seed(value_type seed);
 
-// Operations
-public:
 	// Sets the seed of this generator to the system time.
 	void randomize();
 
+// Operations
+public:
 	// Returns a pseudo-random number in range 0 to 0x7FFF.
 	value_type next();
 
-	// Returns a pseudo-random number in range 0 to <limit>.
+	// Returns a pseudo-random number in range 0 to 'limit'
+	// (inclusively).
 	value_type next(value_type limit);
 
 // Implementation
@@ -85,7 +84,7 @@ inline random::value_type random::next()
 
 inline random::value_type random::next(random::value_type limit)
 {
-	return (next() * limit) / 0x7FFF;
+	return (next() * (limit + 1)) / 0x8000;
 }
 
 B_END_NAMESPACE
