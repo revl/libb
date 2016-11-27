@@ -37,3 +37,21 @@ B_TEST_CASE(seed_1000)
 	for (size_t i = 0; i < number_of_values; ++i)
 		B_CHECK(values[i] == seed_1000.next());
 }
+
+B_TEST_CASE(uniform_distribution)
+{
+	size_t counters[10] = {0};
+
+	const size_t number_of_counters = sizeof(counters) / sizeof(*counters);
+
+	b::random prng;
+
+	for (size_t i = 0; i < number_of_counters * 100000; ++i)
+		++counters[prng.next(number_of_counters - 1)];
+
+	for (size_t i = 0; i < number_of_counters; ++i)
+	{
+		B_CHECK(counters[i] > 99000);
+		B_CHECK(counters[i] < 101000);
+	}
+}
