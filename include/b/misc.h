@@ -24,7 +24,7 @@
 #define B_MISC_H
 
 #include "memory.h"
-#include "random.h"
+#include "pseudorandom.h"
 
 B_BEGIN_NAMESPACE
 
@@ -93,14 +93,14 @@ inline void swap(T& object1, T& object2)
 	object2 = dummy;
 }
 
-// Shuffles the sequence of objects using the pseudo-random number generator.
+// Shuffles the sequence of objects using the pseudorandom number generator.
 template <class T>
 inline void shuffle(T* objects, size_t count)
 {
 	size_t i;
 
 	for (i = 1; i < count; i++)
-		swap(objects[i], objects[random(i)]);
+		swap(objects[i], objects[pseudorandom(i)]);
 }
 
 // Compares two objects. Returns zero, if objects are equal;

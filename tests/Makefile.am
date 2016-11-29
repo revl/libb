@@ -29,7 +29,7 @@ TESTS = \
 	test_misc \
 	test_object \
 	test_pathname \
-	test_random \
+	test_pseudorandom \
 	test_make_path
 
 check_PROGRAMS = \
@@ -43,7 +43,7 @@ check_PROGRAMS = \
 	test_misc \
 	test_object \
 	test_pathname \
-	test_random \
+	test_pseudorandom \
 	test_make_path
 
 test_string_SOURCES = test_string.cc
@@ -66,7 +66,7 @@ test_object_SOURCES = test_object.cc
 
 test_pathname_SOURCES = test_pathname.cc
 
-test_random_SOURCES = test_random.cc
+test_pseudorandom_SOURCES = test_pseudorandom.cc
 
 test_make_path_SOURCES = test_make_path.cc
 

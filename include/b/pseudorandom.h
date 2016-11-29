@@ -18,25 +18,26 @@
  *
  */
 
-#ifndef B_RANDOM_H
-#define B_RANDOM_H
+#ifndef B_PSEUDORANDOM_H
+#define B_PSEUDORANDOM_H
 
 #include "host.h"
 
 B_BEGIN_NAMESPACE
 
-// A simple pseudo-random number generator.
-class random
+// A linear congruential generator that uses the same parameters
+// as the glibc version of rand(3).
+class pseudorandom
 {
 // Initialization
 public:
 	typedef unsigned value_type;
 
 	// Initializes this instance with the system time.
-	random();
+	pseudorandom();
 
 	// Initializes this instance with the <seed> value.
-	random(value_type seed);
+	pseudorandom(value_type seed);
 
 	// Sets the seed of this generator to the <seed> value.
 	void set_seed(value_type seed);
@@ -50,10 +51,10 @@ public:
 	// This implementation always returns 0x7FFFFFFF.
 	static value_type max();
 
-	// Returns a pseudo-random number in range 0 to max().
+	// Returns a pseudorandom number in range 0 to max().
 	value_type next();
 
-	// Returns a pseudo-random number in range 0 to 'limit'
+	// Returns a pseudorandom number in range 0 to 'limit'
 	// (inclusively).
 	value_type next(value_type limit);
 
@@ -62,40 +63,41 @@ private:
 	value_type seed;
 };
 
-inline random::random() :
-	seed((random::value_type) ::time(NULL))
+inline pseudorandom::pseudorandom() :
+	seed((pseudorandom::value_type) ::time(NULL))
 {
 }
 
-inline random::random(value_type initial_seed) : seed(initial_seed)
+inline pseudorandom::pseudorandom(value_type initial_seed) : seed(initial_seed)
 {
 }
 
-inline void random::set_seed(value_type new_seed)
+inline void pseudorandom::set_seed(value_type new_seed)
 {
 	seed = new_seed;
 }
 
-inline void random::randomize()
+inline void pseudorandom::randomize()
 {
 	seed = ((value_type) ::time(NULL)) & 0x7FFFFFFFU;
 }
 
-inline random::value_type random::max()
+inline pseudorandom::value_type pseudorandom::max()
 {
 	return 0x7FFFFFFFU;
 }
 
-inline random::value_type random::next()
+inline pseudorandom::value_type pseudorandom::next()
 {
 	return (seed = seed * 1103515245U + 12345U) & 0x7FFFFFFFU;
 }
 
-inline random::value_type random::next(random::value_type limit)
+inline pseudorandom::value_type pseudorandom::next(
+	pseudorandom::value_type limit)
 {
 	return next() % (limit + 1);
 }
 
 B_END_NAMESPACE
 
-#endif /* !defined(B_RANDOM_H) */
+#endif /* !defined(B_PSEUDORANDOM_H) */
