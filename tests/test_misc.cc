@@ -20,6 +20,8 @@
 
 #include <b/misc.h>
 
+#include <b/heap.h>
+
 #include "unit_test.h"
 
 static bool match_and_check_all(const char* input, const char* pattern,
@@ -76,4 +78,29 @@ B_TEST_CASE(test_pointer_alignment)
 	B_CHECK(b::align((void*) 9, 8) == (void*) 16);
 	B_CHECK(b::align((void*) 0, 16) == (void*) 0);
 	B_CHECK(b::align((void*) 1, 32) == (void*) 32);
+}
+
+B_TEST_CASE(shuffle)
+{
+	unsigned numbers[100];
+
+	const unsigned count = sizeof(numbers) / sizeof(*numbers);
+
+	for (unsigned i = 0; i < count; ++i)
+		numbers[i] = i;
+
+	bool ordered = true;
+
+	b::shuffle(numbers, count);
+
+	for (unsigned i = 0; i < count; ++i)
+		if (numbers[i] != i)
+			ordered = false;
+
+	B_CHECK(!ordered);
+
+	b::Heap<unsigned>::Sort(numbers, count);
+
+	for (unsigned i = 0; i < count; ++i)
+		B_CHECK(numbers[i] == i);
 }
