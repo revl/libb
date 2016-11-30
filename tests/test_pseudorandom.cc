@@ -24,7 +24,7 @@
 
 B_TEST_CASE(seed_1000)
 {
-	b::pseudorandom seed_1000(1000);
+	b::pseudorandom prng(1000);
 
 	static const b::pseudorandom::value_type values[] =
 	{
@@ -35,7 +35,15 @@ B_TEST_CASE(seed_1000)
 	const size_t number_of_values = sizeof(values) / sizeof(*values);
 
 	for (size_t i = 0; i < number_of_values; ++i)
-		B_CHECK(values[i] == seed_1000.next());
+		B_CHECK(values[i] == prng.next());
+}
+
+B_TEST_CASE(limit)
+{
+	b::pseudorandom prng(0);
+
+	for (size_t i = 0; i < 100000; ++i)
+		B_CHECK(prng.next(100) < 100);
 }
 
 B_TEST_CASE(uniform_distribution)
@@ -47,7 +55,7 @@ B_TEST_CASE(uniform_distribution)
 	b::pseudorandom prng;
 
 	for (size_t i = 0; i < number_of_counters * 100000; ++i)
-		++counters[prng.next(number_of_counters - 1)];
+		++counters[prng.next(number_of_counters)];
 
 	for (size_t i = 0; i < number_of_counters; ++i)
 	{

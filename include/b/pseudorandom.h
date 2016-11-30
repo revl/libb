@@ -51,11 +51,12 @@ public:
 	// This implementation always returns 0x7FFFFFFF.
 	static value_type max();
 
-	// Returns a pseudorandom number in range 0 to max().
+	// Returns a pseudorandom number in the range from zero
+	// to max() (inclusively).
 	value_type next();
 
-	// Returns a pseudorandom number in range 0 to 'limit'
-	// (inclusively).
+	// Returns a pseudorandom number in the range from zero
+	// up to (but not including) 'limit'.
 	value_type next(value_type limit);
 
 // Implementation
@@ -95,7 +96,9 @@ inline pseudorandom::value_type pseudorandom::next()
 inline pseudorandom::value_type pseudorandom::next(
 	pseudorandom::value_type limit)
 {
-	return next() % (limit + 1);
+	B_ASSERT(limit > 0);
+
+	return next() % limit;
 }
 
 B_END_NAMESPACE
