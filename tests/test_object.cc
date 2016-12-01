@@ -20,17 +20,17 @@
 
 #include <b/object.h>
 
-B_BEGIN_NAMESPACE
+#include "unit_test.h"
 
-class Base : public Object
+class Base : public b::Object
 {
 // Types
 public:
-	typedef Ref<Base> Ptr;
+	typedef b::Ref<Base> ref;
 
 // Construction
 public:
-	static Ptr Create(int initial_value);
+	static ref Create(int initial_value);
 
 // Attributes
 public:
@@ -55,7 +55,7 @@ Base::Base(int initial_value) : value(initial_value)
 	++instance_count;
 }
 
-Base::Ptr Base::Create(int initial_value)
+Base::ref Base::Create(int initial_value)
 {
 	return new Base(initial_value);
 }
@@ -81,11 +81,11 @@ class Derived : public Base
 {
 // Types
 public:
-	typedef Ref<Derived> Ptr;
+	typedef b::Ref<Derived> ref;
 
 // Construction
 public:
-	static Ptr Create(int initial_value);
+	static ref Create(int initial_value);
 
 // Implementation
 public:
@@ -96,43 +96,28 @@ inline Derived::Derived(int initial_value) : Base(initial_value)
 {
 }
 
-inline Derived::Ptr Derived::Create(int initial_value)
+inline Derived::ref Derived::Create(int initial_value)
 {
 	return new Derived(initial_value);
 }
 
-static int TestObject()
+B_TEST_CASE(object_count)
 {
-	try
 	{
-		Base::Ptr base1 = Base::Create(1);
-		Base::Ptr base2 = Base::Create(2);
+		Base::ref base1 = Base::Create(1);
+		Base::ref base2 = Base::Create(2);
 
-		Derived::Ptr derived = Derived::Create(3);
+		Derived::ref derived = Derived::Create(3);
 
 		base1 = base2;
 		base2 = derived;
 
 		base1.swap(base2);
 
-		if (Base::GetInstanceCount() != 2 ||
-			base1->GetValue() != 3 ||
-			base2->GetValue() != 2)
-			return 4;
-	}
-	catch (runtime_exception& e)
-	{
-		fprintf(stderr, "Error: %s\n", e.message().data());
-
-		return 5;
+		B_CHECK(Base::GetInstanceCount() == 2);
+		B_CHECK(base1->GetValue() == 3);
+		B_CHECK(base2->GetValue() == 2);
 	}
 
-	return Base::GetInstanceCount();
-}
-
-B_END_NAMESPACE
-
-int main()
-{
-	return b::TestObject();
+	B_CHECK(Base::GetInstanceCount() == 0);
 }
