@@ -175,7 +175,7 @@ public:
 	void remove(size_t index, size_t count = 1);
 
 	// Empties the array.
-	void empty();
+	void remove_all();
 
 // Range-based 'for' Loop Compatibility
 public:

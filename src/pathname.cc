@@ -102,7 +102,7 @@ void pathname::append(const pathname& rhs)
 			levels_up += rhs.levels_up -
 				(unsigned) pathname_components.size();
 
-			pathname_components.empty();
+			pathname_components.remove_all();
 		}
 
 	case 0:
@@ -128,7 +128,7 @@ void pathname::append(const string_view& path)
 	switch (*current_char)
 	{
 	case B_PATH_SEPARATOR:
-		pathname_components.empty();
+		pathname_components.remove_all();
 		levels_up = UINT_MAX;
 
 		goto slash;
