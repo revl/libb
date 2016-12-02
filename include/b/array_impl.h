@@ -412,7 +412,7 @@ void array<T>::append(size_t count, const T& element)
 }
 
 template <class T>
-void array<T>::erase(size_t index, size_t count)
+void array<T>::remove(size_t index, size_t count)
 {
 	if (index + count > size())
 		count = size() - index;

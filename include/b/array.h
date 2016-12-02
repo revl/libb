@@ -172,7 +172,7 @@ public:
 // Removal
 public:
 	// Removes a number of elements at the specified position.
-	void erase(size_t index, size_t count = 1);
+	void remove(size_t index, size_t count = 1);
 
 	// Empties the array.
 	void empty();

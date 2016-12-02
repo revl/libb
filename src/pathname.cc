@@ -94,7 +94,7 @@ void pathname::append(const pathname& rhs)
 
 	default:
 		if (rhs.levels_up <= pathname_components.size())
-			pathname_components.erase(pathname_components.size() -
+			pathname_components.remove(pathname_components.size() -
 				rhs.levels_up,
 				rhs.levels_up);
 		else

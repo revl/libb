@@ -193,7 +193,7 @@ public:
 // Deletion
 public:
 	// Deletes a range of characters.
-	void erase(size_t index, size_t count = 1);
+	void remove(size_t index, size_t count = 1);
 
 	// Empties the string.
 	void empty();
