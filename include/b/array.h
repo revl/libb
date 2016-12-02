@@ -101,16 +101,16 @@ public:
 	T& operator [](size_t index);
 
 	// Returns a constant reference to the first array element.
-	const T& front() const;
+	const T& first() const;
 
 	// Returns a modifiable reference to the first array element.
-	T& front();
+	T& first();
 
 	// Returns a constant reference to the last array element.
-	const T& back() const;
+	const T& last() const;
 
 	// Returns a modifiable reference to the last array element.
-	T& back();
+	T& last();
 
 // Assignment
 public:
@@ -352,7 +352,7 @@ T& array<T>::operator [](size_t index)
 }
 
 template <class T>
-const T& array<T>::front() const
+const T& array<T>::first() const
 {
 	B_ASSERT(!is_empty());
 
@@ -360,7 +360,7 @@ const T& array<T>::front() const
 }
 
 template <class T>
-T& array<T>::front()
+T& array<T>::first()
 {
 	B_ASSERT(!is_empty());
 
@@ -369,7 +369,7 @@ T& array<T>::front()
 }
 
 template <class T>
-const T& array<T>::back() const
+const T& array<T>::last() const
 {
 	B_ASSERT(!is_empty());
 
@@ -377,7 +377,7 @@ const T& array<T>::back() const
 }
 
 template <class T>
-T& array<T>::back()
+T& array<T>::last()
 {
 	B_ASSERT(!is_empty());
 

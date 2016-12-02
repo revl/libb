@@ -44,9 +44,9 @@ B_TEST_CASE(test_pathname_normalization)
 
 	B_REQUIRE(components.size() == 2);
 
-	B_CHECK(components.front().name() == "d1");
+	B_CHECK(components.first().name() == "d1");
 
-	const b::pathname::component& filename = components.back();
+	const b::pathname::component& filename = components.last();
 
 	B_CHECK(filename.name() == "f.n.sh");
 	B_CHECK(filename.basename() == "f.n");
@@ -57,11 +57,11 @@ B_TEST_CASE(test_filename_with_empty_suffix)
 {
 	B_STATIC_CONST_STRING(no_suffix, "README");
 
-	B_CHECK(b::pathname(no_suffix).components().back().suffix().is_empty());
+	B_CHECK(b::pathname(no_suffix).components().last().suffix().is_empty());
 
 	B_STATIC_CONST_STRING(ends_with_dot, "period.");
 
-	B_CHECK(b::pathname(ends_with_dot).components().back().suffix() == ".");
+	B_CHECK(b::pathname(ends_with_dot).components().last().suffix() == ".");
 }
 
 B_TEST_CASE(test_pathname_can_represent_file)
