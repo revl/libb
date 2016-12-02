@@ -70,7 +70,7 @@ public:
 	void alloc_and_copy(size_t new_capacity);
 
 	// Frees memory that is not occupied by the array elements.
-	void shrink_to_fit();
+	void trim_to_size();
 
 // Buffer Access
 public:
@@ -282,7 +282,7 @@ bool array<T>::is_locked() const
 }
 
 template <class T>
-void array<T>::shrink_to_fit()
+void array<T>::trim_to_size()
 {
 	alloc_and_copy(size());
 }

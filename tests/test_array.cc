@@ -69,9 +69,9 @@ B_TEST_CASE(test_shrink_to_fit)
 
 	b::array<int> a2(a1);
 
-	a1.shrink_to_fit();
+	a1.trim_to_size();
 
-	// shrink_to_fit() must cause reallocation.
+	// trim_to_size() must cause reallocation.
 	B_CHECK(a1.data() != a2.data());
 }
 

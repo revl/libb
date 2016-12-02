@@ -79,7 +79,7 @@ public:
 	void reserve(size_t new_capacity);
 
 	// Frees memory that is not used by the string.
-	void shrink_to_fit();
+	void trim_to_size();
 
 // Buffer Access
 public:
@@ -365,7 +365,7 @@ inline void string::reserve(size_t new_capacity)
 		alloc_and_copy(extra_capacity(new_capacity));
 }
 
-inline void string::shrink_to_fit()
+inline void string::trim_to_size()
 {
 	size_t len = length();
 
