@@ -196,7 +196,7 @@ public:
 	void erase(size_t index, size_t count = 1);
 
 	// Empties the string.
-	void clear();
+	void empty();
 
 // Comparison
 public:

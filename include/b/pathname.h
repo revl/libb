@@ -193,7 +193,7 @@ inline void pathname::assign(const pathname& rhs)
 
 inline void pathname::assign(const string_view& path)
 {
-	pathname_components.clear();
+	pathname_components.empty();
 	levels_up = 0;
 
 	append(path);
@@ -217,7 +217,7 @@ inline void pathname::go_up(unsigned levels)
 	{
 		levels -= (unsigned) pathname_components.size();
 
-		pathname_components.clear();
+		pathname_components.empty();
 
 		if (levels_up != UINT_MAX)
 			levels_up += levels;

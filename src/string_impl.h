@@ -120,7 +120,7 @@ void string::assign(const char_t* source, size_t count)
 		chars[metadata()->length = count] = 0;
 	}
 	else
-		clear();
+		empty();
 }
 
 void string::assign(char_t source, size_t count)
@@ -135,7 +135,7 @@ void string::assign(char_t source, size_t count)
 		chars[metadata()->length = count] = 0;
 	}
 	else
-		clear();
+		empty();
 }
 
 /*
@@ -149,7 +149,7 @@ void string::assign(const char_t* source, size_t count)
 		UnlockBuffer();
 	}
 	else
-		clear();
+		empty();
 }
 
 void string::assign(char_t source, size_t count)
@@ -162,7 +162,7 @@ void string::assign(char_t source, size_t count)
 		UnlockBuffer();
 	}
 	else
-		clear();
+		empty();
 }
 
 void string::replace(size_t index, const char_t* source, size_t count)
@@ -384,7 +384,7 @@ void string::erase(size_t index, size_t count)
 	}
 }
 
-void string::clear()
+void string::empty()
 {
 	if (!is_shared())
 	{
@@ -424,7 +424,7 @@ void string::format(const char_t* fmt, ...)
 
 void string::format_va(const char_t* fmt, va_list ap)
 {
-	clear();
+	empty();
 	append_format_va(fmt, ap);
 }
 

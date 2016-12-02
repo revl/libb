@@ -175,7 +175,7 @@ public:
 	void erase(size_t index, size_t count = 1);
 
 	// Empties the array.
-	void clear();
+	void empty();
 
 // Range-based 'for' Loop Compatibility
 public:

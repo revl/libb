@@ -118,7 +118,7 @@ void array<T>::assign(const T* source, size_t count)
 		metadata()->size = count;
 	}
 	else
-		clear();
+		empty();
 }
 
 template <class T>
@@ -147,7 +147,7 @@ void array<T>::assign(size_t count, const T& element)
 		metadata()->size = count;
 	}
 	else
-		clear();
+		empty();
 }
 
 template <class T>
@@ -446,7 +446,7 @@ void array<T>::erase(size_t index, size_t count)
 }
 
 template <class T>
-void array<T>::clear()
+void array<T>::empty()
 {
 	if (!is_shared())
 	{
