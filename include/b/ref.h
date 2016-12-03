@@ -118,14 +118,14 @@ template <class TYPE>
 Ref<TYPE>::Ref(const Ref<TYPE>& that)
 {
 	if ((ptr = that.ptr) != NULL)
-		ptr->AddRef();
+		ptr->add_ref();
 }
 
 template <class TYPE>
 Ref<TYPE>::Ref(TYPE* that_ptr)
 {
 	if ((ptr = that_ptr) != NULL)
-		ptr->AddRef();
+		ptr->add_ref();
 }
 
 template <class TYPE>
@@ -236,14 +236,14 @@ template <class TYPE>
 void Ref<TYPE>::Assign(TYPE* that_ptr)
 {
 	if (that_ptr != NULL)
-		that_ptr->AddRef();
+		that_ptr->add_ref();
 
 	TYPE* old_ptr = ptr;
 
 	ptr = that_ptr;
 
 	if (old_ptr != NULL)
-		old_ptr->Release();
+		old_ptr->release();
 }
 
 template <class TYPE>
@@ -266,7 +266,7 @@ template <class TYPE>
 void Ref<TYPE>::Attach(TYPE* that_ptr)
 {
 	if (ptr != NULL)
-		ptr->Release();
+		ptr->release();
 
 	ptr = that_ptr;
 }
@@ -293,7 +293,7 @@ template <class TYPE>
 Ref<TYPE>::~Ref()
 {
 	if (ptr != NULL)
-		ptr->Release();
+		ptr->release();
 }
 
 B_END_NAMESPACE

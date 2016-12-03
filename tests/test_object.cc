@@ -22,102 +22,102 @@
 
 #include "unit_test.h"
 
-class Base : public b::Object
+class base : public b::object
 {
 // Types
 public:
-	typedef b::Ref<Base> ref;
+	typedef b::Ref<base> ref;
 
 // Construction
 public:
-	static ref Create(int initial_value);
+	static ref create(int new_object_id);
 
 // Attributes
 public:
-	int GetValue() const;
+	int id() const;
 
-	static int GetInstanceCount();
+	static int instance_count();
 
 // Implementation
 protected:
-	Base(int initial_value);
+	base(int new_object_id);
 
-	virtual ~Base();
+	virtual ~base();
 
 private:
-	int value;
+	const int object_id;
 
-	static int instance_count;
+	static int instance_counter;
 };
 
-Base::Base(int initial_value) : value(initial_value)
+base::base(int new_object_id) : object_id(new_object_id)
 {
-	++instance_count;
+	++instance_counter;
 }
 
-Base::ref Base::Create(int initial_value)
+base::ref base::create(int new_object_id)
 {
-	return new Base(initial_value);
+	return new base(new_object_id);
 }
 
-int Base::GetValue() const
+int base::id() const
 {
-	return value;
+	return object_id;
 }
 
-int Base::GetInstanceCount()
+int base::instance_count()
 {
-	return instance_count;
+	return instance_counter;
 }
 
-Base::~Base()
+base::~base()
 {
-	--instance_count;
+	--instance_counter;
 }
 
-int Base::instance_count = 0;
+int base::instance_counter = 0;
 
-class Derived : public Base
+class derived : public base
 {
 // Types
 public:
-	typedef b::Ref<Derived> ref;
+	typedef b::Ref<derived> ref;
 
 // Construction
 public:
-	static ref Create(int initial_value);
+	static ref create(int new_object_id);
 
 // Implementation
 public:
-	Derived(int initial_value);
+	derived(int new_object_id);
 };
 
-inline Derived::Derived(int initial_value) : Base(initial_value)
+inline derived::derived(int new_object_id) : base(new_object_id)
 {
 }
 
-inline Derived::ref Derived::Create(int initial_value)
+inline derived::ref derived::create(int new_object_id)
 {
-	return new Derived(initial_value);
+	return new derived(new_object_id);
 }
 
 B_TEST_CASE(object_count)
 {
 	{
-		Base::ref base1 = Base::Create(1);
-		Base::ref base2 = Base::Create(2);
+		base::ref base1 = base::create(1);
+		base::ref base2 = base::create(2);
 
-		Derived::ref derived = Derived::Create(3);
+		derived::ref derived = derived::create(3);
 
 		base1 = base2;
 		base2 = derived;
 
 		base1.swap(base2);
 
-		B_CHECK(Base::GetInstanceCount() == 2);
-		B_CHECK(base1->GetValue() == 3);
-		B_CHECK(base2->GetValue() == 2);
+		B_CHECK(base::instance_count() == 2);
+		B_CHECK(base1->id() == 3);
+		B_CHECK(base2->id() == 2);
 	}
 
-	B_CHECK(Base::GetInstanceCount() == 0);
+	B_CHECK(base::instance_count() == 0);
 }

@@ -39,7 +39,7 @@ class desc_list_node : public list_node
 
 static int object_count = 0;
 
-class test_element : public b::Object,
+class test_element : public b::object,
 	public asc_list_node,
 	public desc_list_node
 {
@@ -76,19 +76,19 @@ B_TEST_CASE(test_object_lists)
 
 	asc_list.insert_first(element);
 	desc_list.append(element);
-	element->AddRef();
+	element->add_ref();
 
 	element = new test_element(3);
 
 	asc_list.append(element);
 	desc_list.insert_first(element);
-	element->AddRef();
+	element->add_ref();
 
 	element = new test_element(1);
 
 	asc_list.insert_first(element);
 	desc_list.append(element);
-	element->AddRef();
+	element->add_ref();
 
 	int i = 0;
 
@@ -117,7 +117,7 @@ B_TEST_CASE(test_object_lists)
 		asc_list.remove_first();
 
 		test_element* next = desc_list.next(element);
-		element->Release();
+		element->release();
 		element = next;
 	}
 
