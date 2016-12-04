@@ -87,7 +87,7 @@
 B_BEGIN_NAMESPACE
 
 // Portable thread-safe reference count class.
-struct RefCount
+struct ref_count
 {
 // Attributes
 public:
@@ -104,22 +104,22 @@ public:
 	B_REFCOUNT_TYPE value;
 };
 
-inline RefCount::operator int() const
+inline ref_count::operator int() const
 {
 	B_REFCOUNT_GET(value);
 }
 
-inline void RefCount::operator =(int new_value)
+inline void ref_count::operator =(int new_value)
 {
 	B_REFCOUNT_SET(value, new_value);
 }
 
-inline void RefCount::operator ++()
+inline void ref_count::operator ++()
 {
 	B_REFCOUNT_INC(value);
 }
 
-inline bool RefCount::operator --()
+inline bool ref_count::operator --()
 {
 	B_REFCOUNT_DEC(value);
 }

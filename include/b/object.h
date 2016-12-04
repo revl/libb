@@ -74,7 +74,7 @@ protected:
 	}
 
 	// The reference count object.
-	mutable RefCount refs;
+	mutable ref_count refs;
 };
 
 inline void* object::operator new(size_t size)

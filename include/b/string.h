@@ -278,7 +278,7 @@ public:
 private:
 	struct buffer
 	{
-		RefCount refs;
+		ref_count refs;
 		size_t capacity;
 		size_t length;
 		char_t first_char[1];
@@ -705,7 +705,7 @@ B_END_NAMESPACE
 #define B_STATIC_CONST_STRING_IMPL(char_type, string_type, name, value) \
 	static struct \
 	{ \
-		b::RefCount refs; \
+		b::ref_count refs; \
 		size_t capacity; \
 		size_t length; \
 		char_type chars[sizeof(value)]; \

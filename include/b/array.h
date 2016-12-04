@@ -194,7 +194,7 @@ public:
 private:
 	struct array_metadata
 	{
-		RefCount refs;
+		ref_count refs;
 		size_t capacity;
 		size_t size;
 	};
