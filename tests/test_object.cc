@@ -26,7 +26,7 @@ class base : public b::object
 {
 // Types
 public:
-	typedef b::Ref<base> ref;
+	typedef b::ref<base> ref;
 
 // Construction
 public:
@@ -81,7 +81,7 @@ class derived : public base
 {
 // Types
 public:
-	typedef b::Ref<derived> ref;
+	typedef b::ref<derived> ref;
 
 // Construction
 public:

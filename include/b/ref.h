@@ -27,18 +27,18 @@ B_BEGIN_NAMESPACE
 
 // Smart pointer to instances of all classes derived from the Object class.
 template <class TYPE>
-class Ref
+class ref
 {
 // Constructors
 public:
 	// Constructs a null pointer.
-	Ref();
+	ref();
 
 	// Increases the reference count of the object pointed to by <that>.
-	Ref(const Ref<TYPE>& that);
+	ref(const ref<TYPE>& that);
 
 	// Initializes this instance with a pointer to an existing object.
-	Ref(TYPE* that_ptr);
+	ref(TYPE* that_ptr);
 
 // Attributes
 public:
@@ -58,22 +58,22 @@ public:
 	TYPE& operator *() const;
 
 	// Various comparison operators.
-	bool operator ==(const Ref<TYPE>& that) const;
+	bool operator ==(const ref<TYPE>& that) const;
 	bool operator ==(TYPE* that_ptr) const;
 
-	bool operator !=(const Ref<TYPE>& that) const;
+	bool operator !=(const ref<TYPE>& that) const;
 	bool operator !=(TYPE* that_ptr) const;
 
-	bool operator <(const Ref<TYPE>& that) const;
+	bool operator <(const ref<TYPE>& that) const;
 	bool operator <(TYPE* that_ptr) const;
 
-	bool operator >(const Ref<TYPE>& that) const;
+	bool operator >(const ref<TYPE>& that) const;
 	bool operator >(TYPE* that_ptr) const;
 
-	bool operator <=(const Ref<TYPE>& that) const;
+	bool operator <=(const ref<TYPE>& that) const;
 	bool operator <=(TYPE* that_ptr) const;
 
-	bool operator >=(const Ref<TYPE>& that) const;
+	bool operator >=(const ref<TYPE>& that) const;
 	bool operator >=(TYPE* that_ptr) const;
 
 // Operations
@@ -83,8 +83,8 @@ public:
 	void Assign(TYPE* that_ptr);
 
 	// Assignment operators.
-	Ref<TYPE>& operator =(const Ref<TYPE>& that);
-	Ref<TYPE>& operator =(TYPE* that_ptr);
+	ref<TYPE>& operator =(const ref<TYPE>& that);
+	ref<TYPE>& operator =(TYPE* that_ptr);
 
 	// Switches to a new object without incrementing its
 	// reference count. Releases the previously controlled object.
@@ -98,56 +98,56 @@ public:
 
 	// Makes this smart pointer instance point to the object
 	// pointed to by <that> and vice versa.
-	void swap(Ref<TYPE>& that);
+	void swap(ref<TYPE>& that);
 
 // Implementation
 public:
 	// Releases the controlled object.
-	~Ref();
+	~ref();
 
 protected:
 	TYPE* ptr;
 };
 
 template <class TYPE>
-Ref<TYPE>::Ref() : ptr(NULL)
+ref<TYPE>::ref() : ptr(NULL)
 {
 }
 
 template <class TYPE>
-Ref<TYPE>::Ref(const Ref<TYPE>& that)
+ref<TYPE>::ref(const ref<TYPE>& that)
 {
 	if ((ptr = that.ptr) != NULL)
 		ptr->add_ref();
 }
 
 template <class TYPE>
-Ref<TYPE>::Ref(TYPE* that_ptr)
+ref<TYPE>::ref(TYPE* that_ptr)
 {
 	if ((ptr = that_ptr) != NULL)
 		ptr->add_ref();
 }
 
 template <class TYPE>
-bool Ref<TYPE>::IsNull() const
+bool ref<TYPE>::IsNull() const
 {
 	return ptr == NULL;
 }
 
 template <class TYPE>
-TYPE* Ref<TYPE>::GetPtr() const
+TYPE* ref<TYPE>::GetPtr() const
 {
 	return ptr;
 }
 
 template <class TYPE>
-Ref<TYPE>::operator TYPE*() const
+ref<TYPE>::operator TYPE*() const
 {
 	return ptr;
 }
 
 template <class TYPE>
-TYPE* Ref<TYPE>::operator ->() const
+TYPE* ref<TYPE>::operator ->() const
 {
 	B_ASSERT(ptr != NULL);
 
@@ -155,85 +155,85 @@ TYPE* Ref<TYPE>::operator ->() const
 }
 
 template <class TYPE>
-TYPE& Ref<TYPE>::operator *() const
+TYPE& ref<TYPE>::operator *() const
 {
 	return *ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator ==(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator ==(const ref<TYPE>& that) const
 {
 	return ptr == that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator ==(TYPE* that_ptr) const
+bool ref<TYPE>::operator ==(TYPE* that_ptr) const
 {
 	return ptr == that_ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator !=(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator !=(const ref<TYPE>& that) const
 {
 	return ptr != that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator !=(TYPE* that_ptr) const
+bool ref<TYPE>::operator !=(TYPE* that_ptr) const
 {
 	return ptr != that_ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator <(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator <(const ref<TYPE>& that) const
 {
 	return ptr < that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator <(TYPE* that_ptr) const
+bool ref<TYPE>::operator <(TYPE* that_ptr) const
 {
 	return ptr < that_ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator >(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator >(const ref<TYPE>& that) const
 {
 	return ptr > that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator >(TYPE* that_ptr) const
+bool ref<TYPE>::operator >(TYPE* that_ptr) const
 {
 	return ptr > that_ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator <=(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator <=(const ref<TYPE>& that) const
 {
 	return ptr <= that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator <=(TYPE* that_ptr) const
+bool ref<TYPE>::operator <=(TYPE* that_ptr) const
 {
 	return ptr <= that_ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator >=(const Ref<TYPE>& that) const
+bool ref<TYPE>::operator >=(const ref<TYPE>& that) const
 {
 	return ptr >= that.ptr;
 }
 
 template <class TYPE>
-bool Ref<TYPE>::operator >=(TYPE* that_ptr) const
+bool ref<TYPE>::operator >=(TYPE* that_ptr) const
 {
 	return ptr >= that_ptr;
 }
 
 template <class TYPE>
-void Ref<TYPE>::Assign(TYPE* that_ptr)
+void ref<TYPE>::Assign(TYPE* that_ptr)
 {
 	if (that_ptr != NULL)
 		that_ptr->add_ref();
@@ -247,7 +247,7 @@ void Ref<TYPE>::Assign(TYPE* that_ptr)
 }
 
 template <class TYPE>
-Ref<TYPE>& Ref<TYPE>::operator =(const Ref<TYPE>& that)
+ref<TYPE>& ref<TYPE>::operator =(const ref<TYPE>& that)
 {
 	Assign(that.ptr);
 
@@ -255,7 +255,7 @@ Ref<TYPE>& Ref<TYPE>::operator =(const Ref<TYPE>& that)
 }
 
 template <class TYPE>
-Ref<TYPE>& Ref<TYPE>::operator =(TYPE* that_ptr)
+ref<TYPE>& ref<TYPE>::operator =(TYPE* that_ptr)
 {
 	Assign(that_ptr);
 
@@ -263,7 +263,7 @@ Ref<TYPE>& Ref<TYPE>::operator =(TYPE* that_ptr)
 }
 
 template <class TYPE>
-void Ref<TYPE>::Attach(TYPE* that_ptr)
+void ref<TYPE>::Attach(TYPE* that_ptr)
 {
 	if (ptr != NULL)
 		ptr->release();
@@ -272,7 +272,7 @@ void Ref<TYPE>::Attach(TYPE* that_ptr)
 }
 
 template <class TYPE>
-TYPE* Ref<TYPE>::Detach()
+TYPE* ref<TYPE>::Detach()
 {
 	TYPE* this_ptr = ptr;
 
@@ -281,7 +281,7 @@ TYPE* Ref<TYPE>::Detach()
 }
 
 template <class TYPE>
-void Ref<TYPE>::swap(Ref<TYPE>& that)
+void ref<TYPE>::swap(ref<TYPE>& that)
 {
 	TYPE* this_ptr = ptr;
 
@@ -290,7 +290,7 @@ void Ref<TYPE>::swap(Ref<TYPE>& that)
 }
 
 template <class TYPE>
-Ref<TYPE>::~Ref()
+ref<TYPE>::~ref()
 {
 	if (ptr != NULL)
 		ptr->release();
