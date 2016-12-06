@@ -77,14 +77,14 @@ void heap<T>::push(const T& element)
 template <class T>
 T heap<T>::pop()
 {
-	int size = data.size();
+	int data_size = data.size();
 
-	pop(data.LockBuffer(), size);
+	pop(data.LockBuffer(), data_size);
 	data.UnlockBuffer();
 
-	T result(data[--size]);
+	T result(data[--data_size]);
 
-	data.RemoveAt(size);
+	data.RemoveAt(data_size);
 
 	return result;
 }
