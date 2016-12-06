@@ -29,102 +29,60 @@
 
 B_BEGIN_NAMESPACE
 
-template <class TYPE>
-class Heap
+template <class T>
+class heap
 {
 // Attributes
 public:
-	static int GetParentIndex(int child);
-	static int GetLeftChildIndex(int parent);
-	static int GetRightChildIndex(int parent);
-
-	int GetSize() const;
-	bool IsEmpty() const;
-
-	const TYPE& GetAt(int index) const;
-	const TYPE& operator [](int index) const;
-
-	array<TYPE> GetData() const;
+	int size() const;
+	bool is_empty() const;
 
 // Operations
 public:
-	static void Push(TYPE* data, int size);
-	static void Pop(TYPE* data, int size);
-	static void Sort(TYPE* data, int size);
+	static void push(T* data, int size);
+	static void pop(T* data, int size);
 
-	void Push(const TYPE& element);
-	TYPE Pop();
+	// Sorts the array pointed to by 'data' using heapsort.
+	// Complexity: O(n * log(n))
+	static void sort(T* data, int size);
+
+	void push(const T& element);
+	T pop();
 
 // Implementation
 protected:
-	array<TYPE> data;
+	array<T> data;
 };
 
-template <class TYPE>
-int Heap<TYPE>::GetSize() const
+template <class T>
+int heap<T>::size() const
 {
-	return data.GetSize();
+	return data.size();
 }
 
-template <class TYPE>
-bool Heap<TYPE>::IsEmpty() const
+template <class T>
+bool heap<T>::is_empty() const
 {
-	return GetSize() == 0;
+	return data.is_empty();
 }
 
-template <class TYPE>
-int Heap<TYPE>::GetParentIndex(int child)
-{
-	return child >> 1;
-}
-
-template <class TYPE>
-int Heap<TYPE>::GetLeftChildIndex(int parent)
-{
-	return parent << 1;
-}
-
-template <class TYPE>
-int Heap<TYPE>::GetRightChildIndex(int parent)
-{
-	return (parent << 1) + 1;
-}
-
-template <class TYPE>
-const TYPE& Heap<TYPE>::GetAt(int index) const
-{
-	return data[index];
-}
-
-template <class TYPE>
-const TYPE& Heap<TYPE>::operator [](int index) const
-{
-	return data[index];
-}
-
-template <class TYPE>
-array<TYPE> Heap<TYPE>::GetData() const
-{
-	return data;
-}
-
-template <class TYPE>
-void Heap<TYPE>::Push(const TYPE& element)
+template <class T>
+void heap<T>::push(const T& element)
 {
 	data.Append(element);
-	Push(data.LockBuffer(), data.GetSize());
+	push(data.LockBuffer(), data.size());
 	data.UnlockBuffer();
 }
 
-template <class TYPE>
-TYPE Heap<TYPE>::Pop()
+template <class T>
+T heap<T>::pop()
 {
-	int size = data.GetSize();
+	int size = data.size();
 
-	Pop(data.LockBuffer(), size);
+	pop(data.LockBuffer(), size);
 	data.UnlockBuffer();
 
-	TYPE result(data[--size]);
+	T result(data[--size]);
 
 	data.RemoveAt(size);
 

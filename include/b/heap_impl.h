@@ -30,7 +30,7 @@ B_BEGIN_NAMESPACE
 /*
  * FUNCTION
  *
- *   static void Push(TYPE* data, int size)
+ *   static void push(T* data, int size)
  *
  * PARAMETERS
  *
@@ -46,16 +46,15 @@ B_BEGIN_NAMESPACE
  * ALGORITHM
  *
  *   child = size - 1
+ *
  *   while child > 0 and A[parent = child / 2] < A[child]
- *   {
- *     A[parent] <=> A[child]
- *     child = parent
- *   }
+ *       A[parent] <=> A[child]
+ *       child = parent
  *
  */
 
-template <class TYPE>
-void Heap<TYPE>::Push(TYPE* data, int size)
+template <class T>
+void heap<T>::push(T* data, int size)
 {
 	B_ASSERT(size > 0);
 
@@ -76,7 +75,7 @@ void Heap<TYPE>::Push(TYPE* data, int size)
 /*
  * FUNCTION
  *
- *   static void Pop(TYPE* data, int size)
+ *   static void pop(T* data, int size)
  *
  * PARAMETERS
  *
@@ -93,17 +92,17 @@ void Heap<TYPE>::Push(TYPE* data, int size)
  * ALGORITHM
  *
  *   A[size - 1] <=> A[0]
+ *
  *   i = 0
+ *
  *   while i has child(ren) and A[i] < A[j = maximal child of i]
- *   {
- *     A[i] <=> A[j]
- *     i = j
- *   }
+ *       A[i] <=> A[j]
+ *       i = j
  *
  */
 
-template <class TYPE>
-void Heap<TYPE>::Pop(TYPE* data, int size)
+template <class T>
+void heap<T>::pop(T* data, int size)
 {
 	B_ASSERT(size > 0);
 
@@ -115,7 +114,7 @@ void Heap<TYPE>::Pop(TYPE* data, int size)
 		int child = 0; // Index of the first element
 		int parent = size - 1; // Index of the last element
 
-		// New index of the last element (after the Pop operation)
+		// New index of the last element (after the pop operation)
 		size = parent - 1;
 
 		do
@@ -133,7 +132,7 @@ void Heap<TYPE>::Pop(TYPE* data, int size)
 				// The parent is a leaf or the tree is empty
 				// (It cannot be empty because of the first
 				// 'if (size > 1)')
-				// Heap is in proper order, exit loop
+				// heap is in proper order, exit loop
 				break;
 			else
 				// The parent has at least one child
@@ -151,39 +150,8 @@ void Heap<TYPE>::Pop(TYPE* data, int size)
 	}
 }
 
-/*
- * FUNCTION
- *
- *   static void Sort(TYPE* data, int size)
- *
- * PARAMETERS
- *
- *   data - pointer to the array to be sorted
- *   size - size of the array
- *
- * DESCRIPTION
- *
- *   The function sorts the given array using heap sort.
- *   (n * log(n))
- *
- * ALGORITHM
- *
- *   heap_size = 1
- *
- *   while heap_size < size
- *   {
- *     Push(data, ++heap_size)
- *   }
- *
- *   while heap_size > 1
- *   {
- *     Pop(data, heap_size--)
- *   }
- *
- */
-
-template <class TYPE>
-void Heap<TYPE>::Sort(TYPE* data, int size)
+template <class T>
+void heap<T>::sort(T* data, int size)
 {
 	B_ASSERT(size >= 0);
 
@@ -192,10 +160,10 @@ void Heap<TYPE>::Sort(TYPE* data, int size)
 		int heap_size = 1;
 
 		while (heap_size < size)
-			Push(data, ++heap_size);
+			push(data, ++heap_size);
 
 		while (heap_size > 1)
-			Pop(data, heap_size--);
+			pop(data, heap_size--);
 	}
 }
 

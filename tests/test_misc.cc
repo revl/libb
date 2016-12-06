@@ -99,7 +99,7 @@ B_TEST_CASE(shuffle)
 
 	B_CHECK(!ordered);
 
-	b::Heap<unsigned>::Sort(numbers, count);
+	b::heap<unsigned>::sort(numbers, count);
 
 	for (unsigned i = 0; i < count; ++i)
 		B_CHECK(numbers[i] == i);
