@@ -27,36 +27,21 @@
 
 B_BEGIN_NAMESPACE
 
-/*
- * FUNCTION
- *
- *   static void push(T* data, int size)
- *
- * PARAMETERS
- *
- *   data - pointer to the array holding a heap
- *   size - size of the array
- *
- * DESCRIPTION
- *
- *   The function adds the value to the heap assuming that the data
- *   array contains a valid heap in element range [0, size - 1) and a
- *   value to insert into the heap in element data[size - 1].
- *
- * ALGORITHM
- *
- *   child = size - 1
- *
- *   while child > 0 and A[parent = child / 2] < A[child]
- *       A[parent] <=> A[child]
- *       child = parent
- *
- */
-
 template <class T>
 void heap<T>::push(T* data, int size)
 {
 	B_ASSERT(size > 0);
+
+	/*
+	 * Algorithm:
+	 *
+	 *   child = size - 1
+	 *
+	 *   while child > 0 and A[parent = child / 2] < A[child]
+	 *       A[parent] <=> A[child]
+	 *       child = parent
+	 *
+	 */
 
 	int parent;
 
@@ -72,39 +57,23 @@ void heap<T>::push(T* data, int size)
 	}
 }
 
-/*
- * FUNCTION
- *
- *   static void pop(T* data, int size)
- *
- * PARAMETERS
- *
- *   data - pointer to the array holding a heap
- *   size - size of the array
- *
- * DESCRIPTION
- *
- *   The function shrinks the data array (maintaining
- *   the heap property) so that data[size - 1] contains
- *   the largest value of the heap and all preceding elements
- *   still contain a valid heap.
- *
- * ALGORITHM
- *
- *   A[size - 1] <=> A[0]
- *
- *   i = 0
- *
- *   while i has child(ren) and A[i] < A[j = maximal child of i]
- *       A[i] <=> A[j]
- *       i = j
- *
- */
-
 template <class T>
 void heap<T>::pop(T* data, int size)
 {
 	B_ASSERT(size > 0);
+
+	/*
+	 * Algorithm:
+	 *
+	 *   A[size - 1] <=> A[0]
+	 *
+	 *   i = 0
+	 *
+	 *   while i has child(ren) and A[i] < A[j = maximal child of i]
+	 *       A[i] <=> A[j]
+	 *       i = j
+	 *
+	 */
 
 	if (size > 1)
 	{

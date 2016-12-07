@@ -32,39 +32,41 @@ B_BEGIN_NAMESPACE
 template <class T>
 class heap
 {
-// Attributes
+// Methods on the
 public:
+	// Adds a value to this heap.
+	void push(const T& element);
+
+	// Removes the smallest element from the heap and returns it.
+	T pop();
+
+	// Returns the number of elements in this heap.
 	int size() const;
+
+	// Returns true if the heap is empty.
 	bool is_empty() const;
 
-// Operations
+// Operations on the external array
 public:
+	// Adds a value to a heap. The last element of the 'data'
+	// array (the one with the index size-1) must contain the
+	// value to be inserted and the rest of the elements must
+	// contain a properly formed heap.
 	static void push(T* data, int size);
+
+	// Given a valid heap in the 'data' array, moves the
+	// element with the lowest value to the end of the array
+	// and then restores the heap property among the remaining
+	// elements.
 	static void pop(T* data, int size);
 
 	// Sorts the array pointed to by 'data' using heapsort.
 	// Complexity: O(n * log(n))
 	static void sort(T* data, int size);
 
-	void push(const T& element);
-	T pop();
-
-// Implementation
 protected:
 	array<T> data;
 };
-
-template <class T>
-int heap<T>::size() const
-{
-	return data.size();
-}
-
-template <class T>
-bool heap<T>::is_empty() const
-{
-	return data.is_empty();
-}
 
 template <class T>
 void heap<T>::push(const T& element)
@@ -87,6 +89,18 @@ T heap<T>::pop()
 	data.RemoveAt(data_size);
 
 	return result;
+}
+
+template <class T>
+int heap<T>::size() const
+{
+	return data.size();
+}
+
+template <class T>
+bool heap<T>::is_empty() const
+{
+	return data.is_empty();
 }
 
 B_END_NAMESPACE
