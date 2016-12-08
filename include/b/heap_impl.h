@@ -28,7 +28,7 @@
 B_BEGIN_NAMESPACE
 
 template <class T>
-void heap<T>::push(T* data, int size)
+void heap<T>::push(T* data, size_t size)
 {
 	B_ASSERT(size > 0);
 
@@ -43,7 +43,7 @@ void heap<T>::push(T* data, int size)
 	 *
 	 */
 
-	int parent;
+	size_t parent;
 
 	--size; // Use size as the current child index
 
@@ -58,7 +58,7 @@ void heap<T>::push(T* data, int size)
 }
 
 template <class T>
-void heap<T>::pop(T* data, int size)
+void heap<T>::pop(T* data, size_t size)
 {
 	B_ASSERT(size > 0);
 
@@ -80,8 +80,8 @@ void heap<T>::pop(T* data, int size)
 		// The first call to swap() function will exchange the
 		// first and the last elements of the array
 
-		int child = 0; // Index of the first element
-		int parent = size - 1; // Index of the last element
+		size_t child = 0; // Index of the first element
+		size_t parent = size - 1; // Index of the last element
 
 		// New index of the last element (after the pop operation)
 		size = parent - 1;
@@ -120,13 +120,13 @@ void heap<T>::pop(T* data, int size)
 }
 
 template <class T>
-void heap<T>::sort(T* data, int size)
+void heap<T>::sort(T* data, size_t size)
 {
 	B_ASSERT(size >= 0);
 
 	if (size > 1)
 	{
-		int heap_size = 1;
+		size_t heap_size = 1;
 
 		while (heap_size < size)
 			push(data, ++heap_size);

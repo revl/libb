@@ -37,11 +37,12 @@ public:
 	// Adds a value to this heap.
 	void push(const T& element);
 
-	// Removes the smallest element from the heap and returns it.
+	// Removes the element with the greatest value from the heap
+	// and returns it.
 	T pop();
 
 	// Returns the number of elements in this heap.
-	int size() const;
+	size_t size() const;
 
 	// Returns true if the heap is empty.
 	bool is_empty() const;
@@ -52,17 +53,17 @@ public:
 	// array (the one with the index size-1) must contain the
 	// value to be inserted and the rest of the elements must
 	// contain a properly formed heap.
-	static void push(T* data, int size);
+	static void push(T* data, size_t size);
 
 	// Given a valid heap in the 'data' array, moves the
-	// element with the lowest value to the end of the array
+	// element with the greatest value to the end of the array
 	// and then restores the heap property among the remaining
 	// elements.
-	static void pop(T* data, int size);
+	static void pop(T* data, size_t size);
 
 	// Sorts the array pointed to by 'data' using heapsort.
 	// Complexity: O(n * log(n))
-	static void sort(T* data, int size);
+	static void sort(T* data, size_t size);
 
 protected:
 	array<T> data;
@@ -71,28 +72,28 @@ protected:
 template <class T>
 void heap<T>::push(const T& element)
 {
-	data.Append(element);
-	push(data.LockBuffer(), data.size());
-	data.UnlockBuffer();
+	data.append(1, element);
+	push(data.lock(), data.size());
+	data.unlock();
 }
 
 template <class T>
 T heap<T>::pop()
 {
-	int data_size = data.size();
+	size_t data_size = data.size();
 
-	pop(data.LockBuffer(), data_size);
-	data.UnlockBuffer();
+	pop(data.lock(), data_size);
+	data.unlock();
 
 	T result(data[--data_size]);
 
-	data.RemoveAt(data_size);
+	data.remove(data_size);
 
 	return result;
 }
 
 template <class T>
-int heap<T>::size() const
+size_t heap<T>::size() const
 {
 	return data.size();
 }
