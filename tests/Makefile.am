@@ -23,6 +23,7 @@ TESTS = \
 	test_string_formatting \
 	test_string_view \
 	test_array \
+	test_heap \
 	test_levenshtein_distance \
 	test_lists \
 	test_memory \
@@ -37,6 +38,7 @@ check_PROGRAMS = \
 	test_string_formatting \
 	test_string_view \
 	test_array \
+	test_heap \
 	test_levenshtein_distance \
 	test_lists \
 	test_memory \
@@ -53,6 +55,8 @@ test_string_formatting_SOURCES = test_string_formatting.cc
 test_string_view_SOURCES = test_string_view.cc
 
 test_array_SOURCES = test_array.cc
+
+test_heap_SOURCES = test_heap.cc
 
 test_levenshtein_distance_SOURCES = test_levenshtein_distance.cc
 

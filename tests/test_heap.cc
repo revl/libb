@@ -20,66 +20,56 @@
 
 #include <b/heap.h>
 
-// My heap
-static b::IntHeap my_heap;
+#include "unit_test.h"
 
-// stl heap
-static std::vector<int> stl_heap;
-
-static void CompareHeaps()
+B_TEST_CASE(push_pop)
 {
-	assert(my_heap.GetSize() == (int) stl_heap.size());
-	if (!my_heap.IsEmpty())
-		assert(my_heap[0] == stl_heap[0]);
+	b::heap<int> heap;
+
+	heap.push(20);
+	heap.push(10);
+
+	B_CHECK(heap.pop() == 20);
+
+	heap.push(30);
+
+	B_CHECK(heap.pop() == 30);
+
+	heap.push(60);
+	heap.push(50);
+
+	B_CHECK(heap.size() == 3);
+
+	heap.push(40);
+	heap.push(70);
+
+	B_CHECK(heap.pop() == 70);
+	B_CHECK(heap.pop() == 60);
+	B_CHECK(heap.pop() == 50);
+	B_CHECK(heap.pop() == 40);
+	B_CHECK(heap.pop() == 10);
+
+	B_CHECK(heap.is_empty());
 }
 
-int main(int /*argc*/, char* /*argv*/[])
-{
-	int i;
-	int n;
-
-	b::randomize();
-
-	for (i = 0; i < 100; i++)
-	{
-		n = b::rand();
-
-		my_heap.Push(n);
-
-		stl_heap.push_back(n);
-		std::push_heap(stl_heap.begin(), stl_heap.end());
-
-		CompareHeaps();
-	}
-
-	for (i = 0; i < 100; i++)
-	{
-		my_heap.Pop(n);
-
-		std::pop_heap(stl_heap.begin(), stl_heap.end());
-
-		assert(stl_heap.back() == n);
-
-		stl_heap.pop_back();
-
-		CompareHeaps();
-	}
-
-	assert(my_heap.IsEmpty());
-
-	int data[10];
 #define COUNT (sizeof(data) / sizeof(*data))
 
-	for (i = 0; i < COUNT; i++)
-		printf("%d\t", data[i] = b::rand());
-	printf("\n");
+B_TEST_CASE(heapsort)
+{
+	b::pseudorandom rand(123);
 
-	printf("Testing my HeapSort...\n");
-	b::IntHeap::Sort(data, COUNT);
+	int data[1000];
 
-	for (i = 0; i < COUNT; i++)
-		printf("%d\t", data[i]);
-	printf("\n");
+	for (size_t i = 0; i < COUNT; ++i)
+		data[i] = rand.next();
 
-	return 0;
+	b::heap<int>::sort(data, COUNT);
+
+	int prev_value = data[0];
+
+	for (size_t i = 1; i < COUNT; ++i)
+	{
+		B_CHECK(prev_value <= data[i]);
+		prev_value = data[i];
+	}
 }
