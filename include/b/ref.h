@@ -26,7 +26,7 @@
 B_BEGIN_NAMESPACE
 
 // Smart pointer to instances of all classes derived from the Object class.
-template <class TYPE>
+template <class T>
 class ref
 {
 // Constructors
@@ -35,10 +35,10 @@ public:
 	ref();
 
 	// Increases the reference count of the object pointed to by <that>.
-	ref(const ref<TYPE>& that);
+	ref(const ref<T>& that);
 
 	// Initializes this instance with a pointer to an existing object.
-	ref(TYPE* that_ptr);
+	ref(T* that_ptr);
 
 // Attributes
 public:
@@ -46,59 +46,59 @@ public:
 	bool IsNull() const;
 
 	// Returns a C++ pointer to the controlled object.
-	TYPE* GetPtr() const;
+	T* GetPtr() const;
 
 	// The same as GetPtr().
-	operator TYPE*() const;
+	operator T*() const;
 
 	// Member selection operator.
-	TYPE* operator ->() const;
+	T* operator ->() const;
 
 	// Dereference operator.
-	TYPE& operator *() const;
+	T& operator *() const;
 
 	// Various comparison operators.
-	bool operator ==(const ref<TYPE>& that) const;
-	bool operator ==(TYPE* that_ptr) const;
+	bool operator ==(const ref<T>& that) const;
+	bool operator ==(T* that_ptr) const;
 
-	bool operator !=(const ref<TYPE>& that) const;
-	bool operator !=(TYPE* that_ptr) const;
+	bool operator !=(const ref<T>& that) const;
+	bool operator !=(T* that_ptr) const;
 
-	bool operator <(const ref<TYPE>& that) const;
-	bool operator <(TYPE* that_ptr) const;
+	bool operator <(const ref<T>& that) const;
+	bool operator <(T* that_ptr) const;
 
-	bool operator >(const ref<TYPE>& that) const;
-	bool operator >(TYPE* that_ptr) const;
+	bool operator >(const ref<T>& that) const;
+	bool operator >(T* that_ptr) const;
 
-	bool operator <=(const ref<TYPE>& that) const;
-	bool operator <=(TYPE* that_ptr) const;
+	bool operator <=(const ref<T>& that) const;
+	bool operator <=(T* that_ptr) const;
 
-	bool operator >=(const ref<TYPE>& that) const;
-	bool operator >=(TYPE* that_ptr) const;
+	bool operator >=(const ref<T>& that) const;
+	bool operator >=(T* that_ptr) const;
 
 // Operations
 public:
 	// Switches to a new object. Releases the previously
 	// controlled object and grabs a reference to the new one.
-	void Assign(TYPE* that_ptr);
+	void Assign(T* that_ptr);
 
 	// Assignment operators.
-	ref<TYPE>& operator =(const ref<TYPE>& that);
-	ref<TYPE>& operator =(TYPE* that_ptr);
+	ref<T>& operator =(const ref<T>& that);
+	ref<T>& operator =(T* that_ptr);
 
 	// Switches to a new object without incrementing its
 	// reference count. Releases the previously controlled object.
-	void Attach(TYPE* that_ptr);
+	void Attach(T* that_ptr);
 
 	// Detaches this smart pointer from the object it points to
 	// without decrementing the reference count of the object,
 	// then resets this smart pointer to zero. Returns a C++
 	// pointer to the detached object.
-	TYPE* Detach();
+	T* Detach();
 
 	// Makes this smart pointer instance point to the object
 	// pointed to by <that> and vice versa.
-	void swap(ref<TYPE>& that);
+	void swap(ref<T>& that);
 
 // Implementation
 public:
@@ -106,139 +106,139 @@ public:
 	~ref();
 
 protected:
-	TYPE* ptr;
+	T* ptr;
 };
 
-template <class TYPE>
-ref<TYPE>::ref() : ptr(NULL)
+template <class T>
+ref<T>::ref() : ptr(NULL)
 {
 }
 
-template <class TYPE>
-ref<TYPE>::ref(const ref<TYPE>& that)
+template <class T>
+ref<T>::ref(const ref<T>& that)
 {
 	if ((ptr = that.ptr) != NULL)
 		ptr->add_ref();
 }
 
-template <class TYPE>
-ref<TYPE>::ref(TYPE* that_ptr)
+template <class T>
+ref<T>::ref(T* that_ptr)
 {
 	if ((ptr = that_ptr) != NULL)
 		ptr->add_ref();
 }
 
-template <class TYPE>
-bool ref<TYPE>::IsNull() const
+template <class T>
+bool ref<T>::IsNull() const
 {
 	return ptr == NULL;
 }
 
-template <class TYPE>
-TYPE* ref<TYPE>::GetPtr() const
+template <class T>
+T* ref<T>::GetPtr() const
 {
 	return ptr;
 }
 
-template <class TYPE>
-ref<TYPE>::operator TYPE*() const
+template <class T>
+ref<T>::operator T*() const
 {
 	return ptr;
 }
 
-template <class TYPE>
-TYPE* ref<TYPE>::operator ->() const
+template <class T>
+T* ref<T>::operator ->() const
 {
 	B_ASSERT(ptr != NULL);
 
 	return ptr;
 }
 
-template <class TYPE>
-TYPE& ref<TYPE>::operator *() const
+template <class T>
+T& ref<T>::operator *() const
 {
 	return *ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator ==(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator ==(const ref<T>& that) const
 {
 	return ptr == that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator ==(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator ==(T* that_ptr) const
 {
 	return ptr == that_ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator !=(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator !=(const ref<T>& that) const
 {
 	return ptr != that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator !=(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator !=(T* that_ptr) const
 {
 	return ptr != that_ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator <(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator <(const ref<T>& that) const
 {
 	return ptr < that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator <(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator <(T* that_ptr) const
 {
 	return ptr < that_ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator >(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator >(const ref<T>& that) const
 {
 	return ptr > that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator >(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator >(T* that_ptr) const
 {
 	return ptr > that_ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator <=(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator <=(const ref<T>& that) const
 {
 	return ptr <= that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator <=(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator <=(T* that_ptr) const
 {
 	return ptr <= that_ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator >=(const ref<TYPE>& that) const
+template <class T>
+bool ref<T>::operator >=(const ref<T>& that) const
 {
 	return ptr >= that.ptr;
 }
 
-template <class TYPE>
-bool ref<TYPE>::operator >=(TYPE* that_ptr) const
+template <class T>
+bool ref<T>::operator >=(T* that_ptr) const
 {
 	return ptr >= that_ptr;
 }
 
-template <class TYPE>
-void ref<TYPE>::Assign(TYPE* that_ptr)
+template <class T>
+void ref<T>::Assign(T* that_ptr)
 {
 	if (that_ptr != NULL)
 		that_ptr->add_ref();
 
-	TYPE* old_ptr = ptr;
+	T* old_ptr = ptr;
 
 	ptr = that_ptr;
 
@@ -246,24 +246,24 @@ void ref<TYPE>::Assign(TYPE* that_ptr)
 		old_ptr->release();
 }
 
-template <class TYPE>
-ref<TYPE>& ref<TYPE>::operator =(const ref<TYPE>& that)
+template <class T>
+ref<T>& ref<T>::operator =(const ref<T>& that)
 {
 	Assign(that.ptr);
 
 	return *this;
 }
 
-template <class TYPE>
-ref<TYPE>& ref<TYPE>::operator =(TYPE* that_ptr)
+template <class T>
+ref<T>& ref<T>::operator =(T* that_ptr)
 {
 	Assign(that_ptr);
 
 	return *this;
 }
 
-template <class TYPE>
-void ref<TYPE>::Attach(TYPE* that_ptr)
+template <class T>
+void ref<T>::Attach(T* that_ptr)
 {
 	if (ptr != NULL)
 		ptr->release();
@@ -271,26 +271,26 @@ void ref<TYPE>::Attach(TYPE* that_ptr)
 	ptr = that_ptr;
 }
 
-template <class TYPE>
-TYPE* ref<TYPE>::Detach()
+template <class T>
+T* ref<T>::Detach()
 {
-	TYPE* this_ptr = ptr;
+	T* this_ptr = ptr;
 
 	ptr = NULL;
 	return this_ptr;
 }
 
-template <class TYPE>
-void ref<TYPE>::swap(ref<TYPE>& that)
+template <class T>
+void ref<T>::swap(ref<T>& that)
 {
-	TYPE* this_ptr = ptr;
+	T* this_ptr = ptr;
 
 	ptr = that.ptr;
 	that.ptr = this_ptr;
 }
 
-template <class TYPE>
-ref<TYPE>::~ref()
+template <class T>
+ref<T>::~ref()
 {
 	if (ptr != NULL)
 		ptr->release();
