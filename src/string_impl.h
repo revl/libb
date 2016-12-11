@@ -123,7 +123,7 @@ void string::assign(const char_t* source, size_t count)
 		empty();
 }
 
-void string::assign(char_t source, size_t count)
+void string::assign(size_t count, char_t source)
 {
 	B_ASSERT(!is_locked());
 

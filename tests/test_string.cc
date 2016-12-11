@@ -81,7 +81,7 @@ B_TEST_CASE(test_string)
 	B_CHECK(str2.length() == 3);
 
 	b::string str3("cba", 3);
-	b::string str4('x', 3);
+	b::string str4(3, 'x');
 
 	B_CHECK(str4 > str3);
 

@@ -193,7 +193,7 @@ template <class T>
 static b::string format(T value, const char* conversion,
 	const char* flags = NULL, ssize_t width = 0, int precision = -1)
 {
-	b::string result('[', 1);
+	b::string result(1, '[');
 
 	b::string format_str = b::string::formatted("%%");
 	if (flags != NULL)

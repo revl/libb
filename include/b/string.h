@@ -42,8 +42,8 @@ public:
 	// repeated multiple times.
 	string(const char_t* source, size_t count, size_t times);
 
-	// Creates a string of <count> copies of source.
-	explicit string(char_t source, size_t count = 1);
+	// Creates a string of 'count' copies of source.
+	explicit string(size_t count, char_t source);
 
 // String Length
 public:
@@ -127,14 +127,14 @@ public:
 
 // Assignment
 public:
-	// Assigns the contents of <source> to this string.
+	// Assigns the contents of 'source' to this string.
 	void assign(const string& source);
 
 	// Replaces the string contents with a copy of character array.
 	void assign(const char_t* source, size_t count);
 
-	// Replaces the string contents with <count> copies of <source>.
-	void assign(char_t source, size_t count = 1);
+	// Replaces the string contents with 'count' copies of 'source'.
+	void assign(size_t count, char_t source);
 
 	// Assigns the contents of one string object to another.
 	string& operator =(const string& source);
@@ -155,21 +155,21 @@ public:
 	// Inserts a character array into this string.
 	void insert(size_t index, const char_t* source, size_t count);
 
-	// Inserts the contents of <source> into this string.
+	// Inserts the contents of 'source' into this string.
 	void insert(size_t index, const string& source);
 
-	// Inserts <count> copies of <source> into this string.
+	// Inserts 'count' copies of 'source' into this string.
 	void insert(size_t index, char_t source, size_t count = 1);
 
 // Concatenation
 public:
-	// Appends characters from <source> to this string.
+	// Appends characters from 'source' to this string.
 	void append(const char_t* source, size_t count);
 
-	// Appends the contents of <source> at the end of this string.
+	// Appends the contents of 'source' at the end of this string.
 	void append(const string& source);
 
-	// Appends <count> copies of <source> to this string.
+	// Appends 'count' copies of 'source' to this string.
 	void append(char_t source, size_t count = 1);
 
 	// Operator version of append(source).
@@ -179,11 +179,11 @@ public:
 	string& operator +=(char_t source);
 
 	// Constructs a new string from the concatenation of
-	// this one and <source>.
+	// this one and 'source'.
 	string operator +(const string& source) const;
 
 	// Constructs a new string from the concatenation of
-	// this one and character <source>.
+	// this one and character 'source'.
 	string operator +(char_t source) const;
 
 	// Concatenates 'times' copies of this string and
@@ -263,15 +263,15 @@ public:
 
 // Character Removal Operations
 public:
-	// Removes all occurrences of characters from <samples>
+	// Removes all occurrences of characters from 'samples'
 	// from the end of this string.
 	void trim_right(const char_t* samples);
 
-	// Removes all occurrences of characters from <samples>
+	// Removes all occurrences of characters from 'samples'
 	// found at the beginning of this string.
 	void trim_left(const char_t* samples);
 
-	// Removes all characters from <samples> from both ends of this string.
+	// Removes all characters from 'samples' from both ends of this string.
 	void trim(const char_t* samples);
 
 // Implementation
@@ -334,9 +334,9 @@ inline string::string(const char_t* source, size_t count) :
 	assign(source, count);
 }
 
-inline string::string(char_t source, size_t count) : chars(empty_string())
+inline string::string(size_t count, char_t source) : chars(empty_string())
 {
-	assign(source, count);
+	assign(count, source);
 }
 
 inline bool string::is_locked() const
@@ -486,7 +486,7 @@ inline string& string::operator =(const string& source)
 
 inline string& string::operator =(char_t source)
 {
-	assign(source);
+	assign(1, source);
 	return *this;
 }
 
