@@ -170,7 +170,7 @@ public:
 	void append(const string& source);
 
 	// Appends 'count' copies of 'source' to this string.
-	void append(char_t source, size_t count = 1);
+	void append(size_t count, char_t source);
 
 	// Operator version of append(source).
 	string& operator +=(const string& source);
@@ -508,7 +508,7 @@ inline string& string::operator +=(const string& source)
 
 inline string& string::operator +=(char_t source)
 {
-	append(source);
+	append(1, source);
 	return *this;
 }
 

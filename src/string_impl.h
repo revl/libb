@@ -308,7 +308,7 @@ void string::append(const char_t* source, size_t count)
 	}
 }
 
-void string::append(char_t source, size_t count)
+void string::append(size_t count, char_t source)
 {
 	B_ASSERT(!is_locked());
 
