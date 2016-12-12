@@ -314,7 +314,7 @@ inline int compare(const int& n1, const int& n2)
 template <>
 inline void construct_default(int* dest, size_t count)
 {
-	Memory::Zero(dest, count * sizeof(*dest));
+	memory::zero(dest, count * sizeof(*dest));
 }
 
 template <>
@@ -328,7 +328,7 @@ inline void construct_identical_copies(int* dest,
 template <>
 inline void construct_copies(int* dest, const int* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -339,14 +339,14 @@ inline void destruct(int*, size_t)
 template <>
 inline void assign_pairwise(int* dest, const int* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
 inline void assign_pairwise_backwards(int* dest,
 	const int* source, size_t count)
 {
-	Memory::Move(dest, source, count * sizeof(*dest));
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 // long
@@ -360,7 +360,7 @@ inline int compare(const long& l1, const long& l2)
 template <>
 inline void construct_default(long* dest, size_t count)
 {
-	Memory::Zero(dest, count * sizeof(long));
+	memory::zero(dest, count * sizeof(long));
 }
 
 template <>
@@ -374,7 +374,7 @@ inline void construct_identical_copies(long* dest,
 template <>
 inline void construct_copies(long* dest, const long* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -385,14 +385,14 @@ inline void destruct(long*, size_t)
 template <>
 inline void assign_pairwise(long* dest, const long* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
 inline void assign_pairwise_backwards(long* dest,
 	const long* source, size_t count)
 {
-	Memory::Move(dest, source, count * sizeof(*dest));
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 // char
@@ -406,26 +406,26 @@ inline int compare(const char& c1, const char& c2)
 template <>
 inline int compare_arrays(const char* array1, const char* array2, size_t count)
 {
-	return Memory::Compare(array1, array2, count);
+	return memory::compare(array1, array2, count);
 }
 
 template <>
 inline void construct_default(char* dest, size_t count)
 {
-	Memory::Zero(dest, count * sizeof(char));
+	memory::zero(dest, count * sizeof(char));
 }
 
 template <>
 inline void construct_identical_copies(char* dest,
 	const char& master_copy, size_t count)
 {
-	Memory::Fill(dest, count, master_copy);
+	memory::fill(dest, count, master_copy);
 }
 
 template <>
 inline void construct_copies(char* dest, const char* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -436,20 +436,20 @@ inline void destruct(char*, size_t)
 template <>
 inline void assign_value(char* dest, size_t count, const char& value)
 {
-	Memory::Fill(dest, count, value);
+	memory::fill(dest, count, value);
 }
 
 template <>
 inline void assign_pairwise(char* dest, const char* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
 inline void assign_pairwise_backwards(char* dest,
 	const char* source, size_t count)
 {
-	Memory::Move(dest, source, count * sizeof(*dest));
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 // wchar_t
@@ -463,13 +463,13 @@ inline int compare(const wchar_t& c1, const wchar_t& c2)
 template <>
 inline void construct_default(wchar_t* dest, size_t count)
 {
-	Memory::Zero(dest, count * sizeof(*dest));
+	memory::zero(dest, count * sizeof(*dest));
 }
 
 template <>
 inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -487,14 +487,14 @@ inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 template <>
 inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 {
-	Memory::Copy(dest, source, count * sizeof(*dest));
+	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 template <>
 inline void assign_pairwise_backwards(wchar_t* dest,
 	const wchar_t* source, size_t count)
 {
-	Memory::Move(dest, source, count * sizeof(*dest));
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 B_END_NAMESPACE

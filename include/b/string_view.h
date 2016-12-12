@@ -269,14 +269,14 @@ inline int string_view::compare(const string_view& rhs) const
 {
 	if (view_length < rhs.view_length)
 	{
-		int diff = Memory::Compare(view, rhs.view,
+		int diff = memory::compare(view, rhs.view,
 			view_length * sizeof(char_t));
 
 		return diff != 0 ? diff : -1;
 	}
 	else
 	{
-		int diff = Memory::Compare(view, rhs.view,
+		int diff = memory::compare(view, rhs.view,
 			rhs.view_length * sizeof(char_t));
 
 		return diff != 0 ? diff : view_length > rhs.view_length;

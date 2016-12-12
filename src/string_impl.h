@@ -581,7 +581,7 @@ char_t* string::alloc_buffer(size_t capacity, size_t length)
 {
 	B_ASSERT(capacity >= length);
 
-	buffer* new_buffer = (buffer*) Memory::Alloc(sizeof(buffer) +
+	buffer* new_buffer = (buffer*) memory::alloc(sizeof(buffer) +
 		capacity * sizeof(char_t));
 
 	new_buffer->refs = 1;
@@ -596,7 +596,7 @@ void string::replace_buffer(char_t* new_buffer_chars)
 	B_ASSERT(!is_locked());
 
 	if (chars != empty_string() && !--metadata()->refs)
-		Memory::Free(metadata());
+		memory::free(metadata());
 
 	chars = new_buffer_chars;
 }
@@ -604,7 +604,7 @@ void string::replace_buffer(char_t* new_buffer_chars)
 string::~string()
 {
 	if (chars != empty_string() && (is_locked() || !--metadata()->refs))
-		Memory::Free(metadata());
+		memory::free(metadata());
 }
 
 char_t* find_char(const char_t* input, char_t c)

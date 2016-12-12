@@ -443,15 +443,15 @@ B_TEST_CASE(n_conversions)
 		char mold[sizeof(short[4])];
 	};
 
-	b::Memory::Fill(mold, sizeof(mold), (char) -1);
+	b::memory::fill(mold, sizeof(mold), (char) -1);
 	words[1] = 5;
 
 	char expected[sizeof(mold)];
-	b::Memory::Copy(expected, mold, sizeof(expected));
+	b::memory::copy(expected, mold, sizeof(expected));
 
 	B_CHECK(b::string::formatted("hello%hn", words + 1) == "hello");
 
-	B_CHECK(b::Memory::Compare(mold, expected, sizeof(expected)) == 0);
+	B_CHECK(b::memory::compare(mold, expected, sizeof(expected)) == 0);
 }
 
 B_TEST_CASE(p_conversions)

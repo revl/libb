@@ -485,7 +485,7 @@ void string_formatting::process_conversion()
 		return;
 	}
 
-	b::Memory::Zero(&flags, sizeof(flags));
+	b::memory::zero(&flags, sizeof(flags));
 
 	// Parse flags
 	for (;; ++fmt)

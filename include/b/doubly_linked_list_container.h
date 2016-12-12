@@ -180,12 +180,12 @@ private:
 	{
 		static void* operator new(size_t size)
 		{
-			return Memory::Alloc(size);
+			return memory::alloc(size);
 		}
 
 		static void operator delete(void* address)
 		{
-			Memory::Free(address);
+			memory::free(address);
 		}
 
 		element_wrapper(const T& source) : element(source)

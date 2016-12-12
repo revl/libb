@@ -22,7 +22,7 @@
 
 B_BEGIN_NAMESPACE
 
-void* Memory::Alloc(size_t size)
+void* memory::alloc(size_t size)
 {
 	B_STATIC_CONST_STRING(method_name, "b::memory::alloc()");
 
@@ -34,14 +34,14 @@ void* Memory::Alloc(size_t size)
 	return block;
 }
 
-void* Memory::FixedAlloc(size_t size)
+void* memory::fixed_alloc(size_t size)
 {
-	return Alloc(size);
+	return alloc(size);
 }
 
-void Memory::FixedFree(void* chunk, size_t /*size*/)
+void memory::fixed_free(void* chunk, size_t /*size*/)
 {
-	Free(chunk);
+	free(chunk);
 }
 
 B_END_NAMESPACE

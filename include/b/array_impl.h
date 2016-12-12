@@ -475,7 +475,7 @@ T* array<T>::empty_array()
 template <class T>
 T* array<T>::alloc_buffer(size_t capacity, size_t size)
 {
-	buffer* new_buffer = (buffer*) Memory::Alloc((size_t)
+	buffer* new_buffer = (buffer*) memory::alloc((size_t)
 		&((buffer*) (sizeof(T) * capacity))->first_element);
 
 	new_buffer->refs = 1;
@@ -493,7 +493,7 @@ void array<T>::release()
 	if (elements != empty_array() && !--metadata()->refs)
 	{
 		destruct(elements, size());
-		Memory::Free(metadata());
+		memory::free(metadata());
 	}
 }
 

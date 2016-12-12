@@ -39,7 +39,7 @@ public:
 	// 'operator delete' was used before it was declared inline.
 	static void operator delete(void* object, size_t size)
 	{
-		Memory::FixedFree(object, size);
+		memory::fixed_free(object, size);
 	}
 
 protected:
@@ -79,7 +79,7 @@ protected:
 
 inline void* object::operator new(size_t size)
 {
-	return Memory::FixedAlloc(size > B_MIN_FIXED_ALLOC ?
+	return memory::fixed_alloc(size > B_MIN_FIXED_ALLOC ?
 		size : B_MIN_FIXED_ALLOC);
 }
 
