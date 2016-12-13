@@ -18,8 +18,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+libtoolize="`which libtoolize`"
+
+if ! test -x "$libtoolize"; then
+	libtoolize="`which glibtoolize`"
+	if ! test -x "$libtoolize"; then
+		echo 'libtoolize: not found' >&2
+		exit 1
+	fi
+fi
+
 aclocal &&
-	libtoolize --automake --copy && \
+	"$libtoolize" --automake --copy && \
 	autoheader && \
 	automake --gnu --add-missing --copy && \
 	autoconf
