@@ -58,14 +58,14 @@ B_TEST_CASE(heapsort)
 {
 	b::pseudorandom rand(123);
 
-	int data[1000];
+	unsigned data[1000];
 
 	for (size_t i = 0; i < COUNT; ++i)
 		data[i] = rand.next();
 
-	b::heap<int>::sort(data, COUNT);
+	b::heap<unsigned>::sort(data, COUNT);
 
-	int prev_value = data[0];
+	unsigned prev_value = data[0];
 
 	for (size_t i = 1; i < COUNT; ++i)
 	{
