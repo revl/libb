@@ -234,12 +234,6 @@ public:
 	}
 
 // Implementation
-public:
-	~linked_list()
-	{
-		remove_all();
-	}
-
 protected:
 	element_type* first_element;
 	element_type* last_element;
