@@ -31,28 +31,27 @@ struct element : public b::binary_tree_node
 	const int value;
 };
 
+static int value_for_node(const b::binary_tree_node& node)
+{
+	return static_cast<const element&>(node).value;
+}
+
 struct value_is_less
 {
-	static const element& element_for_node(const b::binary_tree_node& node)
-	{
-		return static_cast<const element&>(node);
-	}
-
 	bool operator ()(const b::binary_tree_node& lhs,
 		const b::binary_tree_node& rhs) const
 	{
-		return element_for_node(lhs).value <
-			element_for_node(rhs).value;
+		return value_for_node(lhs) < value_for_node(rhs);
 	}
 
 	bool operator ()(const b::binary_tree_node& node, int val) const
 	{
-		return element_for_node(node).value < val;
+		return value_for_node(node) < val;
 	}
 
 	bool operator ()(int val, const b::binary_tree_node& node) const
 	{
-		return val < element_for_node(node).value;
+		return val < value_for_node(node);
 	}
 };
 
@@ -74,4 +73,50 @@ B_TEST_CASE(construction)
 
 	B_CHECK(cmp_result == 0);
 	B_CHECK(found_el10 == &el10);
+}
+
+B_TEST_CASE(inorder_walk)
+{
+	b::binary_search_tree<value_is_less> bst = value_is_less();
+
+	element el20(20);
+	bst.insert(&el20);
+
+	element el40(40);
+	bst.insert(&el40);
+
+	element el20_again(20);
+	bst.insert(&el20_again);
+
+	element el30(30);
+	bst.insert(&el30);
+
+	element el10(10);
+	bst.insert(&el10);
+
+	element el20_again_and_again(20);
+	bst.insert(&el20_again_and_again);
+
+	B_REQUIRE(bst.size() == 6);
+
+	int prev_value = -1;
+
+	const b::binary_tree_node* node = bst.minimum();
+
+	size_t actual_number_of_elements = 0;
+
+	while (node != NULL)
+	{
+		++actual_number_of_elements;
+
+		int value = value_for_node(*node);
+
+		B_CHECK(prev_value <= value);
+
+		prev_value = value;
+
+		node = bst.inorder_next(node);
+	}
+
+	B_CHECK(actual_number_of_elements == 6);
 }

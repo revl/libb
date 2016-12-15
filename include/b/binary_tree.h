@@ -92,9 +92,26 @@ public:
 
 		binary_tree_node* parent = search(*node, &cmp_result);
 
-		if (cmp_result == 0 && parent != NULL)
-			while (parent->right != NULL)
-				parent = parent->right;
+		if (parent != NULL && cmp_result == 0)
+		{
+			binary_tree_node* new_parent = parent->right;
+
+			while (new_parent != NULL)
+			{
+				parent = new_parent;
+
+				if (less(*node, *new_parent))
+				{
+					new_parent = new_parent->left;
+					cmp_result = -1;
+				}
+				else
+				{
+					new_parent = new_parent->right;
+					cmp_result = 1;
+				}
+			}
+		}
 
 		node->left = node->right = NULL;
 
@@ -107,6 +124,46 @@ public:
 				parent->right = node;
 
 		++number_of_elements;
+	}
+
+	// TODO maintain a member pointer to the minimum element
+	const binary_tree_node* minimum() const
+	{
+		const binary_tree_node* node = root;
+		while (node->left != NULL)
+			node = node->left;
+		return node;
+	}
+
+	const binary_tree_node* maximum() const
+	{
+		const binary_tree_node* node = root;
+		while (node->right != NULL)
+			node = node->right;
+		return node;
+	}
+
+	const binary_tree_node* inorder_next(const binary_tree_node* node) const
+	{
+		B_ASSERT(node != NULL);
+
+		if (node->right != NULL)
+		{
+			node = node->right;
+			while (node->left != NULL)
+				node = node->left;
+			return node;
+		}
+
+		const binary_tree_node* parent = node->parent;
+
+		while (parent != NULL && parent->right == node)
+		{
+			node = parent;
+			parent = parent->parent;
+		}
+
+		return parent;
 	}
 
 	bool less(const binary_tree_node& lhs,
