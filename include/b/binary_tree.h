@@ -35,13 +35,18 @@ struct binary_tree_node
 class binary_search_tree_base
 {
 public:
-	binary_search_tree_base() : root(NULL), size(0)
+	binary_search_tree_base() : root(NULL), number_of_elements(0)
 	{
+	}
+
+	size_t size() const
+	{
+		return number_of_elements;
 	}
 
 protected:
 	binary_tree_node* root;
-	size_t size;
+	size_t number_of_elements;
 };
 
 template <class Less>
@@ -59,7 +64,6 @@ public:
 		binary_tree_node* node = root;
 
 		while (node != NULL)
-		{
 			if (less(key, *node))
 			{
 				parent = node;
@@ -75,12 +79,40 @@ public:
 				}
 				else
 				{
-					cmp_result = 0;
+					*cmp_result = 0;
 					return node;
 				}
-		}
 
 		return parent;
+	}
+
+	void insert(binary_tree_node* node)
+	{
+		int cmp_result;
+
+		binary_tree_node* parent = search(*node, &cmp_result);
+
+		if (cmp_result == 0 && parent != NULL)
+			while (parent->right != NULL)
+				parent = parent->right;
+
+		node->left = node->right = NULL;
+
+		if ((node->parent = parent) == NULL)
+			root = node;
+		else
+			if (cmp_result < 0)
+				parent->left = node;
+			else
+				parent->right = node;
+
+		++number_of_elements;
+	}
+
+	bool less(const binary_tree_node& lhs,
+		const binary_tree_node& rhs) const
+	{
+		return this->operator ()(lhs, rhs);
 	}
 
 	template <class Key>

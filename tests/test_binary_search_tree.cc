@@ -38,6 +38,13 @@ struct value_is_less
 		return static_cast<const element&>(node);
 	}
 
+	bool operator ()(const b::binary_tree_node& lhs,
+		const b::binary_tree_node& rhs) const
+	{
+		return element_for_node(lhs).value <
+			element_for_node(rhs).value;
+	}
+
 	bool operator ()(const b::binary_tree_node& node, int val) const
 	{
 		return element_for_node(node).value < val;
@@ -56,4 +63,15 @@ B_TEST_CASE(construction)
 	int cmp_result;
 
 	B_CHECK(bst.search(0, &cmp_result) == NULL);
+
+	element el10(10);
+
+	bst.insert(&el10);
+
+	B_REQUIRE(bst.size() == 1);
+
+	b::binary_tree_node* found_el10 = bst.search(10, &cmp_result);
+
+	B_CHECK(cmp_result == 0);
+	B_CHECK(found_el10 == &el10);
 }
