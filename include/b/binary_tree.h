@@ -30,18 +30,6 @@ struct binary_tree_node
 	binary_tree_node* parent;
 	binary_tree_node* left;
 	binary_tree_node* right;
-
-	void replace_child(binary_tree_node* child, binary_tree_node* new_child)
-	{
-		if (left == child)
-			left = new_child;
-		else
-		{
-			B_ASSERT(right == child);
-
-			right = new_child;
-		}
-	}
 };
 
 class binary_search_tree_base
@@ -56,85 +44,9 @@ public:
 		return number_of_nodes;
 	}
 
-	void remove(binary_tree_node* node)
-	{
-		binary_tree_node* const parent_node = node->parent;
-		binary_tree_node* const left_node = node->left;
-		binary_tree_node* const right_node = node->right;
-
-		if (left_node == NULL)
-		{
-			if (right_node != NULL)
-				right_node->parent = parent_node;
-
-			update_parent(parent_node, node, right_node);
-
-			return;
-		}
-
-		if (right_node == NULL)
-		{
-			left_node->parent = parent_node;
-
-			update_parent(parent_node, node, left_node);
-
-			return;
-		}
-
-		if (right_node->left == NULL)
-		{
-			right_node->left = left_node;
-			left_node->parent = right_node;
-			right_node->parent = parent_node;
-
-			update_parent(parent_node, node, right_node);
-
-			return;
-		}
-
-		if (left_node->right == NULL)
-		{
-			left_node->right = right_node;
-			right_node->parent = left_node;
-			left_node->parent = parent_node;
-
-			update_parent(parent_node, node, left_node);
-
-			return;
-		}
-
-		binary_tree_node* successor_parent;
-		binary_tree_node* successor = right_node;
-
-		do
-		{
-			successor_parent = successor;
-			successor = successor->left;
-		}
-		while (successor->left != NULL);
-
-		if (successor->right != NULL)
-			successor->right->parent = successor_parent;
-
-		successor_parent->replace_child(successor, successor->right);
-
-		successor->parent = parent_node;
-		successor->left = left_node;
-		successor->right = right_node;
-
-		update_parent(parent_node, node, successor);
-	}
+	void remove(binary_tree_node* node);
 
 protected:
-	void update_parent(binary_tree_node* parent,
-		binary_tree_node* old_child, binary_tree_node* new_child)
-	{
-		if (parent != NULL)
-			parent->replace_child(old_child, new_child);
-		else
-			root = new_child;
-	}
-
 	binary_tree_node* root;
 	size_t number_of_nodes;
 };
