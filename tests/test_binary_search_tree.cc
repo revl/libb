@@ -20,6 +20,9 @@
 
 #include <b/binary_tree.h>
 
+#include <b/array.h>
+#include <b/pseudorandom.h>
+
 #include "unit_test.h"
 
 struct element : public b::binary_tree_node
@@ -119,4 +122,75 @@ B_TEST_CASE(inorder_walk)
 	}
 
 	B_CHECK(actual_number_of_elements == 6);
+}
+
+#define NUMBER_OF_ELEMENTS 10
+
+B_TEST_CASE(deletion)
+{
+	b::binary_search_tree<value_is_less> bst = value_is_less();
+
+	b::array<int> numbers;
+
+	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
+		numbers.append(1, i);
+
+	b::pseudorandom prg(11);
+
+	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
+	{
+		b::pseudorandom::value_type random_index =
+			prg.next((b::pseudorandom::value_type) numbers.size());
+
+		bst.insert(new element(numbers[random_index]));
+
+		numbers.remove(random_index);
+	}
+
+	B_REQUIRE(numbers.is_empty());
+
+	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
+		numbers.append(1, i);
+
+	size_t expected_size = NUMBER_OF_ELEMENTS;
+
+	do
+	{
+		B_REQUIRE(bst.size() == expected_size);
+
+		{
+			const b::binary_tree_node* node = bst.minimum();
+
+			int prev_value = -1;
+
+			do
+			{
+				int value = value_for_node(*node);
+
+				B_CHECK(prev_value < value);
+
+				prev_value = value;
+
+				node = bst.inorder_next(node);
+			}
+			while (node != NULL);
+		}
+
+		b::pseudorandom::value_type random_index =
+			prg.next((b::pseudorandom::value_type) numbers.size());
+		int number = numbers[random_index];
+
+		int cmp_result;
+
+		b::binary_tree_node* node = bst.search(number, &cmp_result);
+
+		B_REQUIRE(node != NULL);
+		B_REQUIRE(value_for_node(*node) == number);
+
+		bst.remove(node);
+		delete static_cast<element*>(node);
+
+		numbers.remove(random_index);
+	}
+	while (--expected_size != 0);
 }
