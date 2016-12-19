@@ -44,6 +44,11 @@ public:
 		return number_of_nodes;
 	}
 
+	bool is_empty() const
+	{
+		return number_of_nodes == 0;
+	}
+
 	void remove(binary_tree_node* node);
 
 protected:
