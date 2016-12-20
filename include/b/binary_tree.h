@@ -136,7 +136,7 @@ public:
 	}
 
 	// TODO maintain a member pointer to the minimum element
-	const binary_tree_node* minimum() const
+	const binary_tree_node* first() const
 	{
 		const binary_tree_node* node = root;
 		while (node->left != NULL)
@@ -144,7 +144,7 @@ public:
 		return node;
 	}
 
-	const binary_tree_node* maximum() const
+	const binary_tree_node* last() const
 	{
 		const binary_tree_node* node = root;
 		while (node->right != NULL)

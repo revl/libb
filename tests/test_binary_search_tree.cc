@@ -104,7 +104,7 @@ B_TEST_CASE(inorder_walk)
 
 	int prev_value = -1;
 
-	const b::binary_tree_node* node = bst.minimum();
+	const b::binary_tree_node* node = bst.first();
 
 	size_t actual_number_of_elements = 0;
 
@@ -159,7 +159,7 @@ B_TEST_CASE(deletion)
 		{
 			B_REQUIRE(bst.size() == expected_size);
 
-			const b::binary_tree_node* node = bst.minimum();
+			const b::binary_tree_node* node = bst.first();
 
 			size_t i = 0;
 
