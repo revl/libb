@@ -22,6 +22,33 @@
 
 B_BEGIN_NAMESPACE
 
+const binary_tree_node* binary_tree_node::next() const
+{
+	if (right != NULL)
+	{
+		const binary_tree_node* next_node = right;
+
+		// Find the leftmost child in the right branch.
+		while (next_node->left != NULL)
+			next_node = next_node->left;
+
+		return next_node;
+	}
+
+	// Find the first parent that has the current
+	// subtree as its left branch.
+	const binary_tree_node* next_node = parent;
+	const binary_tree_node* child = this;
+
+	while (next_node != NULL && next_node->right == child)
+	{
+		child = next_node;
+		next_node = next_node->parent;
+	}
+
+	return next_node;
+}
+
 static void update_parent(binary_tree_node** root, binary_tree_node* parent,
 	binary_tree_node* old_child, binary_tree_node* new_child)
 {
@@ -31,11 +58,7 @@ static void update_parent(binary_tree_node** root, binary_tree_node* parent,
 		if (parent->left == old_child)
 			parent->left = new_child;
 		else
-		{
-			B_ASSERT(parent->right == old_child);
-
 			parent->right = new_child;
-		}
 }
 
 void binary_search_tree_base::remove(binary_tree_node* node)

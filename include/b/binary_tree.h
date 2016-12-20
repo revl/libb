@@ -30,6 +30,8 @@ struct binary_tree_node
 	binary_tree_node* parent;
 	binary_tree_node* left;
 	binary_tree_node* right;
+
+	const binary_tree_node* next() const;
 };
 
 class binary_search_tree_base
@@ -142,54 +144,12 @@ public:
 		return node;
 	}
 
-	binary_tree_node* minimum()
-	{
-		return const_cast<binary_tree_node*>(
-			((const binary_search_tree*) this)->minimum());
-	}
-
 	const binary_tree_node* maximum() const
 	{
 		const binary_tree_node* node = root;
 		while (node->right != NULL)
 			node = node->right;
 		return node;
-	}
-
-	binary_tree_node* maximum()
-	{
-		return const_cast<binary_tree_node*>(
-			((const binary_search_tree*) this)->maximum());
-	}
-
-	static const binary_tree_node* inorder_next(
-		const binary_tree_node* node)
-	{
-		B_ASSERT(node != NULL);
-
-		if (node->right != NULL)
-		{
-			node = node->right;
-			while (node->left != NULL)
-				node = node->left;
-			return node;
-		}
-
-		const binary_tree_node* parent = node->parent;
-
-		while (parent != NULL && parent->right == node)
-		{
-			node = parent;
-			parent = parent->parent;
-		}
-
-		return parent;
-	}
-
-	static binary_tree_node* inorder_next(binary_tree_node* node)
-	{
-		return const_cast<binary_tree_node*>(inorder_next(
-			(const binary_tree_node*) node));
 	}
 
 	bool less(const binary_tree_node& lhs,
