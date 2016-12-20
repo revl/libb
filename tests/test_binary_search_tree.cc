@@ -124,7 +124,7 @@ B_TEST_CASE(inorder_walk)
 	B_CHECK(actual_number_of_elements == 6);
 }
 
-#define NUMBER_OF_ELEMENTS 10
+#define NUMBER_OF_ELEMENTS 100
 
 B_TEST_CASE(deletion)
 {
@@ -158,23 +158,19 @@ B_TEST_CASE(deletion)
 	{
 		B_REQUIRE(bst.size() == expected_size);
 
+		b::binary_tree_node* node = bst.minimum();
+
+		size_t i = 0;
+
+		do
 		{
-			const b::binary_tree_node* node = bst.minimum();
+			B_REQUIRE(i < numbers.size());
 
-			int prev_value = -1;
-
-			do
-			{
-				int value = value_for_node(*node);
-
-				B_CHECK(prev_value < value);
-
-				prev_value = value;
-
-				node = bst.inorder_next(node);
-			}
-			while (node != NULL);
+			B_CHECK(numbers[i++] == value_for_node(*node));
 		}
+		while ((node = bst.inorder_next(node)) != NULL);
+
+		B_REQUIRE(i == bst.size());
 
 		b::pseudorandom::value_type random_index =
 			prg.next((b::pseudorandom::value_type) numbers.size());
@@ -182,7 +178,7 @@ B_TEST_CASE(deletion)
 
 		int cmp_result;
 
-		b::binary_tree_node* node = bst.search(number, &cmp_result);
+		node = bst.search(number, &cmp_result);
 
 		B_REQUIRE(node != NULL);
 		B_REQUIRE(value_for_node(*node) == number);

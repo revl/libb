@@ -142,6 +142,12 @@ public:
 		return node;
 	}
 
+	binary_tree_node* minimum()
+	{
+		return const_cast<binary_tree_node*>(
+			((const binary_search_tree*) this)->minimum());
+	}
+
 	const binary_tree_node* maximum() const
 	{
 		const binary_tree_node* node = root;
@@ -150,7 +156,14 @@ public:
 		return node;
 	}
 
-	const binary_tree_node* inorder_next(const binary_tree_node* node) const
+	binary_tree_node* maximum()
+	{
+		return const_cast<binary_tree_node*>(
+			((const binary_search_tree*) this)->maximum());
+	}
+
+	static const binary_tree_node* inorder_next(
+		const binary_tree_node* node)
 	{
 		B_ASSERT(node != NULL);
 
@@ -171,6 +184,12 @@ public:
 		}
 
 		return parent;
+	}
+
+	static binary_tree_node* inorder_next(binary_tree_node* node)
+	{
+		return const_cast<binary_tree_node*>(inorder_next(
+			(const binary_tree_node*) node));
 	}
 
 	bool less(const binary_tree_node& lhs,
