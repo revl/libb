@@ -97,42 +97,36 @@ public:
 
 	void insert(binary_tree_node* node)
 	{
+		++number_of_nodes;
+
+		node->left = node->right = NULL;
+
 		int cmp_result;
 
 		binary_tree_node* parent = search(*node, &cmp_result);
 
-		if (parent != NULL && cmp_result == 0)
+		if (parent == NULL)
 		{
-			binary_tree_node* new_parent = parent->right;
-
-			while (new_parent != NULL)
-			{
-				parent = new_parent;
-
-				if (less(*node, *new_parent))
-				{
-					new_parent = new_parent->left;
-					cmp_result = -1;
-				}
-				else
-				{
-					new_parent = new_parent->right;
-					cmp_result = 1;
-				}
-			}
-		}
-
-		node->left = node->right = NULL;
-
-		if ((node->parent = parent) == NULL)
+			node->parent = NULL;
 			root = node;
+		}
 		else
 			if (cmp_result < 0)
 				parent->left = node;
 			else
-				parent->right = node;
+				if (cmp_result > 0 || parent->right == NULL)
+					parent->right = node;
+				else
+				{
+					parent = parent->right;
 
-		++number_of_nodes;
+					while (parent->left != NULL)
+						parent = parent->left;
+
+					parent->left = node;
+				}
+
+		node->parent = parent;
 	}
 
 	// TODO maintain a member pointer to the minimum element
