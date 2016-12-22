@@ -71,29 +71,18 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 	binary_tree_node* const left_node = node->left;
 	binary_tree_node* const right_node = node->right;
 
-	if (left_node == NULL)
-	{
-		if (right_node != NULL)
-			right_node->parent = parent_node;
-
-		update_parent(&root, parent_node, node, right_node);
-
-		return;
-	}
-
 	if (right_node == NULL)
 	{
-		left_node->parent = parent_node;
+		if (left_node != NULL)
+			left_node->parent = parent_node;
 
 		update_parent(&root, parent_node, node, left_node);
 
 		return;
 	}
 
-	if (right_node->left == NULL)
+	if (left_node == NULL)
 	{
-		right_node->left = left_node;
-		left_node->parent = right_node;
 		right_node->parent = parent_node;
 
 		update_parent(&root, parent_node, node, right_node);
@@ -112,16 +101,38 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 		return;
 	}
 
-	binary_tree_node* successor = right_node->left;
+	if (right_node->left == NULL)
+	{
+		right_node->left = left_node;
+		left_node->parent = right_node;
+		right_node->parent = parent_node;
 
-	while (successor->left != NULL)
-		successor = successor->left;
+		update_parent(&root, parent_node, node, right_node);
 
-	successor->left = left_node;
-	left_node->parent = successor;
-	right_node->parent = parent_node;
+		return;
+	}
 
-	update_parent(&root, parent_node, node, right_node);
+	binary_tree_node* successor_parent = right_node;
+	binary_tree_node* successor;
+
+	for (;;)
+	{
+		successor = successor_parent->left;
+
+		if (successor->left == NULL)
+			break;
+
+		successor_parent = successor;
+	}
+
+	if ((successor_parent->left = successor->right) != NULL)
+		successor->right->parent = successor_parent;
+
+	(successor->left = left_node)->parent = successor;
+	(successor->right = right_node)->parent = successor;
+	successor->parent = parent_node;
+
+	update_parent(&root, parent_node, node, successor);
 }
 
 B_END_NAMESPACE
