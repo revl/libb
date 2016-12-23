@@ -89,6 +89,8 @@ public:
 	template <class Key>
 	binary_tree_node* search(const Key& key, int* cmp_result) const
 	{
+		*cmp_result = 0;
+
 		if (root == NULL)
 			return NULL;
 
@@ -111,10 +113,7 @@ public:
 						return node;
 					}
 				else
-				{
-					*cmp_result = 0;
 					return node;
-				}
 	}
 
 	void insert(binary_tree_node* node)
