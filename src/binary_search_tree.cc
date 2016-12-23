@@ -143,27 +143,27 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 		return;
 	}
 
-	binary_tree_node* successor_parent = right_node;
-	binary_tree_node* successor;
+	binary_tree_node* next_node;
+	binary_tree_node* next_node_parent = right_node;
 
 	for (;;)
 	{
-		successor = successor_parent->left;
+		next_node = next_node_parent->left;
 
-		if (successor->left == NULL)
+		if (next_node->left == NULL)
 			break;
 
-		successor_parent = successor;
+		next_node_parent = next_node;
 	}
 
-	if ((successor_parent->left = successor->right) != NULL)
-		successor->right->parent = successor_parent;
+	if ((next_node_parent->left = next_node->right) != NULL)
+		next_node->right->parent = next_node_parent;
 
-	(successor->left = left_node)->parent = successor;
-	(successor->right = right_node)->parent = successor;
-	successor->parent = parent_node;
+	(next_node->left = left_node)->parent = next_node;
+	(next_node->right = right_node)->parent = next_node;
+	next_node->parent = parent_node;
 
-	update_parent(&root, parent_node, node, successor);
+	update_parent(&root, parent_node, node, next_node);
 }
 
 B_END_NAMESPACE
