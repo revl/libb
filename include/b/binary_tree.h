@@ -51,6 +51,9 @@ public:
 		return number_of_nodes == 0;
 	}
 
+	void insert(binary_tree_node* node,
+		binary_tree_node* parent, int cmp_result);
+
 	void remove(binary_tree_node* node);
 
 protected:
@@ -99,36 +102,11 @@ public:
 
 	void insert(binary_tree_node* node)
 	{
-		++number_of_nodes;
-
-		node->left = node->right = NULL;
-
 		int cmp_result;
 
 		binary_tree_node* parent = search(*node, &cmp_result);
 
-		if (parent == NULL)
-		{
-			node->parent = NULL;
-			root = node;
-		}
-		else
-			if (cmp_result < 0)
-				parent->left = node;
-			else
-				if (cmp_result > 0 || parent->right == NULL)
-					parent->right = node;
-				else
-				{
-					parent = parent->right;
-
-					while (parent->left != NULL)
-						parent = parent->left;
-
-					parent->left = node;
-				}
-
-		node->parent = parent;
+		binary_search_tree_base::insert(node, parent, cmp_result);
 	}
 
 	// TODO maintain a member pointer to the minimum element

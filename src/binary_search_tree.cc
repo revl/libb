@@ -49,6 +49,37 @@ const binary_tree_node* binary_tree_node::next() const
 	return next_node;
 }
 
+void binary_search_tree_base::insert(binary_tree_node* node,
+	binary_tree_node* parent, int cmp_result)
+{
+	++number_of_nodes;
+
+	node->left = node->right = NULL;
+
+	if (parent == NULL)
+	{
+		node->parent = NULL;
+		root = node;
+	}
+	else
+		if (cmp_result < 0)
+			parent->left = node;
+		else
+			if (cmp_result > 0 || parent->right == NULL)
+				parent->right = node;
+			else
+			{
+				parent = parent->right;
+
+				while (parent->left != NULL)
+					parent = parent->left;
+
+				parent->left = node;
+			}
+
+	node->parent = parent;
+}
+
 static void update_parent(binary_tree_node** root, binary_tree_node* parent,
 	binary_tree_node* old_child, binary_tree_node* new_child)
 {
