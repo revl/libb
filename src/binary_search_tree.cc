@@ -98,53 +98,49 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 
 	--number_of_nodes;
 
-	binary_tree_node* const parent_node = node->parent;
-	binary_tree_node* const left_node = node->left;
-	binary_tree_node* const right_node = node->right;
-
-	if (right_node == NULL)
+	if (node->right == NULL)
 	{
-		if (left_node != NULL)
-			left_node->parent = parent_node;
+		if (node->left != NULL)
+			node->left->parent = node->parent;
 
-		update_parent(&root, parent_node, node, left_node);
+		update_parent(&root, node->parent, node, node->left);
 
 		return;
 	}
 
-	if (left_node == NULL)
+	if (node->left == NULL)
 	{
-		right_node->parent = parent_node;
+		node->right->parent = node->parent;
 
-		update_parent(&root, parent_node, node, right_node);
+		update_parent(&root, node->parent, node, node->right);
 
 		return;
 	}
 
-	if (left_node->right == NULL)
+	if (node->left->right == NULL)
 	{
-		left_node->right = right_node;
-		right_node->parent = left_node;
-		left_node->parent = parent_node;
+		node->left->right = node->right;
+		node->right->parent = node->left;
+		node->left->parent = node->parent;
 
-		update_parent(&root, parent_node, node, left_node);
+		update_parent(&root, node->parent, node, node->left);
 
 		return;
 	}
 
-	if (right_node->left == NULL)
+	if (node->right->left == NULL)
 	{
-		right_node->left = left_node;
-		left_node->parent = right_node;
-		right_node->parent = parent_node;
+		node->right->left = node->left;
+		node->left->parent = node->right;
+		node->right->parent = node->parent;
 
-		update_parent(&root, parent_node, node, right_node);
+		update_parent(&root, node->parent, node, node->right);
 
 		return;
 	}
 
 	binary_tree_node* next_node;
-	binary_tree_node* next_node_parent = right_node;
+	binary_tree_node* next_node_parent = node->right;
 
 	for (;;)
 	{
@@ -159,11 +155,11 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 	if ((next_node_parent->left = next_node->right) != NULL)
 		next_node->right->parent = next_node_parent;
 
-	(next_node->left = left_node)->parent = next_node;
-	(next_node->right = right_node)->parent = next_node;
-	next_node->parent = parent_node;
+	(next_node->left = node->left)->parent = next_node;
+	(next_node->right = node->right)->parent = next_node;
+	next_node->parent = node->parent;
 
-	update_parent(&root, parent_node, node, next_node);
+	update_parent(&root, node->parent, node, next_node);
 }
 
 B_END_NAMESPACE
