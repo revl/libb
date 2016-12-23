@@ -62,9 +62,7 @@ B_TEST_CASE(construction)
 {
 	b::binary_search_tree<value_is_less> bst = value_is_less();
 
-	int cmp_result;
-
-	B_CHECK(bst.search(0, &cmp_result) == NULL);
+	B_CHECK(bst.search(0).node == NULL);
 
 	element el10(10);
 
@@ -72,10 +70,10 @@ B_TEST_CASE(construction)
 
 	B_REQUIRE(bst.size() == 1);
 
-	b::binary_tree_node* found_el10 = bst.search(10, &cmp_result);
+	b::binary_search_tree_base::search_result found_el10 = bst.search(10);
 
-	B_CHECK(cmp_result == 0);
-	B_CHECK(found_el10 == &el10);
+	B_CHECK(found_el10.cmp_result == 0);
+	B_CHECK(found_el10.node == &el10);
 }
 
 B_TEST_CASE(inorder_walk)
@@ -178,15 +176,14 @@ B_TEST_CASE(deletion)
 			prg.next((b::pseudorandom::value_type) numbers.size());
 		int number = numbers[random_index];
 
-		int cmp_result;
+		b::binary_search_tree_base::search_result search_result =
+			bst.search(number);
 
-		b::binary_tree_node* node = bst.search(number, &cmp_result);
+		B_REQUIRE(search_result.node != NULL);
+		B_REQUIRE(value_for_node(*search_result.node) == number);
 
-		B_REQUIRE(node != NULL);
-		B_REQUIRE(value_for_node(*node) == number);
-
-		bst.remove(node);
-		delete static_cast<element*>(node);
+		bst.remove(search_result.node);
+		delete static_cast<element*>(search_result.node);
 
 		numbers.remove(random_index);
 	}
