@@ -41,20 +41,37 @@ public:
 	{
 	}
 
+	bool is_empty() const
+	{
+		return root == NULL;
+	}
+
 	size_t size() const
 	{
 		return number_of_nodes;
-	}
-
-	bool is_empty() const
-	{
-		return number_of_nodes == 0;
 	}
 
 	void insert(binary_tree_node* node,
 		binary_tree_node* parent, int cmp_result);
 
 	void remove(binary_tree_node* node);
+
+	// TODO maintain a member pointer to the minimum element
+	const binary_tree_node* first() const
+	{
+		const binary_tree_node* node = root;
+		while (node->left != NULL)
+			node = node->left;
+		return node;
+	}
+
+	const binary_tree_node* last() const
+	{
+		const binary_tree_node* node = root;
+		while (node->right != NULL)
+			node = node->right;
+		return node;
+	}
 
 protected:
 	binary_tree_node* root;
@@ -107,23 +124,6 @@ public:
 		binary_tree_node* parent = search(*node, &cmp_result);
 
 		binary_search_tree_base::insert(node, parent, cmp_result);
-	}
-
-	// TODO maintain a member pointer to the minimum element
-	const binary_tree_node* first() const
-	{
-		const binary_tree_node* node = root;
-		while (node->left != NULL)
-			node = node->left;
-		return node;
-	}
-
-	const binary_tree_node* last() const
-	{
-		const binary_tree_node* node = root;
-		while (node->right != NULL)
-			node = node->right;
-		return node;
 	}
 
 	bool less(const binary_tree_node& lhs,
