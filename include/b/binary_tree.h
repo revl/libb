@@ -53,12 +53,6 @@ public:
 
 	void remove(binary_tree_node* node);
 
-	struct search_result
-	{
-		binary_tree_node* node;
-		int cmp_result;
-	};
-
 protected:
 	binary_tree_node* root;
 	size_t number_of_nodes;
@@ -73,45 +67,34 @@ public:
 	}
 
 	template <class Key>
-	search_result search(const Key& key) const
+	binary_tree_node* search(const Key& key, int* cmp_result) const
 	{
-		search_result result;
-
-		result.node = NULL;
-
 		if (root == NULL)
-			return result;
+			return NULL;
 
 		for (binary_tree_node* node = root; ; )
 			if (less(key, *node))
-			{
-				result.node = node;
-
-				if ((node = node->left) == NULL)
-				{
-					result.cmp_result = -1;
-					break;
-				}
-			}
-			else
-				if (less(*node, key))
-				{
-					result.node = node;
-
-					if ((node = node->right) == NULL)
-					{
-						result.cmp_result = 1;
-						break;
-					}
-				}
+				if (node->left != NULL)
+					node = node->left;
 				else
 				{
-					result.node = node;
-					result.cmp_result = 0;
-					break;
+					*cmp_result = -1;
+					return node;
 				}
-
-		return result;
+			else
+				if (less(*node, key))
+					if (node->right != NULL)
+						node = node->right;
+					else
+					{
+						*cmp_result = 1;
+						return node;
+					}
+				else
+				{
+					*cmp_result = 0;
+					return node;
+				}
 	}
 
 	void insert(binary_tree_node* node)
@@ -120,30 +103,32 @@ public:
 
 		node->left = node->right = NULL;
 
-		search_result sr = search(*node);
+		int cmp_result;
 
-		if (sr.node == NULL)
+		binary_tree_node* parent = search(*node, &cmp_result);
+
+		if (parent == NULL)
 		{
 			node->parent = NULL;
 			root = node;
 		}
 		else
-			if (sr.cmp_result < 0)
-				sr.node->left = node;
+			if (cmp_result < 0)
+				parent->left = node;
 			else
-				if (sr.cmp_result > 0 || sr.node->right == NULL)
-					sr.node->right = node;
+				if (cmp_result > 0 || parent->right == NULL)
+					parent->right = node;
 				else
 				{
-					sr.node = sr.node->right;
+					parent = parent->right;
 
-					while (sr.node->left != NULL)
-						sr.node = sr.node->left;
+					while (parent->left != NULL)
+						parent = parent->left;
 
-					sr.node->left = node;
+					parent->left = node;
 				}
 
-		node->parent = sr.node;
+		node->parent = parent;
 	}
 
 	// TODO maintain a member pointer to the minimum element
