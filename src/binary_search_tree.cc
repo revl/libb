@@ -139,21 +139,14 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 		return;
 	}
 
-	binary_tree_node* next_node;
-	binary_tree_node* next_node_parent = node->right;
+	// Substitute the inorder successor for the deleted node.
+	binary_tree_node* next_node = node->right->left;
 
-	for (;;)
-	{
-		next_node = next_node_parent->left;
+	while (next_node->left != NULL)
+		next_node = next_node->left;
 
-		if (next_node->left == NULL)
-			break;
-
-		next_node_parent = next_node;
-	}
-
-	if ((next_node_parent->left = next_node->right) != NULL)
-		next_node->right->parent = next_node_parent;
+	if ((next_node->parent->left = next_node->right) != NULL)
+		next_node->right->parent = next_node->parent;
 
 	(next_node->left = node->left)->parent = next_node;
 	(next_node->right = node->right)->parent = next_node;
