@@ -49,7 +49,7 @@ const binary_tree_node* binary_tree_node::next() const
 	return next_node;
 }
 
-void binary_search_tree_base::insert(binary_tree_node* node,
+void binary_search_tree_base::insert_after_search(binary_tree_node* node,
 	binary_tree_node* parent, int cmp_result)
 {
 	++number_of_nodes;

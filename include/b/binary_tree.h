@@ -51,7 +51,7 @@ public:
 		return number_of_nodes;
 	}
 
-	void insert(binary_tree_node* node,
+	void insert_after_search(binary_tree_node* node,
 		binary_tree_node* parent, int cmp_result);
 
 	void remove(binary_tree_node* node);
@@ -122,7 +122,7 @@ public:
 
 		binary_tree_node* parent = search(*node, &cmp_result);
 
-		binary_search_tree_base::insert(node, parent, cmp_result);
+		insert_after_search(node, parent, cmp_result);
 	}
 
 	bool less(const binary_tree_node& lhs,
