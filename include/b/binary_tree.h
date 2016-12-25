@@ -32,6 +32,7 @@ struct binary_tree_node
 	binary_tree_node* right;
 
 	const binary_tree_node* next() const;
+	const binary_tree_node* prev() const;
 };
 
 class binary_search_tree_base

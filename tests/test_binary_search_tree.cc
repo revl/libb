@@ -122,6 +122,25 @@ B_TEST_CASE(inorder_walk)
 	}
 
 	B_CHECK(actual_number_of_elements == 6);
+
+	++prev_value;
+
+	node = bst.last();
+
+	while (node != NULL)
+	{
+		--actual_number_of_elements;
+
+		int value = value_for_node(*node);
+
+		B_CHECK(prev_value >= value);
+
+		prev_value = value;
+
+		node = node->prev();
+	}
+
+	B_CHECK(actual_number_of_elements == 0);
 }
 
 #define NUMBER_OF_ELEMENTS 100
@@ -172,6 +191,14 @@ B_TEST_CASE(deletion)
 			while ((node = node->next()) != NULL);
 
 			B_REQUIRE(i == expected_size);
+
+			node = bst.last();
+
+			do
+				B_CHECK(numbers[--i] == value_for_node(*node));
+			while ((node = node->prev()) != NULL);
+
+			B_REQUIRE(i == 0);
 		}
 
 		b::pseudorandom::value_type random_index =

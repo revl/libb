@@ -49,6 +49,33 @@ const binary_tree_node* binary_tree_node::next() const
 	return next_node;
 }
 
+const binary_tree_node* binary_tree_node::prev() const
+{
+	if (left != NULL)
+	{
+		const binary_tree_node* prev_node = left;
+
+		// Find the rightmost child in the left branch.
+		while (prev_node->right != NULL)
+			prev_node = prev_node->right;
+
+		return prev_node;
+	}
+
+	// Find the first parent that has the current
+	// subtree as its right branch.
+	const binary_tree_node* prev_node = parent;
+	const binary_tree_node* child = this;
+
+	while (prev_node != NULL && prev_node->left == child)
+	{
+		child = prev_node;
+		prev_node = prev_node->parent;
+	}
+
+	return prev_node;
+}
+
 void binary_search_tree_base::insert_after_search(binary_tree_node* node,
 	binary_tree_node* parent, int cmp_result)
 {
