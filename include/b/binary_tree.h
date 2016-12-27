@@ -38,7 +38,8 @@ struct binary_tree_node
 class binary_search_tree_base
 {
 public:
-	binary_search_tree_base() : root(NULL), number_of_nodes(0)
+	binary_search_tree_base() :
+		root(NULL), leftmost(NULL), rightmost(NULL), number_of_nodes(0)
 	{
 	}
 
@@ -57,25 +58,21 @@ public:
 
 	void remove(binary_tree_node* node);
 
-	// TODO maintain a member pointer to the minimum element
 	const binary_tree_node* first() const
 	{
-		const binary_tree_node* node = root;
-		while (node->left != NULL)
-			node = node->left;
-		return node;
+		return leftmost;
 	}
 
 	const binary_tree_node* last() const
 	{
-		const binary_tree_node* node = root;
-		while (node->right != NULL)
-			node = node->right;
-		return node;
+		return rightmost;
 	}
 
 protected:
+public:
 	binary_tree_node* root;
+	binary_tree_node* leftmost;
+	binary_tree_node* rightmost;
 	size_t number_of_nodes;
 };
 

@@ -79,21 +79,24 @@ const binary_tree_node* binary_tree_node::prev() const
 void binary_search_tree_base::insert_after_search(binary_tree_node* node,
 	binary_tree_node* parent, int cmp_result)
 {
-	++number_of_nodes;
-
-	node->left = node->right = NULL;
-
 	if (parent == NULL)
-	{
-		node->parent = NULL;
-		root = node;
-	}
+		rightmost = leftmost = root = node;
 	else
 		if (cmp_result < 0)
+		{
 			parent->left = node;
+
+			if (leftmost == parent)
+				leftmost = node;
+		}
 		else
 			if (cmp_result > 0 || parent->right == NULL)
+			{
 				parent->right = node;
+
+				if (rightmost == parent)
+					rightmost = node;
+			}
 			else
 			{
 				parent = parent->right;
@@ -105,6 +108,9 @@ void binary_search_tree_base::insert_after_search(binary_tree_node* node,
 			}
 
 	node->parent = parent;
+	node->left = node->right = NULL;
+
+	++number_of_nodes;
 }
 
 static void update_parent(binary_tree_node** root, binary_tree_node* parent,
@@ -128,15 +134,53 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 	if (node->right == NULL)
 	{
 		if (node->left != NULL)
+		{
+			if (rightmost == node)
+			{
+				rightmost = node->left;
+
+				while (rightmost->right != NULL)
+					rightmost = rightmost->right;
+			}
+
 			node->left->parent = node->parent;
 
-		update_parent(&root, node->parent, node, node->left);
+			update_parent(&root, node->parent, node, node->left);
+
+			return;
+		}
+
+		if (node->parent == NULL)
+			rightmost = leftmost = root = NULL;
+		else
+			if (node->parent->left == node)
+			{
+				if (leftmost == node)
+					leftmost = node->parent;
+
+				node->parent->left = NULL;
+			}
+			else
+			{
+				if (rightmost == node)
+					rightmost = node->parent;
+
+				node->parent->right = NULL;
+			}
 
 		return;
 	}
 
 	if (node->left == NULL)
 	{
+		if (leftmost == node)
+		{
+			leftmost = node->right;
+
+			while (leftmost->left != NULL)
+				leftmost = leftmost->left;
+		}
+
 		node->right->parent = node->parent;
 
 		update_parent(&root, node->parent, node, node->right);
@@ -146,6 +190,9 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 
 	if (node->left->right == NULL)
 	{
+		if (rightmost == node)
+			rightmost = node->left;
+
 		node->left->right = node->right;
 		node->right->parent = node->left;
 		node->left->parent = node->parent;
@@ -157,6 +204,9 @@ void binary_search_tree_base::remove(binary_tree_node* node)
 
 	if (node->right->left == NULL)
 	{
+		if (leftmost == node)
+			leftmost = node->right;
+
 		node->right->left = node->left;
 		node->left->parent = node->right;
 		node->right->parent = node->parent;

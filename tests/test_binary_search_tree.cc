@@ -154,7 +154,7 @@ B_TEST_CASE(deletion)
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
 		numbers.append(1, i);
 
-	b::pseudorandom prg(11);
+	b::pseudorandom prg(10);
 
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
 	{
