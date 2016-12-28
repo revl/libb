@@ -69,18 +69,17 @@ public:
 	}
 
 protected:
-public:
 	binary_tree_node* root;
 	binary_tree_node* leftmost;
 	binary_tree_node* rightmost;
 	size_t number_of_nodes;
 };
 
-template <class Less>
-class binary_search_tree : public Less, public binary_search_tree_base
+template <class Key_op>
+class binary_search_tree : public binary_search_tree_base
 {
 public:
-	binary_search_tree(const Less& less_op) : Less(less_op)
+	binary_search_tree(const Key_op& key_op) : key_for_node(key_op)
 	{
 	}
 
@@ -93,7 +92,7 @@ public:
 			return NULL;
 
 		for (binary_tree_node* node = root; ; )
-			if (less(key, *node))
+			if (key < key_for_node(node))
 				if (node->left != NULL)
 					node = node->left;
 				else
@@ -102,7 +101,7 @@ public:
 					return node;
 				}
 			else
-				if (less(*node, key))
+				if (key_for_node(node) < key)
 					if (node->right != NULL)
 						node = node->right;
 					else
@@ -118,28 +117,13 @@ public:
 	{
 		int cmp_result;
 
-		binary_tree_node* parent = search(*node, &cmp_result);
+		binary_tree_node* parent =
+			search(key_for_node(node), &cmp_result);
 
 		insert_after_search(node, parent, cmp_result);
 	}
 
-	bool less(const binary_tree_node& lhs,
-		const binary_tree_node& rhs) const
-	{
-		return this->operator ()(lhs, rhs);
-	}
-
-	template <class Key>
-	bool less(const Key& key, const binary_tree_node& node) const
-	{
-		return this->operator ()(key, node);
-	}
-
-	template <class Key>
-	bool less(const binary_tree_node& node, const Key& key) const
-	{
-		return this->operator ()(node, key);
-	}
+	Key_op key_for_node;
 };
 
 B_END_NAMESPACE

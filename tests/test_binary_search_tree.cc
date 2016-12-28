@@ -34,33 +34,23 @@ struct element : public b::binary_tree_node
 	const int value;
 };
 
-static int value_for_node(const b::binary_tree_node& node)
+static int value_for_node(const b::binary_tree_node* node)
 {
-	return static_cast<const element&>(node).value;
+	return static_cast<const element*>(node)->value;
 }
 
-struct value_is_less
+struct key_op
 {
-	bool operator ()(const b::binary_tree_node& lhs,
-		const b::binary_tree_node& rhs) const
+	int operator ()(const b::binary_tree_node* node) const
 	{
-		return value_for_node(lhs) < value_for_node(rhs);
-	}
-
-	bool operator ()(const b::binary_tree_node& node, int val) const
-	{
-		return value_for_node(node) < val;
-	}
-
-	bool operator ()(int val, const b::binary_tree_node& node) const
-	{
-		return val < value_for_node(node);
+		return value_for_node(node);
 	}
 };
 
 B_TEST_CASE(construction)
 {
-	b::binary_search_tree<value_is_less> bst = value_is_less();
+	b::binary_search_tree<int (*)(const b::binary_tree_node*)> bst =
+		value_for_node;
 
 	int cmp_result;
 
@@ -80,7 +70,7 @@ B_TEST_CASE(construction)
 
 B_TEST_CASE(inorder_walk)
 {
-	b::binary_search_tree<value_is_less> bst = value_is_less();
+	b::binary_search_tree<key_op> bst = key_op();
 
 	element el20(20);
 	bst.insert(&el20);
@@ -112,7 +102,7 @@ B_TEST_CASE(inorder_walk)
 	{
 		++actual_number_of_elements;
 
-		int value = value_for_node(*node);
+		int value = value_for_node(node);
 
 		B_CHECK(prev_value <= value);
 
@@ -131,7 +121,7 @@ B_TEST_CASE(inorder_walk)
 	{
 		--actual_number_of_elements;
 
-		int value = value_for_node(*node);
+		int value = value_for_node(node);
 
 		B_CHECK(prev_value >= value);
 
@@ -147,7 +137,7 @@ B_TEST_CASE(inorder_walk)
 
 B_TEST_CASE(deletion)
 {
-	b::binary_search_tree<value_is_less> bst = value_is_less();
+	b::binary_search_tree<key_op> bst = key_op();
 
 	b::array<int> numbers;
 
@@ -186,7 +176,7 @@ B_TEST_CASE(deletion)
 			{
 				B_REQUIRE(i < numbers.size());
 
-				B_CHECK(numbers[i++] == value_for_node(*node));
+				B_CHECK(numbers[i++] == value_for_node(node));
 			}
 			while ((node = node->next()) != NULL);
 
@@ -195,7 +185,7 @@ B_TEST_CASE(deletion)
 			node = bst.last();
 
 			do
-				B_CHECK(numbers[--i] == value_for_node(*node));
+				B_CHECK(numbers[--i] == value_for_node(node));
 			while ((node = node->prev()) != NULL);
 
 			B_REQUIRE(i == 0);
@@ -210,7 +200,7 @@ B_TEST_CASE(deletion)
 		b::binary_tree_node* node = bst.search(number, &cmp_result);
 
 		B_REQUIRE(node != NULL);
-		B_REQUIRE(value_for_node(*node) == number);
+		B_REQUIRE(value_for_node(node) == number);
 
 		bst.remove(node);
 		delete static_cast<element*>(node);
