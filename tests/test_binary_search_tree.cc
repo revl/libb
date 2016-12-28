@@ -55,17 +55,18 @@ B_TEST_CASE(construction)
 	int cmp_result;
 
 	B_CHECK(bst.search(0, &cmp_result) == NULL);
+	B_CHECK(cmp_result == 0);
 
 	element el10(10);
 
 	bst.insert(&el10);
 
-	B_REQUIRE(bst.size() == 1);
+	B_REQUIRE(bst.number_of_nodes == 1);
 
 	b::binary_tree_node* found_el10 = bst.search(10, &cmp_result);
 
-	B_CHECK(cmp_result == 0);
 	B_CHECK(found_el10 == &el10);
+	B_CHECK(cmp_result == 0);
 }
 
 B_TEST_CASE(inorder_walk)
@@ -90,11 +91,11 @@ B_TEST_CASE(inorder_walk)
 	element el20_again_and_again(20);
 	bst.insert(&el20_again_and_again);
 
-	B_REQUIRE(bst.size() == 6);
+	B_REQUIRE(bst.number_of_nodes == 6);
 
 	int prev_value = -1;
 
-	const b::binary_tree_node* node = bst.first();
+	const b::binary_tree_node* node = bst.leftmost;
 
 	size_t actual_number_of_elements = 0;
 
@@ -115,7 +116,7 @@ B_TEST_CASE(inorder_walk)
 
 	++prev_value;
 
-	node = bst.last();
+	node = bst.rightmost;
 
 	while (node != NULL)
 	{
@@ -135,7 +136,7 @@ B_TEST_CASE(inorder_walk)
 
 #define NUMBER_OF_ELEMENTS 100
 
-B_TEST_CASE(deletion)
+B_TEST_CASE(random_elements)
 {
 	b::binary_search_tree<key_op> bst = key_op();
 
@@ -166,9 +167,9 @@ B_TEST_CASE(deletion)
 	do
 	{
 		{
-			B_REQUIRE(bst.size() == expected_size);
+			B_REQUIRE(bst.number_of_nodes == expected_size);
 
-			const b::binary_tree_node* node = bst.first();
+			const b::binary_tree_node* node = bst.leftmost;
 
 			size_t i = 0;
 
@@ -182,7 +183,7 @@ B_TEST_CASE(deletion)
 
 			B_REQUIRE(i == expected_size);
 
-			node = bst.last();
+			node = bst.rightmost;
 
 			do
 				B_CHECK(numbers[--i] == value_for_node(node));

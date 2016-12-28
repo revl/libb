@@ -35,50 +35,29 @@ struct binary_tree_node
 	const binary_tree_node* prev() const;
 };
 
-class binary_search_tree_base
+struct binary_search_tree_base
 {
-public:
+	binary_tree_node* root;
+	binary_tree_node* leftmost;
+	binary_tree_node* rightmost;
+	size_t number_of_nodes;
+
 	binary_search_tree_base() :
 		root(NULL), leftmost(NULL), rightmost(NULL), number_of_nodes(0)
 	{
-	}
-
-	bool is_empty() const
-	{
-		return root == NULL;
-	}
-
-	size_t size() const
-	{
-		return number_of_nodes;
 	}
 
 	void insert_after_search(binary_tree_node* node,
 		binary_tree_node* parent, int cmp_result);
 
 	void remove(binary_tree_node* node);
-
-	const binary_tree_node* first() const
-	{
-		return leftmost;
-	}
-
-	const binary_tree_node* last() const
-	{
-		return rightmost;
-	}
-
-protected:
-	binary_tree_node* root;
-	binary_tree_node* leftmost;
-	binary_tree_node* rightmost;
-	size_t number_of_nodes;
 };
 
 template <class Key_op>
-class binary_search_tree : public binary_search_tree_base
+struct binary_search_tree : public binary_search_tree_base
 {
-public:
+	Key_op key_for_node;
+
 	binary_search_tree(const Key_op& key_op) : key_for_node(key_op)
 	{
 	}
@@ -122,8 +101,6 @@ public:
 
 		insert_after_search(node, parent, cmp_result);
 	}
-
-	Key_op key_for_node;
 };
 
 B_END_NAMESPACE

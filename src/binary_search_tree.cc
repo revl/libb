@@ -127,7 +127,7 @@ static void update_parent(binary_tree_node** root, binary_tree_node* parent,
 
 void binary_search_tree_base::remove(binary_tree_node* node)
 {
-	B_ASSERT(!is_empty());
+	B_ASSERT(root != NULL);
 
 	--number_of_nodes;
 
