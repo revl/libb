@@ -27,6 +27,7 @@ TESTS = \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
+	test_map \
 	test_memory \
 	test_misc \
 	test_object \
@@ -43,6 +44,7 @@ check_PROGRAMS = \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
+	test_map \
 	test_memory \
 	test_misc \
 	test_object \
@@ -65,6 +67,8 @@ test_heap_SOURCES = test_heap.cc
 test_levenshtein_distance_SOURCES = test_levenshtein_distance.cc
 
 test_lists_SOURCES = test_lists.cc
+
+test_map_SOURCES = test_map.cc
 
 test_memory_SOURCES = test_memory.cc
 
