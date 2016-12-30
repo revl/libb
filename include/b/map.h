@@ -64,6 +64,20 @@ public:
 		return static_cast<wrapper*>(search_result);
 	}
 
+	// Inserts a new value after a failed search for it.
+	wrapper* insert_new(const Key &key, const T &element,
+			wrapper *search_result, int cmp_result)
+	{
+		B_ASSERT(search_result == NULL || cmp_result != 0);
+
+		wrapper* new_wrapper = new wrapper(key, element);
+
+		tree.insert_after_search(new_wrapper,
+			search_result, cmp_result);
+
+		return new_wrapper;
+	}
+
 	wrapper* insert(const Key& key, const T& element,
 		bool* new_element = NULL)
 	{
@@ -73,10 +87,8 @@ public:
 
 		if (search_result == NULL || cmp_result != 0)
 		{
-			wrapper* new_wrapper = new wrapper(key, element);
-
-			tree.insert_after_search(new_wrapper,
-				search_result, cmp_result);
+			wrapper* new_wrapper = insert_new(
+				key, element, search_result, cmp_result);
 
 			if (new_element != NULL)
 				*new_element = true;
