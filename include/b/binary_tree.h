@@ -32,8 +32,25 @@ struct binary_tree_node
 	binary_tree_node* right;
 
 	const binary_tree_node* next() const;
+
+	binary_tree_node* next();
+
 	const binary_tree_node* prev() const;
+
+	binary_tree_node* prev();
 };
+
+inline binary_tree_node* binary_tree_node::next()
+{
+	return const_cast<binary_tree_node*>(
+		((const binary_tree_node*) this)->next());
+}
+
+inline binary_tree_node* binary_tree_node::prev()
+{
+	return const_cast<binary_tree_node*>(
+		((const binary_tree_node*) this)->prev());
+}
 
 struct binary_search_tree_base
 {

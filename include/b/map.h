@@ -94,6 +94,20 @@ public:
 		}
 	}
 
+	~map()
+	{
+		binary_tree_node* node = tree.leftmost;
+
+		while (node != NULL)
+		{
+			binary_tree_node* next_node = node->next();
+
+			delete static_cast<wrapper*>(node);
+
+			node = next_node;
+		}
+	}
+
 private:
 	struct key_for_node
 	{
