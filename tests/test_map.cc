@@ -33,12 +33,12 @@ B_TEST_CASE(construction)
 
 	bool new_element;
 
-	int_map::wrapper* w = m.insert(6, 6, &new_element);
+	int_map::key_value_pair* w = m.insert(6, 6, &new_element);
 
 	B_CHECK(new_element == true);
 	B_CHECK(m.size() == 1);
 	B_CHECK(w->key == 6);
-	B_CHECK(w->element == 6);
+	B_CHECK(w->value == 6);
 
 	int cmp_result;
 
@@ -46,12 +46,12 @@ B_TEST_CASE(construction)
 
 	B_REQUIRE(w != NULL);
 	B_CHECK(cmp_result == 0);
-	B_CHECK(w->element == 6);
+	B_CHECK(w->value == 6);
 
 	w = m.insert(6, 7, &new_element);
 
 	B_CHECK(new_element == false);
 	B_CHECK(m.size() == 1);
 	B_CHECK(w->key == 6);
-	B_CHECK(w->element == 7);
+	B_CHECK(w->value == 7);
 }

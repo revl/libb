@@ -29,15 +29,15 @@ template <class Key, class T>
 class map
 {
 public:
-	struct wrapper : public binary_tree_node
+	struct key_value_pair : public binary_tree_node
 	{
-		wrapper(const Key& key_arg, const T& element_arg) :
-			key(key_arg), element(element_arg)
+		key_value_pair(const Key& key_arg, const T& value_arg) :
+			key(key_arg), value(value_arg)
 		{
 		}
 
 		Key key;
-		T element;
+		T value;
 	};
 
 	map() : tree(key_for_node())
@@ -54,23 +54,23 @@ public:
 		return tree.number_of_nodes;
 	}
 
-	wrapper* search(const Key& key, int* cmp_result)
+	key_value_pair* search(const Key& key, int* cmp_result)
 	{
 		binary_tree_node* search_result = tree.search(key, cmp_result);
 
 		if (search_result == NULL)
 			return NULL;
 
-		return static_cast<wrapper*>(search_result);
+		return static_cast<key_value_pair*>(search_result);
 	}
 
 	// Inserts a new value after a failed search for it.
-	wrapper* insert_new(const Key &key, const T &element,
-			wrapper *search_result, int cmp_result)
+	key_value_pair* insert_new(const Key &key, const T &value,
+			key_value_pair *search_result, int cmp_result)
 	{
 		B_ASSERT(search_result == NULL || cmp_result != 0);
 
-		wrapper* new_wrapper = new wrapper(key, element);
+		key_value_pair* new_wrapper = new key_value_pair(key, value);
 
 		tree.insert_after_search(new_wrapper,
 			search_result, cmp_result);
@@ -78,32 +78,41 @@ public:
 		return new_wrapper;
 	}
 
-	wrapper* insert(const Key& key, const T& element,
-		bool* new_element = NULL)
+	key_value_pair* insert(const Key& key, const T& value)
 	{
 		int cmp_result;
 
-		wrapper* search_result = search(key, &cmp_result);
+		key_value_pair* search_result = search(key, &cmp_result);
 
-		if (search_result == NULL || cmp_result != 0)
+		if (search_result != NULL && cmp_result == 0)
 		{
-			wrapper* new_wrapper = insert_new(
-				key, element, search_result, cmp_result);
-
-			if (new_element != NULL)
-				*new_element = true;
-
-			return new_wrapper;
-		}
-		else
-		{
-			search_result->element = element;
-
-			if (new_element != NULL)
-				*new_element = false;
+			search_result->value = value;
 
 			return search_result;
 		}
+
+		return insert_new(key, value, search_result, cmp_result);
+	}
+
+	key_value_pair* insert(const Key& key, const T& value,
+		bool* new_inserted)
+	{
+		int cmp_result;
+
+		key_value_pair* search_result = search(key, &cmp_result);
+
+		if (search_result != NULL && cmp_result == 0)
+		{
+			search_result->value = value;
+
+			*new_inserted = false;
+
+			return search_result;
+		}
+
+		*new_inserted = true;
+
+		return insert_new(key, value, search_result, cmp_result);
 	}
 
 	~map()
@@ -114,18 +123,19 @@ public:
 		{
 			binary_tree_node* next_node = node->next();
 
-			delete static_cast<wrapper*>(node);
+			delete static_cast<key_value_pair*>(node);
 
 			node = next_node;
 		}
 	}
 
+// Implementation
 private:
 	struct key_for_node
 	{
 		const Key& operator()(const binary_tree_node* node) const
 		{
-			return static_cast<const wrapper*>(node)->key;
+			return static_cast<const key_value_pair*>(node)->key;
 		}
 	};
 
