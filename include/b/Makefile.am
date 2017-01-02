@@ -24,6 +24,7 @@ pkginclude_HEADERS = \
 	doubly_linked_list.h \
 	doubly_linked_list_container.h \
 	exception.h \
+	heap.h \
 	host.h \
 	levenshtein_distance.h \
 	linked_list.h \

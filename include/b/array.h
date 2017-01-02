@@ -18,11 +18,11 @@
  *
  */
 
-#include "ref_count.h"
-#include "misc.h"
-
 #ifndef B_ARRAY_H
 #define B_ARRAY_H
+
+#include "ref_count.h"
+#include "misc.h"
 
 B_BEGIN_NAMESPACE
 
