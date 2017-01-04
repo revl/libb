@@ -31,6 +31,7 @@ TESTS = \
 	test_memory \
 	test_misc \
 	test_object \
+	test_opaque \
 	test_pathname \
 	test_pseudorandom \
 	test_make_path
@@ -48,6 +49,7 @@ check_PROGRAMS = \
 	test_memory \
 	test_misc \
 	test_object \
+	test_opaque \
 	test_pathname \
 	test_pseudorandom \
 	test_make_path
@@ -75,6 +77,8 @@ test_memory_SOURCES = test_memory.cc
 test_misc_SOURCES = test_misc.cc
 
 test_object_SOURCES = test_object.cc
+
+test_opaque_SOURCES = test_opaque.cc
 
 test_pathname_SOURCES = test_pathname.cc
 

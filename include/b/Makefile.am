@@ -33,6 +33,7 @@ pkginclude_HEADERS = \
 	misc.h \
 	node_access_via_cast.h \
 	object.h \
+	opaque.h \
 	pseudorandom.h \
 	ref.h \
 	ref_count.h \
