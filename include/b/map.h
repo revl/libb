@@ -35,6 +35,10 @@ public:
 
 		Key key;
 		T value;
+
+		const key_value_pair* next() const;
+
+		key_value_pair* next();
 	};
 
 	map();
@@ -43,7 +47,8 @@ public:
 
 	size_t size() const;
 
-	key_value_pair* search(const Key& key, int* cmp_result);
+	template <class Search_key>
+	key_value_pair* search(const Search_key& key, int* cmp_result) const;
 
 	// Inserts a new value after a failed search for it.
 	key_value_pair* insert_new(const Key &key, const T &value,
@@ -55,6 +60,14 @@ public:
 		bool* new_inserted);
 
 	~map();
+
+// C++11 compatibility
+public:
+	struct const_iterator;
+
+	const_iterator begin() const;
+
+	const_iterator end() const;
 
 // Implementation
 private:
@@ -75,6 +88,21 @@ inline map<Key, T>::key_value_pair::key_value_pair(const Key& k, const T& v) :
 {
 }
 
+template <class Key, class T>
+inline const typename map<Key, T>::key_value_pair*
+		map<Key, T>::key_value_pair::next() const
+{
+	return static_cast<const key_value_pair*>(
+			binary_tree_node::next());
+}
+
+template <class Key, class T>
+inline typename map<Key, T>::key_value_pair*
+		map<Key, T>::key_value_pair::next()
+{
+	return static_cast<key_value_pair*>(
+			binary_tree_node::next());
+}
 
 template <class Key, class T>
 inline map<Key, T>::map() : tree(key_for_node())
@@ -94,8 +122,9 @@ inline size_t map<Key, T>::size() const
 }
 
 template <class Key, class T>
+template <class Search_key>
 typename map<Key, T>::key_value_pair* map<Key, T>::search(
-		const Key& key, int* cmp_result)
+		const Search_key& key, int* cmp_result) const
 {
 	binary_tree_node* search_result = tree.search(key, cmp_result);
 
@@ -173,6 +202,55 @@ map<Key, T>::~map()
 
 		node = next_node;
 	}
+}
+
+template <class Key, class T>
+struct map<Key, T>::const_iterator
+{
+	const key_value_pair* kv_pair;
+
+	const_iterator& operator ++()
+	{
+		kv_pair = kv_pair->next();
+		return *this;
+	}
+
+	bool operator ==(const const_iterator& rhs) const
+	{
+		return kv_pair == rhs.kv_pair;
+	}
+
+	bool operator !=(const const_iterator& rhs) const
+	{
+		return kv_pair != rhs.kv_pair;
+	}
+
+	const key_value_pair* operator ->() const
+	{
+		return kv_pair;
+	}
+
+	const key_value_pair& operator *() const
+	{
+		return *kv_pair;
+	}
+};
+
+template <class Key, class T>
+typename map<Key, T>::const_iterator map<Key, T>::begin() const
+{
+	const_iterator leftmost_iter =
+	{
+		tree.leftmost
+	};
+
+	return leftmost_iter;
+}
+
+template <class Key, class T>
+inline typename map<Key, T>::const_iterator map<Key, T>::end() const
+{
+	return NULL;
 }
 
 B_END_NAMESPACE
