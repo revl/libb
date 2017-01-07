@@ -64,6 +64,11 @@ struct binary_search_tree_base
 	{
 	}
 
+	bool is_empty() const
+	{
+		return root == NULL;
+	}
+
 	void insert_after_search(binary_tree_node* node,
 		binary_tree_node* parent, int cmp_result);
 
@@ -77,6 +82,21 @@ struct binary_search_tree : public binary_search_tree_base
 
 	binary_search_tree(const Key_op& key_op) : key_for_node(key_op)
 	{
+	}
+
+	template <class Key>
+	binary_tree_node* find(const Key& key) const
+	{
+		for (binary_tree_node* node = root; node != NULL; )
+			if (key < key_for_node(node))
+				node = node->left;
+			else
+				if (key_for_node(node) < key)
+					node = node->right;
+				else
+					return node;
+
+		return NULL;
 	}
 
 	template <class Key>
