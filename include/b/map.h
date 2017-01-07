@@ -62,9 +62,17 @@ public:
 	key_value_pair* insert(const Key& key, const T& value,
 		bool* new_inserted);
 
-	~map();
+// Iteration over key-value pairs
+public:
+	const key_value_pair* first() const;
 
-// C++11 compatibility
+	key_value_pair* first();
+
+	const key_value_pair* last() const;
+
+	key_value_pair* last();
+
+// Iteration over values and C++11 compatibility
 public:
 	struct const_iterator;
 
@@ -83,6 +91,9 @@ private:
 	};
 
 	binary_search_tree<key_for_node> tree;
+
+public:
+	~map();
 };
 
 template <class Key, class T>
@@ -205,72 +216,96 @@ typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 }
 
 template <class Key, class T>
-map<Key, T>::~map()
+const typename map<Key, T>::key_value_pair* map<Key, T>::first() const
 {
-	binary_tree_node* node = tree.leftmost;
+	return static_cast<const key_value_pair*>(tree.leftmost);
+}
 
-	while (node != NULL)
-	{
-		binary_tree_node* next_node = node->next();
+template <class Key, class T>
+typename map<Key, T>::key_value_pair* map<Key, T>::first()
+{
+	return static_cast<key_value_pair*>(tree.leftmost);
+}
 
-		delete static_cast<key_value_pair*>(node);
+template <class Key, class T>
+const typename map<Key, T>::key_value_pair* map<Key, T>::last() const
+{
+	return static_cast<const key_value_pair*>(tree.rightmost);
+}
 
-		node = next_node;
-	}
+template <class Key, class T>
+typename map<Key, T>::key_value_pair* map<Key, T>::last()
+{
+	return static_cast<key_value_pair*>(tree.rightmost);
 }
 
 template <class Key, class T>
 struct map<Key, T>::const_iterator
 {
-	const key_value_pair* kv_pair;
+	const T* value_addr;
+
+	const_iterator(const T* va) : value_addr(va)
+	{
+	}
 
 	const_iterator& operator ++()
 	{
-		kv_pair = kv_pair->next();
+		B_ASSERT(value_addr != NULL);
+
+		const key_value_pair* next_kv_pair =
+			B_OUTERSTRUCT(key_value_pair, value, value_addr);
+
+		value_addr = next_kv_pair == NULL ? NULL : &next_kv_pair->value;
+
 		return *this;
 	}
 
 	bool operator ==(const const_iterator& rhs) const
 	{
-		return kv_pair == rhs.kv_pair;
+		return value_addr == rhs.value_addr;
 	}
 
 	bool operator !=(const const_iterator& rhs) const
 	{
-		return kv_pair != rhs.kv_pair;
+		return value_addr != rhs.value_addr;
 	}
 
-	const key_value_pair* operator ->() const
+	const T* operator ->() const
 	{
-		return kv_pair;
+		return value_addr;
 	}
 
-	const key_value_pair& operator *() const
+	const T& operator *() const
 	{
-		return *kv_pair;
+		return *value_addr;
 	}
 };
 
 template <class Key, class T>
 typename map<Key, T>::const_iterator map<Key, T>::begin() const
 {
-	const_iterator leftmost_iter =
-	{
-		static_cast<const key_value_pair*>(tree.leftmost)
-	};
+	const key_value_pair* first_kv_pair = first();
 
-	return leftmost_iter;
+	return first_kv_pair == NULL ? NULL : &first_kv_pair->value;
 }
 
 template <class Key, class T>
 inline typename map<Key, T>::const_iterator map<Key, T>::end() const
 {
-	const_iterator null_iter =
-	{
-		NULL
-	};
+	return NULL;
+}
 
-	return null_iter;
+template <class Key, class T>
+map<Key, T>::~map()
+{
+	for (key_value_pair* kv_pair = first(); kv_pair != NULL; )
+	{
+		key_value_pair* next_kv_pair = kv_pair->next();
+
+		delete kv_pair;
+
+		kv_pair = next_kv_pair;
+	}
 }
 
 B_END_NAMESPACE
