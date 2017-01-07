@@ -256,7 +256,7 @@ typename map<Key, T>::const_iterator map<Key, T>::begin() const
 {
 	const_iterator leftmost_iter =
 	{
-		tree.leftmost
+		static_cast<const key_value_pair*>(tree.leftmost)
 	};
 
 	return leftmost_iter;
@@ -265,7 +265,12 @@ typename map<Key, T>::const_iterator map<Key, T>::begin() const
 template <class Key, class T>
 inline typename map<Key, T>::const_iterator map<Key, T>::end() const
 {
-	return NULL;
+	const_iterator null_iter =
+	{
+		NULL
+	};
+
+	return null_iter;
 }
 
 B_END_NAMESPACE
