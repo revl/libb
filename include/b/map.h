@@ -48,6 +48,9 @@ public:
 	size_t size() const;
 
 	template <class Search_key>
+	T* find(const Search_key& key) const;
+
+	template <class Search_key>
 	key_value_pair* search(const Search_key& key, int* cmp_result) const;
 
 	// Inserts a new value after a failed search for it.
@@ -119,6 +122,18 @@ template <class Key, class T>
 inline size_t map<Key, T>::size() const
 {
 	return tree.number_of_nodes;
+}
+
+template <class Key, class T>
+template <class Search_key>
+T* map<Key, T>::find(const Search_key& key) const
+{
+	binary_tree_node* match = tree.find(key);
+
+	if (match == NULL)
+		return NULL;
+
+	return &static_cast<key_value_pair*>(match)->value;
 }
 
 template <class Key, class T>
