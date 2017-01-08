@@ -54,7 +54,7 @@ public:
 	key_value_pair* search(const Search_key& key, int* cmp_result) const;
 
 	// Inserts a new value after a failed search for it.
-	key_value_pair* insert_new(const Key &key, const T &value,
+	key_value_pair* insert(const Key &key, const T &value,
 			key_value_pair *search_result, int cmp_result);
 
 	key_value_pair* insert(const Key& key, const T& value);
@@ -161,7 +161,7 @@ typename map<Key, T>::key_value_pair* map<Key, T>::search(
 }
 
 template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::insert_new(
+typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 		const Key &key, const T &value,
 		key_value_pair *search_result, int cmp_result)
 {
@@ -190,7 +190,7 @@ typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 		return search_result;
 	}
 
-	return insert_new(key, value, search_result, cmp_result);
+	return insert(key, value, search_result, cmp_result);
 }
 
 template <class Key, class T>
@@ -212,7 +212,7 @@ typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 
 	*new_inserted = true;
 
-	return insert_new(key, value, search_result, cmp_result);
+	return insert(key, value, search_result, cmp_result);
 }
 
 template <class Key, class T>
