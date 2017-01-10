@@ -50,17 +50,25 @@ public:
 	template <class Search_key>
 	T* find(const Search_key& key) const;
 
+	struct search_result
+	{
+		key_value_pair* parent_or_match;
+		int cmp_result;
+
+		bool found() const;
+	};
+
 	template <class Search_key>
-	key_value_pair* search(const Search_key& key, int* cmp_result) const;
+	search_result search(const Search_key& key) const;
 
 	// Inserts a new value after a failed search for it.
 	key_value_pair* insert(const Key &key, const T &value,
-			key_value_pair *search_result, int cmp_result);
+			const search_result& sr);
 
 	key_value_pair* insert(const Key& key, const T& value);
 
 	key_value_pair* insert(const Key& key, const T& value,
-		bool* new_inserted);
+			bool* new_inserted);
 
 // Iteration over key-value pairs
 public:
@@ -106,16 +114,14 @@ template <class Key, class T>
 inline const typename map<Key, T>::key_value_pair*
 		map<Key, T>::key_value_pair::next() const
 {
-	return static_cast<const key_value_pair*>(
-			binary_tree_node::next());
+	return static_cast<const key_value_pair*>(binary_tree_node::next());
 }
 
 template <class Key, class T>
 inline typename map<Key, T>::key_value_pair*
 		map<Key, T>::key_value_pair::next()
 {
-	return static_cast<key_value_pair*>(
-			binary_tree_node::next());
+	return static_cast<key_value_pair*>(binary_tree_node::next());
 }
 
 template <class Key, class T>
@@ -148,29 +154,35 @@ T* map<Key, T>::find(const Search_key& key) const
 }
 
 template <class Key, class T>
-template <class Search_key>
-typename map<Key, T>::key_value_pair* map<Key, T>::search(
-		const Search_key& key, int* cmp_result) const
+bool map<Key, T>::search_result::found() const
 {
-	binary_tree_node* search_result = tree.search(key, cmp_result);
+	return parent_or_match != NULL && cmp_result == 0;
+}
 
-	if (search_result == NULL)
-		return NULL;
+template <class Key, class T>
+template <class Search_key>
+typename map<Key, T>::search_result map<Key, T>::search(
+		const Search_key& key) const
+{
+	search_result sr;
 
-	return static_cast<key_value_pair*>(search_result);
+	sr.parent_or_match = static_cast<key_value_pair*>(
+			tree.search(key, &sr.cmp_result));
+
+	return sr;
 }
 
 template <class Key, class T>
 typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 		const Key &key, const T &value,
-		key_value_pair *search_result, int cmp_result)
+		const map<Key, T>::search_result& sr)
 {
-	B_ASSERT(search_result == NULL || cmp_result != 0);
+	B_ASSERT(!sr.found());
 
 	key_value_pair* new_wrapper = new key_value_pair(key, value);
 
 	tree.insert_after_search(new_wrapper,
-		search_result, cmp_result);
+			sr.parent_or_match, sr.cmp_result);
 
 	return new_wrapper;
 }
@@ -179,40 +191,36 @@ template <class Key, class T>
 typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 		const Key& key, const T& value)
 {
-	int cmp_result;
+	search_result sr = search(key);
 
-	key_value_pair* search_result = search(key, &cmp_result);
-
-	if (search_result != NULL && cmp_result == 0)
+	if (sr.found())
 	{
-		search_result->value = value;
+		sr.parent_or_match->value = value;
 
-		return search_result;
+		return sr.parent_or_match;
 	}
 
-	return insert(key, value, search_result, cmp_result);
+	return insert(key, value, sr);
 }
 
 template <class Key, class T>
 typename map<Key, T>::key_value_pair* map<Key, T>::insert(
 		const Key& key, const T& value, bool* new_inserted)
 {
-	int cmp_result;
+	search_result sr = search(key);
 
-	key_value_pair* search_result = search(key, &cmp_result);
-
-	if (search_result != NULL && cmp_result == 0)
+	if (sr.found())
 	{
-		search_result->value = value;
+		sr.parent_or_match->value = value;
 
 		*new_inserted = false;
 
-		return search_result;
+		return sr.parent_or_match;
 	}
 
 	*new_inserted = true;
 
-	return insert(key, value, search_result, cmp_result);
+	return insert(key, value, sr);
 }
 
 template <class Key, class T>

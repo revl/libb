@@ -33,25 +33,27 @@ B_TEST_CASE(construction)
 
 	bool new_element;
 
-	int_map::key_value_pair* w = m.insert(6, 6, &new_element);
+	int_map::key_value_pair* kv = m.insert(6, 6, &new_element);
 
 	B_CHECK(new_element == true);
 	B_CHECK(m.size() == 1);
-	B_CHECK(w->key == 6);
-	B_CHECK(w->value == 6);
+	B_CHECK(kv->key == 6);
+	B_CHECK(kv->value == 6);
 
-	int cmp_result;
+	int_map::search_result sr = m.search(6);
 
-	w = m.search(6, &cmp_result);
+	B_REQUIRE(sr.found());
+	B_CHECK(sr.parent_or_match->value == 6);
 
-	B_REQUIRE(w != NULL);
-	B_CHECK(cmp_result == 0);
-	B_CHECK(w->value == 6);
+	int* v = m.find(6);
 
-	w = m.insert(6, 7, &new_element);
+	B_REQUIRE(v != NULL);
+	B_CHECK(*v == 6);
+
+	kv = m.insert(6, 7, &new_element);
 
 	B_CHECK(new_element == false);
 	B_CHECK(m.size() == 1);
-	B_CHECK(w->key == 6);
-	B_CHECK(w->value == 7);
+	B_CHECK(kv->key == 6);
+	B_CHECK(kv->value == 7);
 }
