@@ -22,7 +22,7 @@
 
 #include "unit_test.h"
 
-B_TEST_CASE(test_size_alignment)
+B_TEST_CASE(size_alignment)
 {
 	B_CHECK(b::memory::align((size_t) 6, 4) == (size_t) 8);
 	B_CHECK(b::memory::align((size_t) 7, 1) == (size_t) 7);
@@ -30,7 +30,7 @@ B_TEST_CASE(test_size_alignment)
 	B_CHECK(b::memory::align((size_t) 9, 8) == (size_t) 16);
 }
 
-B_TEST_CASE(test_pointer_alignment)
+B_TEST_CASE(pointer_alignment)
 {
 	B_CHECK(b::memory::align((void*) 9, 8) == (void*) 16);
 	B_CHECK(b::memory::align((void*) 0, 16) == (void*) 0);

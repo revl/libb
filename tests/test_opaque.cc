@@ -56,7 +56,7 @@ int interface::value() const
 
 #include "unit_test.h"
 
-B_TEST_CASE(test_opaque_pointer)
+B_TEST_CASE(opaque_pointer)
 {
 	interface instance = interface::create_object();
 

@@ -22,7 +22,7 @@
 
 #include "unit_test.h"
 
-B_TEST_CASE(test_empty_pathname)
+B_TEST_CASE(empty_pathname)
 {
 	B_CHECK(b::pathname().components().is_empty());
 
@@ -31,7 +31,7 @@ B_TEST_CASE(test_empty_pathname)
 	B_CHECK(empty_path.components().is_empty());
 }
 
-B_TEST_CASE(test_pathname_normalization)
+B_TEST_CASE(pathname_normalization)
 {
 	B_STATIC_CONST_STRING(with_double_dot, "d1/d2/../f.n.sh");
 
@@ -53,7 +53,7 @@ B_TEST_CASE(test_pathname_normalization)
 	B_CHECK(filename.suffix() == ".sh");
 }
 
-B_TEST_CASE(test_filename_with_empty_suffix)
+B_TEST_CASE(filename_with_empty_suffix)
 {
 	B_STATIC_CONST_STRING(no_suffix, "README");
 
@@ -64,7 +64,7 @@ B_TEST_CASE(test_filename_with_empty_suffix)
 	B_CHECK(b::pathname(ends_with_dot).components().last().suffix() == ".");
 }
 
-B_TEST_CASE(test_pathname_can_represent_file)
+B_TEST_CASE(pathname_can_represent_file)
 {
 	B_STATIC_CONST_STRING(file_or_dir, "dir/subdir_or_file");
 
@@ -83,7 +83,7 @@ B_TEST_CASE(test_pathname_can_represent_file)
 	B_CHECK(!b::pathname(ending_with_double_dot).can_represent_file());
 }
 
-B_TEST_CASE(test_absolute_pathnames)
+B_TEST_CASE(absolute_pathnames)
 {
 	B_STATIC_CONST_STRING(absolute_path, "/absolute/path");
 
@@ -146,7 +146,7 @@ static b::string inc(b::pathname& path, const char* increment)
 	return path.str();
 }
 
-B_TEST_CASE(test_pathname_increments)
+B_TEST_CASE(pathname_increments)
 {
 	B_STATIC_CONST_STRING(initial_path, "dir/subdir");
 

@@ -40,7 +40,7 @@ static bool match_and_check_all(const char* input, const char* pattern,
 #define CHECK_MATCH(input, pattern, expected_match) \
 	B_CHECK(match_and_check_all(input, pattern, expected_match))
 
-B_TEST_CASE(test_pattern_matching)
+B_TEST_CASE(pattern_matching)
 {
 	CHECK_MATCH("", "*?*", false);
 	CHECK_MATCH("abc", "*b*", true);
@@ -56,7 +56,7 @@ B_TEST_CASE(test_pattern_matching)
 	CHECK_MATCH("aaaaaa", "aaa**aaa", true);
 }
 
-B_TEST_CASE(test_version_comparison)
+B_TEST_CASE(version_comparison)
 {
 	B_CHECK(b::compare_versions("11.2", "2.11") > 0);
 	B_CHECK(b::compare_versions("1.1", "1.1.1") < 0);
@@ -65,7 +65,7 @@ B_TEST_CASE(test_version_comparison)
 	B_CHECK(b::compare_versions("1.2.3.4", "1.2.3") > 0);
 }
 
-B_TEST_CASE(test_signed_char_alignment)
+B_TEST_CASE(signed_char_alignment)
 {
 	B_CHECK(b::align((signed char) 6, 3) == (signed char) 6);
 	B_CHECK(b::align((signed char) 7, 3) == (signed char) 9);
@@ -73,7 +73,7 @@ B_TEST_CASE(test_signed_char_alignment)
 	B_CHECK(b::align((signed char) 9, 6) == (signed char) 12);
 }
 
-B_TEST_CASE(test_pointer_alignment)
+B_TEST_CASE(pointer_alignment)
 {
 	B_CHECK(b::align((void*) 9, 8) == (void*) 16);
 	B_CHECK(b::align((void*) 0, 16) == (void*) 0);

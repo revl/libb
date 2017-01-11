@@ -24,7 +24,7 @@
 
 #define DIST(s1, s2) ld(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1)
 
-B_TEST_CASE(test_levenshtein_distance)
+B_TEST_CASE(levenshtein_distance)
 {
 	b::levenshtein_distance ld;
 

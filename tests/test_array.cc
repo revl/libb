@@ -22,7 +22,7 @@
 
 #include "unit_test.h"
 
-B_TEST_CASE(test_shared)
+B_TEST_CASE(shared_data)
 {
 	static const size_t initial_size = 100;
 
@@ -39,7 +39,7 @@ B_TEST_CASE(test_shared)
 	B_CHECK(a1.data() != a2.data());
 }
 
-B_TEST_CASE(test_realloc)
+B_TEST_CASE(array_realloc)
 {
 	b::array<int> a(1, 1);
 
@@ -56,7 +56,7 @@ B_TEST_CASE(test_realloc)
 	B_CHECK(a.capacity() == 3);
 }
 
-B_TEST_CASE(test_shrink_to_fit)
+B_TEST_CASE(shrink_to_fit)
 {
 	static const size_t initial_size = 100;
 
@@ -98,7 +98,7 @@ struct test_element
 typedef b::array<test_element> test_array;
 template class b::array<test_element>;
 
-B_TEST_CASE(test_copying)
+B_TEST_CASE(array_copying)
 {
 	{
 		test_array test(1, test_element(123));

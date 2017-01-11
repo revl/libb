@@ -26,7 +26,7 @@ B_STATIC_CONST_STRING(static_const_string, "static_const_string");
 
 B_STATIC_CONST_STRING(padded, "abcxxxcba");
 
-B_TEST_CASE(test_string_view)
+B_TEST_CASE(string_view)
 {
 	b::string_view sv1;
 

@@ -71,7 +71,7 @@ B_TEST_CASE(disabled_checks)
 }
 
 // TODO FIXME Split into many small tests
-B_TEST_CASE(test_string)
+B_TEST_CASE(string)
 {
 	b::string str1;
 
@@ -102,7 +102,7 @@ B_TEST_CASE(test_string)
 	B_CHECK(str4.rfind('b') == (size_t) -1);
 }
 
-B_TEST_CASE(test_string_formatting)
+B_TEST_CASE(string_formatting)
 {
 	b::string str1;
 	str1.format("abc%s", "xxx");
@@ -116,7 +116,7 @@ B_TEST_CASE(test_string_formatting)
 	B_CHECK(b::string::formatted("%s %d", "cloud", 9) == "cloud 9");
 }
 
-B_TEST_CASE(test_static_string)
+B_TEST_CASE(static_string)
 {
 	B_STATIC_CONST_STRING(hello, "hello");
 

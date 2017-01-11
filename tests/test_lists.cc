@@ -67,7 +67,7 @@ typedef b::node_access_via_cast<desc_list_node> desc_list_node_access;
 typedef b::linked_list<asc_list_node_access> asc_test_element_list;
 typedef b::linked_list<desc_list_node_access> desc_test_element_list;
 
-B_TEST_CASE(test_object_lists)
+B_TEST_CASE(object_lists)
 {
 	asc_test_element_list asc_list = asc_list_node_access();
 	desc_test_element_list desc_list = desc_list_node_access();
@@ -128,7 +128,7 @@ B_TEST_CASE(test_object_lists)
 
 typedef b::doubly_linked_list_container<int> integer_list;
 
-B_TEST_CASE(test_integer_lists)
+B_TEST_CASE(integer_lists)
 {
 	integer_list list;
 
