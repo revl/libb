@@ -114,16 +114,16 @@ public:
 	char_t& operator [](size_t index);
 
 	// Returns the first character of the string.
-	char_t front() const;
+	char_t first() const;
 
 	// Returns a reference to the first character of the string.
-	char_t& front();
+	char_t& first();
 
 	// Returns the last character of the string.
-	char_t back() const;
+	char_t last() const;
 
 	// Returns a reference to the last character of the string.
-	char_t& back();
+	char_t& last();
 
 // Assignment
 public:
@@ -448,14 +448,14 @@ inline char_t& string::operator [](size_t index)
 	return chars[index];
 }
 
-inline char_t string::front() const
+inline char_t string::first() const
 {
 	B_ASSERT(!is_empty());
 
 	return *chars;
 }
 
-inline char_t& string::front()
+inline char_t& string::first()
 {
 	B_ASSERT(!is_empty());
 
@@ -463,14 +463,14 @@ inline char_t& string::front()
 	return *chars;
 }
 
-inline char_t string::back() const
+inline char_t string::last() const
 {
 	B_ASSERT(!is_empty());
 
 	return chars[length() - 1];
 }
 
-inline char_t& string::back()
+inline char_t& string::last()
 {
 	B_ASSERT(!is_empty());
 

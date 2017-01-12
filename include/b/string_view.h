@@ -66,11 +66,11 @@ public:
 	// Returns the character with the specified index.
 	char_t operator [](size_t index) const;
 
-	// Returns the first character of the string_view.
-	char_t front() const;
+	// Returns the first character of this string_view.
+	char_t first() const;
 
-	// Returns the last character of the string_view.
-	char_t back() const;
+	// Returns the last character of this string_view.
+	char_t last() const;
 
 // Assignment
 public:
@@ -214,14 +214,14 @@ inline char_t string_view::operator [](size_t index) const
 	return view[index];
 }
 
-inline char_t string_view::front() const
+inline char_t string_view::first() const
 {
 	B_ASSERT(!is_empty());
 
 	return *view;
 }
 
-inline char_t string_view::back() const
+inline char_t string_view::last() const
 {
 	B_ASSERT(!is_empty());
 
