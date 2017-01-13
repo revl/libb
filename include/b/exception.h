@@ -36,7 +36,6 @@ class exception
 #endif /* defined(B_USE_STL) */
 {
 #ifndef B_USE_STL
-// Implementation
 public:
 	virtual ~exception()
 	{

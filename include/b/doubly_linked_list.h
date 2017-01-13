@@ -28,12 +28,9 @@ B_BEGIN_NAMESPACE
 template <class T>
 class doubly_linked_list_node : public linked_list_node<T>
 {
-// Type
 public:
 	typedef T element_type;
 
-// Accessors
-public:
 	element_type* prev()
 	{
 		return prev_element;
@@ -49,7 +46,6 @@ public:
 		prev_element = new_prev;
 	}
 
-// Implementation
 protected:
 	element_type* prev_element;
 };
@@ -57,13 +53,10 @@ protected:
 template <class Node_access>
 class doubly_linked_list : public linked_list<Node_access>
 {
-// Types
 public:
 	typedef typename Node_access::element_type element_type;
 	typedef typename Node_access::node_type node_type;
 
-// Operations
-public:
 	doubly_linked_list(const Node_access& node_access_inst) :
 		linked_list<Node_access>(node_access_inst)
 	{

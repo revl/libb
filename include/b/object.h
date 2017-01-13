@@ -29,7 +29,6 @@ B_BEGIN_NAMESPACE
 // Base class with reference count support.
 class object
 {
-// Construction
 public:
 	// Allocates objects of the derived classes.
 	static void* operator new(size_t size);
@@ -49,7 +48,6 @@ protected:
 	// Initializes the reference count with zero.
 	object(const object&);
 
-// Operations
 public:
 	// Increases the reference count by one protecting
 	// this object from being deleted.
@@ -64,7 +62,6 @@ public:
 	// assignment operator.
 	object& operator =(object&);
 
-// Implementation
 protected:
 	// Protected destructor prohibits direct calls to
 	// operator delete.

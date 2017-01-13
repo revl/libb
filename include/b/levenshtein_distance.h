@@ -27,13 +27,11 @@ B_BEGIN_NAMESPACE
 
 class levenshtein_distance
 {
-// Operations
 public:
 	template <typename Iter>
 	size_t operator ()(Iter string1, size_t length1,
 		Iter string2, size_t length2);
 
-// Implementation
 private:
 	// A row of the dynamic programming matrix
 	array<size_t> row;

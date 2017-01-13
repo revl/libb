@@ -29,7 +29,6 @@ B_BEGIN_NAMESPACE
 template <class T>
 class ref
 {
-// Constructors
 public:
 	// Constructs a null pointer.
 	ref();
@@ -40,8 +39,6 @@ public:
 	// Initializes this instance with a pointer to an existing object.
 	ref(T* that_ptr);
 
-// Attributes
-public:
 	// Tests if this is a null pointer.
 	bool IsNull() const;
 
@@ -76,8 +73,6 @@ public:
 	bool operator >=(const ref<T>& that) const;
 	bool operator >=(T* that_ptr) const;
 
-// Operations
-public:
 	// Switches to a new object. Releases the previously
 	// controlled object and grabs a reference to the new one.
 	void Assign(T* that_ptr);
@@ -100,8 +95,6 @@ public:
 	// pointed to by <that> and vice versa.
 	void swap(ref<T>& that);
 
-// Implementation
-public:
 	// Releases the controlled object.
 	~ref();
 

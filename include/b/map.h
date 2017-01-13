@@ -70,8 +70,6 @@ public:
 	key_value_pair* insert(const Key& key, const T& value,
 			bool* new_inserted);
 
-// Iteration over key-value pairs
-public:
 	const key_value_pair* first() const;
 
 	key_value_pair* first();
@@ -80,15 +78,12 @@ public:
 
 	key_value_pair* last();
 
-// Iteration over values and C++11 compatibility
-public:
 	struct const_iterator;
 
 	const_iterator begin() const;
 
 	const_iterator end() const;
 
-// Implementation
 private:
 	struct key_for_node
 	{

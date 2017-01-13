@@ -35,7 +35,6 @@ B_BEGIN_NAMESPACE
 // occur during the normal program flow.
 class runtime_exception : public exception
 {
-// Overridable
 public:
 	// Returns the detailed description of this error.
 	virtual string message() const = 0;

@@ -28,12 +28,9 @@ B_BEGIN_NAMESPACE
 template <class T>
 class linked_list_node
 {
-// Type
 public:
 	typedef T element_type;
 
-// Accessors
-public:
 	element_type* next()
 	{
 		return next_element;
@@ -49,7 +46,6 @@ public:
 		next_element = new_next;
 	}
 
-// Implementation
 protected:
 	element_type* next_element;
 };
@@ -57,13 +53,10 @@ protected:
 template <class Node_access>
 class linked_list : public Node_access
 {
-// Types
 public:
 	typedef typename Node_access::element_type element_type;
 	typedef typename Node_access::node_type node_type;
 
-// Construction
-public:
 	linked_list(const Node_access& node_access_inst) :
 		Node_access(node_access_inst),
 		first_element(NULL),
@@ -71,8 +64,6 @@ public:
 	{
 	}
 
-// Accessors
-public:
 	element_type* first()
 	{
 		return first_element;
@@ -98,8 +89,6 @@ public:
 		return first_element == NULL;
 	}
 
-// Operations
-public:
 	static element_type* next(element_type* element)
 	{
 		return Node_access::node_for(element)->next();
@@ -233,7 +222,6 @@ public:
 		}
 	}
 
-// Implementation
 protected:
 	element_type* first_element;
 	element_type* last_element;

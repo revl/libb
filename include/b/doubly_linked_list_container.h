@@ -29,7 +29,6 @@ B_BEGIN_NAMESPACE
 template <class T>
 class doubly_linked_list_container
 {
-// Attributes
 public:
 	T* first()
 	{
@@ -56,8 +55,6 @@ public:
 		return wrappers.is_empty();
 	}
 
-// Operations
-public:
 	static T* next(T* element)
 	{
 		B_ASSERT(element != NULL);
@@ -174,7 +171,6 @@ public:
 		wrappers.move_to_back(element);
 	}
 
-// Implementation
 private:
 	struct element_wrapper : public doubly_linked_list_node<T>
 	{

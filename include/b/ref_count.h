@@ -89,18 +89,12 @@ B_BEGIN_NAMESPACE
 // Portable thread-safe reference count class.
 struct ref_count
 {
-// Attributes
-public:
 	operator int() const;
 
-// Operations
-public:
 	void operator =(int new_value);
 	void operator ++();
 	bool operator --();
 
-// Implementation
-public:
 	B_REFCOUNT_TYPE value;
 };
 

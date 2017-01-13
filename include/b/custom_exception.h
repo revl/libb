@@ -32,7 +32,6 @@ B_BEGIN_NAMESPACE
 // Customizable error exception class.
 class custom_exception : public runtime_exception
 {
-// Constructors
 public:
 	// Constructs a new object with an empty description.
 	custom_exception();
@@ -49,8 +48,7 @@ public:
 	// object using a format string and a va_list.
 	custom_exception(const char* fmt, va_list ap);
 
-// Overridden
-public:
+	// Returns the detailed description of this error.
 	virtual string message() const;
 
 #ifdef B_USE_STL
@@ -58,8 +56,6 @@ public:
 		throw ();
 #endif /* defined(B_USE_STL) */
 
-// Implementation
-public:
 	virtual ~custom_exception()
 	{
 	}

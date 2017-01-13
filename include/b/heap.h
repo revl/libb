@@ -28,7 +28,6 @@ B_BEGIN_NAMESPACE
 template <class T>
 class heap
 {
-// Methods on the
 public:
 	// Adds a value to this heap.
 	void push(const T& element);
@@ -43,8 +42,6 @@ public:
 	// Returns true if the heap is empty.
 	bool is_empty() const;
 
-// Operations on the external array
-public:
 	// Adds a value to a heap. The last element of the 'data'
 	// array (the one with the index size-1) must contain the
 	// value to be inserted and the rest of the elements must

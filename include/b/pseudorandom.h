@@ -29,7 +29,6 @@ B_BEGIN_NAMESPACE
 // as the glibc version of rand(3).
 class pseudorandom
 {
-// Initialization
 public:
 	typedef unsigned value_type;
 
@@ -45,8 +44,6 @@ public:
 	// Sets the seed of this generator to the system time.
 	void randomize();
 
-// Operations
-public:
 	// Returns the maximum value the next() method can return.
 	// This implementation always returns 0x7FFFFFFF.
 	static value_type max();
@@ -59,7 +56,6 @@ public:
 	// up to (but not including) 'limit'.
 	value_type next(value_type limit);
 
-// Implementation
 private:
 	value_type seed;
 };

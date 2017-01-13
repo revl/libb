@@ -32,11 +32,9 @@ B_BEGIN_NAMESPACE
 // modification operations.
 class pathname
 {
-// Types
 public:
 	class component
 	{
-	// Accessors
 	public:
 		// The full name of the component.
 		string_view name() const;
@@ -53,7 +51,6 @@ public:
 		// a suffix, an empty string_view is returned.
 		string_view suffix() const;
 
-	// Implementation
 	private:
 		friend class pathname;
 
@@ -67,16 +64,12 @@ public:
 
 	typedef array<component> component_array;
 
-// Construction
-public:
 	// Constructs an empty pathname object.
 	pathname();
 
 	// Parses and normalizes the specified pathname.
 	pathname(const string_view& path);
 
-// Attributes
-public:
 	// Returns the normalized pathname as a string.
 	string str() const;
 
@@ -96,8 +89,6 @@ public:
 	// with a slash, '.', or '..'.
 	bool can_represent_file() const;
 
-// Operations
-public:
 	// Copy the contents of 'rhs' into this object.
 	void assign(const pathname& rhs);
 
@@ -117,7 +108,6 @@ public:
 	// directory hierarchy.
 	void go_up(unsigned levels);
 
-// Implementation
 private:
 	component_array pathname_components;
 

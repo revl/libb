@@ -33,15 +33,12 @@ B_BEGIN_NAMESPACE
 // abnormal termination of a system or standard library call.
 class system_exception : public runtime_exception
 {
-// Construction
 public:
 	// Initializes the object using the specified error context
 	// (subject, resource, or method name) and the specified
 	// error code.
 	system_exception(const string& context_or_subject, int errno_value);
 
-// Information for the receiving end
-public:
 	// Retrieves the context that this object was constructed with.
 	string context() const;
 
@@ -57,7 +54,6 @@ public:
 		throw ();
 #endif /* defined(B_USE_STL) */
 
-// Implementation
 private:
 	const string exception_context;
 	const int system_error_code;
