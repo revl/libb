@@ -42,7 +42,7 @@ public:
 	// Initializes the error message to be contained by this
 	// object using a format string and a variable number
 	// of arguments.
-	custom_exception(const char* fmt, ...);
+	custom_exception(const char* fmt, ...) B_PRINTF_STYLE(2, 3);
 
 	// Initializes the error message to be contained by this
 	// object using a format string and a va_list.

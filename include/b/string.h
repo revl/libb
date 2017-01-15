@@ -242,15 +242,15 @@ public:
 // Formatting
 public:
 	// Constructs a new string from a format string.
-	static string formatted(const char_t* fmt, ...) B_PRINTF_STYLE(1, 2);
+	static string formatted(const char_t* fmt, ...) B_STRING_PRINTF(1, 2);
 	static string formatted_va(const char_t* fmt, va_list ap);
 
 	// Formats this string using the specified format.
-	void format(const char_t* fmt, ...) B_PRINTF_STYLE(2, 3);
+	void format(const char_t* fmt, ...) B_STRING_PRINTF(2, 3);
 	void format_va(const char_t* fmt, va_list ap);
 
 	// Appends formatted data to this string.
-	void append_format(const char_t* fmt, ...) B_PRINTF_STYLE(2, 3);
+	void append_format(const char_t* fmt, ...) B_STRING_PRINTF(2, 3);
 	void append_format_va(const char_t* fmt, va_list ap);
 
 // Searching
@@ -656,7 +656,7 @@ B_END_NAMESPACE
 
 #define B_STRING_DECL
 
-#define B_PRINTF_STYLE(fmt_index, arg_index)
+#define B_STRING_PRINTF(fmt_index, arg_index)
 
 #define string wstring
 #define char_t wchar_t
@@ -664,17 +664,15 @@ B_END_NAMESPACE
 #undef char_t
 #undef string
 
-#if defined(__GNUG__)
-#undef B_PRINTF_STYLE
-#define B_PRINTF_STYLE(fmt_index, arg_index) \
-	__attribute__ ((format (printf, fmt_index, arg_index)))
-#endif /* defined(__GNUG__) */
+#undef B_STRING_PRINTF
+#define B_STRING_PRINTF(fmt_index, arg_index) \
+	B_PRINTF_STYLE(fmt_index, arg_index)
 
 #define char_t char
 #include "string.h"
 #undef char_t
 
-#undef B_PRINTF_STYLE
+#undef B_STRING_PRINTF
 
 #undef B_STRING_DECL
 

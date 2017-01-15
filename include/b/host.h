@@ -69,6 +69,15 @@
 #pragma warning (disable: 530 981)
 #endif
 
+// Macro to enable syntax checking of the format strings supplied
+// as arguments to the printf-style functions.
+#if defined(__GNUG__)
+#define B_PRINTF_STYLE(fmt_index, arg_index) \
+	__attribute__ ((format (printf, fmt_index, arg_index)))
+#else
+#define B_PRINTF_STYLE(fmt_index, arg_index)
+#endif /* defined(__GNUG__) */
+
 #ifdef B_UNINSTALLED
 #include <b/config.h>
 #else
