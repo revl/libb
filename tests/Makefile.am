@@ -19,14 +19,12 @@
 LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 
 TESTS = \
-	test_string \
-	test_string_formatting \
-	test_string_view \
 	test_array \
 	test_binary_search_tree \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
+	test_make_path \
 	test_map \
 	test_memory \
 	test_misc \
@@ -34,17 +32,17 @@ TESTS = \
 	test_opaque \
 	test_pathname \
 	test_pseudorandom \
-	test_make_path
+	test_string \
+	test_string_formatting \
+	test_string_view
 
 check_PROGRAMS = \
-	test_string \
-	test_string_formatting \
-	test_string_view \
 	test_array \
 	test_binary_search_tree \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
+	test_make_path \
 	test_map \
 	test_memory \
 	test_misc \
@@ -52,13 +50,9 @@ check_PROGRAMS = \
 	test_opaque \
 	test_pathname \
 	test_pseudorandom \
-	test_make_path
-
-test_string_SOURCES = test_string.cc
-
-test_string_formatting_SOURCES = test_string_formatting.cc
-
-test_string_view_SOURCES = test_string_view.cc
+	test_string \
+	test_string_formatting \
+	test_string_view
 
 test_array_SOURCES = test_array.cc
 
@@ -69,6 +63,8 @@ test_heap_SOURCES = test_heap.cc
 test_levenshtein_distance_SOURCES = test_levenshtein_distance.cc
 
 test_lists_SOURCES = test_lists.cc
+
+test_make_path_SOURCES = test_make_path.cc
 
 test_map_SOURCES = test_map.cc
 
@@ -84,6 +80,10 @@ test_pathname_SOURCES = test_pathname.cc
 
 test_pseudorandom_SOURCES = test_pseudorandom.cc
 
-test_make_path_SOURCES = test_make_path.cc
+test_string_formatting_SOURCES = test_string_formatting.cc
+
+test_string_SOURCES = test_string.cc
+
+test_string_view_SOURCES = test_string_view.cc
 
 MAINTAINERCLEANFILES = Makefile.in
