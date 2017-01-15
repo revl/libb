@@ -21,6 +21,7 @@ LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 TESTS = \
 	test_array \
 	test_binary_search_tree \
+	test_exceptions \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
@@ -39,6 +40,7 @@ TESTS = \
 check_PROGRAMS = \
 	test_array \
 	test_binary_search_tree \
+	test_exceptions \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
@@ -57,6 +59,8 @@ check_PROGRAMS = \
 test_array_SOURCES = test_array.cc
 
 test_binary_search_tree_SOURCES = test_binary_search_tree.cc
+
+test_exceptions_SOURCES = test_exceptions.cc
 
 test_heap_SOURCES = test_heap.cc
 
