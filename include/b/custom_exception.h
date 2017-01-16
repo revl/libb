@@ -44,10 +44,6 @@ public:
 	// of arguments.
 	custom_exception(const char* fmt, ...) B_PRINTF_STYLE(2, 3);
 
-	// Initializes the error message to be contained by this
-	// object using a format string and a va_list.
-	custom_exception(const char* fmt, va_list ap);
-
 	// Returns the detailed description of this error.
 	virtual string message() const;
 
@@ -70,11 +66,6 @@ inline custom_exception::custom_exception()
 
 inline custom_exception::custom_exception(const string& msg) :
 	error_message(msg)
-{
-}
-
-inline custom_exception::custom_exception(const char* fmt, va_list ap) :
-	error_message(string::formatted_va(fmt, ap))
 {
 }
 
