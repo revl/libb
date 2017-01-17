@@ -20,17 +20,17 @@
 
 #include <b/opaque.h>
 
-class interface
+class handle
 {
 B_OPAQUE:
-	static interface create_object();
+	static handle create_handle();
 
 	int value() const;
 };
 
 #include <b/object.h>
 
-class interface::impl : public b::object
+class handle::impl : public b::object
 {
 public:
 	impl() : value(100)
@@ -40,16 +40,16 @@ public:
 	int value;
 };
 
-interface interface::create_object()
+handle handle::create_handle()
 {
-	interface new_object;
+	handle new_object;
 
-	new_object.impl_ref = new interface::impl;
+	new_object.impl_ref = new handle::impl;
 
 	return new_object;
 }
 
-int interface::value() const
+int handle::value() const
 {
 	return impl_ref->value;
 }
@@ -58,7 +58,7 @@ int interface::value() const
 
 B_TEST_CASE(opaque_pointer)
 {
-	interface instance = interface::create_object();
+	handle instance = handle::create_handle();
 
 	B_CHECK(instance.value() == 100);
 }
