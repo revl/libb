@@ -103,44 +103,44 @@ protected:
 };
 
 template <class T>
-ref<T>::ref() : obj(NULL)
+inline ref<T>::ref() : obj(NULL)
 {
 }
 
 template <class T>
-ref<T>::ref(const ref<T>& that)
+inline ref<T>::ref(const ref<T>& that)
 {
 	if ((obj = that.obj) != NULL)
 		obj->add_ref();
 }
 
 template <class T>
-ref<T>::ref(T* obj_ptr)
+inline ref<T>::ref(T* obj_ptr)
 {
 	if ((obj = obj_ptr) != NULL)
 		obj_ptr->add_ref();
 }
 
 template <class T>
-bool ref<T>::is_null() const
+inline bool ref<T>::is_null() const
 {
 	return obj == NULL;
 }
 
 template <class T>
-T* ref<T>::ptr() const
+inline T* ref<T>::ptr() const
 {
 	return obj;
 }
 
 template <class T>
-ref<T>::operator T*() const
+inline ref<T>::operator T*() const
 {
 	return obj;
 }
 
 template <class T>
-T* ref<T>::operator ->() const
+inline T* ref<T>::operator ->() const
 {
 	B_ASSERT(obj != NULL);
 
@@ -148,85 +148,85 @@ T* ref<T>::operator ->() const
 }
 
 template <class T>
-T& ref<T>::operator *() const
+inline T& ref<T>::operator *() const
 {
 	return *obj;
 }
 
 template <class T>
-bool ref<T>::operator ==(const ref<T>& that) const
+inline bool ref<T>::operator ==(const ref<T>& that) const
 {
 	return obj == that.obj;
 }
 
 template <class T>
-bool ref<T>::operator ==(T* rhs) const
+inline bool ref<T>::operator ==(T* rhs) const
 {
 	return obj == rhs;
 }
 
 template <class T>
-bool ref<T>::operator !=(const ref<T>& that) const
+inline bool ref<T>::operator !=(const ref<T>& that) const
 {
 	return obj != that.obj;
 }
 
 template <class T>
-bool ref<T>::operator !=(T* rhs) const
+inline bool ref<T>::operator !=(T* rhs) const
 {
 	return obj != rhs;
 }
 
 template <class T>
-bool ref<T>::operator <(const ref<T>& that) const
+inline bool ref<T>::operator <(const ref<T>& that) const
 {
 	return obj < that.obj;
 }
 
 template <class T>
-bool ref<T>::operator <(T* rhs) const
+inline bool ref<T>::operator <(T* rhs) const
 {
 	return obj < rhs;
 }
 
 template <class T>
-bool ref<T>::operator >(const ref<T>& that) const
+inline bool ref<T>::operator >(const ref<T>& that) const
 {
 	return obj > that.obj;
 }
 
 template <class T>
-bool ref<T>::operator >(T* rhs) const
+inline bool ref<T>::operator >(T* rhs) const
 {
 	return obj > rhs;
 }
 
 template <class T>
-bool ref<T>::operator <=(const ref<T>& that) const
+inline bool ref<T>::operator <=(const ref<T>& that) const
 {
 	return obj <= that.obj;
 }
 
 template <class T>
-bool ref<T>::operator <=(T* rhs) const
+inline bool ref<T>::operator <=(T* rhs) const
 {
 	return obj <= rhs;
 }
 
 template <class T>
-bool ref<T>::operator >=(const ref<T>& that) const
+inline bool ref<T>::operator >=(const ref<T>& that) const
 {
 	return obj >= that.obj;
 }
 
 template <class T>
-bool ref<T>::operator >=(T* rhs) const
+inline bool ref<T>::operator >=(T* rhs) const
 {
 	return obj >= rhs;
 }
 
 template <class T>
-void ref<T>::assign(T* new_obj)
+inline void ref<T>::assign(T* new_obj)
 {
 	if (new_obj != NULL)
 		new_obj->add_ref();
@@ -240,7 +240,7 @@ void ref<T>::assign(T* new_obj)
 }
 
 template <class T>
-ref<T>& ref<T>::operator =(const ref<T>& that)
+inline ref<T>& ref<T>::operator =(const ref<T>& that)
 {
 	assign(that.obj);
 
@@ -248,7 +248,7 @@ ref<T>& ref<T>::operator =(const ref<T>& that)
 }
 
 template <class T>
-ref<T>& ref<T>::operator =(T* new_obj)
+inline ref<T>& ref<T>::operator =(T* new_obj)
 {
 	assign(new_obj);
 
@@ -256,7 +256,7 @@ ref<T>& ref<T>::operator =(T* new_obj)
 }
 
 template <class T>
-void ref<T>::attach(T* new_obj)
+inline void ref<T>::attach(T* new_obj)
 {
 	if (obj != NULL)
 		obj->release();
@@ -265,7 +265,7 @@ void ref<T>::attach(T* new_obj)
 }
 
 template <class T>
-T* ref<T>::detach()
+inline T* ref<T>::detach()
 {
 	T* this_obj = obj;
 
@@ -274,7 +274,7 @@ T* ref<T>::detach()
 }
 
 template <class T>
-void ref<T>::swap(ref<T>& that)
+inline void ref<T>::swap(ref<T>& that)
 {
 	T* this_obj = obj;
 
@@ -283,7 +283,7 @@ void ref<T>::swap(ref<T>& that)
 }
 
 template <class T>
-ref<T>::~ref()
+inline ref<T>::~ref()
 {
 	if (obj != NULL)
 		obj->release();
