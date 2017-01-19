@@ -37,15 +37,15 @@ public:
 	ref(const ref<T>& that);
 
 	// Initializes this instance with a pointer to an existing object.
-	ref(T* that_ptr);
+	ref(T* obj_ptr);
 
 	// Tests if this is a null pointer.
-	bool IsNull() const;
+	bool is_null() const;
 
 	// Returns a C++ pointer to the controlled object.
-	T* GetPtr() const;
+	T* ptr() const;
 
-	// The same as GetPtr().
+	// The same as ptr().
 	operator T*() const;
 
 	// Member selection operator.
@@ -56,40 +56,40 @@ public:
 
 	// Various comparison operators.
 	bool operator ==(const ref<T>& that) const;
-	bool operator ==(T* that_ptr) const;
+	bool operator ==(T* rhs) const;
 
 	bool operator !=(const ref<T>& that) const;
-	bool operator !=(T* that_ptr) const;
+	bool operator !=(T* rhs) const;
 
 	bool operator <(const ref<T>& that) const;
-	bool operator <(T* that_ptr) const;
+	bool operator <(T* rhs) const;
 
 	bool operator >(const ref<T>& that) const;
-	bool operator >(T* that_ptr) const;
+	bool operator >(T* rhs) const;
 
 	bool operator <=(const ref<T>& that) const;
-	bool operator <=(T* that_ptr) const;
+	bool operator <=(T* rhs) const;
 
 	bool operator >=(const ref<T>& that) const;
-	bool operator >=(T* that_ptr) const;
+	bool operator >=(T* rhs) const;
 
 	// Switches to a new object. Releases the previously
 	// controlled object and grabs a reference to the new one.
-	void Assign(T* that_ptr);
+	void assign(T* new_obj);
 
 	// Assignment operators.
 	ref<T>& operator =(const ref<T>& that);
-	ref<T>& operator =(T* that_ptr);
+	ref<T>& operator =(T* new_obj);
 
 	// Switches to a new object without incrementing its
 	// reference count. Releases the previously controlled object.
-	void Attach(T* that_ptr);
+	void attach(T* new_obj);
 
 	// Detaches this smart pointer from the object it points to
 	// without decrementing the reference count of the object,
 	// then resets this smart pointer to zero. Returns a C++
 	// pointer to the detached object.
-	T* Detach();
+	T* detach();
 
 	// Makes this smart pointer instance point to the object
 	// pointed to by <that> and vice versa.
@@ -99,194 +99,194 @@ public:
 	~ref();
 
 protected:
-	T* ptr;
+	T* obj;
 };
 
 template <class T>
-ref<T>::ref() : ptr(NULL)
+ref<T>::ref() : obj(NULL)
 {
 }
 
 template <class T>
 ref<T>::ref(const ref<T>& that)
 {
-	if ((ptr = that.ptr) != NULL)
-		ptr->add_ref();
+	if ((obj = that.obj) != NULL)
+		obj->add_ref();
 }
 
 template <class T>
-ref<T>::ref(T* that_ptr)
+ref<T>::ref(T* obj_ptr)
 {
-	if ((ptr = that_ptr) != NULL)
-		ptr->add_ref();
+	if ((obj = obj_ptr) != NULL)
+		obj_ptr->add_ref();
 }
 
 template <class T>
-bool ref<T>::IsNull() const
+bool ref<T>::is_null() const
 {
-	return ptr == NULL;
+	return obj == NULL;
 }
 
 template <class T>
-T* ref<T>::GetPtr() const
+T* ref<T>::ptr() const
 {
-	return ptr;
+	return obj;
 }
 
 template <class T>
 ref<T>::operator T*() const
 {
-	return ptr;
+	return obj;
 }
 
 template <class T>
 T* ref<T>::operator ->() const
 {
-	B_ASSERT(ptr != NULL);
+	B_ASSERT(obj != NULL);
 
-	return ptr;
+	return obj;
 }
 
 template <class T>
 T& ref<T>::operator *() const
 {
-	return *ptr;
+	return *obj;
 }
 
 template <class T>
 bool ref<T>::operator ==(const ref<T>& that) const
 {
-	return ptr == that.ptr;
+	return obj == that.obj;
 }
 
 template <class T>
-bool ref<T>::operator ==(T* that_ptr) const
+bool ref<T>::operator ==(T* rhs) const
 {
-	return ptr == that_ptr;
+	return obj == rhs;
 }
 
 template <class T>
 bool ref<T>::operator !=(const ref<T>& that) const
 {
-	return ptr != that.ptr;
+	return obj != that.obj;
 }
 
 template <class T>
-bool ref<T>::operator !=(T* that_ptr) const
+bool ref<T>::operator !=(T* rhs) const
 {
-	return ptr != that_ptr;
+	return obj != rhs;
 }
 
 template <class T>
 bool ref<T>::operator <(const ref<T>& that) const
 {
-	return ptr < that.ptr;
+	return obj < that.obj;
 }
 
 template <class T>
-bool ref<T>::operator <(T* that_ptr) const
+bool ref<T>::operator <(T* rhs) const
 {
-	return ptr < that_ptr;
+	return obj < rhs;
 }
 
 template <class T>
 bool ref<T>::operator >(const ref<T>& that) const
 {
-	return ptr > that.ptr;
+	return obj > that.obj;
 }
 
 template <class T>
-bool ref<T>::operator >(T* that_ptr) const
+bool ref<T>::operator >(T* rhs) const
 {
-	return ptr > that_ptr;
+	return obj > rhs;
 }
 
 template <class T>
 bool ref<T>::operator <=(const ref<T>& that) const
 {
-	return ptr <= that.ptr;
+	return obj <= that.obj;
 }
 
 template <class T>
-bool ref<T>::operator <=(T* that_ptr) const
+bool ref<T>::operator <=(T* rhs) const
 {
-	return ptr <= that_ptr;
+	return obj <= rhs;
 }
 
 template <class T>
 bool ref<T>::operator >=(const ref<T>& that) const
 {
-	return ptr >= that.ptr;
+	return obj >= that.obj;
 }
 
 template <class T>
-bool ref<T>::operator >=(T* that_ptr) const
+bool ref<T>::operator >=(T* rhs) const
 {
-	return ptr >= that_ptr;
+	return obj >= rhs;
 }
 
 template <class T>
-void ref<T>::Assign(T* that_ptr)
+void ref<T>::assign(T* new_obj)
 {
-	if (that_ptr != NULL)
-		that_ptr->add_ref();
+	if (new_obj != NULL)
+		new_obj->add_ref();
 
-	T* old_ptr = ptr;
+	T* old_obj = obj;
 
-	ptr = that_ptr;
+	obj = new_obj;
 
-	if (old_ptr != NULL)
-		old_ptr->release();
+	if (old_obj != NULL)
+		old_obj->release();
 }
 
 template <class T>
 ref<T>& ref<T>::operator =(const ref<T>& that)
 {
-	Assign(that.ptr);
+	assign(that.obj);
 
 	return *this;
 }
 
 template <class T>
-ref<T>& ref<T>::operator =(T* that_ptr)
+ref<T>& ref<T>::operator =(T* new_obj)
 {
-	Assign(that_ptr);
+	assign(new_obj);
 
 	return *this;
 }
 
 template <class T>
-void ref<T>::Attach(T* that_ptr)
+void ref<T>::attach(T* new_obj)
 {
-	if (ptr != NULL)
-		ptr->release();
+	if (obj != NULL)
+		obj->release();
 
-	ptr = that_ptr;
+	obj = new_obj;
 }
 
 template <class T>
-T* ref<T>::Detach()
+T* ref<T>::detach()
 {
-	T* this_ptr = ptr;
+	T* this_obj = obj;
 
-	ptr = NULL;
-	return this_ptr;
+	obj = NULL;
+	return this_obj;
 }
 
 template <class T>
 void ref<T>::swap(ref<T>& that)
 {
-	T* this_ptr = ptr;
+	T* this_obj = obj;
 
-	ptr = that.ptr;
-	that.ptr = this_ptr;
+	obj = that.obj;
+	that.obj = this_obj;
 }
 
 template <class T>
 ref<T>::~ref()
 {
-	if (ptr != NULL)
-		ptr->release();
+	if (obj != NULL)
+		obj->release();
 }
 
 B_END_NAMESPACE
