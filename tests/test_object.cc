@@ -24,21 +24,15 @@
 
 class base : public b::object
 {
-// Types
 public:
 	typedef b::ref<base> ref;
 
-// Construction
-public:
 	static ref create(int new_object_id);
 
-// Attributes
-public:
 	int id() const;
 
 	static int instance_count();
 
-// Implementation
 protected:
 	base(int new_object_id);
 
@@ -79,16 +73,11 @@ int base::instance_counter = 0;
 
 class derived : public base
 {
-// Types
 public:
 	typedef b::ref<derived> ref;
 
-// Construction
-public:
 	static ref create(int new_object_id);
 
-// Implementation
-public:
 	derived(int new_object_id);
 };
 
