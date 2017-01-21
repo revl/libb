@@ -62,6 +62,11 @@ public:
 
 protected:
 	// Protected destructor prohibits explicit deletion
+	// Deletes this object. The method is called by the
+	// release() method when there are no more references
+	// to this object.
+	virtual void delete_this() const;
+
 	// of this object.
 	virtual ~object()
 	{
@@ -98,7 +103,7 @@ inline void object::release() const
 	B_ASSERT(this != NULL);
 
 	if (!--refs)
-		delete const_cast<object*>(this);
+		delete_this();
 }
 
 inline object& object::operator =(object&)

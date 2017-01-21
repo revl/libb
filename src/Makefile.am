@@ -35,6 +35,7 @@ sources = \
 	exceptions.cc \
 	memory.cc \
 	misc.cc \
+	object.cc \
 	pathname.cc \
 	string.cc \
 	string_impl.h
