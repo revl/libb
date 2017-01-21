@@ -54,6 +54,14 @@ public:
 	// Dereference operator.
 	T& operator *() const;
 
+	// Casts the object pointed to by this smart pointer to the derived
+	// class 'C' and returns a smart pointer to the resulting object.
+	//
+	// Because this method uses 'static_cast' and not 'dynamic_cast',
+	// it cannot be used if 'T' is a virtual base class of 'C'.
+	template <class C>
+	ref<C> cast();
+
 	// Various comparison operators.
 	bool operator ==(const ref<T>& that) const;
 	bool operator ==(T* rhs) const;
@@ -151,6 +159,13 @@ template <class T>
 inline T& ref<T>::operator *() const
 {
 	return *obj;
+}
+
+template <class T>
+template <class C>
+inline ref<C> ref<T>::cast()
+{
+	return ref<C>(static_cast<C*>(obj));
 }
 
 template <class T>
