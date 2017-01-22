@@ -19,6 +19,7 @@
 pkgincludedir = $(includedir)/b
 
 pkginclude_HEADERS = \
+	arg_list.h \
 	array.h \
 	custom_exception.h \
 	doubly_linked_list.h \
@@ -34,7 +35,6 @@ pkginclude_HEADERS = \
 	node_access_via_cast.h \
 	object.h \
 	opaque.h \
-	option_list.h \
 	pseudorandom.h \
 	ref.h \
 	ref_count.h \
