@@ -61,7 +61,7 @@ private:
 };
 
 inline pseudorandom::pseudorandom() :
-	seed((pseudorandom::value_type) ::time(NULL))
+	seed(((pseudorandom::value_type) ::time(NULL)) & 0x7FFFFFFFU)
 {
 }
 

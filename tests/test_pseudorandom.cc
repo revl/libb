@@ -59,7 +59,7 @@ B_TEST_CASE(uniform_distribution)
 
 	for (size_t i = 0; i < number_of_counters; ++i)
 	{
-		B_CHECK(counters[i] > 99000);
-		B_CHECK(counters[i] < 101000);
+		B_CHECK(counters[i] > 98000);
+		B_CHECK(counters[i] < 102000);
 	}
 }
