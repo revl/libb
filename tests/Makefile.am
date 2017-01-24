@@ -19,6 +19,7 @@
 LDADD = -L../src -l$(PACKAGE)$(configsuffix)
 
 TESTS = \
+	test_arg_list \
 	test_array \
 	test_binary_search_tree \
 	test_exceptions \
@@ -38,6 +39,7 @@ TESTS = \
 	test_string_view
 
 check_PROGRAMS = \
+	test_arg_list \
 	test_array \
 	test_binary_search_tree \
 	test_exceptions \
@@ -55,6 +57,8 @@ check_PROGRAMS = \
 	test_string \
 	test_string_formatting \
 	test_string_view
+
+test_arg_list_SOURCES = test_arg_list.cc
 
 test_array_SOURCES = test_array.cc
 
