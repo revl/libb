@@ -104,3 +104,121 @@ B_TEST_CASE(shuffle)
 	for (unsigned i = 0; i < count; ++i)
 		B_CHECK(numbers[i] == i);
 }
+
+B_STATIC_CONST_STRING(dot_dir, ".");
+
+B_STATIC_CONST_STRING(test_dir, "b_test_dir");
+
+B_STATIC_CONST_STRING(intermediate, "b_test_dir" B_PATH_SEPARATOR_SZ
+	"missing_parent");
+
+B_STATIC_CONST_STRING(new_dir, "b_test_dir" B_PATH_SEPARATOR_SZ
+	"missing_parent" B_PATH_SEPARATOR_SZ "new_dir");
+
+B_TEST_CASE(create_directory)
+{
+	// Start with a clean slate.
+	try
+	{
+		b::remove_directory(new_dir);
+	}
+	catch (b::system_exception&)
+	{
+	}
+
+	try
+	{
+		b::remove_directory(intermediate);
+	}
+	catch (b::system_exception&)
+	{
+	}
+
+	try
+	{
+		b::remove_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+	}
+
+	try
+	{
+		b::create_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create new" && false);
+	}
+
+	// Make sure the directory exists now.
+	B_REQUIRE(b::is_directory(test_dir));
+
+	try
+	{
+		// Creation of existing directories must succeed.
+		b::create_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create existing" && false);
+	}
+
+	try
+	{
+		// It is allowed to request creation of
+		// the '.' directory.
+		b::create_directory(dot_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create dot" && false);
+	}
+
+	try
+	{
+		// Empty parameter is allowed.
+		b::create_directory(b::string());
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create empty" && false);
+	}
+
+	// create_directory() with no additional arguments
+	// should not create missing parent directories.
+	if (!b::is_directory(new_dir))
+		try
+		{
+			b::create_directory(new_dir);
+
+			B_REQUIRE("create no parents" && false);
+		}
+		catch (b::system_exception&)
+		{
+		}
+
+	try
+	{
+		using namespace b::args;
+
+		// And create_directory() with the 'create_parents'
+		// argument should.
+		b::create_directory(new_dir, create_parents = true);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create parents" && false);
+	}
+
+	try
+	{
+		b::remove_directory(new_dir);
+		b::remove_directory(intermediate);
+		b::remove_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("cleanup" && false);
+	}
+}
