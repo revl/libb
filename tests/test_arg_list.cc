@@ -46,9 +46,9 @@ namespace init_args
 		bp_tag
 	};
 
-	static const b::arg_name<b::string, sp_tag> sp;
-	static const b::arg_name<int, ip_tag> ip;
-	static const b::arg_name<bool, bp_tag> bp;
+	extern const b::arg_name<b::string, sp_tag> sp;
+	extern const b::arg_name<int, ip_tag> ip;
+	extern const b::arg_name<bool, bp_tag> bp;
 }
 
 static parameters init(const b::arg_list* arg)
@@ -99,8 +99,8 @@ B_TEST_CASE(arg_list)
 // Test case 2. Define named arguments using integer constants.
 // Use a series of if/else statements to recognize argument types.
 
-static const b::arg_name<unsigned, 0> addend;
-static const b::arg_name<unsigned*, 1> partial_sum;
+extern const b::arg_name<unsigned, 0> addend;
+extern const b::arg_name<unsigned*, 1> partial_sum;
 
 static unsigned sum(const b::arg_list* arg = NULL)
 {
@@ -137,7 +137,7 @@ B_TEST_CASE(argument_order)
 // Test case 3. Have a list of named parameters
 // shared between two function calls.
 
-static const b::arg_name<int, 0> int_arg;
+extern const b::arg_name<int, 0> int_arg;
 
 static bool check_values(const b::arg_list* arg,
 		const int* expected_values,

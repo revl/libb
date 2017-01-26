@@ -49,18 +49,18 @@ bool is_directory(const string& directory);
 namespace args
 {
 	// Flag to enable creation of the missing parent directories.
-	static const arg_name<bool, 0> create_parents;
+	extern const arg_name<bool, 0> create_parents;
 
 	// The mode for the new directory.
 	//
 	// The default value is 0777 & ~umask.
-	static const arg_name<mode_t, 1> mode;
+	extern const arg_name<mode_t, 1> mode;
 
 	// If 'create_parents' parameter is also given, 'parent_mode'
 	// is the mode for the new parent directories.
 	//
 	// If not specified, the value of 'mode' is used.
-	static const arg_name<mode_t, 2> parent_mode;
+	extern const arg_name<mode_t, 2> parent_mode;
 }
 
 // Creates a directory, possibly with its parents.
