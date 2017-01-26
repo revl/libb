@@ -32,12 +32,10 @@ bool is_directory(const string& directory)
 		S_ISDIR(stat_struct.st_mode);
 }
 
-void make_directory(const string& directory)
+static void make_directory(const string& directory, mode_t mode)
 {
-	if (!directory.is_empty() && mkdir(directory.data(),
-		S_IRUSR | S_IWUSR | S_IXUSR |
-		S_IRGRP | S_IWGRP | S_IXGRP |
-		S_IROTH | S_IWOTH | S_IXOTH) == -1)
+	if (!directory.is_empty() &&
+			::mkdir(directory.data(), mode) == -1)
 	{
 		int error = errno;
 
@@ -46,25 +44,62 @@ void make_directory(const string& directory)
 	}
 }
 
-void make_path(const string& path)
+static void make_directory_and_parents(const string& path,
+		mode_t mode, mode_t parent_mode)
 {
 	try
 	{
-		make_directory(path);
+		make_directory(path, mode);
 	}
 	catch (system_exception& e)
 	{
-		if (e.error_code() != ENOENT)
-			throw;
-
 		size_t slash_pos;
 
-		if ((slash_pos = path.rfind(B_PATH_SEPARATOR)) > 0)
-		{
-			make_path(string(path.data(), slash_pos));
-			make_directory(path);
-		}
+		if (e.error_code() != ENOENT ||
+				(slash_pos = path.rfind(B_PATH_SEPARATOR)) <= 0)
+			throw;
+
+		// Create the missing parent directory.
+		make_directory_and_parents(string(path.data(), slash_pos),
+				// Pass 'parent_mode' as 'mode'
+				// for all recursive calls.
+				parent_mode, parent_mode);
+
+		make_directory(path, mode);
 	}
+}
+
+void create_directory(const string& path, const arg_list* arg)
+{
+	bool create_parents = false;
+
+	mode_t mode = S_IRUSR | S_IWUSR | S_IXUSR |
+			S_IRGRP | S_IWGRP | S_IXGRP |
+			S_IROTH | S_IWOTH | S_IXOTH;
+
+	mode_t* parent_mode = &mode;
+
+	mode_t parent_mode_arg;
+
+	for (; arg != NULL; arg = arg->prev_arg)
+		if (args::create_parents.is_name_for(arg))
+			create_parents = args::create_parents.value(arg);
+		else
+			if (args::mode.is_name_for(arg))
+				mode = args::mode.value(arg);
+			else
+				if (args::parent_mode.is_name_for(arg))
+				{
+					parent_mode_arg =
+						args::parent_mode.value(arg);
+
+					parent_mode = &parent_mode_arg;
+				}
+
+	if (!create_parents)
+		make_directory(path, mode);
+	else
+		make_directory_and_parents(path, mode, *parent_mode);
 }
 
 void remove_directory(const string& directory)

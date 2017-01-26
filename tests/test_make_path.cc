@@ -20,74 +20,122 @@
 
 #include <b/misc.h>
 
-B_STATIC_CONST_STRING(test_dir, "TestDir");
-B_STATIC_CONST_STRING(dot_dir, ".");
-B_STATIC_CONST_STRING(new_dir, "TestDir" B_PATH_SEPARATOR_SZ \
-	"Intermed" B_PATH_SEPARATOR_SZ "NewDir");
-B_STATIC_CONST_STRING(intermediate,
-	"TestDir" B_PATH_SEPARATOR_SZ "Intermed");
+#include "unit_test.h"
 
-int main()
+B_STATIC_CONST_STRING(dot_dir, ".");
+
+B_STATIC_CONST_STRING(test_dir, "b_test_dir");
+
+B_STATIC_CONST_STRING(intermediate, "b_test_dir" B_PATH_SEPARATOR_SZ
+	"missing_parent");
+
+B_STATIC_CONST_STRING(new_dir, "b_test_dir" B_PATH_SEPARATOR_SZ
+	"missing_parent" B_PATH_SEPARATOR_SZ "new_dir");
+
+B_TEST_CASE(create_directory)
 {
-	int test_number = 1;
+	// Start with a clean slate.
+	try
+	{
+		b::remove_directory(new_dir);
+	}
+	catch (b::system_exception&)
+	{
+	}
 
 	try
 	{
-		b::make_directory(test_dir);
-
-		++test_number;
-
-		// Make sure the directory is created.
-		if (!b::is_directory(test_dir))
-			return test_number;
-
-		++test_number;
-
-		// Creation of existing directories must succeed.
-		b::make_directory(test_dir);
-
-		++test_number;
-
-		b::make_directory(dot_dir);
-
-		++test_number;
-
-		// Empty parameter is allowed.
-		b::make_directory(b::string());
-
-		++test_number;
-
-		// make_directory() should not create intermediate
-		// directories.
-		if (!b::is_directory(new_dir))
-			try
-			{
-				b::make_directory(new_dir);
-				return test_number;
-			}
-			catch (b::system_exception&)
-			{
-			}
-
-		++test_number;
-
-		// And make_path() should.
-		b::make_path(new_dir);
-
-		b::remove_directory(new_dir);
-
-		++test_number;
-
 		b::remove_directory(intermediate);
+	}
+	catch (b::system_exception&)
+	{
+	}
 
-		++test_number;
-
+	try
+	{
 		b::remove_directory(test_dir);
 	}
 	catch (b::system_exception&)
 	{
-		return test_number;
 	}
 
-	return 0;
+	try
+	{
+		b::create_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create new" && false);
+	}
+
+	// Make sure the directory exists now.
+	B_REQUIRE(b::is_directory(test_dir));
+
+	try
+	{
+		// Creation of existing directories must succeed.
+		b::create_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create existing" && false);
+	}
+
+	try
+	{
+		// It is allowed to request creation of
+		// the '.' directory.
+		b::create_directory(dot_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create dot" && false);
+	}
+
+	try
+	{
+		// Empty parameter is allowed.
+		b::create_directory(b::string());
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create empty" && false);
+	}
+
+	// create_directory() with no additional arguments
+	// should not create missing parent directories.
+	if (!b::is_directory(new_dir))
+		try
+		{
+			b::create_directory(new_dir);
+
+			B_REQUIRE("create no parents" && false);
+		}
+		catch (b::system_exception&)
+		{
+		}
+
+	try
+	{
+		using namespace b::args;
+
+		// And create_directory() with the 'create_parents'
+		// argument should.
+		b::create_directory(new_dir, create_parents = true);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("create parents" && false);
+	}
+
+	try
+	{
+		b::remove_directory(new_dir);
+		b::remove_directory(intermediate);
+		b::remove_directory(test_dir);
+	}
+	catch (b::system_exception&)
+	{
+		B_CHECK("cleanup" && false);
+	}
 }
