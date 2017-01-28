@@ -27,57 +27,39 @@ B_STATIC_CONST_STRING(right, "CRr");
 B_STATIC_CONST_STRING(abc, "abc");
 B_STATIC_CONST_STRING(cba, "cba");
 
-B_TEST_CASE(disabled_checks)
+B_TEST_CASE(basic_checks)
 {
-/*	b::string str1("012");
-	b::string str2("345");
+	b::string str1("012", 3);
+	b::string str2("345", 3);
 
-	printf("str1 = %s\n", (const char*) str1);
+	B_CHECK(str1 == "012");
 
-	// append str2 to str1
+	// Append str2 to str1.
 	str1.append(str2);
 
-	printf("str1 = %s\n", (const char*) str1);
+	B_CHECK(str1 == "012345");
 
-	// append the last 2 items in str2 to str1
-	str2 = "567";
-	str1.append(str2, 1, 2);    // begin at pos 1, append 2 elements
+	str2.assign("567", 3);
+	// Append the last 2 characters of str2 to str1.
+	str1.append(str2.data() + 1, 2);
 
-	printf("str1 = %s\n", (const char*) str1);
+	B_CHECK(str1 == "01234567");
 
-	// append the first 2 items from an array of the element type
-	char ach_test[] = {'8', '9', 'A'};
-	str1.append(ach_test, 2);
+	// Append the first 2 characters of a character
+	// array to str1.
+	str1.append("89A", 2);
 
-	printf("str1 = %s\n", (const char*) str1);
+	B_CHECK(str1 == "0123456789");
 
-	// append all of a string literal to str1
-	char test[] = "abc";
-	str1.append(test);
+	// Append a series of characters to str1.
+	str1.append(3, 'D');
 
-	printf("str1 = %s\n", (const char*) str1);
+	B_CHECK(str1 == "0123456789DDD");
 
-	// append one item of the element type
-	str1.append(1, 'D');
-
-	printf("str1 = %s\n", (const char*) str1);
-
-	// append str2 to str1 using iterators
-	str2 = "EF";
-	str1.append(str2.begin(), str2.end());
-
-	printf("str1 = %s\n", (const char*) str1);
-*/
-}
-
-// TODO FIXME Split into many small tests
-B_TEST_CASE(string)
-{
-	b::string str1;
+	str1.empty();
+	str2.assign("abcd", 3);
 
 	B_CHECK(str1.is_empty());
-
-	b::string str2("abcd", 3);
 	B_CHECK(str2.length() == 3);
 
 	b::string str3("cba", 3);
