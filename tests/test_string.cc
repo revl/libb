@@ -27,6 +27,33 @@ B_STATIC_CONST_STRING(right, "CRr");
 B_STATIC_CONST_STRING(abc, "abc");
 B_STATIC_CONST_STRING(cba, "cba");
 
+B_TEST_CASE(replace)
+{
+	b::string str(abc);
+
+	str.replace(1, "B", 1);
+
+	B_CHECK(str == "aBc");
+
+	str.replace(1, "BB", 2);
+
+	B_CHECK(str == "aBB");
+
+	B_REQUIRE(str.capacity() > str.length());
+
+	str.replace(2, "CC", 2);
+
+	B_CHECK(str == "aBCC");
+
+	size_t old_capacity = str.capacity();
+
+	str.replace(3, 'D', old_capacity);
+
+	B_REQUIRE(str.capacity() != old_capacity);
+
+	B_CHECK(str == b::string("aBC", 3) + b::string(old_capacity, 'D'));
+}
+
 B_TEST_CASE(basic_checks)
 {
 	b::string str1("012", 3);
