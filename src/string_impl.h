@@ -138,57 +138,95 @@ void string::assign(size_t count, char_t source)
 		empty();
 }
 
-/*
-void string::assign(const char_t* source, size_t count)
-{
-	B_ASSERT(count >= 0);
-
-	if (count > 0)
-	{
-		assign_pairwise(Allocate(count), source, count);
-		UnlockBuffer();
-	}
-	else
-		empty();
-}
-
-void string::assign(char_t source, size_t count)
-{
-	B_ASSERT(count >= 0);
-
-	if (count > 0)
-	{
-		assign_value(Allocate(count), source, count);
-		UnlockBuffer();
-	}
-	else
-		empty();
-}
-
 void string::replace(size_t index, const char_t* source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= length() && count >= 0);
+	B_ASSERT(index <= length());
 
-	size_t unaffected = index + count;
+	if (count == 0)
+		return;
 
-	assign_pairwise((unaffected <= length() ? LockBuffer() :
-		LockBuffer(unaffected)) + index, source, count);
+	size_t end_of_change = index + count;
 
-	UnlockBuffer();
+	if (end_of_change > capacity() || is_shared())
+	{
+		char_t* new_buffer_chars;
+
+		if (end_of_change >= length())
+		{
+			new_buffer_chars = alloc_buffer(
+				extra_capacity(end_of_change), end_of_change);
+
+			assign_pairwise(new_buffer_chars, chars, index);
+			assign_pairwise(new_buffer_chars + index, source,
+				count);
+		}
+		else
+		{
+			new_buffer_chars = alloc_buffer(
+				extra_capacity(length()), length());
+
+			assign_pairwise(new_buffer_chars, chars, index);
+			assign_pairwise(new_buffer_chars + index, source,
+				count);
+			assign_pairwise(new_buffer_chars + end_of_change,
+				chars + end_of_change,
+				length() - end_of_change);
+		}
+
+		replace_buffer(new_buffer_chars);
+	}
+	else
+	{
+		assign_pairwise(chars + index, source, count);
+
+		if (end_of_change > length())
+			metadata()->length = end_of_change;
+	}
 }
 
 void string::replace(size_t index, char_t source, size_t count)
 {
-	B_ASSERT(index >= 0 && index <= length() && count >= 0);
+	B_ASSERT(index <= length());
 
-	size_t unaffected = index + count;
+	if (count == 0)
+		return;
 
-	assign_value((unaffected <= length() ? LockBuffer() :
-		LockBuffer(unaffected)) + index, source, count);
+	size_t end_of_change = index + count;
 
-	UnlockBuffer();
+	if (end_of_change > capacity() || is_shared())
+	{
+		char_t* new_buffer_chars;
+
+		if (end_of_change >= length())
+		{
+			new_buffer_chars = alloc_buffer(
+				extra_capacity(end_of_change), end_of_change);
+
+			assign_pairwise(new_buffer_chars, chars, index);
+			assign_value(new_buffer_chars + index, count, source);
+		}
+		else
+		{
+			new_buffer_chars = alloc_buffer(
+				extra_capacity(length()), length());
+
+			assign_pairwise(new_buffer_chars, chars, index);
+			assign_value(new_buffer_chars + index, count, source);
+			assign_pairwise(new_buffer_chars + end_of_change,
+				chars + end_of_change,
+				length() - end_of_change);
+		}
+
+		replace_buffer(new_buffer_chars);
+	}
+	else
+	{
+		assign_value(chars + index, count, source);
+
+		if (end_of_change > length())
+			metadata()->length = end_of_change;
+	}
 }
-*/
 
 void string::insert(size_t index, const char_t* source, size_t count)
 {

@@ -148,7 +148,7 @@ public:
 	void replace(size_t index, const char_t* source, size_t count);
 
 	// Replaces a part of this string with a fill character.
-	void replace(size_t index, char_t source, size_t count = 1);
+	void replace(size_t index, char_t source, size_t count);
 
 // Insertion
 public:
