@@ -139,7 +139,7 @@ void heap<T>::pop(T* data, size_t size)
 	 *
 	 *   i = 0
 	 *
-	 *   while i has child(ren) and A[i] < A[j = maximal child of i]
+	 *   while i has child(ren) and A[i] < A[j = maximum child of i]
 	 *       A[i] <=> A[j]
 	 *       i = j
 	 *
@@ -176,14 +176,14 @@ void heap<T>::pop(T* data, size_t size)
 			else
 				// The parent has at least one child
 				// If the parent has two children then
-				// find the maximal one (use 'operator <' only)
+				// find the maximum one (use 'operator <' only)
 				if (child < size &&
 					data[child] < data[child + 1])
-					// The maximal child is the right child
+					// The maximum child is the right child
 					// (or the children are equal)
 					++child;
 
-			// Continue if the parent is less then the maximal child
+			// Continue if the parent is less then the maximum child
 		}
 		while (data[parent] < data[child]);
 	}
