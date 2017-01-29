@@ -34,7 +34,7 @@ public:
 	ref();
 
 	// Increases the reference count of the object pointed to by <that>.
-	ref(const ref<T>& that);
+	ref(const ref& that);
 
 	// Initializes this instance with a pointer to an existing object.
 	ref(T* obj_ptr);
@@ -63,22 +63,22 @@ public:
 	ref<C> cast();
 
 	// Various comparison operators.
-	bool operator ==(const ref<T>& that) const;
+	bool operator ==(const ref& that) const;
 	bool operator ==(T* rhs) const;
 
-	bool operator !=(const ref<T>& that) const;
+	bool operator !=(const ref& that) const;
 	bool operator !=(T* rhs) const;
 
-	bool operator <(const ref<T>& that) const;
+	bool operator <(const ref& that) const;
 	bool operator <(T* rhs) const;
 
-	bool operator >(const ref<T>& that) const;
+	bool operator >(const ref& that) const;
 	bool operator >(T* rhs) const;
 
-	bool operator <=(const ref<T>& that) const;
+	bool operator <=(const ref& that) const;
 	bool operator <=(T* rhs) const;
 
-	bool operator >=(const ref<T>& that) const;
+	bool operator >=(const ref& that) const;
 	bool operator >=(T* rhs) const;
 
 	// Switches to a new object. Releases the previously
@@ -86,8 +86,8 @@ public:
 	void assign(T* new_obj);
 
 	// Assignment operators.
-	ref<T>& operator =(const ref<T>& that);
-	ref<T>& operator =(T* new_obj);
+	ref& operator =(const ref& that);
+	ref& operator =(T* new_obj);
 
 	// Switches to a new object without incrementing its
 	// reference count. Releases the previously controlled object.
@@ -101,7 +101,7 @@ public:
 
 	// Makes this smart pointer instance point to the object
 	// pointed to by <that> and vice versa.
-	void swap(ref<T>& that);
+	void swap(ref& that);
 
 	// Releases the controlled object.
 	~ref();
