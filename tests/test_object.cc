@@ -93,19 +93,22 @@ inline derived::ref derived::create(int new_object_id)
 B_TEST_CASE(object_count)
 {
 	{
-		base::ref base1 = base::create(1);
-		base::ref base2 = base::create(2);
+		base::ref b1 = base::create(1);
+		base::ref b2 = base::create(2);
 
-		derived::ref derived = derived::create(3);
+		derived::ref d = derived::create(3);
 
-		base1 = base2;
-		base2 = derived;
+		B_CHECK(base::instance_count() == 3);
 
-		base1.swap(base2);
+		b1 = b2;
+		b2 = d;
 
 		B_CHECK(base::instance_count() == 2);
-		B_CHECK(base1->id() == 3);
-		B_CHECK(base2->id() == 2);
+
+		b1.swap(b2);
+
+		B_CHECK(b1->id() == 3);
+		B_CHECK(b2->id() == 2);
 	}
 
 	B_CHECK(base::instance_count() == 0);
