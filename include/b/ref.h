@@ -33,11 +33,15 @@ public:
 	// Constructs a null pointer.
 	ref();
 
-	// Increases the reference count of the object pointed to by <that>.
+	// Increases the reference count of the object pointed to by 'that'.
 	ref(const ref& that);
 
 	// Initializes this instance with a pointer to an existing object.
 	ref(T* obj_ptr);
+
+	// Initializes this reference using a reference to a subclass.
+	template <class C>
+	ref(const ref<C>& that);
 
 	// Tests if this is a null pointer.
 	bool is_null() const;
@@ -63,22 +67,22 @@ public:
 	ref<C> cast();
 
 	// Various comparison operators.
-	bool operator ==(const ref& that) const;
+	bool operator ==(const ref& rhs) const;
 	bool operator ==(T* rhs) const;
 
-	bool operator !=(const ref& that) const;
+	bool operator !=(const ref& rhs) const;
 	bool operator !=(T* rhs) const;
 
-	bool operator <(const ref& that) const;
+	bool operator <(const ref& rhs) const;
 	bool operator <(T* rhs) const;
 
-	bool operator >(const ref& that) const;
+	bool operator >(const ref& rhs) const;
 	bool operator >(T* rhs) const;
 
-	bool operator <=(const ref& that) const;
+	bool operator <=(const ref& rhs) const;
 	bool operator <=(T* rhs) const;
 
-	bool operator >=(const ref& that) const;
+	bool operator >=(const ref& rhs) const;
 	bool operator >=(T* rhs) const;
 
 	// Switches to a new object. Releases the previously
@@ -86,8 +90,10 @@ public:
 	void assign(T* new_obj);
 
 	// Assignment operators.
-	ref& operator =(const ref& that);
+	ref& operator =(const ref& rhs);
 	ref& operator =(T* new_obj);
+	template <class C>
+	ref& operator =(const ref<C>& rhs);
 
 	// Switches to a new object without incrementing its
 	// reference count. Releases the previously controlled object.
@@ -100,7 +106,7 @@ public:
 	T* detach();
 
 	// Makes this smart pointer instance point to the object
-	// pointed to by <that> and vice versa.
+	// pointed to by 'that' and vice versa.
 	void swap(ref& that);
 
 	// Releases the controlled object.
@@ -116,9 +122,10 @@ inline ref<T>::ref() : obj(NULL)
 }
 
 template <class T>
-inline ref<T>::ref(const ref<T>& that)
+template <class C>
+inline ref<T>::ref(const ref<C>& that)
 {
-	if ((obj = that.obj) != NULL)
+	if ((obj = that.ptr()) != NULL)
 		obj->add_ref();
 }
 
@@ -169,9 +176,9 @@ inline ref<C> ref<T>::cast()
 }
 
 template <class T>
-inline bool ref<T>::operator ==(const ref<T>& that) const
+inline bool ref<T>::operator ==(const ref<T>& rhs) const
 {
-	return obj == that.obj;
+	return obj == rhs.obj;
 }
 
 template <class T>
@@ -181,9 +188,9 @@ inline bool ref<T>::operator ==(T* rhs) const
 }
 
 template <class T>
-inline bool ref<T>::operator !=(const ref<T>& that) const
+inline bool ref<T>::operator !=(const ref<T>& rhs) const
 {
-	return obj != that.obj;
+	return obj != rhs.obj;
 }
 
 template <class T>
@@ -193,9 +200,9 @@ inline bool ref<T>::operator !=(T* rhs) const
 }
 
 template <class T>
-inline bool ref<T>::operator <(const ref<T>& that) const
+inline bool ref<T>::operator <(const ref<T>& rhs) const
 {
-	return obj < that.obj;
+	return obj < rhs.obj;
 }
 
 template <class T>
@@ -205,9 +212,9 @@ inline bool ref<T>::operator <(T* rhs) const
 }
 
 template <class T>
-inline bool ref<T>::operator >(const ref<T>& that) const
+inline bool ref<T>::operator >(const ref<T>& rhs) const
 {
-	return obj > that.obj;
+	return obj > rhs.obj;
 }
 
 template <class T>
@@ -217,9 +224,9 @@ inline bool ref<T>::operator >(T* rhs) const
 }
 
 template <class T>
-inline bool ref<T>::operator <=(const ref<T>& that) const
+inline bool ref<T>::operator <=(const ref<T>& rhs) const
 {
-	return obj <= that.obj;
+	return obj <= rhs.obj;
 }
 
 template <class T>
@@ -229,9 +236,9 @@ inline bool ref<T>::operator <=(T* rhs) const
 }
 
 template <class T>
-inline bool ref<T>::operator >=(const ref<T>& that) const
+inline bool ref<T>::operator >=(const ref<T>& rhs) const
 {
-	return obj >= that.obj;
+	return obj >= rhs.obj;
 }
 
 template <class T>
@@ -255,9 +262,9 @@ inline void ref<T>::assign(T* new_obj)
 }
 
 template <class T>
-inline ref<T>& ref<T>::operator =(const ref<T>& that)
+inline ref<T>& ref<T>::operator =(const ref<T>& rhs)
 {
-	assign(that.obj);
+	assign(rhs.obj);
 
 	return *this;
 }
@@ -266,6 +273,15 @@ template <class T>
 inline ref<T>& ref<T>::operator =(T* new_obj)
 {
 	assign(new_obj);
+
+	return *this;
+}
+
+template <class T>
+template <class C>
+inline ref<T>& ref<T>::operator =(const ref<C>& rhs)
+{
+	assign(rhs.ptr());
 
 	return *this;
 }
