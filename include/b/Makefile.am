@@ -27,8 +27,7 @@ pkginclude_HEADERS = \
 	exception.h \
 	heap.h \
 	host.h \
-	input_output_stream.h \
-	input_stream.h \
+	io_streams.h \
 	levenshtein_distance.h \
 	linked_list.h \
 	linked_list_container.h \
@@ -37,14 +36,10 @@ pkginclude_HEADERS = \
 	node_access_via_cast.h \
 	object.h \
 	opaque.h \
-	output_stream.h \
 	pseudorandom.h \
 	ref.h \
 	ref_count.h \
 	runtime_exception.h \
-	seekable.h \
-	seekable_input_stream.h \
-	seekable_output_stream.h \
 	string.h \
 	system_exception.h
 

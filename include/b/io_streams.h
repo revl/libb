@@ -18,12 +18,37 @@
  *
  */
 
-#ifndef B_SEEKABLE_H
-#define B_SEEKABLE_H
+#ifndef B_IO_STREAMS_H
+#define B_IO_STREAMS_H
 
 #include "object.h"
 
 B_BEGIN_NAMESPACE
+
+// Interface for serial input.
+class input_stream : public virtual object
+{
+public:
+	// Reads from this input stream. The method returns the number
+	// of bytes read. The interface allows this number to be smaller
+	// than the number of bytes requested.
+	virtual size_t read(void* buffer, size_t buffer_size) = 0;
+
+	// Returns true if the end-of-file condition is reached.
+	// Depending on the implementation, the method may require
+	// an additional read operation to detect the EOF condition.
+	virtual bool eof() = 0;
+};
+
+// Interface for serial output.
+class output_stream : public virtual object
+{
+public:
+	// Writes to the output stream. The interface allows
+	// implementations to return before the entire buffer is sent.
+	// The method returns the number of bytes written.
+	virtual size_t write(const void* buffer, size_t buffer_size) = 0;
+};
 
 // Interface to retrieve and change the current read/write position
 // within a stream.
@@ -55,6 +80,22 @@ public:
 	virtual size_t size() const = 0;
 };
 
+// Input stream that supports random access.
+class seekable_input_stream : public virtual seekable, public input_stream
+{
+};
+
+// Output stream that supports random access.
+class seekable_output_stream : public virtual seekable, public output_stream
+{
+};
+
+// Read/write stream interface.
+class input_output_stream : public seekable_input_stream,
+	public seekable_output_stream
+{
+};
+
 B_END_NAMESPACE
 
-#endif /* !defined(B_SEEKABLE_H) */
+#endif /* !defined(B_IO_STREAMS_H) */
