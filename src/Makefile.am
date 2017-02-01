@@ -38,7 +38,8 @@ sources = \
 	object.cc \
 	pathname.cc \
 	string.cc \
-	string_impl.h
+	string_impl.h \
+	string_stream.cc
 
 libbd_r_la_SOURCES = $(sources)
 libb_r_la_SOURCES = $(sources)

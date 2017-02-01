@@ -35,6 +35,7 @@ TESTS = \
 	test_pseudorandom \
 	test_string \
 	test_string_formatting \
+	test_string_stream \
 	test_string_view
 
 check_PROGRAMS = \
@@ -54,6 +55,7 @@ check_PROGRAMS = \
 	test_pseudorandom \
 	test_string \
 	test_string_formatting \
+	test_string_stream \
 	test_string_view
 
 test_arg_list_SOURCES = test_arg_list.cc
@@ -84,9 +86,11 @@ test_pathname_SOURCES = test_pathname.cc
 
 test_pseudorandom_SOURCES = test_pseudorandom.cc
 
+test_string_SOURCES = test_string.cc
+
 test_string_formatting_SOURCES = test_string_formatting.cc
 
-test_string_SOURCES = test_string.cc
+test_string_stream_SOURCES = test_string_stream.cc
 
 test_string_view_SOURCES = test_string_view.cc
 
