@@ -26,7 +26,7 @@
 B_BEGIN_NAMESPACE
 
 // Stream that uses a string for storage.
-class string_stream : public b::input_output_stream
+class string_stream : public input_output_stream
 {
 public:
 	// Constructs a new string_stream object.
