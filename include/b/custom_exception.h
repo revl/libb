@@ -21,10 +21,6 @@
 #ifndef B_CUSTOM_EXCEPTION_H
 #define B_CUSTOM_EXCEPTION_H
 
-#if defined(__GNUG__) && !defined(__clang__)
-#pragma interface "b/custom_exception.h"
-#endif /* defined(__GNUG__) && !defined(__clang__) */
-
 #include "runtime_exception.h"
 
 B_BEGIN_NAMESPACE

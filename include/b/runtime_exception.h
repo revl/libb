@@ -23,10 +23,6 @@
 #ifndef B_RUNTIME_EXCEPTION_H
 #define B_RUNTIME_EXCEPTION_H
 
-#if defined(__GNUG__) && !defined(__clang__)
-#pragma interface "b/runtime_exception.h"
-#endif /* defined(__GNUG__) && !defined(__clang__) */
-
 #include "exception.h"
 
 B_BEGIN_NAMESPACE

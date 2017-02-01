@@ -21,10 +21,6 @@
 #ifndef B_SYSTEM_EXCEPTION_H
 #define B_SYSTEM_EXCEPTION_H
 
-#if defined(__GNUG__) && !defined(__clang__)
-#pragma interface "b/system_exception.h"
-#endif /* defined(__GNUG__) && !defined(__clang__) */
-
 #include "runtime_exception.h"
 
 B_BEGIN_NAMESPACE

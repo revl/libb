@@ -21,10 +21,6 @@
 #ifndef B_EXCEPTION_H
 #define B_EXCEPTION_H
 
-#if defined(__GNUG__) && !defined(__clang__)
-#pragma interface "b/exception.h"
-#endif /* defined(__GNUG__) && !defined(__clang__) */
-
 #include "host.h"
 
 B_BEGIN_NAMESPACE
