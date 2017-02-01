@@ -78,11 +78,15 @@ public:
 
 	// Returns the file size for the open stream.
 	virtual size_t size() const = 0;
+
+	virtual ~seekable();
 };
 
 // Input stream that supports random access.
 class seekable_input_stream : public virtual seekable, public input_stream
 {
+public:
+	virtual ~seekable_input_stream();
 };
 
 // Output stream that supports random access.
@@ -94,6 +98,10 @@ class seekable_output_stream : public virtual seekable, public output_stream
 class input_output_stream : public seekable_input_stream,
 	public seekable_output_stream
 {
+public:
+	input_output_stream();
+
+	virtual ~input_output_stream();
 };
 
 B_END_NAMESPACE

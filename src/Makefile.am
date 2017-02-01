@@ -33,6 +33,7 @@ endif
 sources = \
 	binary_search_tree.cc \
 	exceptions.cc \
+	io_streams.cc \
 	memory.cc \
 	misc.cc \
 	object.cc \
