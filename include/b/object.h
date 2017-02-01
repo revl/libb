@@ -61,12 +61,12 @@ public:
 	object& operator =(object&);
 
 protected:
-	// Protected destructor prohibits explicit deletion
 	// Deletes this object. The method is called by the
 	// release() method when there are no more references
 	// to this object.
 	virtual void delete_this() const;
 
+	// Protected destructor prohibits explicit deletion
 	// of this object.
 	virtual ~object()
 	{
