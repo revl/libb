@@ -180,7 +180,7 @@ void string::replace(size_t index, const char_t* source, size_t count)
 		assign_pairwise(chars + index, source, count);
 
 		if (end_of_change > length())
-			metadata()->length = end_of_change;
+			chars[metadata()->length = end_of_change] = 0;
 	}
 }
 
@@ -224,7 +224,7 @@ void string::replace(size_t index, char_t source, size_t count)
 		assign_value(chars + index, count, source);
 
 		if (end_of_change > length())
-			metadata()->length = end_of_change;
+			chars[metadata()->length = end_of_change] = 0;
 	}
 }
 
