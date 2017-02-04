@@ -76,7 +76,8 @@ B_END_NAMESPACE
 	do \
 		if (!(condition)) { \
 			++failed_checks; \
-			fputs("FAILED CHECK: " #condition "\n", stderr); \
+			fprintf(stderr, "%s:%d: FAILED CHECK: %s\n", \
+				__FILE__, __LINE__, #condition); \
 		} \
 	while (0)
 
@@ -84,7 +85,8 @@ B_END_NAMESPACE
 	do \
 		if (!(condition)) { \
 			++failed_checks; \
-			fputs("FAILED REQUIREMENT: " #condition "\n", stderr); \
+			fprintf(stderr, "%s:%d: FAILED REQUIREMENT: %s\n", \
+				__FILE__, __LINE__, #condition); \
 			return; \
 		} \
 	while (0)
