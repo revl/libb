@@ -104,6 +104,15 @@ public:
 	virtual ~input_output_stream();
 };
 
+// Returns an object that encapsulates the standard input stream.
+ref<input_stream> standard_input_stream();
+
+// Returns an object that encapsulates the standard output stream.
+ref<output_stream> standard_output_stream();
+
+// Returns an object that encapsulates the standard error stream.
+ref<output_stream> standard_error_stream();
+
 B_END_NAMESPACE
 
 #endif /* !defined(B_IO_STREAMS_H) */

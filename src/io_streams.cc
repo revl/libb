@@ -38,4 +38,93 @@ input_output_stream::~input_output_stream()
 {
 }
 
+namespace
+{
+	class std_input : public input_stream
+	{
+		virtual void delete_this() const;
+
+		virtual size_t read(void* buffer, size_t buffer_size);
+
+		virtual bool eof();
+	};
+
+	void std_input::delete_this() const
+	{
+		// No-op: the only instance of this class is a singleton.
+		// It is created in the data segment and therefore
+		// cannot be deleted.
+	}
+
+	B_STATIC_CONST_STRING(stdin_stream_name, "stdin");
+
+	size_t std_input::read(void* buffer, size_t buffer_size)
+	{
+		size_t bytes_read = fread(buffer, 1, buffer_size, stdin);
+
+		if (bytes_read < buffer_size && ferror(stdin))
+			throw system_exception(stdin_stream_name, errno);
+
+		return bytes_read;
+	}
+
+	bool std_input::eof()
+	{
+		return feof(stdin) != 0;
+	}
+
+	class std_output : public output_stream
+	{
+	public:
+		std_output(FILE* s, const string& sn) :
+			stream(s), stream_name(sn)
+		{
+		}
+
+	private:
+		virtual size_t write(const void* buffer, size_t buffer_size);
+
+		FILE* stream;
+		const string stream_name;
+	};
+
+	size_t std_output::write(const void* buffer, size_t buffer_size)
+	{
+		size_t bytes_written = fwrite(buffer, 1, buffer_size, stream);
+
+		if (bytes_written < buffer_size)
+			throw system_exception(stream_name, errno);
+
+		return bytes_written;
+	}
+}
+
+ref<input_stream> standard_input_stream()
+{
+	// Cannot be 'const' because of the reference counter.
+	static std_input si;
+
+	return &si;
+}
+
+ref<output_stream> standard_output_stream()
+{
+	B_STATIC_CONST_STRING(stdout_stream_name, "stdout");
+
+	// Cannot be 'const' because of the reference counter.
+	static std_output so(stdout, stdout_stream_name);
+
+	return &so;
+}
+
+ref<output_stream> standard_error_stream()
+{
+	B_STATIC_CONST_STRING(stderr_stream_name, "stderr");
+
+	// Cannot be 'const' because of the reference counter.
+	static std_output se(stderr, stderr_stream_name);
+
+	return &se;
+}
+
 B_END_NAMESPACE
