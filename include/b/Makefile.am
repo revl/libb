@@ -21,6 +21,7 @@ pkgincludedir = $(includedir)/b
 pkginclude_HEADERS = \
 	arg_list.h \
 	array.h \
+	cli.h \
 	custom_exception.h \
 	doubly_linked_list.h \
 	doubly_linked_list_container.h \
