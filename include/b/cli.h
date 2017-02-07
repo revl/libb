@@ -23,6 +23,8 @@
 
 #include "opaque.h"
 #include "string.h"
+#include "arg_list.h"
+#include "io_streams.h"
 
 B_BEGIN_NAMESPACE
 
@@ -105,6 +107,13 @@ B_OPAQUE:
 	// well as the order of options in help screens.
 	void register_association(int cmd_id, int arg_id);
 
+	// Parameter to override the stream that the 'help'
+	// command prints to.
+	static arg_name<ref<output_stream>, 0> help_output_stream;
+
+	// Parameter to override the stream for error reporting.
+	static arg_name<ref<output_stream>, 1> error_stream;
+
 	// Parses the command line.
 	//
 	// If at least one command has been registered, a command
@@ -121,7 +130,8 @@ B_OPAQUE:
 	//
 	// If no commands have been registered, the return value
 	// of the method can be ignored unless it is -1.
-	int parse(int argc, const char* const *argv);
+	int parse(int argc, const char* const *argv,
+			const arg_list* arg = NULL);
 
 	// Returns the program name specified in the constructor.
 	const string& program_name() const;

@@ -259,7 +259,10 @@ struct cli::impl : public object, public common_parts
 	option_value_array option_values;
 	option_value_array::const_iterator next_option_value;
 
-	// Help text formatting.
+	// Help text formatting and error reporting.
+	ref<output_stream> help_output_stream;
+	ref<output_stream> error_stream;
+
 	int max_help_text_width;
 	int cmd_descr_indent;
 	int opt_descr_indent;
@@ -297,7 +300,7 @@ void cli::impl::print_word_wrapped(int topic_len,
 {
 	if (text.is_empty())
 	{
-		printf("\n");
+		help_output_stream->write("\n", 1);
 		return;
 	}
 
@@ -308,7 +311,7 @@ void cli::impl::print_word_wrapped(int topic_len,
 	if (topic_len > 0 && (offset -= topic_len) < 1)
 	{
 		offset = indent;
-		printf("\n");
+		help_output_stream->write("\n", 1);
 	}
 
 	if (cont_indent < 0)
@@ -359,9 +362,15 @@ void cli::impl::print_word_wrapped(int topic_len,
 		}
 		int line_len = int(line_end - line);
 		if (line_len > 0)
-			printf("%*.*s\n", offset + line_len, line_len, line);
+		{
+			string output_line = string::formatted("%*.*s\n",
+				offset + line_len, line_len, line);
+
+			help_output_stream->write(output_line.data(),
+				output_line.length());
+		}
 		else
-			printf("\n");
+			help_output_stream->write("\n", 1);
 		offset = indent = cont_indent;
 	}
 	while ((line = next_line) < text_end);
@@ -393,15 +402,21 @@ void cli::impl::print_help(const positional_argument_list& commands,
 		print_help_on_command(this, program_name, program_name);
 	else if (commands.is_empty())
 	{
-		printf("Usage: %s <command> [options] [args]\n",
+		string prog_usage = string::formatted(
+			"Usage: %s <command> [options] [args]\n",
 				program_name.data());
+		help_output_stream->write(prog_usage.data(),
+			prog_usage.length());
 		print_word_wrapped(0, 0, synopsis);
-		printf("Type '%s help <command>' for help on a specific command.\n"
+		prog_usage.format(
+			"Type '%s help <command>' for help on a specific command.\n"
 			"Type '%s --version' to see the program version.\n",
 			program_name.data(), program_name.data());
+		help_output_stream->write(prog_usage.data(),
+			prog_usage.length());
 		if (!usage.is_empty())
 		{
-			printf("\n");
+			help_output_stream->write("\n", 1);
 			print_word_wrapped(0, 0, usage);
 		}
 		for (cat_id_to_cat_info_map::const_iterator category =
@@ -411,18 +426,28 @@ void cli::impl::print_help(const positional_argument_list& commands,
 		{
 			if (!(*category)->commands.is_empty())
 			{
-				printf("\n%s:\n\n", (*category)->title.data());
+				prog_usage.format("\n%s:\n\n",
+					(*category)->title.data());
+				help_output_stream->write(prog_usage.data(),
+					prog_usage.length());
 				for (command_info_list::const_iterator cmd =
 							(*category)->commands.begin();
 						cmd != (*category)->commands.end(); ++cmd)
-					print_word_wrapped(printf("  %s",
-							(*cmd)->command_name_variants().data()),
+				{
+					size_t command_name_len =
+						(*cmd)->command_name_variants().length();
+					help_output_stream->write("  ", 2);
+					help_output_stream->write((*cmd)->command_name_variants().data(),
+						command_name_len);
+					int topic_len = 2 + (int) command_name_len;
+					print_word_wrapped(topic_len,
 						cmd_descr_indent - 2,
 						string("- ", 2) + (*cmd)->synopsis,
 						cmd_descr_indent);
+				}
 			}
 		}
-		printf("\n");
+		help_output_stream->write("\n", 1);
 	}
 	else
 	{
@@ -458,7 +483,12 @@ void cli::impl::print_help(const positional_argument_list& commands,
 						help,
 						program_name + ' ' + help);
 				else
-					printf("'%s': unknown command.\n\n", *cmd_name);
+				{
+					string unknown_command = string::formatted(
+						"'%s': unknown command.\n\n", *cmd_name);
+					help_output_stream->write(unknown_command.data(),
+						unknown_command.length());
+				}
 		}
 	}
 }
@@ -466,9 +496,12 @@ void cli::impl::print_help(const positional_argument_list& commands,
 void cli::impl::print_help_on_command(const common_parts* cp,
 	const string& name_for_synopsis, const string& name_for_usage) const
 {
-	int text_len = printf("%s:", name_for_synopsis.data());
+	help_output_stream->write(name_for_synopsis.data(),
+		name_for_synopsis.length());
+	help_output_stream->write(":", 1);
+	int text_len = (int) name_for_synopsis.length() + 1;
 	print_word_wrapped(text_len, text_len + 1, cp->synopsis);
-	printf("\n");
+	help_output_stream->write("\n", 1);
 
 	string args;
 	for (option_info_list::const_iterator arg =
@@ -497,26 +530,36 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 			args.append("...", 3);
 		}
 	}
-	text_len = printf("Usage: %s", name_for_usage.data());
+	string cmd_usage = string::formatted("Usage: %s", name_for_usage.data());
+	help_output_stream->write(cmd_usage.data(), cmd_usage.length());
+	text_len = (int) cmd_usage.length();
 	print_word_wrapped(text_len, text_len + 1, args);
 
 	if (!cp->usage.is_empty())
 	{
-		printf("\n");
+		help_output_stream->write("\n", 1);
 		print_word_wrapped(0, 0, cp->usage);
 	}
 
 	if (!cp->accepted_options.is_empty())
 	{
-		printf("\nValid options:\n");
+		B_STATIC_CONST_STRING(valid_options, "\nValid options:\n");
+		help_output_stream->write(valid_options.data(),
+			valid_options.length());
 		for (option_info_list::const_iterator opt =
 					cp->accepted_options.begin();
 				opt != cp->accepted_options.end(); ++opt)
-			print_word_wrapped(printf("  %-*s :", opt_descr_indent - 5,
-				(*opt)->option_name_variants().data()),
+		{
+			string option_name = string::formatted(
+				"  %-*s :", opt_descr_indent - 5,
+				(*opt)->option_name_variants().data());
+			help_output_stream->write(option_name.data(),
+				option_name.length());
+			print_word_wrapped((int) option_name.length(),
 					opt_descr_indent, (*opt)->description);
+		}
 	}
-	printf("\n");
+	help_output_stream->write("\n", 1);
 }
 
 void cli::impl::report_error(const string& error_message,
@@ -935,8 +978,24 @@ void cli::register_association(int cmd_id, int arg_id)
 	}
 }
 
-int cli::parse(int argc, const char* const *argv)
+arg_name<ref<output_stream>, 0> cli::help_output_stream;
+
+arg_name<ref<output_stream>, 1> cli::error_stream;
+
+int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
+	impl_ref->help_output_stream = standard_output_stream();
+	impl_ref->error_stream = standard_error_stream();
+
+	for (; arg != NULL; arg = arg->prev_arg)
+		if (help_output_stream.is_name_for(arg))
+			impl_ref->help_output_stream =
+				help_output_stream.value(arg);
+		else
+			if (error_stream.is_name_for(arg))
+				impl_ref->error_stream =
+					error_stream.value(arg);
+
 	return impl_ref->parse_and_validate(argc, argv);
 }
 
