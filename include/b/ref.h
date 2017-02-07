@@ -122,6 +122,13 @@ inline ref<T>::ref() : obj(NULL)
 }
 
 template <class T>
+inline ref<T>::ref(const ref<T>& that)
+{
+	if ((obj = that.ptr()) != NULL)
+		obj->add_ref();
+}
+
+template <class T>
 template <class C>
 inline ref<T>::ref(const ref<C>& that)
 {
@@ -314,7 +321,7 @@ inline void ref<T>::swap(ref<T>& that)
 }
 
 template <class T>
-inline ref<T>::~ref()
+ref<T>::~ref()
 {
 	if (obj != NULL)
 		obj->release();
