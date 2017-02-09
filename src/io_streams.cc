@@ -82,11 +82,19 @@ namespace
 		}
 
 	private:
+		virtual void delete_this() const;
+
 		virtual size_t write(const void* buffer, size_t buffer_size);
 
 		FILE* stream;
 		const string stream_name;
 	};
+
+	void std_output::delete_this() const
+	{
+		// No-op: all instances of this class are singletons
+		// created in the data segment.
+	}
 
 	size_t std_output::write(const void* buffer, size_t buffer_size)
 	{
