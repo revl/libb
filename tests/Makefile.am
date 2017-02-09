@@ -22,6 +22,7 @@ TESTS = \
 	test_arg_list \
 	test_array \
 	test_binary_search_tree \
+	test_cli \
 	test_exceptions \
 	test_heap \
 	test_levenshtein_distance \
@@ -42,6 +43,7 @@ check_PROGRAMS = \
 	test_arg_list \
 	test_array \
 	test_binary_search_tree \
+	test_cli \
 	test_exceptions \
 	test_heap \
 	test_levenshtein_distance \
@@ -63,6 +65,8 @@ test_arg_list_SOURCES = test_arg_list.cc
 test_array_SOURCES = test_array.cc
 
 test_binary_search_tree_SOURCES = test_binary_search_tree.cc
+
+test_cli_SOURCES = test_cli.cc
 
 test_exceptions_SOURCES = test_exceptions.cc
 
