@@ -22,12 +22,16 @@
 
 #include "unit_test.h"
 
+#include <b/string_stream.h>
+
 B_STATIC_CONST_STRING(app_name, "console_app");
 B_STATIC_CONST_STRING(app_version, "1.2");
 B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
 B_STATIC_CONST_STRING(app_description,
-		"Here goes a description of things the app does "
-		"and things it is not designed to do.");
+		"Here goes a description of things the app does. "
+		"The description can be as long as needed to "
+		"convey the purpose of this application. However, "
+		"it does not substitute a proper manual page.");
 
 B_TEST_CASE(cli)
 {
@@ -35,8 +39,17 @@ B_TEST_CASE(cli)
 
 	const char* help_command[] =
 	{
-		"help"
+		"test_cli",
+		"--help"
 	};
 
-	cli_parser.parse(1, help_command);
+	b::ref<b::string_stream> help_str = new b::string_stream;
+
+	cli_parser.parse(2, help_command,
+		b::cli::help_output_stream = help_str);
+
+	B_CHECK(match_pattern(help_str->str(),
+		"console_app: Test the b::cli class.\n\n"
+		"Usage: console_app\n\n"
+		"Here goes *\n*\n* manual page.\n\n"));
 }
