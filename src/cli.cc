@@ -743,7 +743,9 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv)
 		switch (option_value->arg_info->id)
 		{
 		case VERSION_OPT_ID:
-			puts(version_info.data());
+			help_output_stream->write(version_info.data(),
+				version_info.length());
+			help_output_stream->write("\n", 1);
 			return HELP_CMD_ID;
 
 		case HELP_OPT_ID:
