@@ -101,31 +101,39 @@ struct option_info : public option_or_command_info
 			dashes + opt_name;
 	}
 
-	string option_name_variants() const
-	{
-		string result(add_dashes(name_variants.first()));
-		if (name_variants.size() > 1)
-		{
-			result.append(" [", 2);
-			name_variant_list::const_iterator name(name_variants.begin());
-			result.append(add_dashes(*++name));
-			while (++name != name_variants.end())
-			{
-				result.append(", ", 2);
-				result.append(add_dashes(*name));
-			}
-			result.append(1, ']');
-		}
-		if (type == cli::option_with_parameter)
-			result.append(" ARG", 4);
-		return result;
-	}
+	string option_name_variants() const;
 
 	int type;
 	string description;
 
 	virtual ~option_info();
 };
+
+string option_info::option_name_variants() const
+{
+	string result(add_dashes(name_variants.first()));
+
+	if (name_variants.size() > 1)
+	{
+		result.append(" [", 2);
+
+		name_variant_list::const_iterator name(name_variants.begin());
+		result.append(add_dashes(*++name));
+
+		while (++name != name_variants.end())
+		{
+			result.append(", ", 2);
+			result.append(add_dashes(*name));
+		}
+
+		result.append(1, ']');
+	}
+
+	if (type == cli::option_with_parameter)
+		result.append(" ARG", 4);
+
+	return result;
+}
 
 option_info::~option_info()
 {
