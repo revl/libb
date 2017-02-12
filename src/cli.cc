@@ -212,7 +212,7 @@ typedef array<const char*> positional_argument_list;
 
 struct cli::impl : public object, public common_parts
 {
-	impl(const string& prog_name, const string& program_summary,
+	impl(const string& program_summary,
 			const string& program_description,
 			const string& prog_version);
 
@@ -273,12 +273,10 @@ B_STATIC_CONST_STRING(help_option, "--help");
 B_STATIC_CONST_STRING(s_Version, "version");
 B_STATIC_CONST_STRING(available_commands_title, "Available commands");
 
-cli::impl::impl(const string& prog_name,
-		const string& program_summary,
+cli::impl::impl(const string& program_summary,
 		const string& program_description,
 		const string& prog_version) :
 	common_parts(program_summary, program_description),
-	program_name(prog_name),
 	version_info(prog_version),
 	m_VersionOption(VERSION_OPT_ID, s_Version,
 		cli::option, string()),
@@ -601,15 +599,6 @@ void cli::impl::cmd_error(const string& command_name,
 
 int cli::impl::parse_and_validate(int argc, const char* const *argv)
 {
-	if (program_name.is_empty())
-	{
-		program_name.assign(*argv, calc_length(*argv));
-		size_t basename_pos = program_name.rfind('/');
-		// TODO Unit test this part
-		if (basename_pos != (size_t) -1)
-			program_name.remove(0, basename_pos + 1);
-	}
-
 	positional_argument_list positional_argument_values;
 
 	// Part one: parsing.
@@ -864,12 +853,10 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv)
 	return ret_val;
 }
 
-cli::cli(const string& program_name,
-		const string& version_info,
+cli::cli(const string& version_info,
 		const string& program_summary,
 		const string& program_description) :
-	impl_ref(new impl(program_name, program_summary,
-			program_description, version_info))
+	impl_ref(new impl(program_summary, program_description, version_info))
 {
 }
 
@@ -980,30 +967,44 @@ void cli::register_association(int cmd_id, int arg_id)
 	}
 }
 
-arg_name<ref<output_stream>, 0> cli::help_output_stream;
+arg_name<string, 0> cli::program_name;
 
-arg_name<ref<output_stream>, 1> cli::error_stream;
+arg_name<ref<output_stream>, 1> cli::help_output_stream;
+
+arg_name<ref<output_stream>, 2> cli::error_stream;
 
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
 	impl_ref->error_stream = standard_error_stream();
 
+	string prog_name;
+
 	for (; arg != NULL; arg = arg->prev_arg)
-		if (help_output_stream.is_name_for(arg))
-			impl_ref->help_output_stream =
-				help_output_stream.value(arg);
+		if (program_name.is_name_for(arg))
+			prog_name = program_name.value(arg);
 		else
-			if (error_stream.is_name_for(arg))
-				impl_ref->error_stream =
-					error_stream.value(arg);
+			if (help_output_stream.is_name_for(arg))
+				impl_ref->help_output_stream =
+					help_output_stream.value(arg);
+			else
+				if (error_stream.is_name_for(arg))
+					impl_ref->error_stream =
+						error_stream.value(arg);
+
+	if (prog_name.is_empty())
+	{
+		prog_name.assign(*argv, calc_length(*argv));
+
+		size_t basename_pos = prog_name.rfind('/');
+
+		if (basename_pos != (size_t) -1)
+			prog_name.remove(0, basename_pos + 1);
+	}
+
+	impl_ref->program_name = prog_name;
 
 	return impl_ref->parse_and_validate(argc, argv);
-}
-
-const string& cli::program_name() const
-{
-	return impl_ref->program_name;
 }
 
 bool cli::next_arg(int* arg_id, const char** opt_value)

@@ -24,7 +24,6 @@
 
 #include <b/string_stream.h>
 
-B_STATIC_CONST_STRING(app_name, "console_app");
 B_STATIC_CONST_STRING(app_version, "test_cli version 1.2");
 B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
 B_STATIC_CONST_STRING(app_description,
@@ -35,7 +34,7 @@ B_STATIC_CONST_STRING(app_description,
 
 B_TEST_CASE(help_option)
 {
-	b::cli cli_parser(app_name, app_version, app_summary, app_description);
+	b::cli cli_parser(app_version, app_summary, app_description);
 
 	const char* help_option[] =
 	{
@@ -50,14 +49,14 @@ B_TEST_CASE(help_option)
 		b::cli::help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(),
-		"console_app: Test the b::cli class.\n\n"
-		"Usage: console_app\n\n"
+		"test_cli: Test the b::cli class.\n\n"
+		"Usage: test_cli\n\n"
 		"Here goes *\n*\n* manual page.\n\n"));
 }
 
 B_TEST_CASE(version_option)
 {
-	b::cli cli_parser(app_name, app_version, app_summary, app_description);
+	b::cli cli_parser(app_version, app_summary, app_description);
 
 	const char* version_option[] =
 	{
@@ -72,4 +71,34 @@ B_TEST_CASE(version_option)
 		b::cli::help_output_stream = ss);
 
 	B_CHECK(ss->str() == app_version + '\n');
+}
+
+B_TEST_CASE(default_app_name)
+{
+	b::cli cli_parser(app_version, app_summary, app_description);
+
+	const char* help_option[] =
+	{
+		"/path/to/test_cli",
+		"--help"
+	};
+
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		b::cli::help_output_stream = ss);
+
+	B_CHECK(match_pattern(ss->str(), "*\nUsage: test_cli\n*"));
+
+	ss = new b::string_stream;
+
+	B_STATIC_CONST_STRING(app_name, "console_app");
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		(b::cli::program_name = app_name,
+		b::cli::help_output_stream = ss));
+
+	B_CHECK(match_pattern(ss->str(), "*\nUsage: console_app\n*"));
 }

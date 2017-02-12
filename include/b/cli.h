@@ -32,11 +32,9 @@ B_BEGIN_NAMESPACE
 class cli
 {
 B_OPAQUE:
-	// Initialize this object with the name of the program,
-	// human-readable program version, one-line program
-	// description, and a longer program description.
-	cli(const string& program_name,
-		const string& version_info,
+	// Initialize this object with a human-readable program version,
+	// one-line program description, and a longer program description.
+	cli(const string& version_info,
 		const string& program_summary,
 		const string& program_description = string());
 
@@ -107,12 +105,16 @@ B_OPAQUE:
 	// well as the order of options in help screens.
 	void register_association(int cmd_id, int arg_id);
 
+	// The name of the program binary, which is used in the help
+	// and error messages.
+	static arg_name<string, 0> program_name;
+
 	// Parameter to override the stream that the 'help'
 	// command prints to.
-	static arg_name<ref<output_stream>, 0> help_output_stream;
+	static arg_name<ref<output_stream>, 1> help_output_stream;
 
 	// Parameter to override the stream for error reporting.
-	static arg_name<ref<output_stream>, 1> error_stream;
+	static arg_name<ref<output_stream>, 2> error_stream;
 
 	// Parses the command line.
 	//
@@ -132,9 +134,6 @@ B_OPAQUE:
 	// of the method can be ignored unless it is -1.
 	int parse(int argc, const char* const *argv,
 			const arg_list* arg = NULL);
-
-	// Returns the program name specified in the constructor.
-	const string& program_name() const;
 
 	// Consecutively retrieves command line argument values in
 	// the order they appear on the command line.
