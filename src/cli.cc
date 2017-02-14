@@ -248,8 +248,8 @@ struct cli::impl : public object, public common_parts
 	map<int, ref<command_info> > cmd_id_to_cmd_info;
 	typedef map<int, ref<category_info> > cat_id_to_cat_info_map;
 	cat_id_to_cat_info_map cat_id_to_cat_info;
-	option_info version_option;
-	option_info m_HelpOption;
+	option_info version_option_info;
+	option_info help_option_info;
 
 	bool commands_are_defined() const
 	{
@@ -276,24 +276,27 @@ struct cli::impl : public object, public common_parts
 };
 
 B_STATIC_CONST_STRING(help, "help");
-B_STATIC_CONST_STRING(help_option, "--help");
-B_STATIC_CONST_STRING(s_Version, "version");
-B_STATIC_CONST_STRING(default_category, "Available commands");
+B_STATIC_CONST_STRING(dash_dash_help, "--help");
+B_STATIC_CONST_STRING(version, "version");
 
 cli::impl::impl(const string& program_summary,
 		const string& program_description) :
 	common_parts(program_summary, program_description),
-	version_option(VERSION_OPT_ID, s_Version,
+	version_option_info(VERSION_OPT_ID, version,
 		cli::option, string()),
-	m_HelpOption(HELP_OPT_ID, help,
+	help_option_info(HELP_OPT_ID, help,
 		cli::option, string()),
 	max_help_text_width(DEFAULT_HELP_TEXT_WIDTH),
 	cmd_descr_indent(DEFAULT_CMD_DESCR_INDENT),
 	opt_descr_indent(DEFAULT_OPT_DESCR_INDENT)
 {
 	memset(single_letter_options, 0, sizeof(single_letter_options));
-	long_opt_name_to_opt_info.insert(s_Version, &version_option);
-	long_opt_name_to_opt_info.insert(help, &m_HelpOption);
+
+	long_opt_name_to_opt_info.insert(version, &version_option_info);
+	long_opt_name_to_opt_info.insert(help, &help_option_info);
+
+	B_STATIC_CONST_STRING(default_category, "Available commands");
+
 	cat_id_to_cat_info.insert(DEFAULT_CATEGORY_ID,
 		new category_info(default_category));
 }
@@ -395,7 +398,7 @@ void cli::impl::print_help(const positional_argument_list& commands,
 			}
 			else
 			{
-				cmd_error(help_option, "'--help' cannot be "
+				cmd_error(dash_dash_help, "'--help' cannot be "
 					"combined with option '%s'",
 					opt_name.data());
 			}
@@ -584,7 +587,7 @@ void cli::impl::error(const char* err_fmt, ...) const
 	va_end(ap);
 
 	report_error(error_message, !commands_are_defined() ?
-			help_option : help);
+			dash_dash_help : help);
 }
 
 void cli::impl::cmd_error(const string& command_name,
@@ -599,7 +602,7 @@ void cli::impl::cmd_error(const string& command_name,
 	va_end(ap);
 
 	report_error(error_message, !commands_are_defined() ?
-			help_option : help + ' ' + command_name);
+			dash_dash_help : help + ' ' + command_name);
 }
 
 int cli::impl::parse_and_validate(int argc, const char* const *argv,
@@ -639,7 +642,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 						calc_length(arg));
 				const option_info** oi =
 					long_opt_name_to_opt_info.find(opt_name);
-				if (oi == NULL || (*oi == &version_option &&
+				if (oi == NULL ||
+						(*oi == &version_option_info &&
 						version_info.is_empty()))
 					error("unknown option '--%s'",
 							opt_name.data());
