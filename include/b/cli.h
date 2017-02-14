@@ -32,10 +32,9 @@ B_BEGIN_NAMESPACE
 class cli
 {
 B_OPAQUE:
-	// Initialize this object with a human-readable program version,
-	// one-line program description, and a longer program description.
-	cli(const string& version_info,
-		const string& program_summary,
+	// Initialize this object with a one-line program description
+	// and a longer program description.
+	cli(const string& program_summary,
 		const string& program_description = string());
 
 	// Defines the width and certain paragraph indents
@@ -109,12 +108,17 @@ B_OPAQUE:
 	// and error messages.
 	static arg_name<string, 0> program_name;
 
+	// Human-readable program version. This text is printed verbatim
+	// in response to the '--version' option. If this parameter
+	// is not specified, the '--version' option is not recognized.
+	static arg_name<string, 1> version_info;
+
 	// Parameter to override the stream that the 'help'
 	// command prints to.
-	static arg_name<ref<output_stream>, 1> help_output_stream;
+	static arg_name<ref<output_stream>, 2> help_output_stream;
 
 	// Parameter to override the stream for error reporting.
-	static arg_name<ref<output_stream>, 2> error_stream;
+	static arg_name<ref<output_stream>, 3> error_stream;
 
 	// Parses the command line.
 	//

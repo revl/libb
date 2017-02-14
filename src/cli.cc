@@ -31,7 +31,7 @@
 
 #define HELP_CMD_ID -1
 
-#define UNSPECIFIED_CATEGORY_ID -1
+#define DEFAULT_CATEGORY_ID -1
 
 #define DEFAULT_HELP_TEXT_WIDTH 72
 #define DEFAULT_CMD_DESCR_INDENT 24
@@ -221,8 +221,7 @@ typedef array<const char*> positional_argument_list;
 struct cli::impl : public object, public common_parts
 {
 	impl(const string& program_summary,
-			const string& program_description,
-			const string& prog_version);
+			const string& program_description);
 
 	void print_word_wrapped(int topic_len, int indent,
 			const string& text, int cont_indent = -1) const;
@@ -236,11 +235,11 @@ struct cli::impl : public object, public common_parts
 	void error(const char* err_fmt, ...) const B_PRINTF_STYLE(2, 3);
 	void cmd_error(const string& command_name,
 			const char* err_fmt, ...) const B_PRINTF_STYLE(3, 4);
-	int parse_and_validate(int argc, const char* const *argv);
+	int parse_and_validate(int argc, const char* const *argv,
+			const string& version_info);
 
 	// Command and argument definitions.
 	string program_name;
-	string version_info;
 	const option_info* single_letter_options[256];
 	// TODO store the structure itself, not just pointer
 	map<string, const option_info*> long_opt_name_to_opt_info;
@@ -249,7 +248,7 @@ struct cli::impl : public object, public common_parts
 	map<int, ref<command_info> > cmd_id_to_cmd_info;
 	typedef map<int, ref<category_info> > cat_id_to_cat_info_map;
 	cat_id_to_cat_info_map cat_id_to_cat_info;
-	option_info m_VersionOption;
+	option_info version_option;
 	option_info m_HelpOption;
 
 	bool commands_are_defined() const
@@ -279,14 +278,12 @@ struct cli::impl : public object, public common_parts
 B_STATIC_CONST_STRING(help, "help");
 B_STATIC_CONST_STRING(help_option, "--help");
 B_STATIC_CONST_STRING(s_Version, "version");
-B_STATIC_CONST_STRING(available_commands_title, "Available commands");
+B_STATIC_CONST_STRING(default_category, "Available commands");
 
 cli::impl::impl(const string& program_summary,
-		const string& program_description,
-		const string& prog_version) :
+		const string& program_description) :
 	common_parts(program_summary, program_description),
-	version_info(prog_version),
-	m_VersionOption(VERSION_OPT_ID, s_Version,
+	version_option(VERSION_OPT_ID, s_Version,
 		cli::option, string()),
 	m_HelpOption(HELP_OPT_ID, help,
 		cli::option, string()),
@@ -295,10 +292,10 @@ cli::impl::impl(const string& program_summary,
 	opt_descr_indent(DEFAULT_OPT_DESCR_INDENT)
 {
 	memset(single_letter_options, 0, sizeof(single_letter_options));
-	long_opt_name_to_opt_info.insert(s_Version, &m_VersionOption);
+	long_opt_name_to_opt_info.insert(s_Version, &version_option);
 	long_opt_name_to_opt_info.insert(help, &m_HelpOption);
-	cat_id_to_cat_info.insert(UNSPECIFIED_CATEGORY_ID,
-		new category_info(available_commands_title));
+	cat_id_to_cat_info.insert(DEFAULT_CATEGORY_ID,
+		new category_info(default_category));
 }
 
 void cli::impl::print_word_wrapped(int topic_len,
@@ -605,7 +602,8 @@ void cli::impl::cmd_error(const string& command_name,
 			help_option : help + ' ' + command_name);
 }
 
-int cli::impl::parse_and_validate(int argc, const char* const *argv)
+int cli::impl::parse_and_validate(int argc, const char* const *argv,
+		const string& version_info)
 {
 	positional_argument_list positional_argument_values;
 
@@ -641,7 +639,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv)
 						calc_length(arg));
 				const option_info** oi =
 					long_opt_name_to_opt_info.find(opt_name);
-				if (oi == NULL)
+				if (oi == NULL || (*oi == &version_option &&
+						version_info.is_empty()))
 					error("unknown option '--%s'",
 							opt_name.data());
 				opt_info = *oi;
@@ -861,10 +860,9 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv)
 	return ret_val;
 }
 
-cli::cli(const string& version_info,
-		const string& program_summary,
+cli::cli(const string& program_summary,
 		const string& program_description) :
-	impl_ref(new impl(program_summary, program_description, version_info))
+	impl_ref(new impl(program_summary, program_description))
 {
 }
 
@@ -977,28 +975,43 @@ void cli::register_association(int cmd_id, int arg_id)
 
 arg_name<string, 0> cli::program_name;
 
-arg_name<ref<output_stream>, 1> cli::help_output_stream;
+arg_name<string, 1> cli::version_info;
 
-arg_name<ref<output_stream>, 2> cli::error_stream;
+arg_name<ref<output_stream>, 2> cli::help_output_stream;
+
+arg_name<ref<output_stream>, 3> cli::error_stream;
 
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
 	impl_ref->error_stream = standard_error_stream();
 
-	string prog_name;
+	string prog_name, prog_version;
 
 	for (; arg != NULL; arg = arg->prev_arg)
+	{
 		if (program_name.is_name_for(arg))
+		{
 			prog_name = program_name.value(arg);
-		else
-			if (help_output_stream.is_name_for(arg))
-				impl_ref->help_output_stream =
-					help_output_stream.value(arg);
-			else
-				if (error_stream.is_name_for(arg))
-					impl_ref->error_stream =
-						error_stream.value(arg);
+			continue;
+		}
+
+		if (version_info.is_name_for(arg))
+		{
+			prog_version = version_info.value(arg);
+			continue;
+		}
+
+		if (help_output_stream.is_name_for(arg))
+		{
+			impl_ref->help_output_stream =
+				help_output_stream.value(arg);
+			continue;
+		}
+
+		if (error_stream.is_name_for(arg))
+			impl_ref->error_stream = error_stream.value(arg);
+	}
 
 	if (prog_name.is_empty())
 	{
@@ -1012,7 +1025,7 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 
 	impl_ref->program_name = prog_name;
 
-	return impl_ref->parse_and_validate(argc, argv);
+	return impl_ref->parse_and_validate(argc, argv, prog_version);
 }
 
 bool cli::next_arg(int* arg_id, const char** opt_value)
