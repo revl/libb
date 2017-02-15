@@ -32,10 +32,8 @@ B_BEGIN_NAMESPACE
 class cli
 {
 B_OPAQUE:
-	// Initialize this object with a one-line program description
-	// and a longer program description.
-	cli(const string& program_summary,
-		const string& program_description = string());
+	// Initialize this object with a one-line program description.
+	cli(const string& program_summary);
 
 	// Defines the width and certain paragraph indents
 	// of the help screen. Although this class provides
@@ -76,27 +74,23 @@ B_OPAQUE:
 	// specified identifier and description. For options, long
 	// and short variants must be separated by vertical bars.
 	// Positional arguments cannot have name variants.
-	void register_arg(
-		arg_type type,
-		int arg_id,
-		const string& name_variants,
-		const string& description);
+	void register_arg(arg_type type,
+			int arg_id,
+			const string& name_variants,
+			const string& description);
 
 	// Registers a command category with the specified title.
-	void register_command_category(
-		int cat_id,
-		const string& title);
+	void register_command_category(int cat_id, const string& title);
 
 	// Registers a command with the specified identifier,
 	// name, and short and long descriptions. Commands can
 	// have aliases separated by vertical bars. Command
 	// identifier cannot be -1.
-	void register_command(
-		int cmd_id,
-		const string& name_variants,
-		const string& synopsis,
-		const string& usage,
-		int cat_id = -1);
+	void register_command(int cmd_id,
+			const string& name_variants,
+			const string& synopsis,
+			const string& usage,
+			int cat_id = -1);
 
 	// Registers an association between a command and an
 	// argument. The order in which associations are
@@ -113,12 +107,16 @@ B_OPAQUE:
 	// is not specified, the '--version' option is not recognized.
 	static arg_name<string, 1> version_info;
 
+	// A longer program description, which can be as long as needed,
+	// but it is not meant to be a substitute for a proper man page.
+	static arg_name<string, 2> program_description;
+
 	// Parameter to override the stream that the 'help'
 	// command prints to.
-	static arg_name<ref<output_stream>, 2> help_output_stream;
+	static arg_name<ref<output_stream>, 3> help_output_stream;
 
 	// Parameter to override the stream for error reporting.
-	static arg_name<ref<output_stream>, 3> error_stream;
+	static arg_name<ref<output_stream>, 4> error_stream;
 
 	// Parses the command line.
 	//

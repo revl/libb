@@ -25,15 +25,10 @@
 #include <b/string_stream.h>
 
 B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
-B_STATIC_CONST_STRING(app_description,
-		"Here goes a description of things the app does. "
-		"The description can be as long as needed to "
-		"convey the purpose of this application. However, "
-		"it does not substitute a proper manual page.");
 
-B_TEST_CASE(help_option)
+B_TEST_CASE(app_description)
 {
-	b::cli cli_parser(app_summary, app_description);
+	b::cli cli_parser(app_summary);
 
 	const char* help_option[] =
 	{
@@ -43,9 +38,27 @@ B_TEST_CASE(help_option)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
+	// Without program description.
 	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
 		help_option,
 		b::cli::help_output_stream = ss);
+
+	B_CHECK(ss->str() == "test_cli: Test the b::cli class.\n\n"
+		"Usage: test_cli\n\n");
+
+	ss = new b::string_stream;
+
+	// With program description.
+	B_STATIC_CONST_STRING(app_description,
+		"Here goes a description of things the app does. "
+		"The description can be as long as needed to "
+		"convey the purpose of this application. However, "
+		"it does not substitute a proper manual page.");
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		(b::cli::program_description = app_description,
+		b::cli::help_output_stream = ss));
 
 	B_CHECK(match_pattern(ss->str(),
 		"test_cli: Test the b::cli class.\n\n"
@@ -55,7 +68,7 @@ B_TEST_CASE(help_option)
 
 B_TEST_CASE(version_option)
 {
-	b::cli cli_parser(app_summary, app_description);
+	b::cli cli_parser(app_summary);
 
 	const char* version_option[] =
 	{
@@ -94,7 +107,7 @@ B_TEST_CASE(version_option)
 
 B_TEST_CASE(default_app_name)
 {
-	b::cli cli_parser(app_summary, app_description);
+	b::cli cli_parser(app_summary);
 
 	const char* help_option[] =
 	{

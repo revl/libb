@@ -220,8 +220,7 @@ typedef array<const char*> positional_argument_list;
 
 struct cli::impl : public object, public common_parts
 {
-	impl(const string& program_summary,
-			const string& program_description);
+	impl(const string& program_summary);
 
 	void print_word_wrapped(int topic_len, int indent,
 			const string& text, int cont_indent = -1) const;
@@ -279,9 +278,8 @@ B_STATIC_CONST_STRING(help, "help");
 B_STATIC_CONST_STRING(dash_dash_help, "--help");
 B_STATIC_CONST_STRING(version, "version");
 
-cli::impl::impl(const string& program_summary,
-		const string& program_description) :
-	common_parts(program_summary, program_description),
+cli::impl::impl(const string& program_summary) :
+	common_parts(program_summary, string()),
 	version_option_info(VERSION_OPT_ID, version,
 		cli::option, string()),
 	help_option_info(HELP_OPT_ID, help,
@@ -864,9 +862,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 	return ret_val;
 }
 
-cli::cli(const string& program_summary,
-		const string& program_description) :
-	impl_ref(new impl(program_summary, program_description))
+cli::cli(const string& program_summary) :
+	impl_ref(new impl(program_summary))
 {
 }
 
@@ -981,16 +978,18 @@ arg_name<string, 0> cli::program_name;
 
 arg_name<string, 1> cli::version_info;
 
-arg_name<ref<output_stream>, 2> cli::help_output_stream;
+arg_name<string, 2> cli::program_description;
 
-arg_name<ref<output_stream>, 3> cli::error_stream;
+arg_name<ref<output_stream>, 3> cli::help_output_stream;
+
+arg_name<ref<output_stream>, 4> cli::error_stream;
 
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
 	impl_ref->error_stream = standard_error_stream();
 
-	string prog_name, prog_version;
+	string prog_name, prog_version, prog_description;
 
 	for (; arg != NULL; arg = arg->prev_arg)
 	{
@@ -1003,6 +1002,12 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 		if (version_info.is_name_for(arg))
 		{
 			prog_version = version_info.value(arg);
+			continue;
+		}
+
+		if (program_description.is_name_for(arg))
+		{
+			prog_description = program_description.value(arg);
 			continue;
 		}
 
@@ -1028,6 +1033,7 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 	}
 
 	impl_ref->program_name = prog_name;
+	impl_ref->usage = prog_description;
 
 	return impl_ref->parse_and_validate(argc, argv, prog_version);
 }
