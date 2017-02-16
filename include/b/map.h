@@ -89,6 +89,8 @@ private:
 	{
 		const Key& operator()(const binary_tree_node* node) const
 		{
+			B_ASSERT(node != NULL);
+
 			return static_cast<const key_value_pair*>(node)->key;
 		}
 	};
@@ -113,8 +115,7 @@ inline const typename map<Key, T>::key_value_pair*
 }
 
 template <class Key, class T>
-inline typename map<Key, T>::key_value_pair*
-		map<Key, T>::key_value_pair::next()
+inline typename map<Key, T>::key_value_pair* map<Key, T>::key_value_pair::next()
 {
 	return static_cast<key_value_pair*>(binary_tree_node::next());
 }
@@ -142,10 +143,8 @@ T* map<Key, T>::find(const Search_key& key) const
 {
 	binary_tree_node* match = tree.find(key);
 
-	if (match == NULL)
-		return NULL;
-
-	return &static_cast<key_value_pair*>(match)->value;
+	return match != NULL ?
+		&static_cast<key_value_pair*>(match)->value : NULL;
 }
 
 template <class Key, class T>
@@ -304,6 +303,8 @@ map<Key, T>::~map()
 	for (key_value_pair* kv_pair = first(); kv_pair != NULL; )
 	{
 		key_value_pair* next_kv_pair = kv_pair->next();
+
+		tree.remove(kv_pair);
 
 		delete kv_pair;
 
