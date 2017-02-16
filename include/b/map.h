@@ -254,8 +254,8 @@ struct map<Key, T>::const_iterator
 	{
 		B_ASSERT(value_addr != NULL);
 
-		const key_value_pair* next_kv_pair =
-			B_OUTERSTRUCT(key_value_pair, value, value_addr);
+		const key_value_pair* next_kv_pair = B_OUTERSTRUCT(
+			key_value_pair, value, value_addr)->next();
 
 		value_addr = next_kv_pair == NULL ? NULL : &next_kv_pair->value;
 
