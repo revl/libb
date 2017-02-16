@@ -134,3 +134,10 @@ B_TEST_CASE(static_string)
 	B_CHECK(hello == hello);
 	B_CHECK(hello == "hello");
 }
+
+B_TEST_CASE(repeat)
+{
+	B_CHECK(abc.repeat(3) == "abcabcabc");
+
+	B_CHECK(abc * 3 == "abcabcabc");
+}

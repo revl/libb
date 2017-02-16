@@ -190,6 +190,9 @@ public:
 	// returns the result.
 	string repeat(size_t times) const;
 
+	// Operator version of repeat(times).
+	string operator *(size_t times) const;
+
 // Deletion
 public:
 	// Deletes a range of characters.
@@ -524,6 +527,11 @@ inline string string::repeat(size_t times) const
 		return *this;
 
 	return string(chars, length(), times);
+}
+
+inline string string::operator *(size_t times) const
+{
+	return repeat(times);
 }
 
 inline int string::compare(const char_t* rhs) const
