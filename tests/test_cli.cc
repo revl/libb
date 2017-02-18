@@ -166,3 +166,88 @@ B_TEST_CASE(help_text_width)
 		"*\n"
 		"letters \n\n"));
 }
+
+B_TEST_CASE(cmd_descr_indent)
+{
+	b::cli cli_parser(app_summary);
+
+	B_STATIC_CONST_STRING(ls_cmd_name, "ls|list");
+	B_STATIC_CONST_STRING(ls_cmd_synopsis, "List directory contents.");
+
+	cli_parser.register_command(0, ls_cmd_name,
+		ls_cmd_synopsis, b::string());
+
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		b::cli::help_output_stream = ss);
+
+	B_CHECK(match_pattern(ss->str(),
+		"*\n  ls (list)           - List directory contents.\n\n"));
+
+	ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		(b::cli::cmd_descr_indent = 16,
+		b::cli::help_output_stream = ss));
+
+	B_CHECK(match_pattern(ss->str(),
+		"*\n  ls (list)   - List directory contents.\n\n"));
+}
+
+B_TEST_CASE(arg_descr_indent)
+{
+	b::cli cli_parser(app_summary);
+
+	B_STATIC_CONST_STRING(query_cmd_name, "query");
+	B_STATIC_CONST_STRING(query_cmd_synopsis, "Query the server.");
+
+	cli_parser.register_command(0, query_cmd_name,
+		query_cmd_synopsis, b::string());
+
+	B_STATIC_CONST_STRING(query_arg_name, "QUERY");
+
+	cli_parser.register_arg(b::cli::positional_argument, 0,
+		query_arg_name, b::string());
+
+	cli_parser.register_association(0, 0);
+
+	B_STATIC_CONST_STRING(tabular_opt_name, "t|tabular-report");
+	B_STATIC_CONST_STRING(tabular_opt_synopsis,
+		"Use tabular output format.");
+
+	cli_parser.register_arg(b::cli::option, 1,
+		tabular_opt_name, tabular_opt_synopsis);
+
+	cli_parser.register_association(0, 1);
+
+	static const char* const help_cmd[] =
+	{
+		"/path/to/test_cli",
+		"help",
+		"query"
+	};
+
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_cmd) / sizeof(*help_cmd),
+		help_cmd,
+		b::cli::help_output_stream = ss);
+
+	B_CHECK(match_pattern(ss->str(),
+		"*\n  -t [--tabular-report]       : "
+		"Use tabular output format.\n\n"));
+
+	ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_cmd) / sizeof(*help_cmd),
+		help_cmd,
+		(b::cli::help_output_stream = ss,
+		b::cli::arg_descr_indent = 40));
+
+	B_CHECK(match_pattern(ss->str(),
+		"*\n  -t [--tabular-report]               : "
+		"Use tabular output format.\n\n"));
+}
