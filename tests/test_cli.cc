@@ -26,15 +26,15 @@
 
 B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
 
+static const char* const help_option[] =
+{
+	"/path/to/test_cli",
+	"--help"
+};
+
 B_TEST_CASE(app_description)
 {
 	b::cli cli_parser(app_summary);
-
-	const char* help_option[] =
-	{
-		"test_cli",
-		"--help"
-	};
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
@@ -70,7 +70,7 @@ B_TEST_CASE(version_option)
 {
 	b::cli cli_parser(app_summary);
 
-	const char* version_option[] =
+	static const char* const version_option[] =
 	{
 		"test_cli",
 		"--version"
@@ -109,12 +109,6 @@ B_TEST_CASE(default_app_name)
 {
 	b::cli cli_parser(app_summary);
 
-	const char* help_option[] =
-	{
-		"/path/to/test_cli",
-		"--help"
-	};
-
 	b::ref<b::string_stream> ss = new b::string_stream;
 
 	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
@@ -133,4 +127,42 @@ B_TEST_CASE(default_app_name)
 		b::cli::help_output_stream = ss));
 
 	B_CHECK(match_pattern(ss->str(), "*\nUsage: console_app\n*"));
+}
+
+B_TEST_CASE(help_text_width)
+{
+	b::cli cli_parser(app_summary);
+
+	B_STATIC_CONST_STRING(word_and_space, "letters ");
+
+	b::string long_text = word_and_space.repeat(40);
+
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		(b::cli::program_description = long_text,
+		b::cli::help_output_stream = ss));
+
+	B_CHECK(match_pattern(ss->str(), "test_cli: Test the b::cli class.\n\n"
+		"Usage: test_cli\n\n"
+		"letters letters letters letters letters "
+		"letters letters letters letters\n"
+		"*\n"
+		"letters letters letters letters \n\n"));
+
+	ss = new b::string_stream;
+
+	cli_parser.parse(sizeof(help_option) / sizeof(*help_option),
+		help_option,
+		(b::cli::program_description = long_text,
+		b::cli::help_text_width = 24,
+		b::cli::help_output_stream = ss));
+
+	B_CHECK(match_pattern(ss->str(), "test_cli: Test the\n"
+		"          b::cli class.\n\n"
+		"Usage: test_cli\n\n"
+		"letters letters letters\n"
+		"*\n"
+		"letters \n\n"));
 }

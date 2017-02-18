@@ -225,7 +225,8 @@ struct cli::impl : public object, public common_parts
 	void print_word_wrapped(int topic_len, int indent,
 			const string& text, int cont_indent = -1) const;
 	void print_help(const positional_argument_list& commands,
-			bool using_help_command) const;
+			bool using_help_command,
+			bool version_info_defined) const;
 	void print_help_on_command(const common_parts* cp,
 			const string& name_for_synopsis,
 			const string& name_for_usage) const;
@@ -283,10 +284,7 @@ cli::impl::impl(const string& program_summary) :
 	version_option_info(VERSION_OPT_ID, version,
 		cli::option, string()),
 	help_option_info(HELP_OPT_ID, help,
-		cli::option, string()),
-	max_help_text_width(DEFAULT_HELP_TEXT_WIDTH),
-	cmd_descr_indent(DEFAULT_CMD_DESCR_INDENT),
-	opt_descr_indent(DEFAULT_OPT_DESCR_INDENT)
+		cli::option, string())
 {
 	memset(single_letter_options, 0, sizeof(single_letter_options));
 
@@ -381,7 +379,7 @@ void cli::impl::print_word_wrapped(int topic_len,
 }
 
 void cli::impl::print_help(const positional_argument_list& commands,
-		bool using_help_command) const
+		bool using_help_command, bool version_info_defined) const
 {
 	for (option_value_array::const_iterator option_value = option_values.begin();
 			option_value != option_values.end(); ++option_value)
@@ -412,10 +410,11 @@ void cli::impl::print_help(const positional_argument_list& commands,
 		help_output_stream->write(prog_usage.data(),
 			prog_usage.length());
 		print_word_wrapped(0, 0, synopsis);
-		prog_usage.format(
-			"Type '%s help <command>' for help on a specific command.\n"
-			"Type '%s --version' to see the program version.\n",
-			program_name.data(), program_name.data());
+		prog_usage.format("Type '%s help <command>' for help on a "
+			"specific command.\n", program_name.data());
+		if (version_info_defined)
+			prog_usage.format("Type '%s --version' to see the "
+				"program version.\n", program_name.data());
 		help_output_stream->write(prog_usage.data(),
 			prog_usage.length());
 		if (!usage.is_empty())
@@ -747,7 +746,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			return HELP_CMD_ID;
 
 		case HELP_OPT_ID:
-			print_help(positional_argument_values, false);
+			print_help(positional_argument_values, false,
+				!version_info.is_empty());
 			return HELP_CMD_ID;
 
 		default:
@@ -784,7 +784,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		{
 			if (command_name == help)
 			{
-				print_help(positional_argument_values, true);
+				print_help(positional_argument_values, true,
+					!version_info.is_empty());
 				return HELP_CMD_ID;
 			}
 			error("unknown command '%s'", command_name.data());
@@ -865,14 +866,6 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 cli::cli(const string& program_summary) :
 	impl_ref(new impl(program_summary))
 {
-}
-
-void cli::set_help_text_margins(int help_text_width,
-	int cmd_descr_indent, int opt_descr_indent)
-{
-	impl_ref->max_help_text_width = help_text_width;
-	impl_ref->cmd_descr_indent = cmd_descr_indent;
-	impl_ref->opt_descr_indent = opt_descr_indent;
 }
 
 void cli::register_arg(cli::arg_type type,
@@ -980,14 +973,24 @@ arg_name<string, 1> cli::version_info;
 
 arg_name<string, 2> cli::program_description;
 
-arg_name<ref<output_stream>, 3> cli::help_output_stream;
+arg_name<int, 3> cli::help_text_width;
 
-arg_name<ref<output_stream>, 4> cli::error_stream;
+arg_name<int, 4> cli::cmd_descr_indent;
+
+arg_name<int, 5> cli::arg_descr_indent;
+
+arg_name<ref<output_stream>, 6> cli::help_output_stream;
+
+arg_name<ref<output_stream>, 7> cli::error_stream;
 
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
 	impl_ref->error_stream = standard_error_stream();
+
+	impl_ref->max_help_text_width = DEFAULT_HELP_TEXT_WIDTH;
+	impl_ref->cmd_descr_indent = DEFAULT_CMD_DESCR_INDENT;
+	impl_ref->opt_descr_indent = DEFAULT_OPT_DESCR_INDENT;
 
 	string prog_name, prog_version, prog_description;
 
@@ -1008,6 +1011,27 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 		if (program_description.is_name_for(arg))
 		{
 			prog_description = program_description.value(arg);
+			continue;
+		}
+
+		if (help_text_width.is_name_for(arg))
+		{
+			impl_ref->max_help_text_width =
+				help_text_width.value(arg);
+			continue;
+		}
+
+		if (cmd_descr_indent.is_name_for(arg))
+		{
+			impl_ref->cmd_descr_indent =
+				cmd_descr_indent.value(arg);
+			continue;
+		}
+
+		if (arg_descr_indent.is_name_for(arg))
+		{
+			impl_ref->opt_descr_indent =
+				arg_descr_indent.value(arg);
 			continue;
 		}
 

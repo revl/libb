@@ -35,16 +35,6 @@ B_OPAQUE:
 	// Initialize this object with a one-line program description.
 	cli(const string& program_summary);
 
-	// Defines the width and certain paragraph indents
-	// of the help screen. Although this class provides
-	// reasonable defaults for these settings, it is possible
-	// to override them, in which case the values must be
-	// chosen experimentally.
-	void set_help_text_margins(
-		int help_text_width,
-		int cmd_descr_indent,
-		int arg_descr_indent);
-
 	// Command line argument types.
 	enum arg_type {
 		// An optional switch that enables a non-default
@@ -111,12 +101,23 @@ B_OPAQUE:
 	// but it is not meant to be a substitute for a proper man page.
 	static arg_name<string, 2> program_description;
 
+	// The maximum width of the help text, 72 columns by default.
+	static arg_name<int, 3> help_text_width;
+
+	// The column number where command descriptions start
+	// in the list of all commands, 24 by default.
+	static arg_name<int, 4> cmd_descr_indent;
+
+	// The column number where option descriptions start,
+	// 32 by default.
+	static arg_name<int, 5> arg_descr_indent;
+
 	// Parameter to override the stream that the 'help'
 	// command prints to.
-	static arg_name<ref<output_stream>, 3> help_output_stream;
+	static arg_name<ref<output_stream>, 6> help_output_stream;
 
 	// Parameter to override the stream for error reporting.
-	static arg_name<ref<output_stream>, 4> error_stream;
+	static arg_name<ref<output_stream>, 7> error_stream;
 
 	// Parses the command line.
 	//
