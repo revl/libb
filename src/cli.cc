@@ -39,6 +39,18 @@
 
 B_BEGIN_NAMESPACE
 
+namespace cli_args
+{
+	arg_name<string, program_name_tag> program_name;
+	arg_name<string, version_info_tag> version_info;
+	arg_name<string, program_description_tag> program_description;
+	arg_name<int, help_text_width_tag> help_text_width;
+	arg_name<int, cmd_descr_indent_tag> cmd_descr_indent;
+	arg_name<int, arg_descr_indent_tag> arg_descr_indent;
+	arg_name<ref<output_stream>, help_output_stream_tag> help_output_stream;
+	arg_name<ref<output_stream>, error_stream_tag> error_stream;
+}
+
 // TODO Use string_view instead of string in this class
 // where the data is expected to be kept in argv?
 
@@ -967,22 +979,6 @@ void cli::register_association(int cmd_id, int arg_id)
 	}
 }
 
-arg_name<string, 0> cli::program_name;
-
-arg_name<string, 1> cli::version_info;
-
-arg_name<string, 2> cli::program_description;
-
-arg_name<int, 3> cli::help_text_width;
-
-arg_name<int, 4> cli::cmd_descr_indent;
-
-arg_name<int, 5> cli::arg_descr_indent;
-
-arg_name<ref<output_stream>, 6> cli::help_output_stream;
-
-arg_name<ref<output_stream>, 7> cli::error_stream;
-
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
@@ -992,74 +988,63 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 	impl_ref->cmd_descr_indent = DEFAULT_CMD_DESCR_INDENT;
 	impl_ref->opt_descr_indent = DEFAULT_OPT_DESCR_INDENT;
 
-	string prog_name, prog_version, prog_description;
+	string program_name, version_info, program_description;
 
 	for (; arg != NULL; arg = arg->prev_arg)
-	{
-		if (program_name.is_name_for(arg))
+		switch (arg->tag)
 		{
-			prog_name = program_name.value(arg);
-			continue;
-		}
+		case cli_args::program_name_tag:
+			program_name = cli_args::program_name.value(arg);
+			break;
 
-		if (version_info.is_name_for(arg))
-		{
-			prog_version = version_info.value(arg);
-			continue;
-		}
+		case cli_args::version_info_tag:
+			version_info = cli_args::version_info.value(arg);
+			break;
 
-		if (program_description.is_name_for(arg))
-		{
-			prog_description = program_description.value(arg);
-			continue;
-		}
+		case cli_args::program_description_tag:
+			program_description =
+				cli_args::program_description.value(arg);
+			break;
 
-		if (help_text_width.is_name_for(arg))
-		{
+		case cli_args::help_text_width_tag:
 			impl_ref->max_help_text_width =
-				help_text_width.value(arg);
-			continue;
-		}
+				cli_args::help_text_width.value(arg);
+			break;
 
-		if (cmd_descr_indent.is_name_for(arg))
-		{
+		case cli_args::cmd_descr_indent_tag:
 			impl_ref->cmd_descr_indent =
-				cmd_descr_indent.value(arg);
-			continue;
-		}
+				cli_args::cmd_descr_indent.value(arg);
+			break;
 
-		if (arg_descr_indent.is_name_for(arg))
-		{
+		case cli_args::arg_descr_indent_tag:
 			impl_ref->opt_descr_indent =
-				arg_descr_indent.value(arg);
-			continue;
-		}
+				cli_args::arg_descr_indent.value(arg);
+			break;
 
-		if (help_output_stream.is_name_for(arg))
-		{
+		case cli_args::help_output_stream_tag:
 			impl_ref->help_output_stream =
-				help_output_stream.value(arg);
-			continue;
+				cli_args::help_output_stream.value(arg);
+			break;
+
+		case cli_args::error_stream_tag:
+			impl_ref->error_stream =
+				cli_args::error_stream.value(arg);
 		}
 
-		if (error_stream.is_name_for(arg))
-			impl_ref->error_stream = error_stream.value(arg);
-	}
-
-	if (prog_name.is_empty())
+	if (program_name.is_empty())
 	{
-		prog_name.assign(*argv, calc_length(*argv));
+		program_name.assign(*argv, calc_length(*argv));
 
-		size_t basename_pos = prog_name.rfind('/');
+		size_t basename_pos = program_name.rfind('/');
 
 		if (basename_pos != (size_t) -1)
-			prog_name.remove(0, basename_pos + 1);
+			program_name.remove(0, basename_pos + 1);
 	}
 
-	impl_ref->program_name = prog_name;
-	impl_ref->usage = prog_description;
+	impl_ref->program_name = program_name;
+	impl_ref->usage = program_description;
 
-	return impl_ref->parse_and_validate(argc, argv, prog_version);
+	return impl_ref->parse_and_validate(argc, argv, version_info);
 }
 
 bool cli::next_arg(int* arg_id, const char** opt_value)

@@ -28,6 +28,59 @@
 
 B_BEGIN_NAMESPACE
 
+// Optional arguments that can be passed to the cli::parse() method.
+//
+// Example:
+//
+// int cmd_id = cl_parser.parse(argc, argv, b::cli_args::help_text_width = 80);
+//
+namespace cli_args
+{
+	enum
+	{
+		program_name_tag,
+		version_info_tag,
+		program_description_tag,
+		help_text_width_tag,
+		cmd_descr_indent_tag,
+		arg_descr_indent_tag,
+		help_output_stream_tag,
+		error_stream_tag
+	};
+
+	// The name of the program binary, which is used in the help
+	// and error messages.
+	extern arg_name<string, program_name_tag> program_name;
+
+	// Human-readable program version. This text is printed verbatim
+	// in response to the '--version' option. If this parameter
+	// is not specified, the '--version' option is not recognized.
+	extern arg_name<string, version_info_tag> version_info;
+
+	// A longer program description, which can be as long as needed,
+	// but it is not meant to be a substitute for a proper man page.
+	extern arg_name<string, program_description_tag> program_description;
+
+	// The maximum width of the help text, 72 columns by default.
+	extern arg_name<int, help_text_width_tag> help_text_width;
+
+	// The column number where command descriptions start
+	// in the list of all commands, 24 by default.
+	extern arg_name<int, cmd_descr_indent_tag> cmd_descr_indent;
+
+	// The column number where option descriptions start,
+	// 32 by default.
+	extern arg_name<int, arg_descr_indent_tag> arg_descr_indent;
+
+	// Parameter to override the stream that the 'help'
+	// command prints to.
+	extern arg_name<ref<output_stream>, help_output_stream_tag>
+		help_output_stream;
+
+	// Parameter to override the stream for error reporting.
+	extern arg_name<ref<output_stream>, error_stream_tag> error_stream;
+}
+
 // POSIX-compatible command line parser and help screen generator.
 class cli
 {
@@ -87,37 +140,6 @@ B_OPAQUE:
 	// registered defines the order of positional arguments as
 	// well as the order of options in help screens.
 	void register_association(int cmd_id, int arg_id);
-
-	// The name of the program binary, which is used in the help
-	// and error messages.
-	static arg_name<string, 0> program_name;
-
-	// Human-readable program version. This text is printed verbatim
-	// in response to the '--version' option. If this parameter
-	// is not specified, the '--version' option is not recognized.
-	static arg_name<string, 1> version_info;
-
-	// A longer program description, which can be as long as needed,
-	// but it is not meant to be a substitute for a proper man page.
-	static arg_name<string, 2> program_description;
-
-	// The maximum width of the help text, 72 columns by default.
-	static arg_name<int, 3> help_text_width;
-
-	// The column number where command descriptions start
-	// in the list of all commands, 24 by default.
-	static arg_name<int, 4> cmd_descr_indent;
-
-	// The column number where option descriptions start,
-	// 32 by default.
-	static arg_name<int, 5> arg_descr_indent;
-
-	// Parameter to override the stream that the 'help'
-	// command prints to.
-	static arg_name<ref<output_stream>, 6> help_output_stream;
-
-	// Parameter to override the stream for error reporting.
-	static arg_name<ref<output_stream>, 7> error_stream;
 
 	// Parses the command line.
 	//
