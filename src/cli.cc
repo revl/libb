@@ -74,7 +74,7 @@ struct option_or_command_info : public object
 			do
 			{
 				name_variants.append(1, string(name,
-					vertical_bar - name));
+					(size_t) (vertical_bar - name)));
 				name = vertical_bar + 1;
 				vertical_bar = ::strchr(name, '|');
 			}
@@ -230,8 +230,9 @@ struct category_info : public object
 
 typedef array<const char*> positional_argument_list;
 
-struct cli::impl : public object, public common_parts
+class cli::impl : public object, public common_parts
 {
+public:
 	impl(const string& program_summary);
 
 	void print_word_wrapped(int topic_len, int indent,
