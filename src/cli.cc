@@ -56,7 +56,7 @@ namespace cli_args
 
 typedef array<string> name_variant_list;
 
-struct option_or_command_info : public object
+struct option_or_command_info : public binary_tree_node
 {
 	option_or_command_info(int opt_or_cmd_id, const string& names) :
 		id(opt_or_cmd_id)
@@ -92,6 +92,14 @@ struct option_or_command_info : public object
 
 	int id;
 	name_variant_list name_variants;
+};
+
+struct id_for_node
+{
+	int operator ()(const b::binary_tree_node* node) const
+	{
+		return static_cast<const option_or_command_info*>(node)->id;
+	}
 };
 
 struct option_info : public option_or_command_info
@@ -251,14 +259,16 @@ public:
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
 
+	virtual ~impl();
+
 	// Command and argument definitions.
 	string program_name;
 	const option_info* single_letter_options[256];
-	// TODO store the structure itself, not just pointer
 	map<string, const option_info*> long_opt_name_to_opt_info;
-	map<int, ref<option_info> > opt_id_to_opt_info;
+	// TODO Use 'set' instead of binary_search_tree.
+	binary_search_tree<id_for_node> opt_id_to_opt_info;
 	map<string, const command_info*> cmd_name_to_cmd_info;
-	map<int, ref<command_info> > cmd_id_to_cmd_info;
+	binary_search_tree<id_for_node> cmd_id_to_cmd_info;
 	typedef map<int, ref<category_info> > cat_id_to_cat_info_map;
 	cat_id_to_cat_info_map cat_id_to_cat_info;
 	option_info version_option_info;
@@ -294,6 +304,8 @@ B_STATIC_CONST_STRING(version, "version");
 
 cli::impl::impl(const string& program_summary) :
 	common_parts(program_summary, string()),
+	opt_id_to_opt_info(id_for_node()),
+	cmd_id_to_cmd_info(id_for_node()),
 	version_option_info(VERSION_OPT_ID, version,
 		cli::option, string()),
 	help_option_info(HELP_OPT_ID, help,
@@ -876,6 +888,35 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 	return ret_val;
 }
 
+cli::impl::~impl()
+{
+	binary_tree_node* node = opt_id_to_opt_info.leftmost;
+
+	while (node != NULL)
+	{
+		binary_tree_node* next_node = node->next();
+
+		opt_id_to_opt_info.remove(node);
+
+		delete static_cast<option_info*>(node);
+
+		node = next_node;
+	}
+
+	node = cmd_id_to_cmd_info.leftmost;
+
+	while (node != NULL)
+	{
+		binary_tree_node* next_node = node->next();
+
+		cmd_id_to_cmd_info.remove(node);
+
+		delete static_cast<command_info*>(node);
+
+		node = next_node;
+	}
+}
+
 cli::cli(const string& program_summary) :
 	impl_ref(new impl(program_summary))
 {
@@ -891,7 +932,7 @@ void cli::register_arg(cli::arg_type type,
 	option_info* opt_info = new option_info(arg_id,
 			name_variants, type, description);
 
-	impl_ref->opt_id_to_opt_info.insert(arg_id, opt_info);
+	impl_ref->opt_id_to_opt_info.insert(opt_info);
 
 	switch (type)
 	{
@@ -939,7 +980,7 @@ void cli::register_command(int cmd_id, const string& name_variants,
 
 	command_info* ci = new command_info(cmd_id,
 			name_variants, synopsis, usage);
-	impl_ref->cmd_id_to_cmd_info.insert(cmd_id, ci);
+	impl_ref->cmd_id_to_cmd_info.insert(ci);
 
 	(*impl_ref->cat_id_to_cat_info.find(cat_id))->commands.append(1, ci);
 
@@ -957,8 +998,11 @@ void cli::register_association(int cmd_id, int arg_id)
 	B_ASSERT(impl_ref->opt_id_to_opt_info.find(arg_id) != NULL &&
 			"No such option ID");
 
-	command_info* ci = *impl_ref->cmd_id_to_cmd_info.find(cmd_id);
-	option_info* oi = *impl_ref->opt_id_to_opt_info.find(arg_id);
+	command_info* ci = static_cast<command_info*>(
+		impl_ref->cmd_id_to_cmd_info.find(cmd_id));
+
+	option_info* oi = static_cast<option_info*>(
+		impl_ref->opt_id_to_opt_info.find(arg_id));
 
 	switch (oi->type)
 	{
