@@ -39,14 +39,6 @@ static int value_for_node(const b::binary_tree_node* node)
 	return static_cast<const element*>(node)->value;
 }
 
-struct key_op
-{
-	int operator ()(const b::binary_tree_node* node) const
-	{
-		return value_for_node(node);
-	}
-};
-
 B_TEST_CASE(construction)
 {
 	b::binary_search_tree<int (*)(const b::binary_tree_node*)> bst =
@@ -75,6 +67,14 @@ B_TEST_CASE(construction)
 
 	B_CHECK(bst.find(20) == NULL);
 }
+
+struct key_op
+{
+	int operator ()(const b::binary_tree_node* node) const
+	{
+		return value_for_node(node);
+	}
+};
 
 B_TEST_CASE(inorder_walk)
 {
