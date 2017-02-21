@@ -221,8 +221,7 @@ B_TEST_CASE(arg_descr_indent)
 
 	B_STATIC_CONST_STRING(query_arg_name, "QUERY");
 
-	cl_parser.register_arg(b::cli::positional_argument, 0,
-		query_arg_name, b::string());
+	cl_parser.register_positional_argument(0, query_arg_name);
 
 	cl_parser.register_association(0, 0);
 
@@ -230,8 +229,7 @@ B_TEST_CASE(arg_descr_indent)
 	B_STATIC_CONST_STRING(tabular_opt_synopsis,
 		"Use tabular output format.");
 
-	cl_parser.register_arg(b::cli::option, 1,
-		tabular_opt_name, tabular_opt_synopsis);
+	cl_parser.register_option(1, tabular_opt_name, tabular_opt_synopsis);
 
 	cl_parser.register_association(0, 1);
 

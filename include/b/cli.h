@@ -85,42 +85,42 @@ namespace cli_args
 class cli
 {
 B_OPAQUE:
-	// Initialize this object with a one-line program description.
+	// Initializes this object with a one-line program description.
 	cli(const string& program_summary);
 
-	// Command line argument types.
-	enum arg_type {
-		// An optional switch that enables a non-default
-		// mode of operation.
-		option,
-
-		// An optional switch that requires a value.
-		option_with_parameter,
-
-		// A required positional argument. Positional
-		// arguments are reported by the next_arg() method
-		// in the order they were associated with the
-		// command.
-		positional_argument,
-
-		// Similar to 'positional_argument', but optional.
-		optional_positional,
-
-		// An optional sequence of arguments.
-		zero_or_more_positional,
-
-		// An non-empty sequence of arguments.
-		one_or_more_positional
-	};
-
-	// Registers an argument of the specified type with the
-	// specified identifier and description. For options, long
-	// and short variants must be separated by vertical bars.
-	// Positional arguments cannot have name variants.
-	void register_arg(arg_type type,
-			int arg_id,
+	// Registers an optional switch meant to enable a non-default
+	// mode of operation. Name variants must be separated by
+	// vertical bars.
+	void register_option(int opt_id,
 			const string& name_variants,
 			const string& description);
+
+	// Registers an option that requires a value. Option name
+	// variants, both long and short, must be separated by
+	// vertical bars.
+	void register_option_with_parameter(int opt_id,
+			const string& name_variants,
+			const string& param_name,
+			const string& description);
+
+	// Registers a required positional argument. Positional
+	// arguments cannot have name variants. For a particular
+	// command, the order of its positional arguments is
+	// defined by the 'register_association()' method.
+	void register_positional_argument(int arg_id,
+			const string& arg_name);
+
+	// Registers a positional argument that can be omitted.
+	void register_optional_positional(int arg_id,
+			const string& arg_name);
+
+	// Registers an optional sequence of arguments.
+	void register_zero_or_more_positional(int arg_id,
+			const string& arg_name);
+
+	// Registers a non-empty sequence of arguments.
+	void register_one_or_more_positional(int arg_id,
+			const string& arg_name);
 
 	// Registers a command category with the specified title.
 	void register_command_category(int cat_id, const string& title);

@@ -37,6 +37,31 @@
 #define DEFAULT_CMD_DESCR_INDENT 24
 #define DEFAULT_OPT_DESCR_INDENT 32
 
+enum arg_type
+{
+	// An optional switch that enables a non-default
+	// mode of operation.
+	option,
+
+	// An optional switch that requires a value.
+	option_with_parameter,
+
+	// A required positional argument. Positional
+	// arguments are reported by the next_arg() method
+	// in the order they were associated with the
+	// command.
+	positional_argument,
+
+	// Similar to 'positional_argument', but optional.
+	optional_positional,
+
+	// An optional sequence of arguments.
+	zero_or_more_positional,
+
+	// An non-empty sequence of arguments.
+	one_or_more_positional
+};
+
 B_BEGIN_NAMESPACE
 
 namespace cli_args
@@ -104,10 +129,12 @@ struct id_for_node
 
 struct option_info : public option_or_command_info
 {
-	option_info(int arg_id, const string& arg_names,
-			cli::arg_type opt_type,
+	option_info(int arg_id, const string& opt_names,
+			const string& opt_param_name,
+			arg_type opt_type,
 			const string& arg_descr) :
-		option_or_command_info(arg_id, arg_names),
+		option_or_command_info(arg_id, opt_names),
+		param_name(opt_param_name),
 		type(opt_type),
 		description(arg_descr)
 	{
@@ -122,6 +149,8 @@ struct option_info : public option_or_command_info
 	}
 
 	string option_name_variants() const;
+
+	string param_name;
 
 	int type;
 	string description;
@@ -149,8 +178,11 @@ string option_info::option_name_variants() const
 		result.append(1, ']');
 	}
 
-	if (type == cli::option_with_parameter)
-		result.append(" ARG", 4);
+	if (type == option_with_parameter)
+	{
+		result.append(1, ' ');
+		result.append(param_name);
+	}
 
 	return result;
 }
@@ -256,6 +288,9 @@ public:
 	void error(const char* err_fmt, ...) const B_PRINTF_STYLE(2, 3);
 	void cmd_error(const string& command_name,
 			const char* err_fmt, ...) const B_PRINTF_STYLE(3, 4);
+	void register_arg(arg_type type, int arg_id,
+			const string& name_variants, const string& param_name,
+			const string& description);
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
 
@@ -307,9 +342,9 @@ cli::impl::impl(const string& program_summary) :
 	opt_id_to_opt_info(id_for_node()),
 	cmd_id_to_cmd_info(id_for_node()),
 	version_option_info(VERSION_OPT_ID, version,
-		cli::option, string()),
+		string(), option, string()),
 	help_option_info(HELP_OPT_ID, help,
-		cli::option, string())
+		string(), option, string())
 {
 	memset(single_letter_options, 0, sizeof(single_letter_options));
 
@@ -489,7 +524,7 @@ void cli::impl::print_help(const positional_argument_list& commands,
 		B_STATIC_CONST_STRING(help_command_arg, "COMMAND");
 
 		option_info command_arg(COMMAND_OPT_ID, help_command_arg,
-			cli::zero_or_more_positional, string());
+			string(), zero_or_more_positional, string());
 
 		help_command.positional_arguments.append(1, &command_arg);
 
@@ -540,20 +575,20 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 			args.append(1, ' ');
 		switch ((*arg)->type)
 		{
-		case cli::positional_argument:
+		case positional_argument:
 			args.append((*arg)->primary_name());
 			break;
-		case cli::optional_positional:
+		case optional_positional:
 			args.append(1, '[');
 			args.append((*arg)->primary_name());
 			args.append(1, ']');
 			break;
-		case cli::zero_or_more_positional:
+		case zero_or_more_positional:
 			args.append(1, '[');
 			args.append((*arg)->primary_name());
 			args.append("...]", 4);
 			break;
-		default: // always cli::one_or_more_positional
+		default: // always one_or_more_positional
 			args.append((*arg)->primary_name());
 			args.append("...", 3);
 		}
@@ -627,6 +662,43 @@ void cli::impl::cmd_error(const string& command_name,
 			dash_dash_help : help + ' ' + command_name);
 }
 
+void cli::impl::register_arg(arg_type type, int arg_id,
+		const string& name_variants, const string& param_name,
+		const string& description)
+{
+	B_ASSERT(arg_id >= 0 && opt_id_to_opt_info.find(arg_id) == NULL &&
+			"Option IDs must be unique");
+
+	option_info* opt_info = new option_info(arg_id,
+			name_variants, param_name, type, description);
+
+	opt_id_to_opt_info.insert(opt_info);
+
+	switch (type)
+	{
+	default:
+		B_ASSERT(opt_info->name_variants.size() == 1 &&
+			"Positional arguments do not allow name variants");
+
+		positional_arguments.append(1, opt_info);
+		break;
+
+	case option:
+	case option_with_parameter:
+		for (name_variant_list::const_iterator name =
+					opt_info->name_variants.begin();
+				name != opt_info->name_variants.end(); ++name)
+			if (name->length() == 1)
+				single_letter_options[
+					(unsigned char) name->at(0)] = opt_info;
+			else
+				long_opt_name_to_opt_info.insert(
+						*name, opt_info);
+
+		accepted_options.append(1, opt_info);
+	}
+}
+
 int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		const string& version_info)
 {
@@ -671,7 +743,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 							opt_name.data());
 				opt_info = *oi;
 				// Check if this option must have a parameter.
-				if (opt_info->type == cli::option)
+				if (opt_info->type == option)
 				{
 					// No, it's a switch; it's not supposed to have a parameter.
 					if (opt_param != NULL)
@@ -710,7 +782,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 								opt_letter);
 
 					// Check if this option must have a parameter.
-					if (opt_info->type == cli::option)
+					if (opt_info->type == option)
 					{
 						// It's a switch; it's not supposed to have a parameter.
 						opt_param = "yes";
@@ -842,8 +914,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			if (arg_val == positional_argument_values.end())
 				switch ((*expected_arg)->type)
 				{
-				case cli::positional_argument:
-				case cli::one_or_more_positional:
+				case positional_argument:
+				case one_or_more_positional:
 					cmd_error(command_name,
 						"missing argument '%s'",
 						(*expected_arg)->primary_name().data());
@@ -851,8 +923,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			else
 				switch ((*expected_arg)->type)
 				{
-				case cli::positional_argument:
-				case cli::optional_positional:
+				case positional_argument:
+				case optional_positional:
 					{
 						arg_value av =
 						{
@@ -922,41 +994,43 @@ cli::cli(const string& program_summary) :
 {
 }
 
-void cli::register_arg(cli::arg_type type,
-	int arg_id, const string& name_variants, const string& description)
+void cli::register_option(int opt_id, const string& name_variants,
+		const string& description)
 {
-	B_ASSERT(arg_id >= 0 &&
-			impl_ref->opt_id_to_opt_info.find(arg_id) == NULL &&
-			"Option IDs must be unique");
+	impl_ref->register_arg(option, opt_id,
+		name_variants, string(), description);
+}
 
-	option_info* opt_info = new option_info(arg_id,
-			name_variants, type, description);
+void cli::register_option_with_parameter(int opt_id,
+		const string& name_variants, const string& param_name,
+		const string& description)
+{
+	impl_ref->register_arg(option_with_parameter, opt_id,
+		name_variants, param_name, description);
+}
 
-	impl_ref->opt_id_to_opt_info.insert(opt_info);
+void cli::register_positional_argument(int arg_id, const string& arg_name)
+{
+	impl_ref->register_arg(positional_argument, arg_id,
+		arg_name, string(), string());
+}
 
-	switch (type)
-	{
-	default:
-		B_ASSERT(opt_info->name_variants.size() == 1 &&
-			"Positional arguments do not allow name variants");
+void cli::register_optional_positional(int arg_id, const string& arg_name)
+{
+	impl_ref->register_arg(optional_positional, arg_id,
+		arg_name, string(), string());
+}
 
-		impl_ref->positional_arguments.append(1, opt_info);
-		break;
+void cli::register_zero_or_more_positional(int arg_id, const string& arg_name)
+{
+	impl_ref->register_arg(zero_or_more_positional, arg_id,
+		arg_name, string(), string());
+}
 
-	case option:
-	case option_with_parameter:
-		for (name_variant_list::const_iterator name =
-					opt_info->name_variants.begin();
-				name != opt_info->name_variants.end(); ++name)
-			if (name->length() == 1)
-				impl_ref->single_letter_options[
-					(unsigned char) name->at(0)] = opt_info;
-			else
-				impl_ref->long_opt_name_to_opt_info.insert(
-						*name, opt_info);
-
-		impl_ref->accepted_options.append(1, opt_info);
-	}
+void cli::register_one_or_more_positional(int arg_id, const string& arg_name)
+{
+	impl_ref->register_arg(one_or_more_positional, arg_id,
+		arg_name, string(), string());
 }
 
 void cli::register_command_category(int cat_id, const string& title)
