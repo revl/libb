@@ -62,7 +62,7 @@ public:
 	search_result search(const Search_key& key) const;
 
 	// Inserts a new value after a failed search for it.
-	key_value_pair* insert(const Key &key, const T &value,
+	key_value_pair* insert(const Key& key, const T &value,
 			const search_result& sr);
 
 	key_value_pair* insert(const Key& key, const T& value);
