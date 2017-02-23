@@ -74,7 +74,7 @@ string pathname::str() const
 	{
 		++comp;
 
-		path.append(1, B_PATH_SEPARATOR);
+		path.append(B_PATH_SEPARATOR);
 
 		path.append(comp->component_name,
 			(size_t) (comp->component_name_end -

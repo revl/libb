@@ -175,12 +175,12 @@ string option_info::option_name_variants() const
 			result.append(add_dashes(*name));
 		}
 
-		result.append(1, ']');
+		result.append(']');
 	}
 
 	if (type == option_with_parameter)
 	{
-		result.append(1, ' ');
+		result.append(' ');
 		result.append(param_name);
 	}
 
@@ -234,7 +234,7 @@ struct command_info : public option_or_command_info, public common_parts
 			result.append(", ", 2);
 			result.append(*name);
 		}
-		result.append(1, ')');
+		result.append(')');
 		return result;
 	}
 
@@ -572,19 +572,19 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 			arg != cp->positional_arguments.end(); ++arg)
 	{
 		if (!args.is_empty())
-			args.append(1, ' ');
+			args.append(' ');
 		switch ((*arg)->type)
 		{
 		case positional_argument:
 			args.append((*arg)->primary_name());
 			break;
 		case optional_positional:
-			args.append(1, '[');
+			args.append('[');
 			args.append((*arg)->primary_name());
-			args.append(1, ']');
+			args.append(']');
 			break;
 		case zero_or_more_positional:
-			args.append(1, '[');
+			args.append('[');
 			args.append((*arg)->primary_name());
 			args.append("...]", 4);
 			break;
