@@ -123,7 +123,7 @@ void string::assign(const char_t* source, size_t count)
 		empty();
 }
 
-void string::assign(size_t count, char_t source)
+void string::assign(size_t count, char_t ch)
 {
 	B_ASSERT(!is_locked());
 
@@ -131,7 +131,7 @@ void string::assign(size_t count, char_t source)
 	{
 		if (is_shared() || count > capacity())
 			discard_and_alloc(extra_capacity(count));
-		assign_value(chars, count, source);
+		assign_value(chars, count, ch);
 		chars[metadata()->length = count] = 0;
 	}
 	else
@@ -184,7 +184,7 @@ void string::replace(size_t index, const char_t* source, size_t count)
 	}
 }
 
-void string::replace(size_t index, char_t source, size_t count)
+void string::replace(size_t index, char_t ch, size_t count)
 {
 	B_ASSERT(index <= length());
 
@@ -203,7 +203,7 @@ void string::replace(size_t index, char_t source, size_t count)
 				extra_capacity(end_of_change), end_of_change);
 
 			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index, count, source);
+			assign_value(new_buffer_chars + index, count, ch);
 		}
 		else
 		{
@@ -211,7 +211,7 @@ void string::replace(size_t index, char_t source, size_t count)
 				extra_capacity(length()), length());
 
 			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index, count, source);
+			assign_value(new_buffer_chars + index, count, ch);
 			assign_pairwise(new_buffer_chars + end_of_change,
 				chars + end_of_change,
 				length() - end_of_change);
@@ -221,7 +221,7 @@ void string::replace(size_t index, char_t source, size_t count)
 	}
 	else
 	{
-		assign_value(chars + index, count, source);
+		assign_value(chars + index, count, ch);
 
 		if (end_of_change > length())
 			chars[metadata()->length = end_of_change] = 0;
@@ -282,7 +282,7 @@ void string::insert(size_t index, const char_t* source, size_t count)
 	}
 }
 
-void string::insert(size_t index, char_t source, size_t count)
+void string::insert(size_t index, char_t ch, size_t count)
 {
 	B_ASSERT(index <= length());
 
@@ -298,8 +298,7 @@ void string::insert(size_t index, char_t source, size_t count)
 				extra_capacity(new_length), new_length);
 
 			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index,
-				count, source);
+			assign_value(new_buffer_chars + index, count, ch);
 			assign_pairwise(new_buffer_chars + index + count,
 				tail, tail_length + 1);
 
@@ -315,17 +314,17 @@ void string::insert(size_t index, char_t source, size_t count)
 				assign_pairwise_backwards(tail + count,
 					tail, tail_length - count);
 
-				assign_value(tail, count, source);
+				assign_value(tail, count, ch);
 			}
 			else
 			{
 				assign_value(tail + tail_length,
-					count - tail_length, source);
+					count - tail_length, ch);
 
 				assign_pairwise(tail + count,
 					tail, tail_length);
 
-				assign_value(tail, tail_length, source);
+				assign_value(tail, tail_length, ch);
 			}
 
 			metadata()->length = new_length;
@@ -346,7 +345,7 @@ void string::append(const char_t* source, size_t count)
 	}
 }
 
-void string::append(size_t count, char_t source)
+void string::append(size_t count, char_t ch)
 {
 	B_ASSERT(!is_locked());
 
@@ -354,7 +353,7 @@ void string::append(size_t count, char_t source)
 	{
 		if (is_shared() || count + length() > capacity())
 			alloc_and_copy(extra_capacity(length() + count));
-		assign_value(chars + length(), count, source);
+		assign_value(chars + length(), count, ch);
 		chars[metadata()->length += count] = 0;
 	}
 }
@@ -372,14 +371,14 @@ void string::append(const char_t* source, size_t count)
 	}
 }
 
-void string::append(char_t source, size_t count)
+void string::append(char_t ch, size_t count)
 {
 	B_ASSERT(count >= 0);
 
 	if (count > 0)
 	{
 		Lock(length() + count);
-		assign_value(chars + length(), source, count);
+		assign_value(chars + length(), ch, count);
 		UnlockBuffer();
 	}
 }
