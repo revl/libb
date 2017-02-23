@@ -79,7 +79,8 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(str1 == "0123456789");
 
 	// Append a series of characters to str1.
-	str1.append(3, 'D');
+	str1.append(2, 'D');
+	str1.append('D');
 
 	B_CHECK(str1 == "0123456789DDD");
 

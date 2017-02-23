@@ -172,10 +172,13 @@ public:
 	// Appends 'count' copies of 'source' to this string.
 	void append(size_t count, char_t source);
 
+	// Appends a single character to this string.
+	void append(char_t ch);
+
 	// Operator version of append(source).
 	string& operator +=(const string& source);
 
-	// Operator version of append(source).
+	// Operator version of append(char_t).
 	string& operator +=(char_t source);
 
 	// Constructs a new string from the concatenation of
@@ -501,6 +504,11 @@ inline void string::insert(size_t index, const string& source)
 inline void string::append(const string& source)
 {
 	append(source.data(), source.length());
+}
+
+inline void string::append(char_t ch)
+{
+	append(1, ch);
 }
 
 inline string& string::operator +=(const string& source)
