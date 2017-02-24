@@ -41,6 +41,7 @@ pkginclude_HEADERS = \
 	ref.h \
 	ref_count.h \
 	runtime_exception.h \
+	set.h \
 	string.h \
 	system_exception.h
 
