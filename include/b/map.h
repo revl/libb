@@ -21,295 +21,125 @@
 #ifndef B_MAP_H
 #define B_MAP_H
 
-#include "binary_tree.h"
+#include "set.h"
 
 B_BEGIN_NAMESPACE
 
+// Map element type.
 template <class Key, class T>
-class map
+struct kv_pair
 {
-public:
-	struct key_value_pair : public binary_tree_node
+	kv_pair(const Key& k, const T& v) : key(k), value(v)
 	{
-		key_value_pair(const Key& k, const T& v);
+	}
 
-		Key key;
-		T value;
+	Key key;
+	T value;
+};
 
-		const key_value_pair* next() const;
-
-		key_value_pair* next();
-	};
-
-	map();
-
-	bool is_empty() const;
-
-	size_t size() const;
-
-	template <class Search_key>
-	T* find(const Search_key& key) const;
-
-	struct search_result
+// Functor that returns the key for to the map element stored
+// with the specified tree node.
+template <class Key, class T>
+struct map_key_op
+{
+	const Key& operator()(const binary_tree_node* node) const
 	{
-		key_value_pair* parent_or_match;
-		int cmp_result;
+		B_ASSERT(node != NULL);
 
-		bool found() const;
-	};
-
-	template <class Search_key>
-	search_result search(const Search_key& key) const;
-
-	// Inserts a new value after a failed search for it.
-	key_value_pair* insert(const Key& key, const T& value,
-			const search_result& sr);
-
-	key_value_pair* insert(const Key& key, const T& value);
-
-	key_value_pair* insert(const Key& key, const T& value,
-			bool* new_inserted);
-
-	const key_value_pair* first() const;
-
-	key_value_pair* first();
-
-	const key_value_pair* last() const;
-
-	key_value_pair* last();
-
-	struct const_iterator;
-
-	const_iterator begin() const;
-
-	const_iterator end() const;
-
-private:
-	struct key_for_node
-	{
-		const Key& operator()(const binary_tree_node* node) const
-		{
-			B_ASSERT(node != NULL);
-
-			return static_cast<const key_value_pair*>(node)->key;
-		}
-	};
-
-	binary_search_tree<key_for_node> tree;
-
-public:
-	~map();
+		return static_cast<const set_element<kv_pair<Key, T> >*>(
+			node)->value.key;
+	}
 };
 
 template <class Key, class T>
-inline map<Key, T>::key_value_pair::key_value_pair(const Key& k, const T& v) :
-	key(k), value(v)
+class map : public set_base<kv_pair<Key, T>, map_key_op<Key, T> >
 {
-}
+public:
+	typedef set_base<kv_pair<Key, T>, map_key_op<Key, T> > base;
 
-template <class Key, class T>
-inline const typename map<Key, T>::key_value_pair*
-		map<Key, T>::key_value_pair::next() const
-{
-	return static_cast<const key_value_pair*>(binary_tree_node::next());
-}
+	// Finds the value that matches the specified key.
+	// Returns NULL if there is no match.
+	template <class Search_key>
+	T* find(const Search_key& key) const;
 
-template <class Key, class T>
-inline typename map<Key, T>::key_value_pair* map<Key, T>::key_value_pair::next()
-{
-	return static_cast<key_value_pair*>(binary_tree_node::next());
-}
+	// Inserts a new map element after a failed search for it.
+	// Returns a pointer to the newly insterted element.
+	kv_pair<Key, T>* insert(const Key& key, const T& value,
+			const typename base::search_result& sr);
 
-template <class Key, class T>
-inline map<Key, T>::map() : tree(key_for_node())
-{
-}
+	// Adds the specified key-value pair to this map.
+	//
+	// If an element with the same key already exists,
+	// its value is overwritten with the specified value.
+	//
+	// The method returns a pointer to the stored map element.
+	kv_pair<Key, T>* insert(const Key& key, const T& value);
 
-template <class Key, class T>
-inline bool map<Key, T>::is_empty() const
-{
-	return tree.root == NULL;
-}
-
-template <class Key, class T>
-inline size_t map<Key, T>::size() const
-{
-	return tree.number_of_nodes;
-}
+	// Adds the specified key-value pair to this map.
+	//
+	// If an element with the same key already exists,
+	// its value is overwritten with the specified value.
+	//
+	// The method returns a pointer to the stored map element
+	// and sets 'new_element' to true or false, depending on
+	// whether an insertion or a replacement has occurred.
+	kv_pair<Key, T>* insert(const Key& key, const T& value,
+			bool* new_inserted);
+};
 
 template <class Key, class T>
 template <class Search_key>
 T* map<Key, T>::find(const Search_key& key) const
 {
-	binary_tree_node* match = tree.find(key);
+	kv_pair<Key, T>* match = base::find(key);
 
-	return match != NULL ?
-		&static_cast<key_value_pair*>(match)->value : NULL;
+	return match != NULL ? &match->value : NULL;
 }
 
 template <class Key, class T>
-bool map<Key, T>::search_result::found() const
+kv_pair<Key, T>* map<Key, T>::insert(const Key &key, const T &value,
+		const typename map<Key, T>::base::search_result& sr)
 {
-	return parent_or_match != NULL && cmp_result == 0;
+	return base::insert(kv_pair<Key, T>(key, value), sr);
 }
 
 template <class Key, class T>
-template <class Search_key>
-typename map<Key, T>::search_result map<Key, T>::search(
-		const Search_key& key) const
+kv_pair<Key, T>* map<Key, T>::insert(const Key& key, const T& value)
 {
-	search_result sr;
+	typename base::search_result sr = base::search(key);
 
-	sr.parent_or_match = static_cast<key_value_pair*>(
-			tree.search(key, &sr.cmp_result));
+	kv_pair<Key, T>* match = sr.match();
 
-	return sr;
-}
-
-template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::insert(
-		const Key &key, const T &value,
-		const map<Key, T>::search_result& sr)
-{
-	B_ASSERT(!sr.found());
-
-	key_value_pair* new_wrapper = new key_value_pair(key, value);
-
-	tree.insert_after_search(new_wrapper,
-			sr.parent_or_match, sr.cmp_result);
-
-	return new_wrapper;
-}
-
-template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::insert(
-		const Key& key, const T& value)
-{
-	search_result sr = search(key);
-
-	if (sr.found())
+	if (match != NULL)
 	{
-		sr.parent_or_match->value = value;
+		match->value = value;
 
-		return sr.parent_or_match;
+		return match;
 	}
 
-	return insert(key, value, sr);
+	return base::insert(kv_pair<Key, T>(key, value), sr);
 }
 
 template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::insert(
-		const Key& key, const T& value, bool* new_inserted)
+kv_pair<Key, T>* map<Key, T>::insert(const Key& key, const T& value,
+		bool* new_inserted)
 {
-	search_result sr = search(key);
+	typename base::search_result sr = base::search(key);
 
-	if (sr.found())
+	kv_pair<Key, T>* match = sr.match();
+
+	if (match != NULL)
 	{
-		sr.parent_or_match->value = value;
+		match->value = value;
 
 		*new_inserted = false;
 
-		return sr.parent_or_match;
+		return match;
 	}
 
 	*new_inserted = true;
 
-	return insert(key, value, sr);
-}
-
-template <class Key, class T>
-const typename map<Key, T>::key_value_pair* map<Key, T>::first() const
-{
-	return static_cast<const key_value_pair*>(tree.leftmost);
-}
-
-template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::first()
-{
-	return static_cast<key_value_pair*>(tree.leftmost);
-}
-
-template <class Key, class T>
-const typename map<Key, T>::key_value_pair* map<Key, T>::last() const
-{
-	return static_cast<const key_value_pair*>(tree.rightmost);
-}
-
-template <class Key, class T>
-typename map<Key, T>::key_value_pair* map<Key, T>::last()
-{
-	return static_cast<key_value_pair*>(tree.rightmost);
-}
-
-template <class Key, class T>
-struct map<Key, T>::const_iterator
-{
-	const T* value_addr;
-
-	const_iterator(const T* va) : value_addr(va)
-	{
-	}
-
-	const_iterator& operator ++()
-	{
-		B_ASSERT(value_addr != NULL);
-
-		const key_value_pair* next_kv_pair = B_OUTERSTRUCT(
-			key_value_pair, value, value_addr)->next();
-
-		value_addr = next_kv_pair == NULL ? NULL : &next_kv_pair->value;
-
-		return *this;
-	}
-
-	bool operator ==(const const_iterator& rhs) const
-	{
-		return value_addr == rhs.value_addr;
-	}
-
-	bool operator !=(const const_iterator& rhs) const
-	{
-		return value_addr != rhs.value_addr;
-	}
-
-	const T* operator ->() const
-	{
-		return value_addr;
-	}
-
-	const T& operator *() const
-	{
-		return *value_addr;
-	}
-};
-
-template <class Key, class T>
-typename map<Key, T>::const_iterator map<Key, T>::begin() const
-{
-	const key_value_pair* first_kv_pair = first();
-
-	return first_kv_pair == NULL ? NULL : &first_kv_pair->value;
-}
-
-template <class Key, class T>
-inline typename map<Key, T>::const_iterator map<Key, T>::end() const
-{
-	return NULL;
-}
-
-template <class Key, class T>
-map<Key, T>::~map()
-{
-	for (key_value_pair* kv_pair = first(); kv_pair != NULL; )
-	{
-		key_value_pair* next_kv_pair = kv_pair->next();
-
-		tree.remove(kv_pair);
-
-		delete kv_pair;
-
-		kv_pair = next_kv_pair;
-	}
+	return base::insert(kv_pair<Key, T>(key, value), sr);
 }
 
 B_END_NAMESPACE

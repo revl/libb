@@ -490,15 +490,15 @@ void cli::impl::print_help(const positional_argument_list& commands,
 				category != cat_id_to_cat_info.end();
 				++category)
 		{
-			if (!(*category)->commands.is_empty())
+			if (!category->value->commands.is_empty())
 			{
 				prog_usage.format("\n%s:\n\n",
-					(*category)->title.data());
+					category->value->title.data());
 				help_output_stream->write(prog_usage.data(),
 					prog_usage.length());
 				for (command_info_list::const_iterator cmd =
-							(*category)->commands.begin();
-						cmd != (*category)->commands.end(); ++cmd)
+						category->value->commands.begin();
+					cmd != category->value->commands.end(); ++cmd)
 				{
 					size_t command_name_len =
 						(*cmd)->command_name_variants().length();

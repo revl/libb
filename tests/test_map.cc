@@ -22,6 +22,8 @@
 
 #include "unit_test.h"
 
+template class b::map<int, int>;
+
 B_TEST_CASE(construction)
 {
 	typedef b::map<int, int> int_map;
@@ -33,7 +35,7 @@ B_TEST_CASE(construction)
 
 	bool new_element;
 
-	int_map::key_value_pair* kv = m.insert(6, 6, &new_element);
+	b::kv_pair<int, int>* kv = m.insert(6, 6, &new_element);
 
 	B_CHECK(new_element == true);
 	B_CHECK(m.size() == 1);
@@ -42,8 +44,8 @@ B_TEST_CASE(construction)
 
 	int_map::search_result sr = m.search(6);
 
-	B_REQUIRE(sr.found());
-	B_CHECK(sr.parent_or_match->value == 6);
+	B_REQUIRE(sr.match() != NULL);
+	B_CHECK(sr.match()->value == 6);
 
 	int* v = m.find(6);
 
