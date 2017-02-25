@@ -192,8 +192,6 @@ void heap<T>::pop(T* data, size_t size)
 template <class T>
 void heap<T>::sort(T* data, size_t size)
 {
-	B_ASSERT(size >= 0);
-
 	if (size > 1)
 	{
 		size_t heap_size = 1;
