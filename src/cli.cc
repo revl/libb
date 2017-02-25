@@ -23,6 +23,7 @@
 #include <b/array.h>
 #include <b/object.h>
 #include <b/map.h>
+#include <b/set.h>
 #include <b/custom_exception.h>
 
 #define VERSION_OPT_ID -1
@@ -81,7 +82,7 @@ namespace cli_args
 
 typedef array<string> name_variant_list;
 
-struct option_or_command_info : public binary_tree_node
+struct option_or_command_info
 {
 	option_or_command_info(int opt_or_cmd_id, const string& names) :
 		id(opt_or_cmd_id)
@@ -115,17 +116,24 @@ struct option_or_command_info : public binary_tree_node
 		return name_variants.first();
 	}
 
+	bool operator <(const option_or_command_info& rhs) const
+	{
+		return id < rhs.id;
+	}
+
+	bool operator <(int rhs) const
+	{
+		return id < rhs;
+	}
+
 	int id;
 	name_variant_list name_variants;
 };
 
-struct id_for_node
+inline bool operator <(int lhs, const option_or_command_info& rhs)
 {
-	int operator ()(const b::binary_tree_node* node) const
-	{
-		return static_cast<const option_or_command_info*>(node)->id;
-	}
-};
+	return lhs < rhs.id;
+}
 
 struct option_info : public option_or_command_info
 {
@@ -294,16 +302,13 @@ public:
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
 
-	virtual ~impl();
-
 	// Command and argument definitions.
 	string program_name;
 	const option_info* single_letter_options[256];
 	map<string, const option_info*> long_opt_name_to_opt_info;
-	// TODO Use 'set' instead of binary_search_tree.
-	binary_search_tree<id_for_node> opt_id_to_opt_info;
+	set<option_info> opt_id_to_opt_info;
 	map<string, const command_info*> cmd_name_to_cmd_info;
-	binary_search_tree<id_for_node> cmd_id_to_cmd_info;
+	set<command_info> cmd_id_to_cmd_info;
 	typedef map<int, ref<category_info> > cat_id_to_cat_info_map;
 	cat_id_to_cat_info_map cat_id_to_cat_info;
 	option_info version_option_info;
@@ -339,8 +344,6 @@ B_STATIC_CONST_STRING(version, "version");
 
 cli::impl::impl(const string& program_summary) :
 	common_parts(program_summary, string()),
-	opt_id_to_opt_info(id_for_node()),
-	cmd_id_to_cmd_info(id_for_node()),
 	version_option_info(VERSION_OPT_ID, version,
 		string(), option, string()),
 	help_option_info(HELP_OPT_ID, help,
@@ -669,10 +672,8 @@ void cli::impl::register_arg(arg_type type, int arg_id,
 	B_ASSERT(arg_id >= 0 && opt_id_to_opt_info.find(arg_id) == NULL &&
 			"Option IDs must be unique");
 
-	option_info* opt_info = new option_info(arg_id,
-			name_variants, param_name, type, description);
-
-	opt_id_to_opt_info.insert(opt_info);
+	option_info* opt_info = opt_id_to_opt_info.insert(option_info(arg_id,
+		name_variants, param_name, type, description));
 
 	switch (type)
 	{
@@ -960,35 +961,6 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 	return ret_val;
 }
 
-cli::impl::~impl()
-{
-	binary_tree_node* node = opt_id_to_opt_info.leftmost;
-
-	while (node != NULL)
-	{
-		binary_tree_node* next_node = node->next();
-
-		opt_id_to_opt_info.remove(node);
-
-		delete static_cast<option_info*>(node);
-
-		node = next_node;
-	}
-
-	node = cmd_id_to_cmd_info.leftmost;
-
-	while (node != NULL)
-	{
-		binary_tree_node* next_node = node->next();
-
-		cmd_id_to_cmd_info.remove(node);
-
-		delete static_cast<command_info*>(node);
-
-		node = next_node;
-	}
-}
-
 cli::cli(const string& program_summary) :
 	impl_ref(new impl(program_summary))
 {
@@ -1052,9 +1024,8 @@ void cli::register_command(int cmd_id, const string& name_variants,
 	B_ASSERT(impl_ref->cat_id_to_cat_info.find(cat_id) != NULL &&
 			"No such category ID");
 
-	command_info* ci = new command_info(cmd_id,
-			name_variants, synopsis, usage);
-	impl_ref->cmd_id_to_cmd_info.insert(ci);
+	command_info* ci = impl_ref->cmd_id_to_cmd_info.insert(
+		command_info(cmd_id, name_variants, synopsis, usage));
 
 	(*impl_ref->cat_id_to_cat_info.find(cat_id))->commands.append(1, ci);
 
