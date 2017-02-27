@@ -23,6 +23,7 @@
 #include "unit_test.h"
 
 #include <b/string_stream.h>
+#include <b/array.h>
 
 B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
 
@@ -207,10 +208,8 @@ B_TEST_CASE(cmd_descr_indent)
 		"*\n  ls (list)   - List directory contents.\n\n"));
 }
 
-B_TEST_CASE(arg_descr_indent)
+static b::cli create_test_cli()
 {
-	using namespace b::cli_args;
-
 	b::cli cl_parser(app_summary);
 
 	B_STATIC_CONST_STRING(query_cmd_name, "query");
@@ -233,6 +232,25 @@ B_TEST_CASE(arg_descr_indent)
 
 	cl_parser.register_association(0, 1);
 
+	B_STATIC_CONST_STRING(output_opt_name, "o|output-file");
+	B_STATIC_CONST_STRING(output_opt_param, "FILE");
+	B_STATIC_CONST_STRING(output_opt_synopsis,
+		"Redirect output to the specified file.");
+
+	cl_parser.register_option_with_parameter(2, output_opt_name,
+		output_opt_param, output_opt_synopsis);
+
+	cl_parser.register_association(0, 2);
+
+	return cl_parser;
+}
+
+B_TEST_CASE(arg_descr_indent)
+{
+	b::cli cl_parser = create_test_cli();
+
+	using namespace b::cli_args;
+
 	static const char* const help_cmd[] =
 	{
 		"/path/to/test_cli",
@@ -248,7 +266,7 @@ B_TEST_CASE(arg_descr_indent)
 
 	B_CHECK(match_pattern(ss->str(),
 		"*\n  -t [--tabular-report]       : "
-		"Use tabular output format.\n\n"));
+		"Use tabular output format.\n*"));
 
 	ss = new b::string_stream;
 
@@ -259,5 +277,43 @@ B_TEST_CASE(arg_descr_indent)
 
 	B_CHECK(match_pattern(ss->str(),
 		"*\n  -t [--tabular-report]               : "
-		"Use tabular output format.\n\n"));
+		"Use tabular output format.\n*"));
+}
+
+B_TEST_CASE(options)
+{
+	b::cli cl_parser = create_test_cli();
+
+	using namespace b::cli_args;
+
+	static const char* const query_cmd[] =
+	{
+		"/path/to/test_cli",
+		"query",
+		"-t",
+		"query text"
+	};
+
+	int cmd = cl_parser.parse(sizeof(query_cmd) / sizeof(*query_cmd),
+		query_cmd);
+
+	B_CHECK(cmd == 0);
+
+	int arg_id;
+	const char* opt_value;
+
+	b::array<int> args;
+
+	while (cl_parser.next_arg(&arg_id, &opt_value))
+	{
+		args.append(1, arg_id);
+
+		if (arg_id == 0)
+			B_CHECK(b::compare_strings(opt_value,
+				"query text") == 0);
+	}
+
+	B_REQUIRE(args.size() == 2);
+	B_REQUIRE(args[0] == 1);
+	B_REQUIRE(args[1] == 0);
 }
