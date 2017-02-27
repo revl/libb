@@ -484,3 +484,10 @@ B_TEST_CASE(s_conversions)
 	B_CHECK(b::string::formatted("[%4.8s]", "testing") == "[testing]");
 	B_CHECK(b::string::formatted("[%2.4s]", "testing") == "[test]");
 }
+
+B_TEST_CASE(c_conversions)
+{
+	B_CHECK(b::string::formatted("[%c]", 'C') == "[C]");
+	B_CHECK(b::string::formatted("[%4c]", 'C') == "[   C]");
+	B_CHECK(b::string::formatted("[%-4c]", 'C') == "[C   ]");
+}

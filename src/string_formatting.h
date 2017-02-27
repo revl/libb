@@ -248,6 +248,8 @@ namespace
 
 		void process_s_conversion();
 
+		void process_c_conversion();
+
 		void process_conversion();
 
 		void recurse();
@@ -469,6 +471,38 @@ void string_formatting::process_s_conversion()
 		{
 			output_chars(B_L_PREFIX(' '), spaces);
 			output_string(str, str_len);
+		}
+	}
+}
+
+void string_formatting::process_c_conversion()
+{
+	int ch = va_arg(ap, int);
+
+	// The 'flags' member variable will be overwritten by the
+	// 'recurse()' call below. Make a local copy.
+	conversion_flags saved_flags = flags;
+
+	size_t width = saved_flags.min_width_defined &&
+		min_width > 1 ? min_width : 1;
+
+	acc_len += width;
+
+	recurse();
+
+	if (dest != NULL)
+	{
+		size_t spaces = width - 1;
+
+		if (!saved_flags.minus)
+		{
+			output_char((char_t) ch);
+			output_chars(B_L_PREFIX(' '), spaces);
+		}
+		else
+		{
+			output_chars(B_L_PREFIX(' '), spaces);
+			output_char((char_t) ch);
 		}
 	}
 }
@@ -763,6 +797,10 @@ void string_formatting::process_conversion()
 
 	case B_L_PREFIX('s'):
 		process_s_conversion();
+		return;
+
+	case B_L_PREFIX('c'):
+		process_c_conversion();
 		return;
 	}
 
