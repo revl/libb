@@ -202,7 +202,7 @@ static b::cli create_test_cli()
 
 	B_STATIC_CONST_STRING(query_arg_name, "QUERY");
 
-	cl_parser.register_positional_argument(0, query_arg_name);
+	cl_parser.register_one_or_more_positional(0, query_arg_name);
 
 	cl_parser.register_association(0, 0);
 
@@ -332,4 +332,39 @@ B_TEST_CASE(exceptions)
 	B_REQUIRE_EXCEPTION(
 		cl_parser.parse(B_COUNTOF(unknown_opt), unknown_opt),
 		"test_cli: unknown option '-f'\n*");
+}
+
+B_TEST_CASE(free_standing_double_dash)
+{
+	b::cli cl_parser = create_test_cli();
+
+	static const char* const query_cmd[] =
+	{
+		"/path/to/test_cli",
+		"query",
+		"-t",
+		"--",
+		"pos1",
+		"pos2",
+		"-f"
+	};
+
+	B_REQUIRE(cl_parser.parse(B_COUNTOF(query_cmd), query_cmd) == 0);
+
+	int arg_id;
+	const char* opt_value;
+
+	b::array<const char*> pos_arg_values;
+
+	while (cl_parser.next_arg(&arg_id, &opt_value))
+		if (arg_id == 0)
+			pos_arg_values.append(1, opt_value);
+
+	B_REQUIRE(pos_arg_values.size() == 3U);
+
+	const char* const* expected_positional = query_cmd + 4;
+
+	for (size_t i = 0U; i < 3U; ++i)
+		B_CHECK(b::compare_strings(pos_arg_values[i],
+			*expected_positional++) == 0);
 }
