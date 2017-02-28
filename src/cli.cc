@@ -373,6 +373,7 @@ void cli::impl::print_word_wrapped(int topic_len,
 	const char* text_end = line + text.length();
 
 	int offset = indent;
+
 	if (topic_len > 0 && (offset -= topic_len) < 1)
 	{
 		offset = indent;
@@ -390,28 +391,38 @@ void cli::impl::print_word_wrapped(int topic_len,
 	do
 	{
 		const char* line_end;
+
 		// Check for verbatim formatting.
 		if (*line != ' ')
 		{
 			const char* pos = line;
-			const char* max_pos = line + max_help_text_width - indent;
+			const char* max_pos = line +
+				max_help_text_width - indent;
+
 			line_end = NULL;
+
 			for (;;)
 			{
 				if (*pos == ' ')
 				{
 					line_end = pos;
+
 					while (pos < text_end && pos[1] == ' ')
 						++pos;
+
 					next_line = pos + 1;
 				}
-				else if (*pos == '\n')
-				{
-					next_line = (line_end = pos) + 1;
-					break;
-				}
+				else
+					if (*pos == '\n')
+					{
+						next_line =
+							(line_end = pos) + 1;
+						break;
+					}
+
 				if (++pos > max_pos && line_end != NULL)
 					break;
+
 				if (pos == text_end)
 				{
 					next_line = line_end = pos;
@@ -423,19 +434,25 @@ void cli::impl::print_word_wrapped(int topic_len,
 		{
 			// Preformatted text -- do not wrap.
 			line_end = strchr(line, '\n');
-			next_line = (line_end == NULL ? line_end = text_end : line_end + 1);
+
+			next_line = (line_end == NULL ?
+				line_end = text_end : line_end + 1);
 		}
-		int line_len = int(line_end - line);
+
+		ssize_t line_len = line_end - line;
+
 		if (line_len > 0)
 		{
-			string output_line = string::formatted("%*.*s\n",
-				offset + line_len, line_len, line);
+			string spaces((size_t) offset, ' ');
 
-			help_output_stream->write(output_line.data(),
-				output_line.length());
+			help_output_stream->write(spaces.data(),
+				spaces.length());
+
+			help_output_stream->write(line, (size_t) line_len);
 		}
-		else
-			help_output_stream->write("\n", 1);
+
+		help_output_stream->write("\n", 1);
+
 		offset = indent = cont_indent;
 	}
 	while ((line = next_line) < text_end);
@@ -444,28 +461,38 @@ void cli::impl::print_word_wrapped(int topic_len,
 void cli::impl::print_help(const positional_argument_list& commands,
 		bool using_help_command, bool version_info_defined) const
 {
+	// The 'help' command does not accept any options.
 	for (option_value_array::const_iterator option_value = option_values.begin();
 			option_value != option_values.end(); ++option_value)
-		if (option_value->arg_info->id != HELP_OPT_ID)
+	{
+		// Let the '--help' slip through.
+		if (option_value->arg_info->id == HELP_OPT_ID)
+			continue;
+
+		const string& opt_name =
+			option_value->arg_info->option_name_variants();
+
+		if (using_help_command)
 		{
-			string opt_name(option_value->arg_info->option_name_variants());
-			if (using_help_command)
-			{
-				cmd_error(help, "command 'help' does not "
-					"accept option '%s'",
-					opt_name.data());
-			}
-			else
-			{
-				cmd_error(dash_dash_help, "'--help' cannot be "
-					"combined with option '%s'",
-					opt_name.data());
-			}
+			cmd_error(help, "command 'help' does not "
+				"accept option '%s'",
+				opt_name.data());
 		}
+		else
+		{
+			cmd_error(dash_dash_help, "'--help' cannot be "
+				"combined with option '%s'",
+				opt_name.data());
+		}
+	}
 
 	if (!commands_are_defined())
+	{
 		print_help_on_command(this, program_name, program_name);
-	else if (commands.is_empty())
+		return;
+	}
+
+	if (commands.is_empty())
 	{
 		string prog_usage = string::formatted(
 			"Usage: %s <command> [options] [args]\n",
@@ -705,131 +732,133 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 {
 	positional_argument_list positional_argument_values;
 
-	// Part one: parsing.
+	// Part one: parse options and save positional argument values.
 	while (--argc > 0)
 	{
 		const char* arg = *++argv;
 
 		// Check if the current argument is a positional argument.
 		if (*arg != '-' || arg[1] == '\0')
+		{
 			positional_argument_values.append(1, arg);
+			continue;
+		}
+
+		// No, it's an option. Check whether it's a single-letter
+		// option or a long option.
+		const option_info* opt_info;
+		const char* opt_param;
+		if (*++arg == '-')
+		{
+			// It's a long option.
+			// If it's a free standing double dash marker,
+			// treat the rest of arguments as positional.
+			if (*++arg == '\0')
+			{
+				while (--argc > 0)
+					positional_argument_values.append(1, *++argv);
+				break;
+			}
+			// Check if a parameter is specified for this option.
+			opt_param = strchr(arg, '=');
+			string opt_name(arg, opt_param != NULL ?
+					(size_t) (opt_param++ - arg) :
+					calc_length(arg));
+			const option_info** oi =
+				long_opt_name_to_opt_info.find(opt_name);
+			if (oi == NULL ||
+					(*oi == &version_option_info &&
+					version_info.is_empty()))
+				error("unknown option '--%s'",
+						opt_name.data());
+			opt_info = *oi;
+			// Check if this option must have a parameter.
+			if (opt_info->type == option)
+			{
+				// No, it's a switch; it's not supposed
+				// to have a parameter.
+				if (opt_param != NULL)
+					error("option '--%s' does not "
+							"expect a "
+							"parameter",
+						opt_name.data());
+				opt_param = "yes";
+			}
+			else
+				// The option expects a parameter.
+				if (opt_param == NULL)
+				{
+					// Parameter is not specified; use the next
+					// command line argument as a parameter for
+					// this option.
+					if (--argc == 0)
+						error("option '--%s' "
+							"requires a "
+							"parameter",
+							opt_name.data()
+							);
+					opt_param = *++argv;
+				}
+		}
 		else
 		{
-			// No, it's an option. Check whether it's a
-			// single-letter option or a long option.
-			const option_info* opt_info;
-			const char* opt_param;
-			if (*++arg == '-')
+			// The current argument is a (series of) one-letter option(s).
+			for (;;)
 			{
-				// It's a long option.
-				// If it's a free standing double dash marker,
-				// treat the rest of arguments as positional.
-				if (*++arg == '\0')
-				{
-					while (--argc > 0)
-						positional_argument_values.append(1, *++argv);
-					break;
-				}
-				// Check if a parameter is specified for this option.
-				opt_param = strchr(arg, '=');
-				string opt_name(arg, opt_param != NULL ?
-						(size_t) (opt_param++ - arg) :
-						calc_length(arg));
-				const option_info** oi =
-					long_opt_name_to_opt_info.find(opt_name);
-				if (oi == NULL ||
-						(*oi == &version_option_info &&
-						version_info.is_empty()))
-					error("unknown option '--%s'",
-							opt_name.data());
-				opt_info = *oi;
+				char opt_letter = *arg++;
+				opt_info = single_letter_options[
+					(unsigned char) opt_letter];
+				if (opt_info == NULL)
+					error("unknown option '-%c'",
+							opt_letter);
+
 				// Check if this option must have a parameter.
 				if (opt_info->type == option)
 				{
-					// No, it's a switch; it's not supposed to have a parameter.
-					if (opt_param != NULL)
-						error("option '--%s' does not "
-								"expect a "
-								"parameter",
-							opt_name.data());
+					// It's a switch; it's not supposed to have a parameter.
 					opt_param = "yes";
+					if (*arg == '\0')
+						break;
 				}
 				else
-					// The option expects a parameter.
-					if (opt_param == NULL)
+				{
+					// It's an option that expects a parameter.
+					if (*arg == '\0')
 					{
-						// Parameter is not specified; use the next
-						// command line argument as a parameter for
-						// this option.
+						// Use the next command line argument
+						// as a parameter for this option.
 						if (--argc == 0)
-							error("option '--%s' "
-								"requires a "
-								"parameter",
-								opt_name.data()
-								);
+							error("option "
+								"'-%c' "
+								"requir"
+								"es a p"
+								"aramet"
+								"er",
+								opt_letter);
 						opt_param = *++argv;
 					}
-			}
-			else
-			{
-				// The current argument is a (series of) one-letter option(s).
-				for (;;)
-				{
-					char opt_letter = *arg++;
-					opt_info = single_letter_options[
-						(unsigned char) opt_letter];
-					if (opt_info == NULL)
-						error("unknown option '-%c'",
-								opt_letter);
-
-					// Check if this option must have a parameter.
-					if (opt_info->type == option)
-					{
-						// It's a switch; it's not supposed to have a parameter.
-						opt_param = "yes";
-						if (*arg == '\0')
-							break;
-					}
 					else
-					{
-						// It's an option that expects a parameter.
-						if (*arg == '\0')
-						{
-							// Use the next command line argument
-							// as a parameter for this option.
-							if (--argc == 0)
-								error("option "
-									"'-%c' "
-									"requir"
-									"es a p"
-									"aramet"
-									"er",
-									opt_letter);
-							opt_param = *++argv;
-						}
-						else
-							opt_param = arg;
-						break;
-					}
-
-					arg_value av =
-					{
-						opt_info,
-						opt_param
-					};
-
-					option_values.append(1, av);
+						opt_param = arg;
+					break;
 				}
+
+				arg_value av =
+				{
+					opt_info,
+					opt_param
+				};
+
+				option_values.append(1, av);
 			}
-
-			arg_value av =
-			{
-				opt_info,
-				opt_param
-			};
-
-			option_values.append(1, av);
 		}
+
+		arg_value av =
+		{
+			opt_info,
+			opt_param
+		};
+
+		option_values.append(1, av);
 	}
 
 	// Part two: validation.
@@ -961,71 +990,75 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 	return ret_val;
 }
 
-cli::cli(const string& program_summary) :
-	impl_ref(new impl(program_summary))
+cli::cli(const string& program_summary) : impl_ref(new impl(program_summary))
 {
 }
 
-void cli::register_option(int opt_id, const string& name_variants,
+void cli::register_option(int unique_arg_id, const string& name_variants,
 		const string& description)
 {
-	impl_ref->register_arg(option, opt_id,
+	impl_ref->register_arg(option, unique_arg_id,
 		name_variants, string(), description);
 }
 
-void cli::register_option_with_parameter(int opt_id,
+void cli::register_option_with_parameter(int unique_arg_id,
 		const string& name_variants, const string& param_name,
 		const string& description)
 {
-	impl_ref->register_arg(option_with_parameter, opt_id,
+	impl_ref->register_arg(option_with_parameter, unique_arg_id,
 		name_variants, param_name, description);
 }
 
-void cli::register_positional_argument(int arg_id, const string& arg_name)
+void cli::register_positional_argument(int unique_arg_id,
+		const string& arg_name)
 {
-	impl_ref->register_arg(positional_argument, arg_id,
+	impl_ref->register_arg(positional_argument, unique_arg_id,
 		arg_name, string(), string());
 }
 
-void cli::register_optional_positional(int arg_id, const string& arg_name)
+void cli::register_optional_positional(int unique_arg_id,
+		const string& arg_name)
 {
-	impl_ref->register_arg(optional_positional, arg_id,
+	impl_ref->register_arg(optional_positional, unique_arg_id,
 		arg_name, string(), string());
 }
 
-void cli::register_zero_or_more_positional(int arg_id, const string& arg_name)
+void cli::register_zero_or_more_positional(int unique_arg_id,
+		const string& arg_name)
 {
-	impl_ref->register_arg(zero_or_more_positional, arg_id,
+	impl_ref->register_arg(zero_or_more_positional, unique_arg_id,
 		arg_name, string(), string());
 }
 
-void cli::register_one_or_more_positional(int arg_id, const string& arg_name)
+void cli::register_one_or_more_positional(int unique_arg_id,
+		const string& arg_name)
 {
-	impl_ref->register_arg(one_or_more_positional, arg_id,
+	impl_ref->register_arg(one_or_more_positional, unique_arg_id,
 		arg_name, string(), string());
 }
 
-void cli::register_command_category(int cat_id, const string& title)
+void cli::register_command_category(int unique_cat_id, const string& title)
 {
-	B_ASSERT(cat_id >= 0 &&
-			impl_ref->cat_id_to_cat_info.find(cat_id) == NULL &&
-			"Category IDs must be unique");
+	B_ASSERT(unique_cat_id >= 0 &&
+		impl_ref->cat_id_to_cat_info.find(unique_cat_id) == NULL &&
+		"Category IDs must be unique");
 
-	impl_ref->cat_id_to_cat_info.insert(cat_id, new category_info(title));
+	impl_ref->cat_id_to_cat_info.insert(unique_cat_id,
+		new category_info(title));
 }
 
-void cli::register_command(int cmd_id, const string& name_variants,
+void cli::register_command(int unique_cmd_id, const string& name_variants,
 	const string& synopsis, const string& usage, int cat_id)
 {
-	B_ASSERT(cmd_id >= 0 &&
-			impl_ref->cmd_id_to_cmd_info.find(cmd_id) == NULL &&
-			"Command IDs must be unique");
+	B_ASSERT(unique_cmd_id >= 0 &&
+		impl_ref->cmd_id_to_cmd_info.find(unique_cmd_id) == NULL &&
+		"Command IDs must be unique");
 
 	B_ASSERT(impl_ref->cat_id_to_cat_info.find(cat_id) != NULL &&
-			"No such category ID");
+		"No such category ID");
 
 	command_info* ci = impl_ref->cmd_id_to_cmd_info.insert(
-		command_info(cmd_id, name_variants, synopsis, usage));
+		command_info(unique_cmd_id, name_variants, synopsis, usage));
 
 	(*impl_ref->cat_id_to_cat_info.find(cat_id))->commands.append(1, ci);
 

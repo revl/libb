@@ -91,14 +91,14 @@ B_OPAQUE:
 	// Registers an optional switch meant to enable a non-default
 	// mode of operation. Name variants must be separated by
 	// vertical bars.
-	void register_option(int opt_id,
+	void register_option(int unique_arg_id,
 			const string& name_variants,
 			const string& description);
 
 	// Registers an option that requires a value. Option name
 	// variants, both long and short, must be separated by
 	// vertical bars.
-	void register_option_with_parameter(int opt_id,
+	void register_option_with_parameter(int unique_arg_id,
 			const string& name_variants,
 			const string& param_name,
 			const string& description);
@@ -107,29 +107,29 @@ B_OPAQUE:
 	// arguments cannot have name variants. For a particular
 	// command, the order of its positional arguments is
 	// defined by the 'register_association()' method.
-	void register_positional_argument(int arg_id,
+	void register_positional_argument(int unique_arg_id,
 			const string& arg_name);
 
 	// Registers a positional argument that can be omitted.
-	void register_optional_positional(int arg_id,
+	void register_optional_positional(int unique_arg_id,
 			const string& arg_name);
 
 	// Registers an optional sequence of arguments.
-	void register_zero_or_more_positional(int arg_id,
+	void register_zero_or_more_positional(int unique_arg_id,
 			const string& arg_name);
 
 	// Registers a non-empty sequence of arguments.
-	void register_one_or_more_positional(int arg_id,
+	void register_one_or_more_positional(int unique_arg_id,
 			const string& arg_name);
 
 	// Registers a command category with the specified title.
-	void register_command_category(int cat_id, const string& title);
+	void register_command_category(int unique_cat_id, const string& title);
 
 	// Registers a command with the specified identifier,
 	// name, and short and long descriptions. Commands can
 	// have aliases separated by vertical bars. Command
 	// identifier cannot be -1.
-	void register_command(int cmd_id,
+	void register_command(int unique_cmd_id,
 			const string& name_variants,
 			const string& synopsis,
 			const string& usage,
