@@ -119,6 +119,8 @@
 #define B_OUTERSTRUCT(s, m, a) const_cast<s*>((const s*) \
 	((const char*) (a) - B_OFFSETOF(s, m)))
 
+#define B_COUNTOF(array) (sizeof(array) / sizeof(*(array)))
+
 #ifdef B_DEBUG
 #include <assert.h>
 #define B_ASSERT(expr) assert(expr)

@@ -32,9 +32,7 @@ B_TEST_CASE(seed_1000)
 		1456914738, 117026435, 1204643840, 405108793, 665566846
 	};
 
-	const size_t number_of_values = sizeof(values) / sizeof(*values);
-
-	for (size_t i = 0; i < number_of_values; ++i)
+	for (size_t i = 0; i < B_COUNTOF(values); ++i)
 		B_CHECK(values[i] == prng.next());
 }
 
@@ -50,14 +48,12 @@ B_TEST_CASE(uniform_distribution)
 {
 	size_t counters[10] = {0};
 
-	const size_t number_of_counters = sizeof(counters) / sizeof(*counters);
-
 	b::pseudorandom prng;
 
-	for (size_t i = 0; i < number_of_counters * 100000; ++i)
-		++counters[prng.next(number_of_counters)];
+	for (size_t i = 0; i < B_COUNTOF(counters) * 100000; ++i)
+		++counters[prng.next(B_COUNTOF(counters))];
 
-	for (size_t i = 0; i < number_of_counters; ++i)
+	for (size_t i = 0; i < B_COUNTOF(counters); ++i)
 	{
 		B_CHECK(counters[i] > 98000);
 		B_CHECK(counters[i] < 102000);

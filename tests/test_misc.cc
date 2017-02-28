@@ -84,24 +84,22 @@ B_TEST_CASE(shuffle)
 {
 	unsigned numbers[100];
 
-	const unsigned count = sizeof(numbers) / sizeof(*numbers);
-
-	for (unsigned i = 0; i < count; ++i)
+	for (unsigned i = 0; i < B_COUNTOF(numbers); ++i)
 		numbers[i] = i;
 
 	bool ordered = true;
 
-	b::shuffle(numbers, count);
+	b::shuffle(numbers, B_COUNTOF(numbers));
 
-	for (unsigned i = 0; i < count; ++i)
+	for (unsigned i = 0; i < B_COUNTOF(numbers); ++i)
 		if (numbers[i] != i)
 			ordered = false;
 
 	B_CHECK(!ordered);
 
-	b::heap<unsigned>::sort(numbers, count);
+	b::heap<unsigned>::sort(numbers, B_COUNTOF(numbers));
 
-	for (unsigned i = 0; i < count; ++i)
+	for (unsigned i = 0; i < B_COUNTOF(numbers); ++i)
 		B_CHECK(numbers[i] == i);
 }
 

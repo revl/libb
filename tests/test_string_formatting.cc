@@ -173,7 +173,7 @@ static b::string int_to_str(unsigned long n, unsigned base = 10)
 
 	char buffer[B_DEC_BUF_LEN];
 
-	char* const buffer_end = buffer + sizeof(buffer) / sizeof(*buffer);
+	char* const buffer_end = buffer + B_COUNTOF(buffer);
 	char* ptr = buffer_end;
 
 	do

@@ -42,8 +42,7 @@ B_TEST_CASE(app_description)
 	b::ref<b::string_stream> ss = new b::string_stream;
 
 	// Without program description.
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		help_output_stream = ss);
 
 	B_CHECK(ss->str() == "test_cli: Test the b::cli class.\n\n"
@@ -58,8 +57,7 @@ B_TEST_CASE(app_description)
 		"convey the purpose of this application. However, "
 		"it does not substitute a proper manual page.");
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		(program_description = app_description,
 		help_output_stream = ss));
 
@@ -86,16 +84,14 @@ B_TEST_CASE(version_option)
 	// The '--version' option without 'version_info' must generate
 	// an exception.
 	B_REQUIRE_EXCEPTION(cl_parser.parse(
-		sizeof(version_option) / sizeof(*version_option),
-			version_option),
+		B_COUNTOF(version_option), version_option),
 		"test_cli: unknown option '--version'\n*");
 
 	ss = new b::string_stream;
 
 	B_STATIC_CONST_STRING(app_version, "test_cli version 1.2");
 
-	cl_parser.parse(sizeof(version_option) / sizeof(*version_option),
-		version_option,
+	cl_parser.parse(B_COUNTOF(version_option), version_option,
 		(version_info = app_version,
 		help_output_stream = ss));
 
@@ -110,8 +106,7 @@ B_TEST_CASE(default_app_name)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(), "*\nUsage: test_cli\n*"));
@@ -120,8 +115,7 @@ B_TEST_CASE(default_app_name)
 
 	B_STATIC_CONST_STRING(app_name, "console_app");
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		(program_name = app_name,
 		help_output_stream = ss));
 
@@ -140,8 +134,7 @@ B_TEST_CASE(help_text_width)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		(program_description = long_text,
 		help_output_stream = ss));
 
@@ -154,8 +147,7 @@ B_TEST_CASE(help_text_width)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		(program_description = long_text,
 		help_text_width = 24,
 		help_output_stream = ss));
@@ -182,8 +174,7 @@ B_TEST_CASE(cmd_descr_indent)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(),
@@ -191,8 +182,7 @@ B_TEST_CASE(cmd_descr_indent)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_option) / sizeof(*help_option),
-		help_option,
+	cl_parser.parse(B_COUNTOF(help_option), help_option,
 		(cmd_descr_indent = 16,
 		help_output_stream = ss));
 
@@ -252,8 +242,7 @@ B_TEST_CASE(arg_descr_indent)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_cmd) / sizeof(*help_cmd),
-		help_cmd,
+	cl_parser.parse(B_COUNTOF(help_cmd), help_cmd,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(),
@@ -262,8 +251,7 @@ B_TEST_CASE(arg_descr_indent)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(sizeof(help_cmd) / sizeof(*help_cmd),
-		help_cmd,
+	cl_parser.parse(B_COUNTOF(help_cmd), help_cmd,
 		(help_output_stream = ss,
 		arg_descr_indent = 40));
 
@@ -286,8 +274,7 @@ B_TEST_CASE(options)
 		"query text"
 	};
 
-	int cmd = cl_parser.parse(sizeof(query_cmd) / sizeof(*query_cmd),
-		query_cmd);
+	int cmd = cl_parser.parse(B_COUNTOF(query_cmd), query_cmd);
 
 	B_CHECK(cmd == 0);
 
@@ -321,8 +308,7 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(sizeof(unknown_cmd) / sizeof(*unknown_cmd),
-			unknown_cmd),
+		cl_parser.parse(B_COUNTOF(unknown_cmd), unknown_cmd),
 		"test_cli: unknown command 'nosuchcmd'\n*");
 
 	static const char* const missing_arg[] =
@@ -332,8 +318,7 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(sizeof(missing_arg) / sizeof(*missing_arg),
-			missing_arg),
+		cl_parser.parse(B_COUNTOF(missing_arg), missing_arg),
 		"test_cli: missing argument 'QUERY'\n*");
 
 	static const char* const unknown_opt[] =
@@ -345,7 +330,6 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(sizeof(unknown_opt) / sizeof(*unknown_opt),
-			unknown_opt),
+		cl_parser.parse(B_COUNTOF(unknown_opt), unknown_opt),
 		"test_cli: unknown option '-f'\n*");
 }

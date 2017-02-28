@@ -52,22 +52,20 @@ B_TEST_CASE(push_pop)
 	B_CHECK(heap.is_empty());
 }
 
-#define COUNT (sizeof(data) / sizeof(*data))
-
 B_TEST_CASE(heapsort)
 {
 	b::pseudorandom rand(123);
 
 	unsigned data[1000];
 
-	for (size_t i = 0; i < COUNT; ++i)
+	for (size_t i = 0; i < B_COUNTOF(data); ++i)
 		data[i] = rand.next();
 
-	b::heap<unsigned>::sort(data, COUNT);
+	b::heap<unsigned>::sort(data, B_COUNTOF(data));
 
 	unsigned prev_value = data[0];
 
-	for (size_t i = 1; i < COUNT; ++i)
+	for (size_t i = 1; i < B_COUNTOF(data); ++i)
 	{
 		B_CHECK(prev_value <= data[i]);
 		prev_value = data[i];
