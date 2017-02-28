@@ -188,15 +188,8 @@ B_TEST_CASE(create_directory)
 	// create_directory() with no additional arguments
 	// should not create missing parent directories.
 	if (!b::is_directory(new_dir))
-		try
-		{
-			b::create_directory(new_dir);
-
-			B_REQUIRE("create no parents" && false);
-		}
-		catch (b::system_exception&)
-		{
-		}
+		B_REQUIRE_EXCEPTION(b::create_directory(new_dir),
+			(new_dir + '*').data());
 
 	try
 	{

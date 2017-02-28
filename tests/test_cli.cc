@@ -83,20 +83,12 @@ B_TEST_CASE(version_option)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	try
-	{
-		cl_parser.parse(
-			sizeof(version_option) / sizeof(*version_option),
-			version_option);
-
-		B_CHECK("The '--version' option without 'version_info' "
-			"must generate an exception." && false);
-	}
-	catch (b::runtime_exception& e)
-	{
-		B_CHECK(match_pattern(e.message(),
-			"test_cli: unknown option '--version'\n*"));
-	}
+	// The '--version' option without 'version_info' must generate
+	// an exception.
+	B_REQUIRE_EXCEPTION(cl_parser.parse(
+		sizeof(version_option) / sizeof(*version_option),
+			version_option),
+		"test_cli: unknown option '--version'\n*");
 
 	ss = new b::string_stream;
 

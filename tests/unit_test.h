@@ -91,6 +91,29 @@ B_END_NAMESPACE
 		} \
 	while (0)
 
+#define B_REQUIRE_EXCEPTION(operation, expected_message_pattern) \
+	try \
+	{ \
+		operation; \
+		++failed_checks; \
+		fprintf(stderr, "%s:%d: error: %s must throw an exception\n", \
+			__FILE__, __LINE__, #operation); \
+		return; \
+	} \
+	catch (b::runtime_exception& e) \
+	{ \
+		if (!b::match_pattern(e.message(), expected_message_pattern)) \
+		{ \
+			++failed_checks; \
+			fprintf(stderr, "%s:%d: error: exception " \
+				"message \"%s\" does not match " \
+				"the expected pattern \"%s\"\n", \
+				__FILE__, __LINE__, e.message().data(), \
+				expected_message_pattern); \
+			return; \
+		} \
+	}
+
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
