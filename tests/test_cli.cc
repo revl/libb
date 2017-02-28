@@ -309,3 +309,43 @@ B_TEST_CASE(options)
 	B_REQUIRE(args[0] == 1);
 	B_REQUIRE(args[1] == 0);
 }
+
+B_TEST_CASE(exceptions)
+{
+	b::cli cl_parser = create_test_cli();
+
+	static const char* const unknown_cmd[] =
+	{
+		"/path/to/test_cli",
+		"nosuchcmd"
+	};
+
+	B_REQUIRE_EXCEPTION(
+		cl_parser.parse(sizeof(unknown_cmd) / sizeof(*unknown_cmd),
+			unknown_cmd),
+		"test_cli: unknown command 'nosuchcmd'\n*");
+
+	static const char* const missing_arg[] =
+	{
+		"/path/to/test_cli",
+		"query"
+	};
+
+	B_REQUIRE_EXCEPTION(
+		cl_parser.parse(sizeof(missing_arg) / sizeof(*missing_arg),
+			missing_arg),
+		"test_cli: missing argument 'QUERY'\n*");
+
+	static const char* const unknown_opt[] =
+	{
+		"/path/to/test_cli",
+		"query",
+		"query text",
+		"-f"
+	};
+
+	B_REQUIRE_EXCEPTION(
+		cl_parser.parse(sizeof(unknown_opt) / sizeof(*unknown_opt),
+			unknown_opt),
+		"test_cli: unknown option '-f'\n*");
+}
