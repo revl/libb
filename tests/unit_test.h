@@ -76,7 +76,8 @@ B_END_NAMESPACE
 	do \
 		if (!(condition)) { \
 			++failed_checks; \
-			fprintf(stderr, "%s:%d: FAILED CHECK: %s\n", \
+			fprintf(stderr, "%s:%d: error: " \
+				"check \"%s\" failed\n", \
 				__FILE__, __LINE__, #condition); \
 		} \
 	while (0)
@@ -85,7 +86,8 @@ B_END_NAMESPACE
 	do \
 		if (!(condition)) { \
 			++failed_checks; \
-			fprintf(stderr, "%s:%d: FAILED REQUIREMENT: %s\n", \
+			fprintf(stderr, "%s:%d: error: required " \
+				"check \"%s\" failed\n", \
 				__FILE__, __LINE__, #condition); \
 			return; \
 		} \
@@ -96,8 +98,8 @@ B_END_NAMESPACE
 	{ \
 		operation; \
 		++failed_checks; \
-		fprintf(stderr, "%s:%d: error: %s must throw an exception\n", \
-			__FILE__, __LINE__, #operation); \
+		fprintf(stderr, "%s:%d: error: \"%s\" failed to throw " \
+			"an exception\n", __FILE__, __LINE__, #operation); \
 		return; \
 	} \
 	catch (b::runtime_exception& e) \
