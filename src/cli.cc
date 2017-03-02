@@ -299,6 +299,10 @@ public:
 	void register_arg(arg_type type, int arg_id,
 			const string& name_variants, const string& param_name,
 			const string& description);
+	void parse_long_option(int* argc, const char* const** argv,
+			const char* arg, bool no_version_opt);
+	void parse_single_letter_options(int* argc, const char* const** argv,
+			const char* arg);
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
 
@@ -327,6 +331,19 @@ public:
 	};
 	typedef array<arg_value> option_value_array;
 	option_value_array option_values;
+
+	void append_option_value(const option_info* opt_info,
+			const char* opt_param)
+	{
+		arg_value av =
+		{
+			opt_info,
+			opt_param
+		};
+
+		option_values.append(1, av);
+	}
+
 	option_value_array::const_iterator next_option_value;
 
 	// Help text formatting and error reporting.
@@ -727,6 +744,96 @@ void cli::impl::register_arg(arg_type type, int arg_id,
 	}
 }
 
+void cli::impl::parse_long_option(int* argc, const char* const** argv,
+		const char* arg, bool no_version_opt)
+{
+	// Check if a parameter is specified for this option.
+	const char* opt_param = strchr(arg, '=');
+	string opt_name(arg, opt_param != NULL ?
+			(size_t) (opt_param++ - arg) : calc_length(arg));
+
+	const option_info** oi = long_opt_name_to_opt_info.find(opt_name);
+
+	if (oi == NULL || (*oi == &version_option_info && no_version_opt))
+		error("unknown option '--%s'", opt_name.data());
+
+	// Check if this option must have a parameter.
+	if ((*oi)->type == option)
+	{
+		// No, it's a switch; it's not supposed to have a parameter.
+		if (opt_param != NULL)
+			error("option '--%s' does not expect a parameter",
+				opt_name.data());
+
+		opt_param = "yes";
+	}
+	else
+		// The option expects a parameter.
+		if (opt_param == NULL)
+		{
+			// Parameter is not specified; use the next command
+			// line argument as a parameter for this option.
+			if (--*argc == 0)
+				error("option '--%s' requires a parameter",
+					opt_name.data());
+
+			opt_param = *++*argv;
+		}
+
+	append_option_value(*oi, opt_param);
+}
+
+void cli::impl::parse_single_letter_options(int* argc, const char* const** argv,
+		const char* arg)
+{
+	const option_info* opt_info;
+	const char* opt_param;
+
+	// The current argument is a (series of) one-letter option(s).
+	for (;;)
+	{
+		char opt_letter = *arg++;
+
+		opt_info = single_letter_options[(unsigned char) opt_letter];
+
+		if (opt_info == NULL)
+			error("unknown option '-%c'", opt_letter);
+
+		// Check if this option must have a parameter.
+		if (opt_info->type == option)
+		{
+			// It's a switch; it's not supposed to have
+			// a parameter.
+			opt_param = "yes";
+
+			if (*arg == '\0')
+				break;
+		}
+		else
+		{
+			// It's an option that expects a parameter.
+			if (*arg == '\0')
+			{
+				// Use the next command line argument
+				// as a parameter for this option.
+				if (--*argc == 0)
+					error("option '-%c' requires "
+						"a parameter", opt_letter);
+
+				opt_param = *++*argv;
+			}
+			else
+				opt_param = arg;
+
+			break;
+		}
+
+		append_option_value(opt_info, opt_param);
+	}
+
+	append_option_value(opt_info, opt_param);
+}
+
 int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		const string& version_info)
 {
@@ -746,123 +853,27 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 
 		// No, it's an option. Check whether it's a single-letter
 		// option or a long option.
-		const option_info* opt_info;
-		const char* opt_param;
-		if (*++arg == '-')
+		if (*++arg != '-')
 		{
-			// It's a long option.
-			// If it's a free standing double dash marker,
-			// treat the rest of arguments as positional.
-			if (*++arg == '\0')
-			{
-				positional_argument_values.append(++argv,
-					--argc);
-				break;
-			}
-			// Check if a parameter is specified for this option.
-			opt_param = strchr(arg, '=');
-			string opt_name(arg, opt_param != NULL ?
-					(size_t) (opt_param++ - arg) :
-					calc_length(arg));
-			const option_info** oi =
-				long_opt_name_to_opt_info.find(opt_name);
-			if (oi == NULL ||
-					(*oi == &version_option_info &&
-					version_info.is_empty()))
-				error("unknown option '--%s'",
-						opt_name.data());
-			opt_info = *oi;
-			// Check if this option must have a parameter.
-			if (opt_info->type == option)
-			{
-				// No, it's a switch; it's not supposed
-				// to have a parameter.
-				if (opt_param != NULL)
-					error("option '--%s' does not "
-							"expect a "
-							"parameter",
-						opt_name.data());
-				opt_param = "yes";
-			}
-			else
-				// The option expects a parameter.
-				if (opt_param == NULL)
-				{
-					// Parameter is not specified; use the next
-					// command line argument as a parameter for
-					// this option.
-					if (--argc == 0)
-						error("option '--%s' "
-							"requires a "
-							"parameter",
-							opt_name.data()
-							);
-					opt_param = *++argv;
-				}
-		}
-		else
-		{
-			// The current argument is a (series of) one-letter option(s).
-			for (;;)
-			{
-				char opt_letter = *arg++;
-				opt_info = single_letter_options[
-					(unsigned char) opt_letter];
-				if (opt_info == NULL)
-					error("unknown option '-%c'",
-							opt_letter);
-
-				// Check if this option must have a parameter.
-				if (opt_info->type == option)
-				{
-					// It's a switch; it's not supposed to have a parameter.
-					opt_param = "yes";
-					if (*arg == '\0')
-						break;
-				}
-				else
-				{
-					// It's an option that expects a parameter.
-					if (*arg == '\0')
-					{
-						// Use the next command line argument
-						// as a parameter for this option.
-						if (--argc == 0)
-							error("option "
-								"'-%c' "
-								"requir"
-								"es a p"
-								"aramet"
-								"er",
-								opt_letter);
-						opt_param = *++argv;
-					}
-					else
-						opt_param = arg;
-					break;
-				}
-
-				arg_value av =
-				{
-					opt_info,
-					opt_param
-				};
-
-				option_values.append(1, av);
-			}
+			parse_single_letter_options(&argc, &argv, arg);
+			continue;
 		}
 
-		arg_value av =
+		// If it's a free standing double dash marker,
+		// treat the rest of arguments as positional.
+		if (*++arg == '\0')
 		{
-			opt_info,
-			opt_param
-		};
+			positional_argument_values.append(++argv, --argc);
+			break;
+		}
 
-		option_values.append(1, av);
+		// It's a long option.
+		parse_long_option(&argc, &argv, arg, version_info.is_empty());
 	}
 
 	// Part two: validation.
 	option_value_array::const_iterator option_value(option_values.begin());
+
 	while (option_value != option_values.end())
 		switch (option_value->arg_info->id)
 		{
@@ -901,7 +912,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		}
 
 		command_name.assign(positional_argument_values.first(),
-				calc_length(positional_argument_values.first()));
+			calc_length(positional_argument_values.first()));
+
 		positional_argument_values.remove(0);
 
 		const command_info** command =
@@ -922,8 +934,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 
 		for (option_value = option_values.begin();
 				option_value != option_values.end(); ++option_value)
-			if (!ci->is_option_accepted(
-					option_value->arg_info))
+			if (!ci->is_option_accepted(option_value->arg_info))
 				cmd_error(command_name,
 						"command '%s' doesn't accept option '%s'",
 						command_name.data(),
@@ -940,48 +951,40 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 
 	for (;;)
 	{
-		if (expected_arg != expected_positional_arguments->end())
+		if (expected_arg == expected_positional_arguments->end())
+		{
 			if (arg_val == positional_argument_values.end())
-				switch ((*expected_arg)->type)
-				{
-				case positional_argument:
-				case one_or_more_positional:
-					cmd_error(command_name,
-						"missing argument '%s'",
-						(*expected_arg)->primary_name().data());
-				}
-			else
-				switch ((*expected_arg)->type)
-				{
-				case positional_argument:
-				case optional_positional:
-					{
-						arg_value av =
-						{
-							*expected_arg,
-							*arg_val
-						};
-						option_values.append(1, av);
-						++arg_val;
-						++expected_arg;
-					}
-					continue;
-				default:
-					do
-					{
-						arg_value av =
-						{
-							*expected_arg,
-							*arg_val
-						};
-						option_values.append(1, av);
-					}
-					while (++arg_val != positional_argument_values.end());
-				}
-		else
-			if (arg_val != positional_argument_values.end())
-				cmd_error(command_name,
-					"too many positional arguments");
+				break;
+
+			cmd_error(command_name,
+				"too many positional arguments");
+		}
+
+		if (arg_val == positional_argument_values.end())
+		{
+			switch ((*expected_arg)->type)
+			{
+			case positional_argument:
+			case one_or_more_positional:
+				cmd_error(command_name, "missing argument '%s'",
+					(*expected_arg)->primary_name().data());
+			}
+
+			break;
+		}
+
+		switch ((*expected_arg)->type)
+		{
+		case positional_argument:
+		case optional_positional:
+			append_option_value(*expected_arg++, *arg_val++);
+			continue;
+		}
+
+		do
+			append_option_value(*expected_arg, *arg_val);
+		while (++arg_val != positional_argument_values.end());
+
 		break;
 	}
 
