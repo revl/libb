@@ -405,10 +405,19 @@ B_TEST_CASE(arg_order)
 	const char* opt_value;
 
 	while (cl_parser.next_arg(&arg_id, &opt_value))
-		if (arg_id == tabular_report_opt)
+		switch (arg_id)
+		{
+		case tabular_report_opt:
 			arg_order.append('t');
-		else
-			arg_order.append(opt_value, b::calc_length(opt_value));
+			break;
 
-	B_CHECK(arg_order == "ttttF1tF2F3F4A1A2A3");
+		case output_file_opt:
+			arg_order.append('o');
+			/* FALL THROUGH */
+
+		case query_arg:
+			arg_order.append(opt_value, b::calc_length(opt_value));
+		}
+
+	B_CHECK(arg_order == "ttttoF1toF2oF3oF4A1A2A3");
 }
