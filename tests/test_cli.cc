@@ -190,6 +190,13 @@ B_TEST_CASE(cmd_descr_indent)
 		"*\n  ls (list)   - List directory contents.\n\n"));
 }
 
+enum
+{
+	query_arg,
+	tabular_report_opt,
+	output_file_opt
+};
+
 static b::cli create_test_cli()
 {
 	b::cli cl_parser(app_summary);
@@ -202,7 +209,7 @@ static b::cli create_test_cli()
 
 	B_STATIC_CONST_STRING(query_arg_name, "QUERY");
 
-	cl_parser.register_one_or_more_positional(0, query_arg_name);
+	cl_parser.register_one_or_more_positional(query_arg, query_arg_name);
 
 	cl_parser.register_association(0, 0);
 
@@ -210,19 +217,20 @@ static b::cli create_test_cli()
 	B_STATIC_CONST_STRING(tabular_opt_synopsis,
 		"Use tabular output format.");
 
-	cl_parser.register_option(1, tabular_opt_name, tabular_opt_synopsis);
+	cl_parser.register_option(tabular_report_opt,
+		tabular_opt_name, tabular_opt_synopsis);
 
-	cl_parser.register_association(0, 1);
+	cl_parser.register_association(0, tabular_report_opt);
 
 	B_STATIC_CONST_STRING(output_opt_name, "o|output-file");
 	B_STATIC_CONST_STRING(output_opt_param, "FILE");
 	B_STATIC_CONST_STRING(output_opt_synopsis,
 		"Redirect output to the specified file.");
 
-	cl_parser.register_option_with_parameter(2, output_opt_name,
-		output_opt_param, output_opt_synopsis);
+	cl_parser.register_option_with_parameter(output_file_opt,
+		output_opt_name, output_opt_param, output_opt_synopsis);
 
-	cl_parser.register_association(0, 2);
+	cl_parser.register_association(0, output_file_opt);
 
 	return cl_parser;
 }
@@ -287,14 +295,14 @@ B_TEST_CASE(options)
 	{
 		args.append(1, arg_id);
 
-		if (arg_id == 0)
+		if (arg_id == query_arg)
 			B_CHECK(b::compare_strings(opt_value,
 				"query text") == 0);
 	}
 
 	B_REQUIRE(args.size() == 2);
-	B_REQUIRE(args[0] == 1);
-	B_REQUIRE(args[1] == 0);
+	B_REQUIRE(args[0] == tabular_report_opt);
+	B_REQUIRE(args[1] == query_arg);
 }
 
 B_TEST_CASE(exceptions)
@@ -357,7 +365,7 @@ B_TEST_CASE(free_standing_double_dash)
 	b::array<const char*> pos_arg_values;
 
 	while (cl_parser.next_arg(&arg_id, &opt_value))
-		if (arg_id == 0)
+		if (arg_id == query_arg)
 			pos_arg_values.append(1, opt_value);
 
 	B_REQUIRE(pos_arg_values.size() == 3U);
@@ -367,4 +375,40 @@ B_TEST_CASE(free_standing_double_dash)
 	for (size_t i = 0U; i < 3U; ++i)
 		B_CHECK(b::compare_strings(pos_arg_values[i],
 			*expected_positional++) == 0);
+}
+
+B_TEST_CASE(arg_order)
+{
+	b::cli cl_parser = create_test_cli();
+
+	static const char* const query_cmd[] =
+	{
+		"/path/to/test_cli",
+		"query",
+		"A1",
+		"-tt",
+		"-tto",
+		"F1",
+		"A2",
+		"-toF2",
+		"-o",
+		"F3",
+		"-oF4",
+		"A3"
+	};
+
+	B_REQUIRE(cl_parser.parse(B_COUNTOF(query_cmd), query_cmd) == 0);
+
+	b::string arg_order;
+
+	int arg_id;
+	const char* opt_value;
+
+	while (cl_parser.next_arg(&arg_id, &opt_value))
+		if (arg_id == tabular_report_opt)
+			arg_order.append('t');
+		else
+			arg_order.append(opt_value, b::calc_length(opt_value));
+
+	B_CHECK(arg_order == "ttttF1tF2F3F4A1A2A3");
 }
