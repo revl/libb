@@ -233,25 +233,31 @@ struct command_info : public option_or_command_info, public common_parts
 	{
 		if (name_variants.size() == 1)
 			return name_variants.first();
-		name_variant_list::const_iterator name(name_variants.begin());
+
+		name_variant_list::const_iterator name = name_variants.begin();
+
 		string result(*name);
+
 		result.append(" (", 2);
 		result.append(*++name);
+
 		while (++name != name_variants.end())
 		{
 			result.append(", ", 2);
 			result.append(*name);
 		}
+
 		result.append(')');
+
 		return result;
 	}
 
 	bool is_option_accepted(const option_info* opt_info) const
 	{
-		option_info_list::const_iterator iter = accepted_options.begin();
-
-		while (iter != accepted_options.end())
-			if (*iter++ == opt_info)
+		for (option_info_list::const_iterator oi_iter =
+					accepted_options.begin();
+				oi_iter != accepted_options.end(); ++oi_iter)
+			if (*oi_iter == opt_info)
 				return true;
 
 		return false;
@@ -285,24 +291,35 @@ public:
 
 	void print_word_wrapped(int topic_len, int indent,
 			const string& text, int cont_indent = -1) const;
+
+	void print_command_list(bool version_info_defined) const;
+
 	void print_help(const positional_argument_list& commands,
 			bool using_help_command,
 			bool version_info_defined) const;
+
 	void print_help_on_command(const common_parts* cp,
 			const string& name_for_synopsis,
 			const string& name_for_usage) const;
+
 	void report_error(const string& error_message,
 			const string& help_cmd) const;
+
 	void error(const char* err_fmt, ...) const B_PRINTF_STYLE(2, 3);
+
 	void cmd_error(const string& command_name,
 			const char* err_fmt, ...) const B_PRINTF_STYLE(3, 4);
+
 	void register_arg(arg_type type, int arg_id,
 			const string& name_variants, const string& param_name,
 			const string& description);
+
 	void parse_long_option(int* argc, const char* const** argv,
 			const char* arg, bool no_version_opt);
+
 	void parse_single_letter_options(int* argc, const char* const** argv,
 			const char* arg);
+
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
 
@@ -475,19 +492,86 @@ void cli::impl::print_word_wrapped(int topic_len,
 	while ((line = next_line) < text_end);
 }
 
+void cli::impl::print_command_list(bool version_info_defined) const
+{
+	string prog_usage = string::formatted(
+		"Usage: %s <command> [options] [args]\n", program_name.data());
+
+	help_output_stream->write(prog_usage.data(), prog_usage.length());
+	print_word_wrapped(0, 0, synopsis);
+
+	prog_usage.format("Type '%s help <command>' for help on a "
+		"specific command.\n", program_name.data());
+
+	if (version_info_defined)
+		prog_usage.format("Type '%s --version' to see the "
+			"program version.\n", program_name.data());
+
+	help_output_stream->write(prog_usage.data(),
+		prog_usage.length());
+
+	if (!usage.is_empty())
+	{
+		help_output_stream->write("\n", 1);
+		print_word_wrapped(0, 0, usage);
+	}
+
+	// There is always at least one category.
+	cat_id_to_cat_info_map::const_iterator category =
+		cat_id_to_cat_info.begin();
+
+	B_STATIC_CONST_STRING(dash_space, "- ");
+
+	do
+	{
+		if (category->value->commands.is_empty())
+			continue;
+
+		prog_usage.format("\n%s:\n\n", category->value->title.data());
+
+		help_output_stream->write(prog_usage.data(),
+			prog_usage.length());
+
+		command_info_list::const_iterator ci_iter =
+			category->value->commands.begin();
+
+		do
+		{
+			size_t command_name_len =
+				(*ci_iter)->command_name_variants().length();
+
+			help_output_stream->write("  ", 2);
+
+			help_output_stream->write(
+				(*ci_iter)->command_name_variants().data(),
+				command_name_len);
+
+			int topic_len = 2 + (int) command_name_len;
+
+			print_word_wrapped(topic_len, cmd_descr_indent - 2,
+				dash_space + (*ci_iter)->synopsis,
+				cmd_descr_indent);
+		}
+		while (++ci_iter != category->value->commands.end());
+	}
+	while (++category != cat_id_to_cat_info.end());
+
+	help_output_stream->write("\n", 1);
+}
+
 void cli::impl::print_help(const positional_argument_list& commands,
 		bool using_help_command, bool version_info_defined) const
 {
 	// The 'help' command does not accept any options.
-	for (option_value_array::const_iterator option_value = option_values.begin();
-			option_value != option_values.end(); ++option_value)
+	for (option_value_array::const_iterator ov_iter = option_values.begin();
+			ov_iter != option_values.end(); ++ov_iter)
 	{
-		// Let the '--help' slip through.
-		if (option_value->arg_info->id == HELP_OPT_ID)
+		// Ignore the '--help' option.
+		if (ov_iter->arg_info->id == HELP_OPT_ID)
 			continue;
 
 		const string& opt_name =
-			option_value->arg_info->option_name_variants();
+			ov_iter->arg_info->option_name_variants();
 
 		if (using_help_command)
 		{
@@ -511,96 +595,49 @@ void cli::impl::print_help(const positional_argument_list& commands,
 
 	if (commands.is_empty())
 	{
-		string prog_usage = string::formatted(
-			"Usage: %s <command> [options] [args]\n",
-				program_name.data());
-		help_output_stream->write(prog_usage.data(),
-			prog_usage.length());
-		print_word_wrapped(0, 0, synopsis);
-		prog_usage.format("Type '%s help <command>' for help on a "
-			"specific command.\n", program_name.data());
-		if (version_info_defined)
-			prog_usage.format("Type '%s --version' to see the "
-				"program version.\n", program_name.data());
-		help_output_stream->write(prog_usage.data(),
-			prog_usage.length());
-		if (!usage.is_empty())
-		{
-			help_output_stream->write("\n", 1);
-			print_word_wrapped(0, 0, usage);
-		}
-		for (cat_id_to_cat_info_map::const_iterator category =
-					cat_id_to_cat_info.begin();
-				category != cat_id_to_cat_info.end();
-				++category)
-		{
-			if (!category->value->commands.is_empty())
-			{
-				prog_usage.format("\n%s:\n\n",
-					category->value->title.data());
-				help_output_stream->write(prog_usage.data(),
-					prog_usage.length());
-				for (command_info_list::const_iterator cmd =
-						category->value->commands.begin();
-					cmd != category->value->commands.end(); ++cmd)
-				{
-					size_t command_name_len =
-						(*cmd)->command_name_variants().length();
-					help_output_stream->write("  ", 2);
-					help_output_stream->write((*cmd)->command_name_variants().data(),
-						command_name_len);
-					int topic_len = 2 + (int) command_name_len;
-					print_word_wrapped(topic_len,
-						cmd_descr_indent - 2,
-						string("- ", 2) + (*cmd)->synopsis,
-						cmd_descr_indent);
-				}
-			}
-		}
-		help_output_stream->write("\n", 1);
+		print_command_list(version_info_defined);
+		return;
 	}
-	else
+
+	B_STATIC_CONST_STRING(help_command_synopsis,
+		"Describe the usage of this program or its commands.");
+
+	command_info help_command(HELP_CMD_ID, help,
+		help_command_synopsis, string());
+
+	B_STATIC_CONST_STRING(help_command_arg, "COMMAND");
+
+	option_info command_arg(COMMAND_OPT_ID, help_command_arg,
+		string(), zero_or_more_positional, string());
+
+	help_command.positional_arguments.append(1, &command_arg);
+
+	positional_argument_list::const_iterator cmd_name = commands.begin();
+
+	do
 	{
-		B_STATIC_CONST_STRING(help_command_synopsis,
-				"Describe the usage of this "
-				"program or its commands.");
+		const command_info** ci = cmd_name_to_cmd_info.find(*cmd_name);
 
-		command_info help_command(HELP_CMD_ID, help,
-			help_command_synopsis, string());
-
-		B_STATIC_CONST_STRING(help_command_arg, "COMMAND");
-
-		option_info command_arg(COMMAND_OPT_ID, help_command_arg,
-			string(), zero_or_more_positional, string());
-
-		help_command.positional_arguments.append(1, &command_arg);
-
-		for (positional_argument_list::const_iterator cmd_name =
-					commands.begin();
-				cmd_name != commands.end(); ++cmd_name)
-		{
-			const command_info** ci =
-				cmd_name_to_cmd_info.find(*cmd_name);
-
-			if (ci != NULL)
-				print_help_on_command(*ci,
-					(*ci)->command_name_variants(),
-					program_name + ' ' +
-					(*ci)->primary_name());
+		if (ci != NULL)
+			print_help_on_command(*ci,
+				(*ci)->command_name_variants(),
+				program_name + ' ' + (*ci)->primary_name());
+		else
+			if (*cmd_name == help)
+				print_help_on_command(&help_command, help,
+					program_name + ' ' + help);
 			else
-				if (*cmd_name == help)
-					print_help_on_command(&help_command,
-						help,
-						program_name + ' ' + help);
-				else
-				{
-					string unknown_command = string::formatted(
-						"'%s': unknown command.\n\n", *cmd_name);
-					help_output_stream->write(unknown_command.data(),
-						unknown_command.length());
-				}
-		}
+			{
+				string unknown_command = string::formatted(
+					"'%s': unknown command.\n\n",
+					*cmd_name);
+
+				help_output_stream->write(
+					unknown_command.data(),
+					unknown_command.length());
+			}
 	}
+	while (++cmd_name != commands.end());
 }
 
 void cli::impl::print_help_on_command(const common_parts* cp,
@@ -640,8 +677,12 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 			args.append("...", 3);
 		}
 	}
-	string cmd_usage = string::formatted("Usage: %s", name_for_usage.data());
+
+	string cmd_usage = string::formatted("Usage: %s",
+		name_for_usage.data());
+
 	help_output_stream->write(cmd_usage.data(), cmd_usage.length());
+
 	text_len = (int) cmd_usage.length();
 	print_word_wrapped(text_len, text_len + 1, args);
 
@@ -859,7 +900,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			continue;
 		}
 
-		// If it's a free standing double dash marker,
+		// It's a free standing double dash marker;
 		// treat the rest of arguments as positional.
 		if (*++arg == '\0')
 		{
@@ -872,10 +913,10 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 	}
 
 	// Part two: validation.
-	option_value_array::const_iterator option_value(option_values.begin());
+	option_value_array::const_iterator ov_iter(option_values.begin());
 
-	while (option_value != option_values.end())
-		switch (option_value->arg_info->id)
+	while (ov_iter != option_values.end())
+		switch (ov_iter->arg_info->id)
 		{
 		case VERSION_OPT_ID:
 			help_output_stream->write(version_info.data(),
@@ -889,7 +930,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			return HELP_CMD_ID;
 
 		default:
-			++option_value;
+			++ov_iter;
 		}
 
 	string command_name;
@@ -916,10 +957,10 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 
 		positional_argument_values.remove(0);
 
-		const command_info** command =
+		const command_info* const* ci =
 			cmd_name_to_cmd_info.find(command_name);
 
-		if (command == NULL)
+		if (ci == NULL)
 		{
 			if (command_name == help)
 			{
@@ -930,22 +971,22 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			error("unknown command '%s'", command_name.data());
 		}
 
-		const command_info* ci = *command;
+		for (ov_iter = option_values.begin();
+				ov_iter != option_values.end(); ++ov_iter)
+			if (!(*ci)->is_option_accepted(ov_iter->arg_info))
+				cmd_error(command_name, "command '%s' "
+					"does not accept option '%s'",
+					command_name.data(),
+					ov_iter->arg_info->
+						option_name_variants().data());
 
-		for (option_value = option_values.begin();
-				option_value != option_values.end(); ++option_value)
-			if (!ci->is_option_accepted(option_value->arg_info))
-				cmd_error(command_name,
-						"command '%s' doesn't accept option '%s'",
-						command_name.data(),
-						option_value->arg_info->option_name_variants().data());
-
-		expected_positional_arguments = &ci->positional_arguments;
-		ret_val = ci->id;
+		expected_positional_arguments = &(*ci)->positional_arguments;
+		ret_val = (*ci)->id;
 	}
 
 	positional_argument_list::const_iterator arg_val =
 		positional_argument_values.begin();
+
 	option_info_list::const_iterator expected_arg =
 		expected_positional_arguments->begin();
 
