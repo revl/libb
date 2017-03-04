@@ -358,32 +358,6 @@ void string::append(size_t count, char_t ch)
 	}
 }
 
-/*
-void string::append(const char_t* source, size_t count)
-{
-	B_ASSERT(count >= 0);
-
-	if (count > 0)
-	{
-		Lock(length() + count);
-		assign_pairwise(chars + length(), source, count);
-		Unlock();
-	}
-}
-
-void string::append(char_t ch, size_t count)
-{
-	B_ASSERT(count >= 0);
-
-	if (count > 0)
-	{
-		Lock(length() + count);
-		assign_value(chars + length(), ch, count);
-		UnlockBuffer();
-	}
-}
-*/
-
 string string::operator +(const string& source) const
 {
 	string result(*this);
