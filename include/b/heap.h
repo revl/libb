@@ -65,7 +65,7 @@ protected:
 template <class T>
 void heap<T>::push(const T& element)
 {
-	data.append(1, element);
+	data.append(element);
 	push(data.lock(), data.size());
 	data.unlock();
 }

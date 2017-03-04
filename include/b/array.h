@@ -159,10 +159,13 @@ public:
 	// Appends 'count' copies of 'element' at the end of this array.
 	void append(size_t count, const T& element);
 
+	// Appends a single element to this array.
+	void append(const T& element);
+
 	// Operator version of 'append(source)'.
 	array<T>& operator +=(const array<T>& source);
 
-	// Operator version of 'append(1, element)'.
+	// Operator version of 'append(element)'.
 	array<T>& operator +=(const T& element);
 
 	// Concatenates this array with 'source' and returns the
@@ -792,6 +795,12 @@ void array<T>::append(size_t count, const T& element)
 		construct_identical_copies(elements + size(), element, count);
 		metadata()->size += count;
 	}
+}
+
+template <class T>
+void array<T>::append(const T& element)
+{
+	append(1, element);
 }
 
 template <class T>

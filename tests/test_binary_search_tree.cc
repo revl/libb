@@ -150,7 +150,7 @@ B_TEST_CASE(random_elements)
 	b::array<int> numbers;
 
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
-		numbers.append(1, i);
+		numbers.append(i);
 
 	b::pseudorandom prg(10);
 
@@ -167,7 +167,7 @@ B_TEST_CASE(random_elements)
 	B_REQUIRE(numbers.is_empty());
 
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
-		numbers.append(1, i);
+		numbers.append(i);
 
 	size_t expected_size = NUMBER_OF_ELEMENTS;
 

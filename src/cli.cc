@@ -93,13 +93,12 @@ struct option_or_command_info
 		const char* vertical_bar = ::strchr(name, '|');
 
 		if (vertical_bar == NULL)
-			// FIXME Implement string::append(const value&)
-			name_variants.append(1, names);
+			name_variants.append(names);
 		else
 		{
 			do
 			{
-				name_variants.append(1, string(name,
+				name_variants.append(string(name,
 					(size_t) (vertical_bar - name)));
 				name = vertical_bar + 1;
 				vertical_bar = ::strchr(name, '|');
@@ -358,7 +357,7 @@ public:
 			opt_param
 		};
 
-		option_values.append(1, av);
+		option_values.append(av);
 	}
 
 	option_value_array::const_iterator next_option_value;
@@ -610,7 +609,7 @@ void cli::impl::print_help(const positional_argument_list& commands,
 	option_info command_arg(COMMAND_OPT_ID, help_command_arg,
 		string(), zero_or_more_positional, string());
 
-	help_command.positional_arguments.append(1, &command_arg);
+	help_command.positional_arguments.append(&command_arg);
 
 	positional_argument_list::const_iterator cmd_name = commands.begin();
 
@@ -766,7 +765,7 @@ void cli::impl::register_arg(arg_type type, int arg_id,
 		B_ASSERT(opt_info->name_variants.size() == 1 &&
 			"Positional arguments do not allow name variants");
 
-		positional_arguments.append(1, opt_info);
+		positional_arguments.append(opt_info);
 		break;
 
 	case option:
@@ -781,7 +780,7 @@ void cli::impl::register_arg(arg_type type, int arg_id,
 				long_opt_name_to_opt_info.insert(
 						*name, opt_info);
 
-		accepted_options.append(1, opt_info);
+		accepted_options.append(opt_info);
 	}
 }
 
@@ -888,7 +887,7 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		// Check if the current argument is a positional argument.
 		if (*arg != '-' || arg[1] == '\0')
 		{
-			positional_argument_values.append(1, arg);
+			positional_argument_values.append(arg);
 			continue;
 		}
 
@@ -1104,7 +1103,7 @@ void cli::register_command(int unique_cmd_id, const string& name_variants,
 	command_info* ci = impl_ref->cmd_id_to_cmd_info.insert(
 		command_info(unique_cmd_id, name_variants, synopsis, usage));
 
-	(*impl_ref->cat_id_to_cat_info.find(cat_id))->commands.append(1, ci);
+	(*impl_ref->cat_id_to_cat_info.find(cat_id))->commands.append(ci);
 
 	for (name_variant_list::const_iterator name =
 				ci->name_variants.begin();
@@ -1130,7 +1129,7 @@ void cli::register_association(int cmd_id, int arg_id)
 	{
 	case option:
 	case option_with_parameter:
-		ci->accepted_options.append(1, oi);
+		ci->accepted_options.append(oi);
 		break;
 
 	default:
@@ -1142,7 +1141,7 @@ void cli::register_association(int cmd_id, int arg_id)
 				optional_positional &&
 					oi->type != positional_argument)));
 
-		ci->positional_arguments.append(1, oi);
+		ci->positional_arguments.append(oi);
 	}
 }
 

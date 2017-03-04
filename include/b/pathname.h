@@ -217,7 +217,7 @@ inline void pathname::go_up(unsigned levels)
 inline void pathname::append_component(const char* name,
 	const char* suffix, const char* end)
 {
-	pathname_components.append(1, component(name,
+	pathname_components.append(component(name,
 		suffix == NULL ? end : suffix, end));
 }
 

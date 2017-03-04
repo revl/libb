@@ -293,7 +293,7 @@ B_TEST_CASE(options)
 
 	while (cl_parser.next_arg(&arg_id, &opt_value))
 	{
-		args.append(1, arg_id);
+		args.append(arg_id);
 
 		if (arg_id == query_arg)
 			B_CHECK(b::compare_strings(opt_value,
@@ -366,7 +366,7 @@ B_TEST_CASE(free_standing_double_dash)
 
 	while (cl_parser.next_arg(&arg_id, &opt_value))
 		if (arg_id == query_arg)
-			pos_arg_values.append(1, opt_value);
+			pos_arg_values.append(opt_value);
 
 	B_REQUIRE(pos_arg_values.size() == 3U);
 
