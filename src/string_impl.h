@@ -364,6 +364,12 @@ string string::operator +(const string& source) const
 	return result += source;
 }
 
+string string::operator +(char_t ch) const
+{
+	string result(*this);
+	return result += ch;
+}
+
 void string::remove(size_t index, size_t count)
 {
 	if (index + count > length())

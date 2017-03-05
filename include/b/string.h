@@ -523,12 +523,6 @@ inline string& string::operator +=(char_t ch)
 	return *this;
 }
 
-inline string string::operator +(char_t ch) const
-{
-	string result(*this);
-	return result += ch;
-}
-
 inline string string::repeat(size_t times) const
 {
 	if (times == 1)
