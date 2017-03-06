@@ -147,7 +147,7 @@ struct option_info : public option_or_command_info
 	{
 	}
 
-	static string add_dashes(const string& opt_name)
+	static string with_dashes(const string& opt_name)
 	{
 		B_STATIC_CONST_STRING(dashes, "--");
 
@@ -167,19 +167,19 @@ struct option_info : public option_or_command_info
 
 string option_info::option_name_variants() const
 {
-	string result(add_dashes(name_variants.first()));
+	string result(with_dashes(name_variants.first()));
 
 	if (name_variants.size() > 1)
 	{
 		result.append(" [", 2);
 
 		name_variant_list::const_iterator name(name_variants.begin());
-		result.append(add_dashes(*++name));
+		result.append(with_dashes(*++name));
 
 		while (++name != name_variants.end())
 		{
 			result.append(", ", 2);
-			result.append(add_dashes(*name));
+			result.append(with_dashes(*name));
 		}
 
 		result.append(']');
@@ -318,6 +318,11 @@ public:
 
 	void parse_single_letter_options(int* argc, const char* const** argv,
 			const char* arg);
+
+	void append_positional_argument_values(
+			const string& command_name,
+			const positional_argument_list& argument_values,
+			const option_info_list& expected_positional_arguments);
 
 	int parse_and_validate(int argc, const char* const *argv,
 			const string& version_info);
@@ -644,33 +649,41 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 {
 	help_output_stream->write(name_for_synopsis.data(),
 		name_for_synopsis.length());
+
 	help_output_stream->write(":", 1);
+
 	int text_len = (int) name_for_synopsis.length() + 1;
 	print_word_wrapped(text_len, text_len + 1, cp->synopsis);
+
 	help_output_stream->write("\n", 1);
 
 	string args;
+
 	for (option_info_list::const_iterator arg =
 				cp->positional_arguments.begin();
 			arg != cp->positional_arguments.end(); ++arg)
 	{
 		if (!args.is_empty())
 			args.append(' ');
+
 		switch ((*arg)->type)
 		{
 		case positional_argument:
 			args.append((*arg)->primary_name());
 			break;
+
 		case optional_positional:
 			args.append('[');
 			args.append((*arg)->primary_name());
 			args.append(']');
 			break;
+
 		case zero_or_more_positional:
 			args.append('[');
 			args.append((*arg)->primary_name());
 			args.append("...]", 4);
 			break;
+
 		default: // always one_or_more_positional
 			args.append((*arg)->primary_name());
 			args.append("...", 3);
@@ -696,19 +709,25 @@ void cli::impl::print_help_on_command(const common_parts* cp,
 		B_STATIC_CONST_STRING(valid_options, "\nValid options:\n");
 		help_output_stream->write(valid_options.data(),
 			valid_options.length());
-		for (option_info_list::const_iterator opt =
-					cp->accepted_options.begin();
-				opt != cp->accepted_options.end(); ++opt)
+
+		option_info_list::const_iterator opt =
+			cp->accepted_options.begin();
+
+		do
 		{
 			string option_name = string::formatted(
 				"  %-*s :", opt_descr_indent - 5,
 				(*opt)->option_name_variants().data());
+
 			help_output_stream->write(option_name.data(),
 				option_name.length());
+
 			print_word_wrapped((int) option_name.length(),
 					opt_descr_indent, (*opt)->description);
 		}
+		while (++opt != cp->accepted_options.end());
 	}
+
 	help_output_stream->write("\n", 1);
 }
 
@@ -874,6 +893,57 @@ void cli::impl::parse_single_letter_options(int* argc, const char* const** argv,
 	append_option_value(opt_info, opt_param);
 }
 
+void cli::impl::append_positional_argument_values(
+		const string& command_name,
+		const positional_argument_list& argument_values,
+		const option_info_list& expected_positional_arguments)
+{
+	positional_argument_list::const_iterator av_iter =
+		argument_values.begin();
+
+	option_info_list::const_iterator expected_arg =
+		expected_positional_arguments.begin();
+
+	for (;;)
+	{
+		if (expected_arg == expected_positional_arguments.end())
+		{
+			if (av_iter == argument_values.end())
+				break;
+
+			cmd_error(command_name,
+				"too many positional arguments");
+		}
+
+		if (av_iter == argument_values.end())
+		{
+			switch ((*expected_arg)->type)
+			{
+			case positional_argument:
+			case one_or_more_positional:
+				cmd_error(command_name, "missing argument '%s'",
+					(*expected_arg)->primary_name().data());
+			}
+
+			break;
+		}
+
+		switch ((*expected_arg)->type)
+		{
+		case positional_argument:
+		case optional_positional:
+			append_option_value(*expected_arg++, *av_iter++);
+			continue;
+		}
+
+		do
+			append_option_value(*expected_arg, *av_iter);
+		while (++av_iter != argument_values.end());
+
+		break;
+	}
+}
+
 int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		const string& version_info)
 {
@@ -932,105 +1002,61 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 			++ov_iter;
 		}
 
-	string command_name;
-	const option_info_list* expected_positional_arguments;
-	int ret_val;
-
 	if (!commands_are_defined())
 	{
-		expected_positional_arguments = &positional_arguments;
-		ret_val = 0;
+		append_positional_argument_values(string(),
+			positional_argument_values, positional_arguments);
+
+		next_option_value = option_values.begin();
+
+		return 0;
 	}
-	else
+
+	// Extract command name and verify that it accepts
+	// the options specified on the command line.
+	if (positional_argument_values.is_empty())
 	{
-		if (positional_argument_values.is_empty())
-		{
-			if (option_values.is_empty())
-				report_error(synopsis, help);
-			else
-				error("a command is required");
-		}
-
-		command_name.assign(positional_argument_values.first(),
-			calc_length(positional_argument_values.first()));
-
-		positional_argument_values.remove(0);
-
-		const command_info* const* ci =
-			cmd_name_to_cmd_info.find(command_name);
-
-		if (ci == NULL)
-		{
-			if (command_name == help)
-			{
-				print_help(positional_argument_values, true,
-					!version_info.is_empty());
-				return HELP_CMD_ID;
-			}
-			error("unknown command '%s'", command_name.data());
-		}
-
-		for (ov_iter = option_values.begin();
-				ov_iter != option_values.end(); ++ov_iter)
-			if (!(*ci)->is_option_accepted(ov_iter->arg_info))
-				cmd_error(command_name, "command '%s' "
-					"does not accept option '%s'",
-					command_name.data(),
-					ov_iter->arg_info->
-						option_name_variants().data());
-
-		expected_positional_arguments = &(*ci)->positional_arguments;
-		ret_val = (*ci)->id;
+		if (option_values.is_empty())
+			report_error(synopsis, help);
+		else
+			error("a command is required");
 	}
 
-	positional_argument_list::const_iterator arg_val =
-		positional_argument_values.begin();
+	string command_name(positional_argument_values.first(),
+		calc_length(positional_argument_values.first()));
 
-	option_info_list::const_iterator expected_arg =
-		expected_positional_arguments->begin();
+	positional_argument_values.remove(0);
 
-	for (;;)
+	const command_info* const* ci =
+		cmd_name_to_cmd_info.find(command_name);
+
+	if (ci == NULL)
 	{
-		if (expected_arg == expected_positional_arguments->end())
+		if (command_name == help)
 		{
-			if (arg_val == positional_argument_values.end())
-				break;
-
-			cmd_error(command_name,
-				"too many positional arguments");
+			print_help(positional_argument_values, true,
+				!version_info.is_empty());
+			return HELP_CMD_ID;
 		}
 
-		if (arg_val == positional_argument_values.end())
-		{
-			switch ((*expected_arg)->type)
-			{
-			case positional_argument:
-			case one_or_more_positional:
-				cmd_error(command_name, "missing argument '%s'",
-					(*expected_arg)->primary_name().data());
-			}
-
-			break;
-		}
-
-		switch ((*expected_arg)->type)
-		{
-		case positional_argument:
-		case optional_positional:
-			append_option_value(*expected_arg++, *arg_val++);
-			continue;
-		}
-
-		do
-			append_option_value(*expected_arg, *arg_val);
-		while (++arg_val != positional_argument_values.end());
-
-		break;
+		error("unknown command '%s'", command_name.data());
 	}
+
+	for (ov_iter = option_values.begin();
+			ov_iter != option_values.end(); ++ov_iter)
+		if (!(*ci)->is_option_accepted(ov_iter->arg_info))
+			cmd_error(command_name, "command '%s' "
+				"does not accept option '%s'",
+				command_name.data(),
+				ov_iter->arg_info->
+					option_name_variants().data());
+
+	append_positional_argument_values(command_name,
+		positional_argument_values, (*ci)->positional_arguments);
 
 	next_option_value = option_values.begin();
 
-	return ret_val;
+	return (*ci)->id;
 }
 
 cli::cli(const string& program_summary) : impl_ref(new impl(program_summary))
@@ -1130,19 +1156,31 @@ void cli::register_association(int cmd_id, int arg_id)
 	case option:
 	case option_with_parameter:
 		ci->accepted_options.append(oi);
-		break;
+		return;
 
+#ifdef B_DEBUG
+	case optional_positional:
+	case zero_or_more_positional:
+		if (ci->positional_arguments.is_empty() ||
+				ci->positional_arguments.last()->type ==
+						optional_positional)
+			break;
+		/* FALL THROUGH */
+
+	case one_or_more_positional:
+		for (option_info_list::const_iterator pa_iter =
+					ci->positional_arguments.begin();
+				pa_iter != ci->positional_arguments.end();
+				++pa_iter)
+		{
+			B_ASSERT((*pa_iter)->type == positional_argument);
+		}
+#endif
 	default:
-		B_ASSERT("Invalid sequence of optional positional arguments" &&
-			(ci->positional_arguments.is_empty() ||
-			ci->positional_arguments.last()->type ==
-				positional_argument ||
-			(ci->positional_arguments.last()->type ==
-				optional_positional &&
-					oi->type != positional_argument)));
-
-		ci->positional_arguments.append(oi);
+		break;
 	}
+
+	ci->positional_arguments.append(oi);
 }
 
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
