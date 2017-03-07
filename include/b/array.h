@@ -77,9 +77,6 @@ public:
 	// Returns a constant pointer to the elements.
 	const T* data() const;
 
-	// Returns 'data()'.
-	operator const T*() const;
-
 	// Fixes the buffer in memory and returns a modifiable pointer to it.
 	T* lock();
 
@@ -341,12 +338,6 @@ void array<T>::trim_to_size()
 
 template <class T>
 const T* array<T>::data() const
-{
-	return elements;
-}
-
-template <class T>
-array<T>::operator const T*() const
 {
 	return elements;
 }
