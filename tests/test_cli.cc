@@ -327,7 +327,7 @@ B_TEST_CASE(exceptions)
 
 	B_REQUIRE_EXCEPTION(
 		cl_parser.parse(B_COUNTOF(missing_arg), missing_arg),
-		"test_cli: missing argument 'QUERY'\n*");
+		"test_cli: too few positional arguments\n*");
 
 	static const char* const unknown_opt[] =
 	{
