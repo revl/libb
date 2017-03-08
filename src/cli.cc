@@ -1027,7 +1027,8 @@ int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		// treat the rest of arguments as positional.
 		if (*++arg == '\0')
 		{
-			positional_argument_values.append(++argv, --argc);
+			positional_argument_values.append(++argv,
+				(size_t) --argc);
 			break;
 		}
 
