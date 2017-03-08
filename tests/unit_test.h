@@ -56,8 +56,14 @@ public:
 	static linked_list<node_access> test_case_list;
 };
 
+class abort_test_case : public exception
+{
+};
+
 linked_list<test_case::node_access> test_case::test_case_list =
 	test_case::node_access();
+
+test_case* current_test_case = NULL;
 
 B_END_NAMESPACE
 
@@ -75,67 +81,73 @@ B_END_NAMESPACE
 #define B_CHECK(condition) \
 	do \
 		if (!(condition)) { \
-			++failed_checks; \
 			fprintf(stderr, "%s:%d: error: " \
 				"check \"%s\" failed\n", \
 				__FILE__, __LINE__, #condition); \
+			++b::current_test_case->failed_checks; \
 		} \
 	while (0)
 
 #define B_REQUIRE(condition) \
 	do \
 		if (!(condition)) { \
-			++failed_checks; \
 			fprintf(stderr, "%s:%d: error: required " \
 				"check \"%s\" failed\n", \
 				__FILE__, __LINE__, #condition); \
-			return; \
+			throw b::abort_test_case(); \
 		} \
 	while (0)
 
 #define B_REQUIRE_EXCEPTION(operation, expected_message_pattern) \
-	try \
-	{ \
-		operation; \
-		++failed_checks; \
-		fprintf(stderr, "%s:%d: error: \"%s\" failed to throw " \
-			"an exception\n", __FILE__, __LINE__, #operation); \
-		return; \
-	} \
-	catch (b::runtime_exception& e) \
-	{ \
-		if (!b::match_pattern(e.message(), expected_message_pattern)) \
+	do \
+		try \
 		{ \
-			++failed_checks; \
-			fprintf(stderr, "%s:%d: error: exception " \
-				"message \"%s\" does not match " \
-				"the expected pattern \"%s\"\n", \
-				__FILE__, __LINE__, e.message().data(), \
-				expected_message_pattern); \
-			return; \
+			operation; \
+			fprintf(stderr, "%s:%d: error: \"%s\" failed " \
+				"to throw an exception\n", \
+				__FILE__, __LINE__, #operation); \
+			throw b::abort_test_case(); \
 		} \
-	}
+		catch (b::runtime_exception& e) \
+		{ \
+			if (!b::match_pattern(e.message(), \
+					expected_message_pattern)) \
+			{ \
+				fprintf(stderr, "%s:%d: error: exception " \
+					"message \"%s\" does not match " \
+					"the expected pattern \"%s\"\n", \
+					__FILE__, __LINE__, \
+					e.message().data(), \
+					expected_message_pattern); \
+				throw b::abort_test_case(); \
+			} \
+		} \
+	while (0)
 
 int main(int /*argc*/, char* /*argv*/[])
 {
 	int failed_tests = 0;
-	b::test_case* current_test_case = b::test_case::test_case_list.first();
+	b::current_test_case = b::test_case::test_case_list.first();
 
-	while (current_test_case != NULL)
+	while (b::current_test_case != NULL)
 	{
 		try
 		{
-			current_test_case->run();
+			b::current_test_case->run();
 
-			if (current_test_case->failed_checks > 0)
+			if (b::current_test_case->failed_checks > 0)
 				++failed_tests;
+		}
+		catch (b::abort_test_case&)
+		{
+			++failed_tests;
 		}
 		catch (b::runtime_exception& e)
 		{
 			++failed_tests;
 
 			fprintf(stderr, "Exception in %s: %s\n",
-				current_test_case->test_name,
+				b::current_test_case->test_name,
 				e.message().data());
 		}
 		catch (...)
@@ -143,11 +155,11 @@ int main(int /*argc*/, char* /*argv*/[])
 			++failed_tests;
 
 			fprintf(stderr, "Unhandled exception in %s\n",
-				current_test_case->test_name);
+				b::current_test_case->test_name);
 		}
 
-		current_test_case =
-			b::test_case::test_case_list.next(current_test_case);
+		b::current_test_case =
+			b::test_case::test_case_list.next(b::current_test_case);
 	}
 
 	return failed_tests;
