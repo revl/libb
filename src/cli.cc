@@ -997,6 +997,8 @@ void cli::impl::append_positional_argument_values(
 int cli::impl::parse_and_validate(int argc, const char* const *argv,
 		const string& version_info)
 {
+	option_values.remove_all();
+
 	positional_argument_list positional_argument_values;
 
 	// Part one: parse options and save positional argument values.
