@@ -44,8 +44,7 @@ namespace cli_args
 		help_text_width_tag,
 		cmd_descr_indent_tag,
 		arg_descr_indent_tag,
-		help_output_stream_tag,
-		error_stream_tag
+		help_output_stream_tag
 	};
 
 	// The name of the program binary, which is used in the help
@@ -76,9 +75,6 @@ namespace cli_args
 	// command prints to.
 	extern arg_name<ref<output_stream>, help_output_stream_tag>
 		help_output_stream;
-
-	// Parameter to override the stream for error reporting.
-	extern arg_name<ref<output_stream>, error_stream_tag> error_stream;
 }
 
 // POSIX-compatible command line parser and help screen generator.

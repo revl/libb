@@ -74,7 +74,6 @@ namespace cli_args
 	arg_name<int, cmd_descr_indent_tag> cmd_descr_indent;
 	arg_name<int, arg_descr_indent_tag> arg_descr_indent;
 	arg_name<ref<output_stream>, help_output_stream_tag> help_output_stream;
-	arg_name<ref<output_stream>, error_stream_tag> error_stream;
 }
 
 // TODO Use string_view instead of string in this class
@@ -386,10 +385,8 @@ public:
 
 	option_value_array::const_iterator next_option_value;
 
-	// Help text formatting and error reporting.
+	// Help text formatting.
 	ref<output_stream> help_output_stream;
-	ref<output_stream> error_stream;
-
 	int max_help_text_width;
 	int cmd_descr_indent;
 	int opt_descr_indent;
@@ -981,12 +978,11 @@ void cli::impl::append_positional_argument_values(
 				continue;
 			}
 
-			if (ci->optional_sequence_arg == NULL)
-				break;
-
-			while (av_iter != trailing_av_iter)
-				append_option_value(ci->optional_sequence_arg,
-					*av_iter++);
+			if (ci->optional_sequence_arg != NULL)
+				while (av_iter != trailing_av_iter)
+					append_option_value(
+						ci->optional_sequence_arg,
+						*av_iter++);
 
 			break;
 		}
@@ -1251,7 +1247,6 @@ void cli::register_association(int cmd_id, int arg_id)
 int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 {
 	impl_ref->help_output_stream = standard_output_stream();
-	impl_ref->error_stream = standard_error_stream();
 
 	impl_ref->max_help_text_width = DEFAULT_HELP_TEXT_WIDTH;
 	impl_ref->cmd_descr_indent = DEFAULT_CMD_DESCR_INDENT;
@@ -1293,11 +1288,6 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 		case cli_args::help_output_stream_tag:
 			impl_ref->help_output_stream =
 				cli_args::help_output_stream.value(arg);
-			break;
-
-		case cli_args::error_stream_tag:
-			impl_ref->error_stream =
-				cli_args::error_stream.value(arg);
 		}
 
 	if (program_name.is_empty())
