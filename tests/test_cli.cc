@@ -457,11 +457,11 @@ static b::string parse_and_collect_args(b::cli cl_parser,
 			break;
 
 		case optional_positional_1:
-			arg_order.append("P?=", 3);
+			arg_order.append("O1=", 3);
 			break;
 
 		case optional_positional_2:
-			arg_order.append("P?=", 3);
+			arg_order.append("O2=", 3);
 			break;
 
 		case zero_or_more_positional:
@@ -486,11 +486,11 @@ static b::string parse_and_collect_args(b::cli cl_parser,
 	return arg_order;
 }
 
+B_STATIC_CONST_STRING(dummy_arg_name, "ARG");
+
 static b::cli create_cli_with_one_or_more_positional()
 {
 	b::cli cl_parser(app_summary);
-
-	B_STATIC_CONST_STRING(dummy_arg_name, "ARG");
 
 	cl_parser.register_positional_argument(positional_1, dummy_arg_name);
 	cl_parser.register_positional_argument(positional_2, dummy_arg_name);
@@ -565,4 +565,104 @@ B_TEST_CASE(commandless_cli_with_one_or_more_positional)
 	};
 
 	run_tests_for_one_or_more_positional(cl_parser, 5, commandless);
+}
+
+static b::cli create_cli_with_zero_or_more_positional()
+{
+	b::cli cl_parser(app_summary);
+
+	cl_parser.register_positional_argument(positional_1, dummy_arg_name);
+	cl_parser.register_positional_argument(positional_2, dummy_arg_name);
+
+	cl_parser.register_optional_positional(optional_positional_1,
+		dummy_arg_name);
+	cl_parser.register_optional_positional(optional_positional_2,
+		dummy_arg_name);
+
+	cl_parser.register_zero_or_more_positional(zero_or_more_positional,
+		dummy_arg_name);
+
+	cl_parser.register_positional_argument(trailing_positional_1,
+		dummy_arg_name);
+	cl_parser.register_positional_argument(trailing_positional_2,
+		dummy_arg_name);
+
+	return cl_parser;
+}
+
+static void run_tests_for_zero_or_more_positional(b::cli cl_parser,
+		int initial_argc, const char* const* argv)
+{
+	B_REQUIRE_EXCEPTION(cl_parser.parse(initial_argc, argv),
+		"test_cli: too few positional arguments\n*");
+
+	B_CHECK(parse_and_collect_args(cl_parser, initial_argc + 1, argv) ==
+		"P1=1P2=2T1=3T2=4");
+
+	B_CHECK(parse_and_collect_args(cl_parser, initial_argc + 2, argv) ==
+		"P1=1P2=2O1=3T1=4T2=5");
+
+	B_CHECK(parse_and_collect_args(cl_parser, initial_argc + 3, argv) ==
+		"P1=1P2=2O1=3O2=4T1=5T2=6");
+
+	B_CHECK(parse_and_collect_args(cl_parser, initial_argc + 4, argv) ==
+		"P1=1P2=2O1=3O2=4P*=5T1=6T2=7");
+
+	B_CHECK(parse_and_collect_args(cl_parser, initial_argc + 5, argv) ==
+		"P1=1P2=2O1=3O2=4P*=5P*=6T1=7T2=8");
+}
+
+B_TEST_CASE(command_with_zero_or_more_positional)
+{
+	b::cli cl_parser = create_cli_with_zero_or_more_positional();
+
+	cl_parser.register_command(0, query_cmd_name,
+		query_cmd_synopsis, b::string());
+
+	cl_parser.register_association(0, positional_1);
+	cl_parser.register_association(0, positional_2);
+
+	cl_parser.register_association(0, optional_positional_1);
+	cl_parser.register_association(0, optional_positional_2);
+
+	cl_parser.register_association(0, zero_or_more_positional);
+
+	cl_parser.register_association(0, trailing_positional_1);
+	cl_parser.register_association(0, trailing_positional_2);
+
+	static const char* const query_cmd[] =
+	{
+		"/path/to/test_cli",
+		"query",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8"
+	};
+
+	run_tests_for_zero_or_more_positional(cl_parser, 5, query_cmd);
+}
+
+B_TEST_CASE(commandless_cli_with_zero_or_more_positional)
+{
+	b::cli cl_parser = create_cli_with_zero_or_more_positional();
+
+	static const char* const commandless[] =
+	{
+		"/path/to/test_cli",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8"
+	};
+
+	run_tests_for_zero_or_more_positional(cl_parser, 4, commandless);
 }
