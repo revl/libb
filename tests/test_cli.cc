@@ -30,7 +30,8 @@ B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
 static const char* const help_option[] =
 {
 	"/path/to/test_cli",
-	"--help"
+	"--help",
+	"query"
 };
 
 B_TEST_CASE(app_description)
@@ -42,7 +43,7 @@ B_TEST_CASE(app_description)
 	b::ref<b::string_stream> ss = new b::string_stream;
 
 	// Without program description.
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		help_output_stream = ss);
 
 	B_CHECK(ss->str() == "test_cli: Test the b::cli class.\n\n"
@@ -57,7 +58,7 @@ B_TEST_CASE(app_description)
 		"convey the purpose of this application. However, "
 		"it does not substitute a proper manual page.");
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		(program_description = app_description,
 		help_output_stream = ss));
 
@@ -106,7 +107,7 @@ B_TEST_CASE(default_app_name)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(), "*\nUsage: test_cli\n*"));
@@ -115,7 +116,7 @@ B_TEST_CASE(default_app_name)
 
 	B_STATIC_CONST_STRING(app_name, "console_app");
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		(program_name = app_name,
 		help_output_stream = ss));
 
@@ -134,7 +135,7 @@ B_TEST_CASE(help_text_width)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		(program_description = long_text,
 		help_output_stream = ss));
 
@@ -147,7 +148,7 @@ B_TEST_CASE(help_text_width)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		(program_description = long_text,
 		help_text_width = 24,
 		help_output_stream = ss));
@@ -174,7 +175,7 @@ B_TEST_CASE(cmd_descr_indent)
 
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(),
@@ -182,7 +183,7 @@ B_TEST_CASE(cmd_descr_indent)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_option), help_option,
+	cl_parser.parse(2, help_option,
 		(cmd_descr_indent = 16,
 		help_output_stream = ss));
 
@@ -241,16 +242,9 @@ B_TEST_CASE(arg_descr_indent)
 
 	using namespace b::cli_args;
 
-	static const char* const help_cmd[] =
-	{
-		"/path/to/test_cli",
-		"help",
-		"query"
-	};
-
 	b::ref<b::string_stream> ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_cmd), help_cmd,
+	cl_parser.parse(3, help_option,
 		help_output_stream = ss);
 
 	B_CHECK(match_pattern(ss->str(),
@@ -259,7 +253,7 @@ B_TEST_CASE(arg_descr_indent)
 
 	ss = new b::string_stream;
 
-	cl_parser.parse(B_COUNTOF(help_cmd), help_cmd,
+	cl_parser.parse(3, help_option,
 		(help_output_stream = ss,
 		arg_descr_indent = 40));
 
@@ -488,6 +482,33 @@ static b::string parse_and_collect_args(b::cli cl_parser,
 
 B_STATIC_CONST_STRING(dummy_arg_name, "ARG");
 
+static const char* const query_cmd_positional_args[] =
+{
+	"/path/to/test_cli",
+	"query",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8"
+};
+
+static const char* const commandless_cli_positional_args[] =
+{
+	"/path/to/test_cli",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8"
+};
+
 static b::cli create_cli_with_one_or_more_positional()
 {
 	b::cli cl_parser(app_summary);
@@ -507,8 +528,15 @@ static b::cli create_cli_with_one_or_more_positional()
 }
 
 static void run_tests_for_one_or_more_positional(b::cli cl_parser,
-		int initial_argc, const char* const* argv)
+		int argc_for_help, int initial_argc, const char* const* argv)
 {
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cl_parser.parse(argc_for_help, help_option,
+		b::cli_args::help_output_stream = ss);
+
+	B_CHECK(match_pattern(ss->str(), "* ARG ARG ARG... ARG ARG\n*"));
+
 	B_REQUIRE_EXCEPTION(cl_parser.parse(initial_argc, argv),
 		"test_cli: too few positional arguments\n*");
 
@@ -534,37 +562,16 @@ B_TEST_CASE(command_with_one_or_more_positional)
 	cl_parser.register_association(0, trailing_positional_1);
 	cl_parser.register_association(0, trailing_positional_2);
 
-	static const char* const query_cmd[] =
-	{
-		"/path/to/test_cli",
-		"query",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6"
-	};
-
-	run_tests_for_one_or_more_positional(cl_parser, 6, query_cmd);
+	run_tests_for_one_or_more_positional(cl_parser,
+		3, 6, query_cmd_positional_args);
 }
 
 B_TEST_CASE(commandless_cli_with_one_or_more_positional)
 {
 	b::cli cl_parser = create_cli_with_one_or_more_positional();
 
-	static const char* const commandless[] =
-	{
-		"/path/to/test_cli",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6"
-	};
-
-	run_tests_for_one_or_more_positional(cl_parser, 5, commandless);
+	run_tests_for_one_or_more_positional(cl_parser,
+		2, 5, commandless_cli_positional_args);
 }
 
 static b::cli create_cli_with_zero_or_more_positional()
@@ -591,8 +598,16 @@ static b::cli create_cli_with_zero_or_more_positional()
 }
 
 static void run_tests_for_zero_or_more_positional(b::cli cl_parser,
-		int initial_argc, const char* const* argv)
+		int argc_for_help, int initial_argc, const char* const* argv)
 {
+	b::ref<b::string_stream> ss = new b::string_stream;
+
+	cl_parser.parse(argc_for_help, help_option,
+		b::cli_args::help_output_stream = ss);
+
+	B_CHECK(match_pattern(ss->str(),
+		"* ARG ARG [ARG] [ARG] [ARG...] ARG ARG\n*"));
+
 	B_REQUIRE_EXCEPTION(cl_parser.parse(initial_argc, argv),
 		"test_cli: too few positional arguments\n*");
 
@@ -630,39 +645,14 @@ B_TEST_CASE(command_with_zero_or_more_positional)
 	cl_parser.register_association(0, trailing_positional_1);
 	cl_parser.register_association(0, trailing_positional_2);
 
-	static const char* const query_cmd[] =
-	{
-		"/path/to/test_cli",
-		"query",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8"
-	};
-
-	run_tests_for_zero_or_more_positional(cl_parser, 5, query_cmd);
+	run_tests_for_zero_or_more_positional(cl_parser,
+		3, 5, query_cmd_positional_args);
 }
 
 B_TEST_CASE(commandless_cli_with_zero_or_more_positional)
 {
 	b::cli cl_parser = create_cli_with_zero_or_more_positional();
 
-	static const char* const commandless[] =
-	{
-		"/path/to/test_cli",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8"
-	};
-
-	run_tests_for_zero_or_more_positional(cl_parser, 4, commandless);
+	run_tests_for_zero_or_more_positional(cl_parser,
+		2, 4, commandless_cli_positional_args);
 }
