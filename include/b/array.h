@@ -175,7 +175,7 @@ public:
 	void remove(size_t index, size_t count = 1);
 
 	// Empties the array.
-	void remove_all();
+	void empty();
 
 // Range-based 'for' Loop Compatibility
 public:
@@ -470,7 +470,7 @@ void array<T>::assign(const T* source, size_t count)
 		metadata()->size = count;
 	}
 	else
-		remove_all();
+		empty();
 }
 
 template <class T>
@@ -499,7 +499,7 @@ void array<T>::assign(size_t count, const T& element)
 		metadata()->size = count;
 	}
 	else
-		remove_all();
+		empty();
 }
 
 template <class T>
@@ -850,7 +850,7 @@ void array<T>::remove(size_t index, size_t count)
 }
 
 template <class T>
-void array<T>::remove_all()
+void array<T>::empty()
 {
 	if (!is_shared())
 	{

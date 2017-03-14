@@ -144,11 +144,11 @@ public:
 		delete wrapper_node_access::node_for(element);
 	}
 
-	void remove_all()
+	void empty()
 	{
 		T* current_element = wrappers.first();
 
-		wrappers.remove_all();
+		wrappers.empty();
 
 		while (current_element != NULL)
 		{

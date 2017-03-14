@@ -121,7 +121,7 @@ B_TEST_CASE(object_lists)
 		element = next;
 	}
 
-	desc_list.remove_all();
+	desc_list.empty();
 
 	B_CHECK(object_count == 0);
 }

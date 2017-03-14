@@ -168,7 +168,7 @@ public:
 			last_element = prev_element;
 	}
 
-	void remove_all()
+	void empty()
 	{
 		last_element = first_element = NULL;
 	}
