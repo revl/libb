@@ -376,6 +376,12 @@ class set : public set_base<T, set_key_op<T> >
 public:
 	typedef set_base<T, set_key_op<T> > base;
 
+	// Inserts a new element after a failed search for it.
+	//
+	// Returns a pointer to the copy of 'value' that is stored
+	// with the newly insterted element.
+	T* insert(const T& value, const typename base::search_result& sr);
+
 	// Inserts the specified value into this set.
 	//
 	// If an element with the same key already exists,
@@ -395,6 +401,13 @@ public:
 	// occurred.
 	T* insert(const T& value, bool* new_element);
 };
+
+template <class T>
+T* set<T>::insert(const T &value,
+		const typename set<T>::base::search_result& sr)
+{
+	return base::insert(value, sr);
+}
 
 template <class T>
 T* set<T>::insert(const T& value)

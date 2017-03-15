@@ -58,4 +58,9 @@ B_TEST_CASE(construction)
 	B_CHECK(new_element == false);
 	B_CHECK(s.size() == 1);
 	B_CHECK(*v == 6);
+
+	sr = s.search(10);
+
+	B_REQUIRE(sr.match() == NULL);
+	B_CHECK(*s.insert(10, sr) == 10);
 }
