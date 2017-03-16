@@ -133,6 +133,11 @@ public:
 	// with the newly insterted element.
 	T* insert(const T& value, const search_result& sr);
 
+	// Removes the element that matches the specified key.
+	// Returns true if the element was found and deleted.
+	template <class Search_key>
+	bool remove(const Search_key& key) const;
+
 	// Returns a pointer to the first element or NULL if there are
 	// no elements.
 	const T* first() const;
@@ -238,6 +243,21 @@ T* set_base<T, Key_op>::insert(const T& value, const set_base<T, Key_op>::search
 		B_OUTERSTRUCT(set_element<T>, value, sr.value) : NULL, sr.cmp_result);
 
 	return &new_element->value;
+}
+
+template <class T, class Key_op>
+template <class Search_key>
+bool set_base<T, Key_op>::remove(const Search_key& key) const
+{
+	set_element<T>* element_to_delete = static_cast<set_element<T>*>(
+		tree.find(key));
+
+	if (element_to_delete == NULL)
+		return false;
+
+	delete element_to_delete;
+
+	return true;
 }
 
 template <class T, class Key_op>
