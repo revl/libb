@@ -65,4 +65,5 @@ B_TEST_CASE(construction)
 	B_CHECK(*s.insert(10, sr) == 10);
 
 	B_CHECK(s.remove(10));
+	B_CHECK(!s.remove(11));
 }
