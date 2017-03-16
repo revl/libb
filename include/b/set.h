@@ -136,7 +136,7 @@ public:
 	// Removes the element that matches the specified key.
 	// Returns true if the element was found and deleted.
 	template <class Search_key>
-	bool remove(const Search_key& key) const;
+	bool remove(const Search_key& key);
 
 	// Returns a pointer to the first element or NULL if there are
 	// no elements.
@@ -247,13 +247,15 @@ T* set_base<T, Key_op>::insert(const T& value, const set_base<T, Key_op>::search
 
 template <class T, class Key_op>
 template <class Search_key>
-bool set_base<T, Key_op>::remove(const Search_key& key) const
+bool set_base<T, Key_op>::remove(const Search_key& key)
 {
 	set_element<T>* element_to_delete = static_cast<set_element<T>*>(
 		tree.find(key));
 
 	if (element_to_delete == NULL)
 		return false;
+
+	tree.remove(element_to_delete);
 
 	delete element_to_delete;
 

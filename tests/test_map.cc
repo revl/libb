@@ -58,4 +58,8 @@ B_TEST_CASE(construction)
 	B_CHECK(m.size() == 1);
 	B_CHECK(kv->key == 6);
 	B_CHECK(kv->value == 7);
+
+	B_CHECK(m.remove(6));
+	B_CHECK(!m.remove(6));
+	B_CHECK(!m.remove(10));
 }
