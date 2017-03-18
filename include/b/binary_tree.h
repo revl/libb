@@ -52,6 +52,7 @@ inline binary_tree_node* binary_tree_node::prev()
 		((const binary_tree_node*) this)->prev());
 }
 
+// Non-template base class for the 'binary_search_tree' template.
 struct binary_search_tree_base
 {
 	binary_tree_node* root;
@@ -75,6 +76,9 @@ struct binary_search_tree_base
 	void remove(binary_tree_node* node);
 };
 
+// Binary search tree implementation. This is a low-level structure
+// that exposes its internals. It is not meant for routine use.
+// The 'set' and 'map' containers must be used instead.
 template <class Key_op>
 struct binary_search_tree : public binary_search_tree_base
 {
