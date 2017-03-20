@@ -25,7 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
-// Smart pointer to instances of all classes derived from the Object class.
+// Smart pointer to instances of all classes derived from the 'object' class.
 template <class T>
 class ref
 {
