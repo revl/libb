@@ -20,7 +20,7 @@ AC_INIT([b], [1.0.1])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/string.cc])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 library_version_info=3:0:0
 AC_SUBST(library_version_info)

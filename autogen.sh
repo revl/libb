@@ -31,5 +31,5 @@ fi
 aclocal &&
 	"$libtoolize" --automake --copy && \
 	autoheader && \
-	automake --gnu --add-missing --copy && \
+	automake --foreign --add-missing --copy && \
 	autoconf

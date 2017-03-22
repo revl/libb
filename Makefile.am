@@ -17,6 +17,7 @@
 #
 
 ACLOCAL_AMFLAGS = -I m4
+AUTOMAKE_OPTIONS = foreign
 
 .PHONY: doc
 
@@ -26,7 +27,7 @@ doc:
 SUBDIRS = . config m4 include src tests doc
 
 plaindocdir = $(pkgdocdir)
-plaindoc_DATA = ChangeLog NEWS README
+plaindoc_DATA = README
 
 install-exec-local:
 	@$(NORMAL_INSTALL)
