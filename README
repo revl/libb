@@ -11,14 +11,14 @@ apparent explanations for that.  I for one need to know what goes into my
 application.  I need to know implementation details.  And I'm willing to
 sacrifice compatibility with non-POSIX systems to achieve that goal.
 
-There is also an even less plausible motive. Over the years, I grew
-disenchanted with C++, especially when new, conceptually sound compiled
-languages started to emerge. Who knows how many of those languages were
-developed out of frustration with C++? D is a clear example of that. If there
-really is a smaller and cleaner language withing C++ struggling to get out,
-well, that struggle is real. The way I see it, you cannot make the language
-lean and at the same time keep compatibility with all the accumulated cruft
-that's rooted in C.
+There is also another prominent motive.  Over the years, I grew disenchanted
+with C++, especially when new, conceptually sound compiled languages started
+to emerge. Who knows how many of those languages were developed out of
+frustration with C++? D is a clear example of that. If there really is a
+smaller and cleaner language within C++ struggling to get out, well, that
+struggle is real. The way I see it, you cannot make the language lean and at
+the same time keep compatibility with all the accumulated cruft that's rooted
+in C.
 
 That being said, C++ is the only compiled language that is available on all
 platforms, so I'm stuck with it for the foreseeable future. The B library is
