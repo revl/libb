@@ -120,7 +120,7 @@ B_TEST_CASE(string_formatting)
 	B_CHECK(str1 == "abcxxxcba");
 
 	b::string str2;
-	str2.append_format("init");
+	str2.append_formatted("init");
 	B_CHECK(str2 == "init");
 
 	B_CHECK(b::string::formatted("%s %d", "cloud", 9) == "cloud 9");

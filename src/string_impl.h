@@ -442,15 +442,15 @@ void string::format(const char_t* fmt, ...)
 void string::format_va(const char_t* fmt, va_list ap)
 {
 	empty();
-	append_format_va(fmt, ap);
+	append_formatted_va(fmt, ap);
 }
 
-void string::append_format(const char_t* fmt, ...)
+void string::append_formatted(const char_t* fmt, ...)
 {
 	va_list ap;
 
 	va_start(ap, fmt);
-	append_format_va(fmt, ap);
+	append_formatted_va(fmt, ap);
 	va_end(ap);
 }
 
@@ -488,7 +488,7 @@ string_allocator::~string_allocator()
 		dest->unlock(new_length);
 }
 
-void string::append_format_va(const char_t* fmt, va_list ap)
+void string::append_formatted_va(const char_t* fmt, va_list ap)
 {
 	string_allocator str_alloc(this);
 

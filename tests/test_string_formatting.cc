@@ -197,15 +197,15 @@ static b::string format(T value, const char* conversion,
 
 	b::string format_str = b::string::formatted("%%");
 	if (flags != NULL)
-		format_str.append_format("%s", flags);
+		format_str.append_formatted("%s", flags);
 	if (width != 0)
-		format_str.append_format("%ld", (long) width);
+		format_str.append_formatted("%ld", (long) width);
 	if (precision >= 0)
-		format_str.append_format(".%d", precision);
-	format_str.append_format("%s", conversion);
-	format_str.append_format("]");
+		format_str.append_formatted(".%d", precision);
+	format_str.append_formatted("%s", conversion);
+	format_str.append_formatted("]");
 
-	result.append_format(format_str.data(), value);
+	result.append_formatted(format_str.data(), value);
 
 	return result;
 }

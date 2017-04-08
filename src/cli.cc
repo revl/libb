@@ -667,7 +667,7 @@ static void append_positional_arg_name(string* args,
 	if (!args->is_empty())
 		args->append(' ');
 
-	args->append_format(arg_name_format, arg->primary_name().data());
+	args->append_formatted(arg_name_format, arg->primary_name().data());
 }
 
 void cli::impl::print_help_on_command(const command_or_commandless_cli* ci,
@@ -762,7 +762,7 @@ void cli::impl::error(const char* err_fmt, ...) const
 
 	va_list ap;
 	va_start(ap, err_fmt);
-	error_message.append_format_va(err_fmt, ap);
+	error_message.append_formatted_va(err_fmt, ap);
 	va_end(ap);
 
 	report_error(error_message, !commands_are_defined() ?
@@ -777,7 +777,7 @@ void cli::impl::cmd_error(const string& command_name,
 
 	va_list ap;
 	va_start(ap, err_fmt);
-	error_message.append_format_va(err_fmt, ap);
+	error_message.append_formatted_va(err_fmt, ap);
 	va_end(ap);
 
 	report_error(error_message, !commands_are_defined() ?

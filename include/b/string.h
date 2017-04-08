@@ -256,8 +256,8 @@ public:
 	void format_va(const char_t* fmt, va_list ap);
 
 	// Appends formatted data to this string.
-	void append_format(const char_t* fmt, ...) B_STRING_PRINTF(2, 3);
-	void append_format_va(const char_t* fmt, va_list ap);
+	void append_formatted(const char_t* fmt, ...) B_STRING_PRINTF(2, 3);
+	void append_formatted_va(const char_t* fmt, va_list ap);
 
 // Searching
 public:
