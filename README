@@ -26,93 +26,110 @@ the tool that makes programming in C++ a more enjoyable experience for me.
 
 The library provides the following functionality:
 
-Class           Header                  Description
---------        --------------------    ------------------------------------
-b::arg_list     <b/arg_list.h>          Implementation of an obscure
-                                        technique for passing a
-                                        variable-length list of named
-                                        parameters to a function or a method.
+#include <b/arg_list.h>                 b::arg_list
+
+    Implementation of an obscure technique for passing a variable-length
+    list of named parameters to a function or a method.
 
 
-b::array<T>     <b/array.h>             Array template type. Uses the
-                                        copy-on-write technique for memory
-                                        management.
+#include <b/array.h>                    b::array<T>
+
+    Array template type. Uses the copy-on-write technique for memory
+    management.
 
 
-b::binary_search_tree<Key_op>           Low-level structure that implements
-                <b/binary_tree.h>       a non-balancing binary search tree.
+#include <b/binary_tree.h>              b::binary_search_tree<Key_op>
+
+    Low-level structure that implements a non-balancing binary search tree.
 
 
-b::cli          <b/cli.h>               POSIX-compatible command line parser
-                                        and help screen generator.
+#include <b/cli.h>                      b::cli
+
+    POSIX-compatible command line parser and help screen generator.
 
 
-b::heap<T>      <b/heap.h>              Priority heap implementation.
+#include <b/heap.h>                     b::heap<T>
+
+    Priority heap implementation.
 
 
-b::levenshtein_distance                 Edit distance calculation.
-                <b/levenshtein_distance.h>
+#include <b/levenshtein_distance.h>     b::levenshtein_distance
+
+    Edit distance calculation.
 
 
-b::map<Key, T>  <b/map.h>               Template implementation of an
-                                        associative array container type.
+#include <b/map.h>                      b::map<Key, T>
+
+    Template implementation of an associative array container type.
 
 
-b::object       <b/object.h>            Base class with reference count
-                                        support.
+#include <b/object.h>                   b::object
+
+    Base class with reference count support.
 
 
-b::pathname     <b/pathname.h>          Pathname parsing and normalization
-                                        with additional modification operations.
+#include <b/pathname.h>                 b::pathname
+
+    Pathname parsing and normalization with additional modification
+    operations.
 
 
-b::random       <b/random.h>            A linear congruential generator.
+#include <b/random.h>                   b::random
+
+    A linear congruential generator.
 
 
-b::ref_count    <b/ref_count.h>         Portable thread-safe reference
-                                        counter.
+#include <b/ref_count.h>                b::ref_count
+
+    Portable thread-safe reference counter.
 
 
-b::ref          <b/ref.h>               Smart pointer to instances of all
-                                        classes derived from 'b::object'.
+#include <b/ref.h>                      b::ref
+
+    Smart pointer to instances of all classes derived from 'b::object'.
 
 
-b::set<T>       <b/set.h>               A set of unique objects of type T.
+#include <b/set.h>                      b::set<T>
+
+    A set of unique objects of type T.
 
 
-b::string       <b/string.h>            Generic string type, both byte
-b::wstring                              character and wide character versions.
-                                        Uses the copy-on-write technique.
+#include <b/string.h>                   b::string
+                                        b::wstring
+
+    Generic string type, both byte character and wide character
+    versions.  Uses the copy-on-write technique.
 
 
+#include <b/string_view.h>              b::string_view
+                                        b::wstring_view
 
-b::string_view  <b/string_view.h>       A pointer to a string segment. Useful
-b::wstring_view                         in parameters and for temporary strings.
-
-
-
-b::input_stream <b/io_streams.h>        Various input/output interfaces.
-b::output_stream
-b::seekable
-b::seekable_input_stream
-b::seekable_output_stream
-b::input_output_stream
+    A pointer to a string segment. Useful in parameters and for
+    temporary strings.
 
 
-b::doubly_linked_list<Node_access>      Various linked list classes.
-                <b/doubly_linked_list.h>
-b::doubly_linked_list_container<T>
-                <b/doubly_linked_list_container.h>
-b::linked_list<Node_access>
-                <b/linked_list.h>
-b::linked_list_container<T>
-                <b/linked_list_container.h>
+#include <b/io_streams.h>               b::input_stream
+                                        b::output_stream
+                                        b::seekable
+                                        b::seekable_input_stream
+                                        b::seekable_output_stream
+                                        b::input_output_stream
+
+    Various input/output interfaces.
 
 
-b::exception    <b/exception.h>         Various exception classes.
-b::runtime_exception
-                <b/runtime_exception.h>
-b::custom_exception
-                <b/custom_exception.h>
-b::system_exception
-                <b/system_exception.h>
+#include <b/doubly_linked_list.h>       b::doubly_linked_list<Node_access>
+#include <b/doubly_linked_list_container.h>
+                                        b::doubly_linked_list_container<T>
+#include <b/linked_list.h>              b::linked_list<Node_access>
+#include <b/linked_list_container.h>    b::linked_list_container<T>
+
+    Various linked list classes.
+
+
+#include <b/exception.h>                b::exception
+#include <b/runtime_exception.h>        b::runtime_exception
+#include <b/custom_exception.h>         b::custom_exception
+#include <b/system_exception.h>         b::system_exception
+
+    Various exception classes.
