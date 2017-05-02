@@ -142,3 +142,26 @@ B_TEST_CASE(repeat)
 
 	B_CHECK(abc * 3 == "abcabcabc");
 }
+
+B_TEST_CASE(split)
+{
+	B_CHECK(!abc.split('\t', NULL, NULL));
+
+	B_STATIC_CONST_STRING(tab_separated, "one\ttwo\tthree");
+
+	B_REQUIRE(tab_separated.split('\t', NULL, NULL));
+
+	b::string_view one, two_three;
+
+	B_REQUIRE(tab_separated.split('\t', &one, &two_three));
+	B_CHECK(one == "one");
+	B_CHECK(two_three == "two\tthree");
+
+	b::string_view single;
+
+	B_REQUIRE(tab_separated.split('\t', &single, NULL));
+	B_CHECK(single == "one");
+
+	B_REQUIRE(tab_separated.split('\t', NULL, &single));
+	B_CHECK(single == "two\tthree");
+}

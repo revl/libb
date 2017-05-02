@@ -24,6 +24,8 @@
 
 B_BEGIN_NAMESPACE
 
+class string_view;
+
 // Sequence of characters.
 class string
 {
@@ -266,6 +268,12 @@ public:
 
 	// Finds the last occurrence of a character in this string.
 	size_t rfind(char_t c) const;
+
+	// Splits the string into two parts at the first occurrence of
+	// the delimiter character.  Either of the output pointers can
+	// be NULL.  Returns true if the delimiter was found and the
+	// split happened.
+	bool split(char_t delim, string_view* first, string_view* rest) const;
 
 // Character Removal Operations
 public:
@@ -669,9 +677,11 @@ B_END_NAMESPACE
 #define B_STRING_PRINTF(fmt_index, arg_index)
 
 #define string wstring
+#define string_view wstring_view
 #define char_t wchar_t
 #include "string.h"
 #undef char_t
+#undef string_view
 #undef string
 
 #undef B_STRING_PRINTF

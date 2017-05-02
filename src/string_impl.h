@@ -525,6 +525,26 @@ size_t string::rfind(char_t c) const
 	return (size_t) -1;
 }
 
+bool string::split(char_t delim, string_view* left, string_view* right) const
+{
+	size_t delim_pos = find(delim);
+
+	if (delim_pos == (size_t) -1)
+		return false;
+
+	if (left != NULL)
+		left->assign(chars, delim_pos);
+
+	if (right != NULL)
+	{
+		++delim_pos;
+
+		right->assign(chars + delim_pos, length() - delim_pos);
+	}
+
+	return true;
+}
+
 void string::trim_right(const char_t* samples)
 {
 	char_t* end = chars + length();
