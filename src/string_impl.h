@@ -525,21 +525,21 @@ size_t string::rfind(char_t c) const
 	return (size_t) -1;
 }
 
-bool string::split(char_t delim, string_view* left, string_view* right) const
+bool string::split(char_t delim, string_view* slice, string_view* rest) const
 {
 	size_t delim_pos = find(delim);
 
 	if (delim_pos == (size_t) -1)
 		return false;
 
-	if (left != NULL)
-		left->assign(chars, delim_pos);
+	if (slice != NULL)
+		slice->assign(chars, delim_pos);
 
-	if (right != NULL)
+	if (rest != NULL)
 	{
 		++delim_pos;
 
-		right->assign(chars + delim_pos, length() - delim_pos);
+		rest->assign(chars + delim_pos, length() - delim_pos);
 	}
 
 	return true;

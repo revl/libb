@@ -273,7 +273,7 @@ public:
 	// the delimiter character.  Either of the output pointers can
 	// be NULL.  Returns true if the delimiter was found and the
 	// split happened.
-	bool split(char_t delim, string_view* first, string_view* rest) const;
+	bool split(char_t delim, string_view* slice, string_view* rest) const;
 
 // Character Removal Operations
 public:
