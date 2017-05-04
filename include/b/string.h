@@ -37,6 +37,9 @@ public:
 	// Constructs a copy of an existing string.
 	string(const string& source);
 
+	// Constructs a string from a string view.
+	string(const string_view& source);
+
 	// Constructs a string from a linear character array.
 	string(const char_t* source, size_t count);
 

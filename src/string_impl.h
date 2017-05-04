@@ -20,6 +20,11 @@
 
 B_BEGIN_NAMESPACE
 
+string::string(const string_view& source) : chars(empty_string())
+{
+	assign(source.data(), source.length());
+}
+
 string::string(const char_t* source, size_t count, size_t times)
 {
 	size_t total_count = count * times;
