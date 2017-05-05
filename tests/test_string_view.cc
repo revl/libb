@@ -83,3 +83,38 @@ B_TEST_CASE(string_view_repeat)
 	B_CHECK(abc.repeat(2) == "abcabc");
 	B_CHECK(abc.repeat(3) == "abcabcabc");
 }
+
+B_TEST_CASE(split)
+{
+	b::string_view abc("abc", 3);
+
+	B_CHECK(!abc.split('\t', NULL, NULL));
+
+	B_STATIC_CONST_STRING(tab_separated, "one\ttwo\tthree");
+
+	B_REQUIRE(tab_separated.split('\t', NULL, NULL));
+
+	b::string_view one, two_three;
+
+	B_REQUIRE(tab_separated.split('\t', &one, &two_three));
+	B_CHECK(one == "one");
+	B_CHECK(two_three == "two\tthree");
+
+	b::string_view two, three;
+
+	B_REQUIRE(two_three.split('\t', &two, &three));
+	B_CHECK(two == "two");
+	B_CHECK(three == "three");
+
+	b::string_view single;
+
+	B_REQUIRE(tab_separated.split('\t', &single, NULL));
+	B_CHECK(single == "one");
+
+	B_REQUIRE(tab_separated.split('\t', NULL, &single));
+	B_CHECK(single == "two\tthree");
+
+	B_REQUIRE(single.split('\t', &single, &single));
+	B_CHECK(single == "three");
+	printf("[%.*s]\n", (int) single.length(), single.data());
+}

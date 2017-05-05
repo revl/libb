@@ -50,6 +50,46 @@ size_t string_view::rfind(char_t c) const
 	return (size_t) -1;
 }
 
+// This method cannot be made 'const' because either of the
+// output pointers can point to *this* string_view.
+bool string_view::split(char_t delim, string_view* slice, string_view* rest)
+{
+	size_t delim_pos = find(delim);
+
+	if (delim_pos == (size_t) -1)
+		return false;
+
+	if (slice == NULL)
+	{
+		if (rest != NULL)
+		{
+			++delim_pos;
+
+			rest->assign(view + delim_pos, view_length - delim_pos);
+		}
+
+		return true;
+	}
+
+
+	if (rest == NULL)
+	{
+		slice->assign(view, delim_pos);
+
+		return true;
+	}
+
+	size_t this_view_length = view_length;
+
+	slice->assign(view, delim_pos);
+
+	++delim_pos;
+
+	rest->assign(view + delim_pos, this_view_length - delim_pos);
+
+	return true;
+}
+
 void string_view::trim_right(const char_t* samples)
 {
 	const char_t* end = view + view_length;

@@ -146,6 +146,12 @@ public:
 	// Finds the last occurrence of a character in this string_view.
 	size_t rfind(char_t c) const;
 
+	// Splits this string_view into two parts at the first occurrence of
+	// the delimiter character.  Either of the output pointers can be NULL
+	// or point to this string_view.  Returns true if the delimiter was
+	// found and the split happened.
+	bool split(char_t delim, string_view* slice, string_view* rest);
+
 // Whitespace trimming
 public:
 	// Shrink this string_view by removing the characters that are
