@@ -86,17 +86,17 @@ struct option_or_command_info
 	option_or_command_info(int opt_or_cmd_id, const string& names) :
 		id(opt_or_cmd_id)
 	{
-		string_view name, variants;
+		string_view name, more;
 
-		if (!names.split('|', &name, &variants))
+		if (!names.split('|', &name, &more))
 			name_variants.append(names);
 		else
 		{
 			do
 				name_variants.append(name);
-			while (variants.split('|', &name, &variants));
+			while (more.split('|', &name, &more));
 
-			name_variants.append(variants);
+			name_variants.append(more);
 		}
 	}
 
