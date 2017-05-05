@@ -86,26 +86,17 @@ struct option_or_command_info
 	option_or_command_info(int opt_or_cmd_id, const string& names) :
 		id(opt_or_cmd_id)
 	{
-		// TODO Extract the following code into some sort of universal
-		// split method or function.
-		const char* name = names.data();
-		const char* vertical_bar = ::strchr(name, '|');
+		string_view name, variants;
 
-		if (vertical_bar == NULL)
+		if (!names.split('|', &name, &variants))
 			name_variants.append(names);
 		else
 		{
 			do
-			{
-				name_variants.append(string(name,
-					(size_t) (vertical_bar - name)));
-				name = vertical_bar + 1;
-				vertical_bar = ::strchr(name, '|');
-			}
-			while (vertical_bar != NULL);
+				name_variants.append(name);
+			while (variants.split('|', &name, &variants));
 
-			name_variants.append(1,
-					string(name, calc_length(name)));
+			name_variants.append(variants);
 		}
 	}
 
