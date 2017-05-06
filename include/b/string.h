@@ -206,6 +206,10 @@ public:
 	// Deletes a range of characters.
 	void remove(size_t index, size_t count = 1);
 
+	// Deletes characters starting at 'new_length' until
+	// the end of the string.
+	void truncate(size_t new_length);
+
 	// Empties the string.
 	void empty();
 

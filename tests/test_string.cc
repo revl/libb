@@ -165,3 +165,20 @@ B_TEST_CASE(split)
 	B_REQUIRE(tab_separated.split('\t', NULL, &single));
 	B_CHECK(single == "two\tthree");
 }
+
+B_TEST_CASE(truncate)
+{
+	b::string str1;
+	str1.format("abc%s", "xxx");
+
+	str1.truncate(3);
+
+	B_CHECK(str1 == abc);
+
+	b::string str2 = str1;
+
+	str1.truncate(1);
+
+	B_CHECK(str1 == "a");
+	B_CHECK(str2 == abc);
+}

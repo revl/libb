@@ -377,6 +377,8 @@ string string::operator +(char_t ch) const
 
 void string::remove(size_t index, size_t count)
 {
+	B_ASSERT(index <= length());
+
 	if (index + count > length())
 		count = length() - index;
 
@@ -400,6 +402,27 @@ void string::remove(size_t index, size_t count)
 
 			assign_pairwise(new_buffer_chars + index,
 				chars + index + count, new_length - index + 1);
+
+			replace_buffer(new_buffer_chars);
+		}
+	}
+}
+
+void string::truncate(size_t new_length)
+{
+	B_ASSERT(new_length <= length());
+
+	if (new_length < length())
+	{
+		if (!is_shared())
+			chars[metadata()->length = new_length] = 0;
+		else
+		{
+			char_t* new_buffer_chars = alloc_buffer(
+				extra_capacity(new_length), new_length);
+
+			assign_pairwise(new_buffer_chars, chars, new_length);
+			new_buffer_chars[new_length] = 0;
 
 			replace_buffer(new_buffer_chars);
 		}
@@ -557,25 +580,7 @@ void string::trim_right(const char_t* samples)
 	while (--end >= chars && find_char(samples, *end) != NULL)
 		;
 
-	size_t new_length = (size_t) (++end - chars);
-
-	if (new_length < length())
-	{
-		if (!is_shared())
-			*end = 0;
-		else
-		{
-			char_t* new_buffer_chars = alloc_buffer(
-				extra_capacity(new_length), new_length);
-
-			assign_pairwise(new_buffer_chars, chars, new_length);
-			new_buffer_chars[new_length] = 0;
-
-			replace_buffer(new_buffer_chars);
-		}
-
-		metadata()->length = new_length;
-	}
+	truncate((size_t) (++end - chars));
 }
 
 void string::trim_left(const char_t* samples)
@@ -590,7 +595,10 @@ void string::trim_left(const char_t* samples)
 		size_t new_length = (size_t) (chars + length() - start);
 
 		if (!is_shared())
+		{
+			metadata()->length = new_length;
 			assign_pairwise_backwards(chars, start, new_length + 1);
+		}
 		else
 		{
 			char_t* new_buffer_chars = alloc_buffer(
@@ -601,8 +609,6 @@ void string::trim_left(const char_t* samples)
 
 			replace_buffer(new_buffer_chars);
 		}
-
-		metadata()->length = new_length;
 	}
 }
 
