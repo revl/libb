@@ -22,24 +22,18 @@ B_BEGIN_NAMESPACE
 
 size_t string_view::find(char_t c) const
 {
-	size_t counter = length();
-
 	const char_t* vc = view;
 
-	while (counter-- > 0)
-	{
+	for (size_t counter = view_length; counter > 0; --counter, ++vc)
 		if (*vc == c)
 			return (size_t) (vc - view);
-
-		++vc;
-	}
 
 	return (size_t) -1;
 }
 
 size_t string_view::rfind(char_t c) const
 {
-	size_t index = length();
+	size_t index = view_length;
 	const char_t* vc = view + index;
 
 	while (index-- > 0 && *--vc != c)
