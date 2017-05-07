@@ -49,16 +49,6 @@ B_TEST_CASE(string_view)
 
 	sv2 = b::string_view(padded);
 
-	size_t b_index = sv2.find('b');
-
-	B_REQUIRE(b_index == 1);
-	B_CHECK(sv2[b_index] == 'b');
-
-	b_index = sv2.rfind('b');
-
-	B_REQUIRE(b_index == 7);
-	B_CHECK(sv2[b_index] == 'b');
-
 	sv2.trim("abc");
 
 	B_CHECK(sv2 == "xxx");
@@ -66,7 +56,31 @@ B_TEST_CASE(string_view)
 	B_CHECK(sv2 > padded);
 }
 
-B_TEST_CASE(string_view_repeat)
+B_TEST_CASE(find)
+{
+	b::string_view sv = padded;
+
+	size_t b_index = sv.find('b');
+
+	B_REQUIRE(b_index == 1);
+	B_CHECK(sv[b_index] == 'b');
+
+	B_CHECK(sv.find('z') == (size_t) -1);
+}
+
+B_TEST_CASE(rfind)
+{
+	b::string_view sv = padded;
+
+	size_t b_index = sv.rfind('b');
+
+	B_REQUIRE(b_index == 7);
+	B_CHECK(sv[b_index] == 'b');
+
+	B_CHECK(sv.rfind('z') == (size_t) -1);
+}
+
+B_TEST_CASE(repeat)
 {
 	b::string_view empty;
 
