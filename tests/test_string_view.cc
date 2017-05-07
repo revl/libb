@@ -46,14 +46,6 @@ B_TEST_CASE(string_view)
 	B_CHECK(sv1 < "1234");
 
 	B_CHECK(b::string_view("123a", 3) == b::string_view("123b", 3));
-
-	sv2 = b::string_view(padded);
-
-	sv2.trim("abc");
-
-	B_CHECK(sv2 == "xxx");
-
-	B_CHECK(sv2 > padded);
 }
 
 B_TEST_CASE(find)
@@ -130,4 +122,15 @@ B_TEST_CASE(split)
 
 	B_REQUIRE(single.split('\t', &single, &single));
 	B_CHECK(single == "three");
+}
+
+B_TEST_CASE(trim)
+{
+	b::string_view sv = padded;
+
+	sv.trim("abc");
+
+	B_CHECK(sv == "xxx");
+
+	B_CHECK(sv > padded);
 }
