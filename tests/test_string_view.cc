@@ -116,5 +116,4 @@ B_TEST_CASE(split)
 
 	B_REQUIRE(single.split('\t', &single, &single));
 	B_CHECK(single == "three");
-	printf("[%.*s]\n", (int) single.length(), single.data());
 }
