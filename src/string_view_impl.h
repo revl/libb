@@ -24,14 +24,14 @@ size_t string_view::find(char_t c) const
 {
 	size_t counter = length();
 
-	const char_t* pos = view;
+	const char_t* vc = view;
 
 	while (counter-- > 0)
 	{
-		if (*pos == c)
-			return (size_t) (pos - view);
+		if (*vc == c)
+			return (size_t) (vc - view);
 
-		++pos;
+		++vc;
 	}
 
 	return (size_t) -1;
@@ -40,14 +40,12 @@ size_t string_view::find(char_t c) const
 size_t string_view::rfind(char_t c) const
 {
 	size_t index = length();
+	const char_t* vc = view + index;
 
-	const char_t* pos = view + index;
+	while (index-- > 0 && *--vc != c)
+		;
 
-	while (index-- > 0)
-		if (*--pos == c)
-			return (size_t) (pos - view);
-
-	return (size_t) -1;
+	return index;
 }
 
 // This method cannot be made 'const' because either of the
