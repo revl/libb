@@ -93,10 +93,10 @@ struct option_or_command_info
 		else
 		{
 			do
-				name_variants.append(name);
+				name_variants.append(string(name));
 			while (more.split('|', &name, &more));
 
-			name_variants.append(more);
+			name_variants.append(string(more));
 		}
 	}
 
