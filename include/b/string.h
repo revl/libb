@@ -104,8 +104,6 @@ public:
 	// Unlocks the buffer and sets the new string length.
 	void unlock(size_t new_length);
 
-// Single Character Access
-public:
 	// Returns the character with the specified index.
 	char_t at(size_t index) const;
 
@@ -129,6 +127,9 @@ public:
 
 	// Returns a reference to the last character of the string.
 	char_t& last();
+
+	// Returns a substring of this string as a string_view object.
+	string_view substr(size_t start, size_t substr_len) const;
 
 // Assignment
 public:

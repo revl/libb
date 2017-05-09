@@ -90,6 +90,8 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(str1.is_empty());
 	B_CHECK(str2.length() == 3);
 
+	B_CHECK(str1.substr(0, 10).is_empty());
+
 	b::string str3("cba", 3);
 	b::string str4(3, 'x');
 
@@ -100,6 +102,9 @@ B_TEST_CASE(basic_checks)
 	str1.trim_right("Rr");
 	str1.trim("C");
 	B_CHECK(str1 == "abcxxxcba");
+
+	B_CHECK(str1.substr(3, 3) == "xxx");
+	B_CHECK(str1.substr(6, 6) == "cba");
 
 	str2 = abc + str4 + str3;
 	B_CHECK(str1 == str2);

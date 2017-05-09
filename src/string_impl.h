@@ -99,6 +99,14 @@ void string::alloc_and_copy(size_t new_capacity)
 	}
 }
 
+string_view string::substr(size_t start, size_t substr_len) const
+{
+	B_ASSERT(start <= length());
+
+	return string_view(chars + start,
+		substr_len <= length() - start ? substr_len : length() - start);
+}
+
 void string::assign(const string& source)
 {
 	if (!is_locked() && !source.is_locked())
