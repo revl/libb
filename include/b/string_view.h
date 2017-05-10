@@ -72,6 +72,9 @@ public:
 	// Returns the last character of this string_view.
 	char_t last() const;
 
+	// Returns a part of this string view.
+	string_view substr(size_t start, size_t substr_len) const;
+
 // Assignment
 public:
 	// Makes this string_view object point to the contents
@@ -232,6 +235,14 @@ inline char_t string_view::last() const
 	B_ASSERT(!is_empty());
 
 	return view[length() - 1];
+}
+
+inline string_view string_view::substr(size_t start, size_t substr_len) const
+{
+	B_ASSERT(start <= length());
+
+	return string_view(view + start,
+		substr_len <= length() - start ? substr_len : length() - start);
 }
 
 inline void string_view::assign(const string_view& source)

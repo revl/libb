@@ -134,3 +134,13 @@ B_TEST_CASE(trim)
 
 	B_CHECK(sv > padded);
 }
+
+B_TEST_CASE(substr)
+{
+	B_CHECK(b::string_view().substr(0, 10).is_empty());
+
+	b::string_view sv = padded;
+
+	B_CHECK(sv.substr(3, 3) == "xxx");
+	B_CHECK(sv.substr(6, 6) == "cba");
+}
