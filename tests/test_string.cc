@@ -106,6 +106,8 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(str1.substr(3, 3) == "xxx");
 	B_CHECK(str1.substr(6, 6) == "cba");
 
+	B_CHECK(str1.remainder(6) == "cba");
+
 	str2 = abc + str4 + str3;
 	B_CHECK(str1 == str2);
 

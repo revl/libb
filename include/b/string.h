@@ -131,6 +131,10 @@ public:
 	// Returns a substring of this string as a string_view object.
 	string_view substr(size_t start, size_t substr_len) const;
 
+	// Returns a string view that spans from 'pos' to the end
+	// of this string.
+	string_view remainder(size_t pos) const;
+
 // Assignment
 public:
 	// Assigns the contents of 'source' to this string.

@@ -107,6 +107,13 @@ string_view string::substr(size_t start, size_t substr_len) const
 		substr_len <= length() - start ? substr_len : length() - start);
 }
 
+string_view string::remainder(size_t pos) const
+{
+	B_ASSERT(pos <= length());
+
+	return string_view(chars + pos, length() - pos);
+}
+
 void string::assign(const string& source)
 {
 	if (!is_locked() && !source.is_locked())
