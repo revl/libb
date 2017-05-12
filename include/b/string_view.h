@@ -155,8 +155,12 @@ public:
 	// found and the split happened.
 	bool split(char_t delim, string_view* slice, string_view* rest);
 
-// Whitespace trimming
+// Trimming
 public:
+	// Shortens this string view to 'new_length' characters.  The new
+	// length cannot exceed the current length of this string view.
+	void truncate(size_t new_length);
+
 	// Shrink this string_view by removing the characters that are
 	// listed in 'samples' from the end of this string_view.
 	void trim_right(const char_t* samples);
@@ -399,6 +403,13 @@ inline bool operator <=(const char_t* chars, const string_view& str)
 inline bool operator >=(const char_t* chars, const string_view& str)
 {
 	return str.compare(chars) <= 0;
+}
+
+inline void string_view::truncate(size_t new_length)
+{
+	B_ASSERT(view_length >= new_length);
+
+	view_length = new_length;
 }
 
 B_END_NAMESPACE

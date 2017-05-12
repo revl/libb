@@ -133,6 +133,12 @@ B_TEST_CASE(trim)
 	B_CHECK(sv == "xxx");
 
 	B_CHECK(sv > padded);
+
+	sv = padded;
+
+	sv.truncate(3);
+
+	B_CHECK(sv == "abc");
 }
 
 B_TEST_CASE(substr)
