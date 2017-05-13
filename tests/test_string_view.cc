@@ -149,4 +149,6 @@ B_TEST_CASE(substr)
 
 	B_CHECK(sv.substr(3, 3) == "xxx");
 	B_CHECK(sv.substr(6, 6) == "cba");
+
+	B_CHECK(sv.remainder(6) == "cba");
 }

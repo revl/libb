@@ -75,6 +75,10 @@ public:
 	// Returns a part of this string view.
 	string_view substr(size_t start, size_t substr_len) const;
 
+	// Returns the end part of this string view that
+	// starts at 'pos'.
+	string_view remainder(size_t pos) const;
+
 // Assignment
 public:
 	// Makes this string_view object point to the contents
@@ -247,6 +251,13 @@ inline string_view string_view::substr(size_t start, size_t substr_len) const
 
 	return string_view(view + start,
 		substr_len <= length() - start ? substr_len : length() - start);
+}
+
+inline string_view string_view::remainder(size_t pos) const
+{
+	B_ASSERT(pos <= length());
+
+	return string_view(view + pos, length() - pos);
 }
 
 inline void string_view::assign(const string_view& source)
