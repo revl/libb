@@ -595,7 +595,7 @@ void string::trim_right(const char_t* samples)
 	while (--end >= chars && find_char(samples, *end) != NULL)
 		;
 
-	truncate((size_t) (++end - chars));
+	truncate((size_t) (end + 1 - chars));
 }
 
 void string::trim_left(const char_t* samples)
