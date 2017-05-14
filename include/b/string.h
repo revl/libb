@@ -291,14 +291,14 @@ public:
 public:
 	// Removes all occurrences of characters from 'samples'
 	// from the end of this string.
-	void trim_right(const char_t* samples);
+	void trim_right(const string_view& samples);
 
 	// Removes all occurrences of characters from 'samples'
 	// found at the beginning of this string.
-	void trim_left(const char_t* samples);
+	void trim_left(const string_view& samples);
 
 	// Removes all characters from 'samples' from both ends of this string.
-	void trim(const char_t* samples);
+	void trim(const string_view& samples);
 
 // Implementation
 private:
@@ -621,7 +621,7 @@ inline bool string::operator >=(const char_t* rhs) const
 	return compare(rhs) >= 0;
 }
 
-inline void string::trim(const char_t* samples)
+inline void string::trim(const string_view& samples)
 {
 	trim_right(samples);
 	trim_left(samples);

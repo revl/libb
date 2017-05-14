@@ -167,15 +167,15 @@ public:
 
 	// Shrink this string_view by removing the characters that are
 	// listed in 'samples' from the end of this string_view.
-	void trim_right(const char_t* samples);
+	void trim_right(const string_view& samples);
 
 	// Shrink this string_view by removing the characters that are
 	// listed in 'samples' from the beginning of this string_view.
-	void trim_left(const char_t* samples);
+	void trim_left(const string_view& samples);
 
 	// Removes all characters that are listed in 'samples' from
 	// both ends of this string_view.
-	void trim(const char_t* samples);
+	void trim(const string_view& samples);
 
 // Utility methods
 public:
@@ -375,7 +375,7 @@ inline bool string_view::operator >=(const char_t* rhs) const
 	return compare(rhs) >= 0;
 }
 
-inline void string_view::trim(const char_t* samples)
+inline void string_view::trim(const string_view& samples)
 {
 	trim_right(samples);
 	trim_left(samples);

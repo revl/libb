@@ -98,9 +98,9 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(str4 > str3);
 
 	str1 = left + str2 + str4 + str3 + right;
-	str1.trim_left("Ll");
-	str1.trim_right("Rr");
-	str1.trim("C");
+	str1.trim_left(b::string_view("Ll", 2));
+	str1.trim_right(b::string_view("Rr", 2));
+	str1.trim(b::string_view("C", 1));
 	B_CHECK(str1 == "abcxxxcba");
 
 	B_CHECK(str1.substr(3, 3) == "xxx");

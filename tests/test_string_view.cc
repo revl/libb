@@ -128,7 +128,7 @@ B_TEST_CASE(trim)
 {
 	b::string_view sv = padded;
 
-	sv.trim("abc");
+	sv.trim(b::string_view("abc", 3));
 
 	B_CHECK(sv == "xxx");
 

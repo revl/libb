@@ -82,17 +82,17 @@ bool string_view::split(char_t delim, string_view* slice, string_view* rest)
 	return true;
 }
 
-void string_view::trim_right(const char_t* samples)
+void string_view::trim_right(const string_view& samples)
 {
 	const char_t* end = view + view_length;
 
-	while (view_length > 0 && find_char(samples, *--end) != NULL)
+	while (view_length > 0 && samples.find(*--end) != (size_t) -1)
 		--view_length;
 }
 
-void string_view::trim_left(const char_t* samples)
+void string_view::trim_left(const string_view& samples)
 {
-	while (view_length > 0 && find_char(samples, *view) != NULL)
+	while (view_length > 0 && samples.find(*view) != (size_t) -1)
 	{
 		++view;
 		--view_length;

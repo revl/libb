@@ -588,17 +588,17 @@ bool string::split(char_t delim, string_view* slice, string_view* rest) const
 	return true;
 }
 
-void string::trim_right(const char_t* samples)
+void string::trim_right(const string_view& samples)
 {
 	char_t* new_last = chars + length();
 
-	while (--new_last >= chars && find_char(samples, *new_last) != NULL)
+	while (--new_last >= chars && samples.find(*new_last) != (size_t) -1)
 		;
 
 	truncate((size_t) (new_last + 1 - chars));
 }
 
-void string::trim_left(const char_t* samples)
+void string::trim_left(const string_view& samples)
 {
 	if (is_empty())
 		return;
@@ -607,7 +607,7 @@ void string::trim_left(const char_t* samples)
 	const char_t* new_first = chars;
 
 	do
-		if (find_char(samples, *new_first) == NULL)
+		if (samples.find(*new_first) == (size_t) -1)
 			break;
 		else
 			++new_first;
