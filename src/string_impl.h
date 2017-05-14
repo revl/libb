@@ -590,36 +590,38 @@ bool string::split(char_t delim, string_view* slice, string_view* rest) const
 
 void string::trim_right(const char_t* samples)
 {
-	char_t* end = chars + length();
+	char_t* new_last = chars + length();
 
-	while (--end >= chars && find_char(samples, *end) != NULL)
+	while (--new_last >= chars && find_char(samples, *new_last) != NULL)
 		;
 
-	truncate((size_t) (end + 1 - chars));
+	truncate((size_t) (new_last + 1 - chars));
 }
 
 void string::trim_left(const char_t* samples)
 {
-	const char_t* start = chars;
+	const char_t* new_first = chars;
 
-	while (*start && find_char(samples, *start) != NULL)
-		++start;
+	while (*new_first && find_char(samples, *new_first) != NULL)
+		++new_first;
 
-	if (start > chars)
+	if (new_first > chars)
 	{
-		size_t new_length = (size_t) (chars + length() - start);
+		size_t new_length = (size_t) (chars + length() - new_first);
 
 		if (!is_shared())
 		{
 			metadata()->length = new_length;
-			assign_pairwise_backwards(chars, start, new_length + 1);
+			assign_pairwise_backwards(chars, new_first,
+				new_length + 1);
 		}
 		else
 		{
 			char_t* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			assign_pairwise(new_buffer_chars, start, new_length);
+			assign_pairwise(new_buffer_chars, new_first,
+				new_length);
 			new_buffer_chars[new_length] = 0;
 
 			replace_buffer(new_buffer_chars);
