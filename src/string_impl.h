@@ -600,15 +600,21 @@ void string::trim_right(const char_t* samples)
 
 void string::trim_left(const char_t* samples)
 {
+	if (is_empty())
+		return;
+
+	size_t new_length = length();
 	const char_t* new_first = chars;
 
-	while (*new_first && find_char(samples, *new_first) != NULL)
-		++new_first;
+	do
+		if (find_char(samples, *new_first) == NULL)
+			break;
+		else
+			++new_first;
+	while (--new_length > 0);
 
 	if (new_first > chars)
 	{
-		size_t new_length = (size_t) (chars + length() - new_first);
-
 		if (!is_shared())
 		{
 			metadata()->length = new_length;
