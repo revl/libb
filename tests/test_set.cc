@@ -24,10 +24,10 @@
 
 template class b::set<int>;
 
+typedef b::set<int> int_set;
+
 B_TEST_CASE(construction)
 {
-	typedef b::set<int> int_set;
-
 	int_set s;
 
 	B_CHECK(s.is_empty());
@@ -67,4 +67,26 @@ B_TEST_CASE(construction)
 	B_CHECK(s.remove(10));
 	B_CHECK(!s.remove(10));
 	B_CHECK(!s.remove(11));
+}
+
+B_TEST_CASE(iteration)
+{
+	int_set s;
+
+	B_CHECK(*s.insert(20) == 20);
+	B_CHECK(*s.insert(40) == 40);
+	B_CHECK(*s.insert(20) == 20);
+	B_CHECK(*s.insert(30) == 30);
+	B_CHECK(*s.insert(10) == 10);
+
+	int* element = s.first();
+
+	for (int v = 10; v <= 40; v += 10)
+	{
+		B_CHECK(*element == v);
+
+		element = int_set::next(element);
+	}
+
+	B_CHECK(element == NULL);
 }

@@ -287,6 +287,24 @@ T* set_base<T, Key_op>::last()
 }
 
 template <class T, class Key_op>
+const T* set_base<T, Key_op>::next(const T* value)
+{
+	const set_element<T>* next_element = B_OUTERSTRUCT(
+		set_element<T>, value, value)->next();
+
+	return next_element == NULL ? NULL : &next_element->value;
+}
+
+template <class T, class Key_op>
+T* set_base<T, Key_op>::next(T* value)
+{
+	set_element<T>* next_element = B_OUTERSTRUCT(
+		set_element<T>, value, value)->next();
+
+	return next_element == NULL ? NULL : &next_element->value;
+}
+
+template <class T, class Key_op>
 struct set_base<T, Key_op>::const_iterator
 {
 	const T* value_addr;
