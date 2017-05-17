@@ -89,4 +89,15 @@ B_TEST_CASE(iteration)
 	}
 
 	B_CHECK(element == NULL);
+
+	element = s.last();
+
+	for (int v = 40; v >= 10; v -= 10)
+	{
+		B_CHECK(*element == v);
+
+		element = int_set::prev(element);
+	}
+
+	B_CHECK(element == NULL);
 }
