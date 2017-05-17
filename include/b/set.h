@@ -233,14 +233,17 @@ typename set_base<T, Key_op>::search_result set_base<T, Key_op>::search(
 }
 
 template <class T, class Key_op>
-T* set_base<T, Key_op>::insert(const T& value, const set_base<T, Key_op>::search_result& sr)
+T* set_base<T, Key_op>::insert(const T& value,
+		const set_base<T, Key_op>::search_result& sr)
 {
 	B_ASSERT(sr.match() == NULL);
 
 	set_element<T>* new_element = new set_element<T>(value);
 
-	tree.insert_after_search(new_element, sr.value != NULL ?
-		B_OUTERSTRUCT(set_element<T>, value, sr.value) : NULL, sr.cmp_result);
+	tree.insert_after_search(new_element,
+		sr.value != NULL ?
+			B_OUTERSTRUCT(set_element<T>, value, sr.value) : NULL,
+		sr.cmp_result);
 
 	return &new_element->value;
 }
@@ -335,10 +338,7 @@ struct set_base<T, Key_op>::const_iterator
 	{
 		B_ASSERT(value_addr != NULL);
 
-		const set_element<T>* next_element = B_OUTERSTRUCT(
-			set_element<T>, value, value_addr)->next();
-
-		value_addr = next_element == NULL ? NULL : &next_element->value;
+		value_addr = set_base<T, Key_op>::next(value_addr);
 
 		return *this;
 	}
@@ -347,10 +347,7 @@ struct set_base<T, Key_op>::const_iterator
 	{
 		B_ASSERT(value_addr != NULL);
 
-		const set_element<T>* prev_element = B_OUTERSTRUCT(
-			set_element<T>, value, value_addr)->prev();
-
-		value_addr = prev_element == NULL ? NULL : &prev_element->value;
+		value_addr = set_base<T, Key_op>::prev(value_addr);
 
 		return *this;
 	}
