@@ -455,6 +455,12 @@ void string::empty()
 		replace_buffer(empty_string());
 }
 
+bool string::starts_with(const string_view& prefix) const
+{
+	return length() >= prefix.length() &&
+		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
+}
+
 string string::formatted(const char_t* fmt, ...)
 {
 	va_list ap;

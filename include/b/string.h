@@ -223,6 +223,9 @@ public:
 	// Compares this string against 'rhs' lexicographically.
 	int compare(const char_t* rhs) const;
 
+	// Checks if this string starts with the specified prefix.
+	bool starts_with(const string_view& prefix) const;
+
 	// Returns true if this string and 'rhs' are equal.
 	bool operator ==(const string& rhs) const;
 

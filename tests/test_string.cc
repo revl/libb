@@ -60,6 +60,9 @@ B_TEST_CASE(basic_checks)
 	b::string str2("345", 3);
 
 	B_CHECK(str1 == "012");
+	B_CHECK(str1.starts_with(b::string_view("01", 2)));
+	B_CHECK(!str1.starts_with(b::string_view("02", 2)));
+	B_CHECK(!str1.starts_with(b::string_view("0123", 4)));
 
 	// Append str2 to str1.
 	str1.append(str2);
