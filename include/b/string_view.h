@@ -107,6 +107,9 @@ public:
 	// lexicographically.
 	int compare(const string_view& rhs) const;
 
+	// Checks if this string_view starts with the specified prefix.
+	bool starts_with(const string_view& prefix) const;
+
 	// Checks if two string_view objects are equal.
 	bool operator ==(const string_view& rhs) const;
 
@@ -313,6 +316,12 @@ inline int string_view::compare(const string_view& rhs) const
 
 		return diff != 0 ? diff : view_length > rhs.view_length;
 	}
+}
+
+inline bool string_view::starts_with(const string_view& prefix) const
+{
+	return length() >= prefix.length() &&
+		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
 }
 
 inline bool string_view::operator ==(const string_view& rhs) const

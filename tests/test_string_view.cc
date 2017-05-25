@@ -26,7 +26,7 @@ B_STATIC_CONST_STRING(static_const_string, "static_const_string");
 
 B_STATIC_CONST_STRING(padded, "abcxxxcba");
 
-B_TEST_CASE(string_view)
+B_TEST_CASE(basic_checks)
 {
 	b::string_view sv1;
 
@@ -46,6 +46,17 @@ B_TEST_CASE(string_view)
 	B_CHECK(sv1 < "1234");
 
 	B_CHECK(b::string_view("123a", 3) == b::string_view("123b", 3));
+}
+
+B_TEST_CASE(starts_with)
+{
+	b::string_view sv("012", 3);
+
+	B_CHECK(sv.starts_with(b::string_view("01", 2)));
+	B_CHECK(sv.starts_with(b::string_view("012", 3)));
+
+	B_CHECK(!sv.starts_with(b::string_view("02", 2)));
+	B_CHECK(!sv.starts_with(b::string_view("0123", 4)));
 }
 
 B_TEST_CASE(find)
