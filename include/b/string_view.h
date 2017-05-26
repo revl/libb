@@ -448,9 +448,15 @@ B_END_NAMESPACE
 #undef char_t
 #undef string_view
 
+#define B_WSTRING_VIEW(string_literal) \
+	b::wstring_view(L##string_literal, B_COUNTOF(string_literal) - 1)
+
 #define char_t char
 #include "string_view.h"
 #undef char_t
+
+#define B_STRING_VIEW(string_literal) \
+	b::string_view(string_literal, B_COUNTOF(string_literal) - 1)
 
 #undef B_STRING_VIEW_DECL
 

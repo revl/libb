@@ -52,11 +52,11 @@ B_TEST_CASE(starts_with)
 {
 	b::string_view sv("012", 3);
 
-	B_CHECK(sv.starts_with(b::string_view("01", 2)));
-	B_CHECK(sv.starts_with(b::string_view("012", 3)));
+	B_CHECK(sv.starts_with(B_STRING_VIEW("01")));
+	B_CHECK(sv.starts_with(B_STRING_VIEW("012")));
 
-	B_CHECK(!sv.starts_with(b::string_view("02", 2)));
-	B_CHECK(!sv.starts_with(b::string_view("0123", 4)));
+	B_CHECK(!sv.starts_with(B_STRING_VIEW("02")));
+	B_CHECK(!sv.starts_with(B_STRING_VIEW("0123")));
 }
 
 B_TEST_CASE(find)
@@ -139,7 +139,7 @@ B_TEST_CASE(trim)
 {
 	b::string_view sv = padded;
 
-	sv.trim(b::string_view("abc", 3));
+	sv.trim(B_STRING_VIEW("abc"));
 
 	B_CHECK(sv == "xxx");
 
@@ -162,4 +162,9 @@ B_TEST_CASE(substr)
 	B_CHECK(sv.substr(6, 6) == "cba");
 
 	B_CHECK(sv.remainder(6) == "cba");
+}
+
+B_TEST_CASE(wide_chars)
+{
+	B_CHECK(B_WSTRING_VIEW("Unicode") == L"Unicode");
 }

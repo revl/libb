@@ -112,7 +112,7 @@ B_TEST_CASE(up_levels)
 
 	b::pathname path(relative_path);
 
-	path.append(b::string_view("..", 2));
+	path.append(B_STRING_VIEW(".."));
 
 	B_CHECK(path.str() == "relative");
 	B_CHECK(path.number_of_levels_up() == 0);
