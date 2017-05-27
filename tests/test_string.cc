@@ -192,3 +192,10 @@ B_TEST_CASE(truncate)
 	B_CHECK(str1 == "a");
 	B_CHECK(str2 == abc);
 }
+
+B_TEST_CASE(wide_chars)
+{
+	B_STATIC_CONST_WSTRING(unicode, "Unicode");
+
+	B_CHECK(unicode == L"Unicode");
+}
