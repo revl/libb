@@ -151,10 +151,10 @@ public:
 // Searching
 public:
 	// Finds a character in this string_view.
-	size_t find(char_t c) const;
+	size_t find(char_t ch) const;
 
 	// Finds the last occurrence of a character in this string_view.
-	size_t rfind(char_t c) const;
+	size_t rfind(char_t ch) const;
 
 	// Splits this string_view into two parts at the first occurrence of
 	// the delimiter character.  Either of the output pointers can be NULL

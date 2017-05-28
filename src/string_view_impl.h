@@ -20,23 +20,23 @@
 
 B_BEGIN_NAMESPACE
 
-size_t string_view::find(char_t c) const
+size_t string_view::find(char_t ch) const
 {
-	const char_t* vc = view;
+	const char_t* ptr = view;
 
-	for (size_t counter = view_length; counter > 0; --counter, ++vc)
-		if (*vc == c)
-			return (size_t) (vc - view);
+	for (size_t counter = view_length; counter > 0; --counter, ++ptr)
+		if (*ptr == ch)
+			return (size_t) (ptr - view);
 
 	return (size_t) -1;
 }
 
-size_t string_view::rfind(char_t c) const
+size_t string_view::rfind(char_t ch) const
 {
 	size_t index = view_length;
-	const char_t* vc = view + index;
+	const char_t* ptr = view + index;
 
-	while (index-- > 0 && *--vc != c)
+	while (index-- > 0 && *--ptr != ch)
 		;
 
 	return index;
