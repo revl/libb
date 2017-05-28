@@ -163,14 +163,14 @@ void string::assign(const string_view& source)
 	assign(source.data(), source.length());
 }
 
-void string::replace(size_t index, const char_t* source, size_t count)
+void string::replace(size_t start, const char_t* source, size_t count)
 {
-	B_ASSERT(index <= length());
+	B_ASSERT(start <= length());
 
 	if (count == 0)
 		return;
 
-	size_t end_of_change = index + count;
+	size_t end_of_change = start + count;
 
 	if (end_of_change > capacity() || is_shared())
 	{
@@ -181,8 +181,8 @@ void string::replace(size_t index, const char_t* source, size_t count)
 			new_buffer_chars = alloc_buffer(
 				extra_capacity(end_of_change), end_of_change);
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_pairwise(new_buffer_chars + index, source,
+			assign_pairwise(new_buffer_chars, chars, start);
+			assign_pairwise(new_buffer_chars + start, source,
 				count);
 		}
 		else
@@ -190,8 +190,8 @@ void string::replace(size_t index, const char_t* source, size_t count)
 			new_buffer_chars = alloc_buffer(
 				extra_capacity(length()), length());
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_pairwise(new_buffer_chars + index, source,
+			assign_pairwise(new_buffer_chars, chars, start);
+			assign_pairwise(new_buffer_chars + start, source,
 				count);
 			assign_pairwise(new_buffer_chars + end_of_change,
 				chars + end_of_change,
@@ -202,21 +202,21 @@ void string::replace(size_t index, const char_t* source, size_t count)
 	}
 	else
 	{
-		assign_pairwise(chars + index, source, count);
+		assign_pairwise(chars + start, source, count);
 
 		if (end_of_change > length())
 			chars[metadata()->length = end_of_change] = 0;
 	}
 }
 
-void string::replace(size_t index, char_t ch, size_t count)
+void string::replace(size_t start, char_t ch, size_t count)
 {
-	B_ASSERT(index <= length());
+	B_ASSERT(start <= length());
 
 	if (count == 0)
 		return;
 
-	size_t end_of_change = index + count;
+	size_t end_of_change = start + count;
 
 	if (end_of_change > capacity() || is_shared())
 	{
@@ -227,16 +227,16 @@ void string::replace(size_t index, char_t ch, size_t count)
 			new_buffer_chars = alloc_buffer(
 				extra_capacity(end_of_change), end_of_change);
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index, count, ch);
+			assign_pairwise(new_buffer_chars, chars, start);
+			assign_value(new_buffer_chars + start, count, ch);
 		}
 		else
 		{
 			new_buffer_chars = alloc_buffer(
 				extra_capacity(length()), length());
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index, count, ch);
+			assign_pairwise(new_buffer_chars, chars, start);
+			assign_value(new_buffer_chars + start, count, ch);
 			assign_pairwise(new_buffer_chars + end_of_change,
 				chars + end_of_change,
 				length() - end_of_change);
@@ -246,23 +246,23 @@ void string::replace(size_t index, char_t ch, size_t count)
 	}
 	else
 	{
-		assign_value(chars + index, count, ch);
+		assign_value(chars + start, count, ch);
 
 		if (end_of_change > length())
 			chars[metadata()->length = end_of_change] = 0;
 	}
 }
 
-void string::insert(size_t index, const char_t* source, size_t count)
+void string::insert(size_t pos, const char_t* source, size_t count)
 {
-	B_ASSERT(index <= length());
+	B_ASSERT(pos <= length());
 	// source must not be a part of this array
 	B_ASSERT(source >= chars + capacity() || source + count < chars);
 
 	if (count > 0)
 	{
-		char_t* tail = chars + index;
-		size_t tail_length = length() - index;
+		char_t* tail = chars + pos;
+		size_t tail_length = length() - pos;
 		size_t new_length = length() + count;
 
 		if (new_length > capacity() || is_shared())
@@ -270,10 +270,10 @@ void string::insert(size_t index, const char_t* source, size_t count)
 			char_t* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_pairwise(new_buffer_chars + index,
+			assign_pairwise(new_buffer_chars, chars, pos);
+			assign_pairwise(new_buffer_chars + pos,
 				source, count);
-			assign_pairwise(new_buffer_chars + index + count,
+			assign_pairwise(new_buffer_chars + pos + count,
 				tail, tail_length + 1);
 
 			replace_buffer(new_buffer_chars);
@@ -307,14 +307,14 @@ void string::insert(size_t index, const char_t* source, size_t count)
 	}
 }
 
-void string::insert(size_t index, char_t ch, size_t count)
+void string::insert(size_t pos, char_t ch, size_t count)
 {
-	B_ASSERT(index <= length());
+	B_ASSERT(pos <= length());
 
 	if (count > 0)
 	{
-		char_t* tail = chars + index;
-		size_t tail_length = length() - index;
+		char_t* tail = chars + pos;
+		size_t tail_length = length() - pos;
 		size_t new_length = length() + count;
 
 		if (new_length > capacity() || is_shared())
@@ -322,9 +322,9 @@ void string::insert(size_t index, char_t ch, size_t count)
 			char_t* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			assign_pairwise(new_buffer_chars, chars, index);
-			assign_value(new_buffer_chars + index, count, ch);
-			assign_pairwise(new_buffer_chars + index + count,
+			assign_pairwise(new_buffer_chars, chars, pos);
+			assign_value(new_buffer_chars + pos, count, ch);
+			assign_pairwise(new_buffer_chars + pos + count,
 				tail, tail_length + 1);
 
 			replace_buffer(new_buffer_chars);
@@ -395,12 +395,12 @@ string string::operator +(char_t ch) const
 	return result += ch;
 }
 
-void string::remove(size_t index, size_t count)
+void string::remove(size_t start, size_t count)
 {
-	B_ASSERT(index <= length());
+	B_ASSERT(start <= length());
 
-	if (index + count > length())
-		count = length() - index;
+	if (start + count > length())
+		count = length() - start;
 
 	if (count > 0)
 	{
@@ -408,8 +408,8 @@ void string::remove(size_t index, size_t count)
 
 		if (!is_shared())
 		{
-			assign_pairwise(chars + index, chars + index + count,
-				new_length - index + 1);
+			assign_pairwise(chars + start, chars + start + count,
+				new_length - start + 1);
 
 			metadata()->length = new_length;
 		}
@@ -418,10 +418,10 @@ void string::remove(size_t index, size_t count)
 			char_t* new_buffer_chars = alloc_buffer(
 				extra_capacity(new_length), new_length);
 
-			assign_pairwise(new_buffer_chars, chars, index);
+			assign_pairwise(new_buffer_chars, chars, start);
 
-			assign_pairwise(new_buffer_chars + index,
-				chars + index + count, new_length - index + 1);
+			assign_pairwise(new_buffer_chars + start,
+				chars + start + count, new_length - start + 1);
 
 			replace_buffer(new_buffer_chars);
 		}
@@ -549,32 +549,32 @@ void string::append_formatted_va(const char_t* fmt, va_list ap)
 	format_buffer_va(&str_alloc, fmt, ap);
 }
 
-size_t string::find(char_t c) const
+size_t string::find(char_t ch) const
 {
 	size_t counter = length();
 
-	const char_t* pos = chars;
+	const char_t* ptr = chars;
 
 	while (counter-- > 0)
 	{
-		if (*pos == c)
-			return (size_t) (pos - chars);
+		if (*ptr == ch)
+			return (size_t) (ptr - chars);
 
-		++pos;
+		++ptr;
 	}
 
 	return (size_t) -1;
 }
 
-size_t string::rfind(char_t c) const
+size_t string::rfind(char_t ch) const
 {
-	size_t index = length();
+	size_t pos = length();
 
-	const char_t* pos = chars + index;
+	const char_t* ptr = chars + pos;
 
-	while (index-- > 0)
-		if (*--pos == c)
-			return (size_t) (pos - chars);
+	while (pos-- > 0)
+		if (*--ptr == ch)
+			return (size_t) (ptr - chars);
 
 	return (size_t) -1;
 }
@@ -689,23 +689,23 @@ string::~string()
 		memory::free(metadata());
 }
 
-char_t* find_char(const char_t* input, char_t c)
+char_t* find_char(const char_t* input, char_t ch)
 {
 	while (*input != 0)
-		if (*input++ == c)
+		if (*input++ == ch)
 			return const_cast<char_t*>(input);
 
 	return NULL;
 }
 
-char_t* find_char_backwards(const char_t* input, char_t c)
+char_t* find_char_backwards(const char_t* input, char_t ch)
 {
 	size_t index = calc_length(input);
 
 	input += index;
 
 	while (index-- > 0)
-		if (*--input == c)
+		if (*--input == ch)
 			return const_cast<char_t*>(input);
 
 	return NULL;

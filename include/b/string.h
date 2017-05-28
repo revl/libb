@@ -158,21 +158,21 @@ public:
 // Replacement
 public:
 	// Replaces a part of this string with a character sequence.
-	void replace(size_t index, const char_t* source, size_t count);
+	void replace(size_t start, const char_t* source, size_t count);
 
 	// Replaces a part of this string with a fill character.
-	void replace(size_t index, char_t ch, size_t count);
+	void replace(size_t start, char_t ch, size_t count);
 
 // Insertion
 public:
 	// Inserts a character array into this string.
-	void insert(size_t index, const char_t* source, size_t count);
+	void insert(size_t pos, const char_t* source, size_t count);
 
 	// Inserts the contents of 'source' into this string.
-	void insert(size_t index, const string& source);
+	void insert(size_t pos, const string& source);
 
 	// Inserts 'count' copies of 'ch' into this string.
-	void insert(size_t index, char_t ch, size_t count = 1);
+	void insert(size_t pos, char_t ch, size_t count = 1);
 
 // Concatenation
 public:
@@ -212,7 +212,7 @@ public:
 // Deletion
 public:
 	// Deletes a range of characters.
-	void remove(size_t index, size_t count = 1);
+	void remove(size_t start, size_t count = 1);
 
 	// Deletes characters starting at 'new_length' until
 	// the end of the string.
@@ -282,10 +282,10 @@ public:
 // Searching
 public:
 	// Finds a character in this string.
-	size_t find(char_t c) const;
+	size_t find(char_t ch) const;
 
 	// Finds the last occurrence of a character in this string.
-	size_t rfind(char_t c) const;
+	size_t rfind(char_t ch) const;
 
 	// Splits the string into two parts at the first occurrence of
 	// the delimiter character.  Either of the output pointers can
@@ -678,11 +678,11 @@ inline bool operator >=(const char_t* chars, const string& str)
 	return str.compare(chars) <= 0;
 }
 
-// Finds the first occurrence of character 'c' in 'input'.
-char_t* find_char(const char_t* input, char_t c);
+// Finds the first occurrence of character 'ch' in 'input'.
+char_t* find_char(const char_t* input, char_t ch);
 
-// Finds the last occurrence of character 'c' in 'input'.
-char_t* find_char_backwards(const char_t* input, char_t c);
+// Finds the last occurrence of character 'ch' in 'input'.
+char_t* find_char_backwards(const char_t* input, char_t ch);
 
 B_END_NAMESPACE
 
