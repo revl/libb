@@ -146,6 +146,9 @@ public:
 	// Replaces the string contents with 'count' copies of 'ch'.
 	void assign(size_t count, char_t ch);
 
+	// Copies the contents of the specified string view to this string.
+	void assign(const string_view& source);
+
 	// Assigns the contents of one string object to another.
 	string& operator =(const string& source);
 

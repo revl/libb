@@ -158,6 +158,11 @@ void string::assign(size_t count, char_t ch)
 		empty();
 }
 
+void string::assign(const string_view& source)
+{
+	assign(source.data(), source.length());
+}
+
 void string::replace(size_t index, const char_t* source, size_t count)
 {
 	B_ASSERT(index <= length());
