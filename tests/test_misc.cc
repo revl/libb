@@ -43,7 +43,12 @@ static bool match_and_check_all(const char* input, const char* pattern,
 B_TEST_CASE(pattern_matching)
 {
 	CHECK_MATCH("", "*?*", false);
+	CHECK_MATCH("a", "a*", true);
+	CHECK_MATCH("abc", "abc", true);
+	CHECK_MATCH("abc", "a*", true);
 	CHECK_MATCH("abc", "*b*", true);
+	CHECK_MATCH("abc", "*c", true);
+	CHECK_MATCH("abc", "*", true);
 	CHECK_MATCH("abcd", "ab*c", false);
 	CHECK_MATCH("abcdbc", "abd*", false);
 	CHECK_MATCH("abcdbcda", "a?*cda", true);
@@ -54,6 +59,9 @@ B_TEST_CASE(pattern_matching)
 		"a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*", true);
 	CHECK_MATCH("aaaaaa", "aaa*aaa", true);
 	CHECK_MATCH("aaaaaa", "aaa**aaa", true);
+	CHECK_MATCH("aaa", "*a", true);
+	CHECK_MATCH("ab!bb!db!eb!czz!", "a*b?c*!", true);
+	CHECK_MATCH("ab!bb!db!eb!czzy", "a*b?c*!", false);
 }
 
 B_TEST_CASE(version_comparison)
