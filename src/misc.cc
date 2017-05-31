@@ -152,14 +152,15 @@ bool match_pattern(const char* input, const char* pattern)
 			{
 				++input;
 
-				if (*++pattern == '\0')
-					return *input == '\0';
+				if (*++pattern != '\0')
+					continue;
+
+				if (*input == '\0')
+					return true;
 			}
-			else
-			{
-				input = ++saved_input;
-				pattern = saved_pattern;
-			}
+
+			input = ++saved_input;
+			pattern = saved_pattern;
 		}
 		while (*pattern != '*');
 	}
@@ -208,14 +209,15 @@ bool match_pattern(const char* input, const string_view& pattern)
 			{
 				++input;
 
-				if (++pattern_char == pattern_end)
-					return *input == '\0';
+				if (++pattern_char != pattern_end)
+					continue;
+
+				if (*input == '\0')
+					return true;
 			}
-			else
-			{
-				input = ++saved_input;
-				pattern_char = saved_pattern;
-			}
+
+			input = ++saved_input;
+			pattern_char = saved_pattern;
 		}
 		while (*pattern_char != '*');
 	}
@@ -262,14 +264,15 @@ bool match_pattern(const string_view& input, const char* pattern)
 			{
 				++input_char;
 
-				if (*++pattern == '\0')
-					return input_char == input_end;
+				if (*++pattern != '\0')
+					continue;
+
+				if (input_char == input_end)
+					return true;
 			}
-			else
-			{
-				input_char = ++saved_input;
-				pattern = saved_pattern;
-			}
+
+			input_char = ++saved_input;
+			pattern = saved_pattern;
 		}
 		while (*pattern != '*');
 	}
@@ -321,14 +324,15 @@ bool match_pattern(const string_view& input, const string_view& pattern)
 			{
 				++input_char;
 
-				if (++pattern_char == pattern_end)
-					return input_char == input_end;
+				if (++pattern_char != pattern_end)
+					continue;
+
+				if (input_char == input_end)
+					return true;
 			}
-			else
-			{
-				input_char = ++saved_input;
-				pattern_char = saved_pattern;
-			}
+
+			input_char = ++saved_input;
+			pattern_char = saved_pattern;
 		}
 		while (*pattern_char != '*');
 	}
