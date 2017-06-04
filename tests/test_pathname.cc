@@ -162,3 +162,10 @@ B_TEST_CASE(pathname_increments)
 	B_CHECK(inc(path, "../var///lib") == "/var/lib");
 	B_CHECK(inc(path, "../../../../../srv/") == "/srv");
 }
+
+B_TEST_CASE(pattern_match)
+{
+	b::pathname pn(B_STRING_VIEW(__FILE__));
+
+	B_CHECK(pn.components().last().name().matches_pattern("*.cc"));
+}

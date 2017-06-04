@@ -110,6 +110,14 @@ public:
 	// Checks if this string_view starts with the specified prefix.
 	bool starts_with(const string_view& prefix) const;
 
+	// Checks if this string_view matches the specified glob-style
+	// pattern.
+	bool matches_pattern(const char* pattern) const;
+
+	// Checks if this string_view matches the specified glob-style
+	// pattern.
+	bool matches_pattern(const string_view& pattern) const;
+
 	// Checks if two string_view objects are equal.
 	bool operator ==(const string_view& rhs) const;
 
@@ -323,6 +331,18 @@ inline bool string_view::starts_with(const string_view& prefix) const
 	return length() >= prefix.length() &&
 		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
 }
+
+#ifndef string_view
+inline bool string_view::matches_pattern(const char* pattern) const
+{
+	return match_pattern(*this, pattern);
+}
+
+inline bool string_view::matches_pattern(const string_view& pattern) const
+{
+	return match_pattern(*this, pattern);
+}
+#endif /* !defined(string_view) */
 
 inline bool string_view::operator ==(const string_view& rhs) const
 {

@@ -229,6 +229,12 @@ public:
 	// Checks if this string starts with the specified prefix.
 	bool starts_with(const string_view& prefix) const;
 
+	// Checks if this string matches the specified glob-style pattern.
+	bool matches_pattern(const char* pattern) const;
+
+	// Checks if this string matches the specified glob-style pattern.
+	bool matches_pattern(const string_view& pattern) const;
+
 	// Returns true if this string and 'rhs' are equal.
 	bool operator ==(const string& rhs) const;
 
