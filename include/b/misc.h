@@ -242,6 +242,10 @@ bool match_pattern(const char* input, const char* pattern);
 bool match_pattern(const char* input, const string_view& pattern);
 bool match_pattern(const string_view& input, const char* pattern);
 bool match_pattern(const string_view& input, const string_view& pattern);
+bool match_pattern(const wchar_t* input, const wchar_t* pattern);
+bool match_pattern(const wchar_t* input, const wstring_view& pattern);
+bool match_pattern(const wstring_view& input, const wchar_t* pattern);
+bool match_pattern(const wstring_view& input, const wstring_view& pattern);
 
 // Compares two version strings.
 int compare_versions(const char* version1, const char* version2);
