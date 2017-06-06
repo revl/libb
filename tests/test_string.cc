@@ -198,4 +198,6 @@ B_TEST_CASE(wide_chars)
 	B_STATIC_CONST_WSTRING(unicode, "Unicode");
 
 	B_CHECK(unicode == L"Unicode");
+
+	B_CHECK(unicode.matches_pattern(L"*code"));
 }

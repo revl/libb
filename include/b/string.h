@@ -230,7 +230,7 @@ public:
 	bool starts_with(const string_view& prefix) const;
 
 	// Checks if this string matches the specified glob-style pattern.
-	bool matches_pattern(const char* pattern) const;
+	bool matches_pattern(const char_t* pattern) const;
 
 	// Checks if this string matches the specified glob-style pattern.
 	bool matches_pattern(const string_view& pattern) const;

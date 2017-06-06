@@ -466,8 +466,7 @@ bool string::starts_with(const string_view& prefix) const
 		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
 }
 
-#ifndef string
-bool string::matches_pattern(const char* pattern) const
+bool string::matches_pattern(const char_t* pattern) const
 {
 	return match_pattern(*this, pattern);
 }
@@ -476,7 +475,6 @@ bool string::matches_pattern(const string_view& pattern) const
 {
 	return match_pattern(*this, pattern);
 }
-#endif /* !defined(string) */
 
 string string::formatted(const char_t* fmt, ...)
 {

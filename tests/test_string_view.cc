@@ -166,5 +166,9 @@ B_TEST_CASE(substr)
 
 B_TEST_CASE(wide_chars)
 {
-	B_CHECK(B_WSTRING_VIEW("Unicode") == L"Unicode");
+	b::wstring_view unicode = B_WSTRING_VIEW("Unicode");
+
+	B_CHECK(unicode == L"Unicode");
+
+	B_CHECK(unicode.matches_pattern(L"*code"));
 }
