@@ -18,7 +18,7 @@
  *
  */
 
-#include <b/misc.h>
+#include <b/fn.h>
 
 #include <b/heap.h>
 

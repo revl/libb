@@ -24,12 +24,12 @@ TESTS = \
 	test_binary_search_tree \
 	test_cli \
 	test_exceptions \
+	test_fn \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
 	test_map \
 	test_memory \
-	test_misc \
 	test_object \
 	test_opaque \
 	test_pathname \
@@ -46,12 +46,12 @@ check_PROGRAMS = \
 	test_binary_search_tree \
 	test_cli \
 	test_exceptions \
+	test_fn \
 	test_heap \
 	test_levenshtein_distance \
 	test_lists \
 	test_map \
 	test_memory \
-	test_misc \
 	test_object \
 	test_opaque \
 	test_pathname \
@@ -72,6 +72,8 @@ test_cli_SOURCES = test_cli.cc
 
 test_exceptions_SOURCES = test_exceptions.cc
 
+test_fn_SOURCES = test_fn.cc
+
 test_heap_SOURCES = test_heap.cc
 
 test_levenshtein_distance_SOURCES = test_levenshtein_distance.cc
@@ -81,8 +83,6 @@ test_lists_SOURCES = test_lists.cc
 test_map_SOURCES = test_map.cc
 
 test_memory_SOURCES = test_memory.cc
-
-test_misc_SOURCES = test_misc.cc
 
 test_object_SOURCES = test_object.cc
 

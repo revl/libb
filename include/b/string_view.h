@@ -480,7 +480,7 @@ B_END_NAMESPACE
 
 #define B_STRING_VIEW_H
 #include "string.h"
-#include "misc.h"
+#include "fn.h"
 #undef B_STRING_VIEW_H
 
 #define B_STRING_VIEW_INLINE

@@ -721,7 +721,7 @@ B_END_NAMESPACE
 #undef B_STRING_DECL
 
 #define B_STRING_H
-#include "misc.h"
+#include "fn.h"
 #undef B_STRING_H
 
 #define B_STRING_INLINE

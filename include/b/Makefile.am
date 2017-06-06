@@ -26,6 +26,7 @@ pkginclude_HEADERS = \
 	doubly_linked_list.h \
 	doubly_linked_list_container.h \
 	exception.h \
+	fn.h \
 	heap.h \
 	host.h \
 	io_streams.h \
@@ -33,7 +34,6 @@ pkginclude_HEADERS = \
 	linked_list.h \
 	linked_list_container.h \
 	memory.h \
-	misc.h \
 	node_access_via_cast.h \
 	object.h \
 	opaque.h \

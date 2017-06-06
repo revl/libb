@@ -34,9 +34,9 @@ sources = \
 	binary_search_tree.cc \
 	cli.cc \
 	exceptions.cc \
+	fn.cc \
 	io_streams.cc \
 	memory.cc \
-	misc.cc \
 	object.cc \
 	pathname.cc \
 	string.cc \
