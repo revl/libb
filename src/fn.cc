@@ -25,11 +25,11 @@
 namespace
 {
 	template <class C>
-	struct string_stream_base
+	struct char_feed_base
 	{
 		typedef C char_type;
 
-		string_stream_base(const C* p) : ptr(p)
+		char_feed_base(const C* p) : ptr(p)
 		{
 		}
 
@@ -37,10 +37,9 @@ namespace
 	};
 
 	template <class C>
-	struct zero_terminated_string_stream : string_stream_base<C>
+	struct null_terminated_char_feed : char_feed_base<C>
 	{
-		zero_terminated_string_stream(const C* p) :
-			string_stream_base<C>(p)
+		null_terminated_char_feed(const C* p) : char_feed_base<C>(p)
 		{
 		}
 
@@ -51,10 +50,10 @@ namespace
 	};
 
 	template <class C>
-	struct string_view_stream : string_stream_base<C>
+	struct sized_char_feed : char_feed_base<C>
 	{
-		string_view_stream(const C* p, size_t len) :
-			string_stream_base<C>(p),
+		sized_char_feed(const C* p, size_t len) :
+			char_feed_base<C>(p),
 			end(p + len)
 		{
 		}
@@ -133,57 +132,57 @@ B_BEGIN_NAMESPACE
 bool match_pattern(const char* input, const char* pattern)
 {
 	return match_pattern_impl(
-		zero_terminated_string_stream<char>(input),
-		zero_terminated_string_stream<char>(pattern));
+		null_terminated_char_feed<char>(input),
+		null_terminated_char_feed<char>(pattern));
 }
 
 bool match_pattern(const char* input, const string_view& pattern)
 {
 	return match_pattern_impl(
-		zero_terminated_string_stream<char>(input),
-		string_view_stream<char>(pattern.data(), pattern.length()));
+		null_terminated_char_feed<char>(input),
+		sized_char_feed<char>(pattern.data(), pattern.length()));
 }
 
 bool match_pattern(const string_view& input, const char* pattern)
 {
 	return match_pattern_impl(
-		string_view_stream<char>(input.data(), input.length()),
-		zero_terminated_string_stream<char>(pattern));
+		sized_char_feed<char>(input.data(), input.length()),
+		null_terminated_char_feed<char>(pattern));
 }
 
 bool match_pattern(const string_view& input, const string_view& pattern)
 {
 	return match_pattern_impl(
-		string_view_stream<char>(input.data(), input.length()),
-		string_view_stream<char>(pattern.data(), pattern.length()));
+		sized_char_feed<char>(input.data(), input.length()),
+		sized_char_feed<char>(pattern.data(), pattern.length()));
 }
 
 bool match_pattern(const wchar_t* input, const wchar_t* pattern)
 {
 	return match_pattern_impl(
-		zero_terminated_string_stream<wchar_t>(input),
-		zero_terminated_string_stream<wchar_t>(pattern));
+		null_terminated_char_feed<wchar_t>(input),
+		null_terminated_char_feed<wchar_t>(pattern));
 }
 
 bool match_pattern(const wchar_t* input, const wstring_view& pattern)
 {
 	return match_pattern_impl(
-		zero_terminated_string_stream<wchar_t>(input),
-		string_view_stream<wchar_t>(pattern.data(), pattern.length()));
+		null_terminated_char_feed<wchar_t>(input),
+		sized_char_feed<wchar_t>(pattern.data(), pattern.length()));
 }
 
 bool match_pattern(const wstring_view& input, const wchar_t* pattern)
 {
 	return match_pattern_impl(
-		string_view_stream<wchar_t>(input.data(), input.length()),
-		zero_terminated_string_stream<wchar_t>(pattern));
+		sized_char_feed<wchar_t>(input.data(), input.length()),
+		null_terminated_char_feed<wchar_t>(pattern));
 }
 
 bool match_pattern(const wstring_view& input, const wstring_view& pattern)
 {
 	return match_pattern_impl(
-		string_view_stream<wchar_t>(input.data(), input.length()),
-		string_view_stream<wchar_t>(pattern.data(), pattern.length()));
+		sized_char_feed<wchar_t>(input.data(), input.length()),
+		sized_char_feed<wchar_t>(pattern.data(), pattern.length()));
 }
 
 bool is_directory(const string& directory)
