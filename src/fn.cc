@@ -291,4 +291,157 @@ int compare_versions(const char* version1, const char* version2)
 	return *version2 == '.' || *version2 == '\0' ? result : -1;
 }
 
+static const unsigned char base64url_alphabet[] =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+size_t base64url_encode(const void* src_buf, size_t src_size,
+	void* dst_buf, size_t dst_size)
+{
+	const size_t result_len = ((src_size << 2) + 2) / 3;
+
+	if (result_len > dst_size)
+		return result_len;
+
+	const unsigned char* src = (const unsigned char*) src_buf;
+	unsigned char* dst = (unsigned char*) dst_buf;
+
+	const unsigned char* offset;
+
+	while (src_size > 2)
+	{
+		*dst++ = base64url_alphabet[*src >> 2];
+
+		offset = base64url_alphabet + ((*src & 003) << 4);
+		*dst++ = offset[*++src >> 4];
+
+		offset = base64url_alphabet + ((*src & 017) << 2);
+		*dst++ = offset[*++src >> 6];
+
+		*dst++ = base64url_alphabet[*src++ & 077];
+
+		src_size -= 3;
+	}
+
+	if (src_size > 0)
+	{
+		*dst = base64url_alphabet[*src >> 2];
+
+		offset = base64url_alphabet + ((*src & 003) << 4);
+
+		if (src_size == 1)
+			*++dst = *offset;
+		else
+		{
+			/* src_size == 2 */
+			*++dst = offset[*++src >> 4];
+			*++dst = base64url_alphabet[(*src & 017) << 2];
+		}
+	}
+
+	return result_len;
+}
+
+static const unsigned char base64url_decode_table[256] =
+{
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200,   62, 0200, 0200,
+	52,   53,   54,   55,   56,   57,   58,   59,
+	60,   61,   0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0,    1,    2,    3,    4,    5,    6,
+	7,    8,    9,    10,   11,   12,   13,   14,
+	15,   16,   17,   18,   19,   20,   21,   22,
+	23,   24,   25,   0200, 0200, 0200, 0200, 63,
+	0200, 26,   27,   28,   29,   30,   31,   32,
+	33,   34,   35,   36,   37,   38,   39,   40,
+	41,   42,   43,   44,   45,   46,   47,   48,
+	49,   50,   51,   0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
+	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200
+};
+
+namespace
+{
+	class invalid_input_exception : public runtime_exception
+	{
+		virtual string message() const;
+	};
+
+	string invalid_input_exception::message() const
+	{
+		B_STATIC_CONST_STRING(invalid_input,
+			"Invalid input passed to base64url_decode()");
+
+		return invalid_input;
+	}
+}
+
+#define XLAT_BASE64_CHAR(var) \
+	if ((signed char) (var = base64url_decode_table[*src++]) < 0) \
+		throw invalid_input_exception();
+
+size_t base64url_decode(const void* src_buf, size_t src_size,
+	void* dst_buf, size_t dst_size)
+{
+	const size_t result_len = (src_size * 3) >> 2;
+
+	if (result_len > dst_size)
+		return result_len;
+
+	const unsigned char* src = (const unsigned char*) src_buf;
+	unsigned char* dst = (unsigned char*) dst_buf;
+
+	unsigned char src_ch0, src_ch1;
+
+	while (src_size > 3)
+	{
+		XLAT_BASE64_CHAR(src_ch0);
+		XLAT_BASE64_CHAR(src_ch1);
+		*dst++ = (unsigned char)(src_ch0 << 2 | src_ch1 >> 4);
+
+		XLAT_BASE64_CHAR(src_ch0);
+		*dst++ = (unsigned char)(src_ch1 << 4 | src_ch0 >> 2);
+
+		XLAT_BASE64_CHAR(src_ch1);
+		*dst++ = (unsigned char)(src_ch0 << 6 | src_ch1);
+
+		src_size -= 4;
+	}
+
+	if (src_size > 1)
+	{
+		XLAT_BASE64_CHAR(src_ch0);
+		XLAT_BASE64_CHAR(src_ch1);
+		*dst++ = (unsigned char)(src_ch0 << 2 | src_ch1 >> 4);
+
+		if (src_size > 2)
+		{
+			XLAT_BASE64_CHAR(src_ch0);
+			*dst = (unsigned char)(src_ch1 << 4 | src_ch0 >> 2);
+		}
+	}
+	else
+		if (src_size == 1)
+			throw invalid_input_exception();
+
+	return result_len;
+}
+
 B_END_NAMESPACE

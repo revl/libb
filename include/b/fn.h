@@ -523,6 +523,13 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 	memory::move(dest, source, count * sizeof(*dest));
 }
 
+size_t base64url_encode(const void* src_buf, size_t src_size,
+	void* dst_buf, size_t dst_size);
+
+
+size_t base64url_decode(const void* src_buf, size_t src_size,
+	void* dst_buf, size_t dst_size);
+
 B_END_NAMESPACE
 
 #endif /* !defined(B_MISC_H) */
