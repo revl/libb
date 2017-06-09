@@ -59,6 +59,9 @@ B_TEST_CASE(construction)
 	B_CHECK(kv->key == 6);
 	B_CHECK(kv->value == 7);
 
+	kv->value = 8;
+	B_CHECK(*m.find(6) == 8);
+
 	B_CHECK(m.remove(6));
 	B_CHECK(!m.remove(6));
 	B_CHECK(!m.remove(10));
