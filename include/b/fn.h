@@ -523,6 +523,22 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 	memory::move(dest, source, count * sizeof(*dest));
 }
 
+// Base64url_encode() encodes binary data using the base64url variant
+// of the Base64 family of encoding schemes.
+//
+// The function reads its input from src_buf and stores the result in
+// dst_buf. This implementation does not pad the result with '='.
+//
+// Base64url_encode() always returns the number of bytes required to
+// encode the given input buffer even if that number is greater than the
+// size of the output buffer, in which case the output buffer is left
+// untouched.
+//
+// A large input can be encoded incrementally by dividing it into chunks
+// and calling base64url_encode() on each chunk. The size of all but the
+// last chunk must be divisible by 3.
+//
+// For information about the base64url, please refer to RFC 4648.
 size_t base64url_encode(const void* src_buf, size_t src_size,
 	void* dst_buf, size_t dst_size);
 
