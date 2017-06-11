@@ -531,18 +531,38 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 //
 // Base64url_encode() always returns the number of bytes required to
 // encode the given input buffer even if that number is greater than the
-// size of the output buffer, in which case the output buffer is left
-// untouched.
+// size of the provided output buffer, in which case the output buffer
+// is left untouched.
 //
 // A large input can be encoded incrementally by dividing it into chunks
 // and calling base64url_encode() on each chunk. The size of all but the
 // last chunk must be divisible by 3.
 //
-// For information about the base64url, please refer to RFC 4648.
+// For information about the base64url encoding, please refer to RFC 4648.
 size_t base64url_encode(const void* src_buf, size_t src_size,
 	void* dst_buf, size_t dst_size);
 
 
+// Base64url_decode() decodes the base64url-encoded src_buf and stores
+// the result in dst_buf.
+//
+// The function throws a runtime exception if it encounters a character
+// in src_buf that is not an alphanumeric character, underscore, or
+// dash.  In particular, the padding character ('=') and any whitespace
+// characters are not allowed.
+//
+// Base64url_decode() returns the number of bytes required to decode
+// the input buffer regardless of whether the size of the provided output
+// buffer is sufficient or not.
+//
+// When the output buffer is too small to fit the decoded data, the
+// output buffer is left untouched.
+//
+// A large input can be decoded incrementally by dividing it into chunks
+// and calling base64url_decode() on each chunk. The size of all but the
+// last chunk must be divisible by 4.
+//
+// For information about the base64url encoding, please refer to RFC 4648.
 size_t base64url_decode(const void* src_buf, size_t src_size,
 	void* dst_buf, size_t dst_size);
 
