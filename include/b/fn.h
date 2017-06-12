@@ -200,6 +200,10 @@ inline int compare_strings(const char* lhs, const char* rhs,
 	return ::strncmp(lhs, rhs, max_len);
 }
 
+// Compares two strings of the specified lengths.
+int compare_strings(const char* lhs, size_t lhs_len,
+	const char* rhs, size_t rhs_len);
+
 // Compares two strings.
 inline int compare_strings(const wchar_t* lhs, const wchar_t* rhs)
 {
@@ -213,6 +217,10 @@ inline int compare_strings(const wchar_t* lhs, const wchar_t* rhs,
 {
 	return ::wcsncmp(lhs, rhs, max_len);
 }
+
+// Compares two strings of the specified lengths.
+int compare_strings(const wchar_t* lhs, size_t lhs_len,
+	const wchar_t* rhs, size_t rhs_len);
 
 // Custom allocator interface.
 class allocator

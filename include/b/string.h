@@ -223,6 +223,9 @@ public:
 
 // Comparison
 public:
+	// Compares two strings lexicographically.
+	int compare(const string& rhs) const;
+
 	// Compares this string against 'rhs' lexicographically.
 	int compare(const char_t* rhs) const;
 
@@ -237,6 +240,9 @@ public:
 
 	// Returns true if this string and 'rhs' are equal.
 	bool operator ==(const string& rhs) const;
+
+	// Checks this string and 'rhs' for equality.
+	bool operator ==(const string_view& rhs) const;
 
 	// Checks this string and 'rhs' for equality.
 	bool operator ==(const char_t* rhs) const;
@@ -568,12 +574,22 @@ inline string string::operator *(size_t times) const
 	return repeat(times);
 }
 
+inline int string::compare(const string& rhs) const
+{
+	return compare_strings(data(), length(), rhs.data(), rhs.length());
+}
+
 inline int string::compare(const char_t* rhs) const
 {
 	return compare_strings(chars, rhs);
 }
 
 inline bool string::operator ==(const string& rhs) const
+{
+	return compare(rhs) == 0;
+}
+
+inline bool string::operator ==(const string_view& rhs) const
 {
 	return compare(rhs.data()) == 0;
 }
@@ -585,7 +601,7 @@ inline bool string::operator ==(const char_t* rhs) const
 
 inline bool string::operator !=(const string& rhs) const
 {
-	return compare(rhs.data()) != 0;
+	return compare(rhs) != 0;
 }
 
 inline bool string::operator !=(const char_t* rhs) const

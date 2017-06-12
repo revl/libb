@@ -185,6 +185,36 @@ bool match_pattern(const wstring_view& input, const wstring_view& pattern)
 		sized_char_feed<wchar_t>(pattern.data(), pattern.length()));
 }
 
+int compare_strings(const char* lhs, size_t lhs_len,
+	const char* rhs, size_t rhs_len)
+{
+	if (lhs_len < rhs_len)
+	{
+		int cmp_res = memcmp(lhs, rhs, lhs_len);
+
+		return cmp_res != 0 ? cmp_res : -1;
+	}
+
+	int cmp_res = memcmp(lhs, rhs, rhs_len);
+
+	return lhs_len == rhs_len || cmp_res != 0 ? cmp_res : 1;
+}
+
+int compare_strings(const wchar_t* lhs, size_t lhs_len,
+	const wchar_t* rhs, size_t rhs_len)
+{
+	if (lhs_len < rhs_len)
+	{
+		int cmp_res = wmemcmp(lhs, rhs, lhs_len);
+
+		return cmp_res != 0 ? cmp_res : -1;
+	}
+
+	int cmp_res = wmemcmp(lhs, rhs, rhs_len);
+
+	return lhs_len == rhs_len || cmp_res != 0 ? cmp_res : 1;
+}
+
 bool is_directory(const string& directory)
 {
 	struct stat stat_struct;

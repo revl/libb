@@ -122,6 +122,15 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(str4.rfind('b') == (size_t) -1);
 }
 
+B_TEST_CASE(comparison)
+{
+	B_STATIC_CONST_STRING(abc1, "abc\000123");
+
+	B_STATIC_CONST_STRING(abc2, "abc\000def");
+
+	B_CHECK(abc1 != abc2);
+}
+
 B_TEST_CASE(string_formatting)
 {
 	b::string str1;
