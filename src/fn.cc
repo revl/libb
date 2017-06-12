@@ -371,6 +371,24 @@ size_t base64url_encode(const void* src_buf, size_t src_size,
 	return result_len;
 }
 
+string base64url_encode(const string_view& src)
+{
+	// Calculate the size of the result.
+	size_t encoded_size = base64url_encode(NULL, src.length(), NULL, 0U);
+
+	string encoded;
+
+	encoded.reserve(encoded_size);
+
+	// Lock the output string and encode the source string.
+	base64url_encode(src.data(), src.length(),
+		encoded.lock(), encoded_size);
+
+	encoded.unlock(encoded_size);
+
+	return encoded;
+}
+
 static const unsigned char base64url_decode_table[256] =
 {
 	0200, 0200, 0200, 0200, 0200, 0200, 0200, 0200,
@@ -472,6 +490,25 @@ size_t base64url_decode(const void* src_buf, size_t src_size,
 			throw invalid_input_exception();
 
 	return result_len;
+}
+
+string base64url_decode(const string_view& encoded)
+{
+	// Calculate the size of the decoded data.
+	size_t decoded_size = base64url_decode(
+		NULL, encoded.length(), NULL, 0U);
+
+	string decoded;
+
+	decoded.reserve(decoded_size);
+
+	// Lock the output string and decode the encoded data.
+	base64url_decode(encoded.data(), encoded.length(),
+		decoded.lock(), decoded_size);
+
+	decoded.unlock(decoded_size);
+
+	return decoded;
 }
 
 B_END_NAMESPACE

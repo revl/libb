@@ -550,6 +550,9 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 size_t base64url_encode(const void* src_buf, size_t src_size,
 	void* dst_buf, size_t dst_size);
 
+// This variant of base64url_encode() encodes a string or a string_view
+// and returns the encoded data as a new string.
+string base64url_encode(const string_view& encoded);
 
 // Base64url_decode() decodes the base64url-encoded src_buf and stores
 // the result in dst_buf.
@@ -573,6 +576,10 @@ size_t base64url_encode(const void* src_buf, size_t src_size,
 // For information about the base64url encoding, please refer to RFC 4648.
 size_t base64url_decode(const void* src_buf, size_t src_size,
 	void* dst_buf, size_t dst_size);
+
+// This variant of base64url_decode() decodes a base64url-encoded string
+// or string_view and returns the decoded data as a new string.
+string base64url_decode(const string_view& encoded);
 
 B_END_NAMESPACE
 

@@ -221,3 +221,20 @@ B_TEST_CASE(create_directory)
 		B_CHECK("cleanup" && false);
 	}
 }
+
+static void check_base64url(const b::string_view& decoded,
+		const b::string_view& encoded)
+{
+	B_CHECK(base64url_encode(decoded) == encoded);
+
+	B_CHECK(base64url_decode(encoded) == decoded);
+}
+
+B_TEST_CASE(base64url)
+{
+	check_base64url(B_STRING_VIEW("Man"), B_STRING_VIEW("TWFu"));
+
+	check_base64url(B_STRING_VIEW("Ma"), B_STRING_VIEW("TWE"));
+
+	check_base64url(B_STRING_VIEW("M"), B_STRING_VIEW("TQ"));
+}
