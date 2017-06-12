@@ -444,13 +444,13 @@ size_t base64url_decode(const void* src_buf, size_t src_size,
 	{
 		XLAT_BASE64_CHAR(src_ch0);
 		XLAT_BASE64_CHAR(src_ch1);
-		*dst++ = (unsigned char)(src_ch0 << 2 | src_ch1 >> 4);
+		*dst++ = (unsigned char) (src_ch0 << 2 | src_ch1 >> 4);
 
 		XLAT_BASE64_CHAR(src_ch0);
-		*dst++ = (unsigned char)(src_ch1 << 4 | src_ch0 >> 2);
+		*dst++ = (unsigned char) (src_ch1 << 4 | src_ch0 >> 2);
 
 		XLAT_BASE64_CHAR(src_ch1);
-		*dst++ = (unsigned char)(src_ch0 << 6 | src_ch1);
+		*dst++ = (unsigned char) (src_ch0 << 6 | src_ch1);
 
 		src_size -= 4;
 	}
@@ -459,12 +459,12 @@ size_t base64url_decode(const void* src_buf, size_t src_size,
 	{
 		XLAT_BASE64_CHAR(src_ch0);
 		XLAT_BASE64_CHAR(src_ch1);
-		*dst++ = (unsigned char)(src_ch0 << 2 | src_ch1 >> 4);
+		*dst++ = (unsigned char) (src_ch0 << 2 | src_ch1 >> 4);
 
 		if (src_size > 2)
 		{
 			XLAT_BASE64_CHAR(src_ch0);
-			*dst = (unsigned char)(src_ch1 << 4 | src_ch0 >> 2);
+			*dst = (unsigned char) (src_ch1 << 4 | src_ch0 >> 2);
 		}
 	}
 	else
