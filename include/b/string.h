@@ -226,7 +226,7 @@ public:
 	// Compares two strings lexicographically.
 	int compare(const string& rhs) const;
 
-	// Compares this string against 'rhs' lexicographically.
+	// Compares this string a null-terminated string lexicographically.
 	int compare(const char_t* rhs) const;
 
 	// Checks if this string starts with the specified prefix.
