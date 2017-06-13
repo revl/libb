@@ -100,12 +100,13 @@ public:
 
 // Comparison
 public:
-	// Compares this string_view with 'rhs' lexicographically.
-	int compare(const char_t* rhs) const;
-
 	// Compares the contents of two string_view objects
 	// lexicographically.
 	int compare(const string_view& rhs) const;
+
+	// Compares this string_view and a null-terminated string
+	// lexicographically.
+	int compare(const char_t* rhs) const;
 
 	// Checks if this string_view starts with the specified prefix.
 	bool starts_with(const string_view& prefix) const;
@@ -306,24 +307,6 @@ inline int string_view::compare(const char_t* rhs) const
 	int diff = compare_strings(view, rhs, view_length);
 
 	return diff != 0 ? diff : -(rhs[view_length] != B_L_PREFIX('\0'));
-}
-
-inline int string_view::compare(const string_view& rhs) const
-{
-	if (view_length < rhs.view_length)
-	{
-		int diff = memory::compare(view, rhs.view,
-			view_length * sizeof(char_t));
-
-		return diff != 0 ? diff : -1;
-	}
-	else
-	{
-		int diff = memory::compare(view, rhs.view,
-			rhs.view_length * sizeof(char_t));
-
-		return diff != 0 ? diff : view_length > rhs.view_length;
-	}
 }
 
 inline bool string_view::starts_with(const string_view& prefix) const
