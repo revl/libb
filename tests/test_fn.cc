@@ -237,4 +237,16 @@ B_TEST_CASE(base64url)
 	check_base64url(B_STRING_VIEW("Ma"), B_STRING_VIEW("TWE"));
 
 	check_base64url(B_STRING_VIEW("M"), B_STRING_VIEW("TQ"));
+
+	check_base64url(B_STRING_VIEW("pleasure."),
+		B_STRING_VIEW("cGxlYXN1cmUu"));
+
+	check_base64url(B_STRING_VIEW("leasure."),
+		B_STRING_VIEW("bGVhc3VyZS4"));
+
+	check_base64url(B_STRING_VIEW("easure."), B_STRING_VIEW("ZWFzdXJlLg"));
+
+	check_base64url(B_STRING_VIEW("asure."), B_STRING_VIEW("YXN1cmUu"));
+
+	check_base64url(B_STRING_VIEW("sure."), B_STRING_VIEW("c3VyZS4"));
 }
