@@ -104,6 +104,9 @@ public:
 	// lexicographically.
 	int compare(const string_view& rhs) const;
 
+	// Compares this string_view and a string lexicographically.
+	int compare(const string& rhs) const;
+
 	// Compares this string_view and a null-terminated string
 	// lexicographically.
 	int compare(const char_t* rhs) const;
@@ -302,7 +305,12 @@ inline string_view& string_view::operator =(const string& source)
 	return *this;
 }
 
-inline int string_view::compare(const string_view* rhs) const
+inline int string_view::compare(const string_view& rhs) const
+{
+	return compare_strings(data(), length(), rhs.data(), rhs.length());
+}
+
+inline int string_view::compare(const string& rhs) const
 {
 	return compare_strings(data(), length(), rhs.data(), rhs.length());
 }
