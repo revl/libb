@@ -302,6 +302,11 @@ inline string_view& string_view::operator =(const string& source)
 	return *this;
 }
 
+inline int string_view::compare(const string_view* rhs) const
+{
+	return compare_strings(data(), length(), rhs.data(), rhs.length());
+}
+
 inline int string_view::compare(const char_t* rhs) const
 {
 	int diff = compare_strings(view, rhs, view_length);
