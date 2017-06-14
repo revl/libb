@@ -226,7 +226,11 @@ public:
 	// Compares two strings lexicographically.
 	int compare(const string& rhs) const;
 
-	// Compares this string a null-terminated string lexicographically.
+	// Compares this string and a string_view lexicographically.
+	int compare(const string_view& rhs) const;
+
+	// Compares this string with a null-terminated string
+	// lexicographically.
 	int compare(const char_t* rhs) const;
 
 	// Checks if this string starts with the specified prefix.
@@ -575,6 +579,11 @@ inline string string::operator *(size_t times) const
 }
 
 inline int string::compare(const string& rhs) const
+{
+	return compare_strings(data(), length(), rhs.data(), rhs.length());
+}
+
+inline int string::compare(const string_view& rhs) const
 {
 	return compare_strings(data(), length(), rhs.data(), rhs.length());
 }
