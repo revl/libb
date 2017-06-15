@@ -129,6 +129,8 @@ B_TEST_CASE(comparison)
 	B_STATIC_CONST_STRING(abc2, "abc\000def");
 
 	B_CHECK(abc1 != abc2);
+
+	B_CHECK(abc1 != B_STRING_VIEW("abc"));
 }
 
 B_TEST_CASE(string_formatting)

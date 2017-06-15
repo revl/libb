@@ -245,7 +245,7 @@ public:
 	// Returns true if this string and 'rhs' are equal.
 	bool operator ==(const string& rhs) const;
 
-	// Checks this string and 'rhs' for equality.
+	// Checks if this string and the specified string view are equal.
 	bool operator ==(const string_view& rhs) const;
 
 	// Checks this string and 'rhs' for equality.
@@ -253,6 +253,10 @@ public:
 
 	// Returns true if this string and 'rhs' differ.
 	bool operator !=(const string& rhs) const;
+
+	// Returns true if this string and the specified string view
+	// are not equal.
+	bool operator !=(const string_view& rhs) const;
 
 	// Returns true if this string and 'rhs' differ.
 	bool operator !=(const char_t* rhs) const;
@@ -600,7 +604,7 @@ inline bool string::operator ==(const string& rhs) const
 
 inline bool string::operator ==(const string_view& rhs) const
 {
-	return compare(rhs.data()) == 0;
+	return compare(rhs) == 0;
 }
 
 inline bool string::operator ==(const char_t* rhs) const
@@ -609,6 +613,11 @@ inline bool string::operator ==(const char_t* rhs) const
 }
 
 inline bool string::operator !=(const string& rhs) const
+{
+	return compare(rhs) != 0;
+}
+
+inline bool string::operator !=(const string_view& rhs) const
 {
 	return compare(rhs) != 0;
 }
