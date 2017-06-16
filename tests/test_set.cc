@@ -62,7 +62,7 @@ B_TEST_CASE(construction)
 	sr = s.search(10);
 
 	B_REQUIRE(sr.match() == NULL);
-	B_CHECK(*s.insert(10, sr) == 10);
+	B_CHECK(*s.insert_new(10, sr) == 10);
 
 	B_CHECK(s.remove(10));
 	B_CHECK(!s.remove(10));

@@ -131,7 +131,7 @@ public:
 	//
 	// Returns a pointer to the copy of 'value' that is stored
 	// with the newly insterted element.
-	T* insert(const T& value, const search_result& sr);
+	T* insert_new(const T& value, const search_result& sr);
 
 	// Removes the element that matches the specified key.
 	// Returns true if the element was found and deleted.
@@ -233,7 +233,7 @@ typename set_base<T, Key_op>::search_result set_base<T, Key_op>::search(
 }
 
 template <class T, class Key_op>
-T* set_base<T, Key_op>::insert(const T& value,
+T* set_base<T, Key_op>::insert_new(const T& value,
 		const set_base<T, Key_op>::search_result& sr)
 {
 	B_ASSERT(sr.match() == NULL);
@@ -435,7 +435,7 @@ public:
 	//
 	// Returns a pointer to the copy of 'value' that is stored
 	// with the newly insterted element.
-	T* insert(const T& value, const typename base::search_result& sr);
+	T* insert_new(const T& value, const typename base::search_result& sr);
 
 	// Inserts the specified value into this set.
 	//
@@ -458,10 +458,10 @@ public:
 };
 
 template <class T>
-T* set<T>::insert(const T &value,
+T* set<T>::insert_new(const T &value,
 		const typename set<T>::base::search_result& sr)
 {
-	return base::insert(value, sr);
+	return base::insert_new(value, sr);
 }
 
 template <class T>
@@ -478,7 +478,7 @@ T* set<T>::insert(const T& value)
 		return match;
 	}
 
-	return base::insert(value, sr);
+	return base::insert_new(value, sr);
 }
 
 template <class T>
@@ -499,7 +499,7 @@ T* set<T>::insert(const T& value, bool* new_inserted)
 
 	*new_inserted = true;
 
-	return base::insert(value, sr);
+	return base::insert_new(value, sr);
 }
 
 B_END_NAMESPACE

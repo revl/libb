@@ -64,7 +64,7 @@ public:
 
 	// Inserts a new map element after a failed search for it.
 	// Returns a pointer to the newly insterted element.
-	kv_pair<Key, T>* insert(const Key& key, const T& value,
+	kv_pair<Key, T>* insert_new(const Key& key, const T& value,
 			const typename base::search_result& sr);
 
 	// Adds the specified key-value pair to this map.
@@ -97,10 +97,10 @@ T* map<Key, T>::find(const Search_key& key) const
 }
 
 template <class Key, class T>
-kv_pair<Key, T>* map<Key, T>::insert(const Key &key, const T &value,
+kv_pair<Key, T>* map<Key, T>::insert_new(const Key &key, const T &value,
 		const typename map<Key, T>::base::search_result& sr)
 {
-	return base::insert(kv_pair<Key, T>(key, value), sr);
+	return base::insert_new(kv_pair<Key, T>(key, value), sr);
 }
 
 template <class Key, class T>
@@ -117,7 +117,7 @@ kv_pair<Key, T>* map<Key, T>::insert(const Key& key, const T& value)
 		return match;
 	}
 
-	return base::insert(kv_pair<Key, T>(key, value), sr);
+	return base::insert_new(kv_pair<Key, T>(key, value), sr);
 }
 
 template <class Key, class T>
@@ -139,7 +139,7 @@ kv_pair<Key, T>* map<Key, T>::insert(const Key& key, const T& value,
 
 	*new_inserted = true;
 
-	return base::insert(kv_pair<Key, T>(key, value), sr);
+	return base::insert_new(kv_pair<Key, T>(key, value), sr);
 }
 
 B_END_NAMESPACE
