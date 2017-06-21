@@ -371,22 +371,26 @@ size_t base64url_encode(const void* src_buf, size_t src_size,
 	return result_len;
 }
 
-string base64url_encode(const string_view& src)
+string base64url_encode(const void* src_buf, size_t src_size)
 {
 	// Calculate the size of the result.
-	size_t encoded_size = base64url_encode(NULL, src.length(), NULL, 0U);
+	size_t encoded_size = base64url_encode(NULL, src_size, NULL, 0U);
 
 	string encoded;
 
 	encoded.reserve(encoded_size);
 
-	// Lock the output string and encode the source string.
-	base64url_encode(src.data(), src.length(),
-		encoded.lock(), encoded_size);
+	// Lock the output string and encode the source buffer.
+	base64url_encode(src_buf, src_size, encoded.lock(), encoded_size);
 
 	encoded.unlock(encoded_size);
 
 	return encoded;
+}
+
+string base64url_encode(const string_view& src)
+{
+	return base64url_encode(src.data(), src.length());
 }
 
 static const unsigned char base64url_decode_table[256] =
@@ -492,23 +496,26 @@ size_t base64url_decode(const void* src_buf, size_t src_size,
 	return result_len;
 }
 
-string base64url_decode(const string_view& encoded)
+string base64url_decode(const void* src_buf, size_t src_size)
 {
 	// Calculate the size of the decoded data.
-	size_t decoded_size = base64url_decode(
-		NULL, encoded.length(), NULL, 0U);
+	size_t decoded_size = base64url_decode(NULL, src_size, NULL, 0U);
 
 	string decoded;
 
 	decoded.reserve(decoded_size);
 
 	// Lock the output string and decode the encoded data.
-	base64url_decode(encoded.data(), encoded.length(),
-		decoded.lock(), decoded_size);
+	base64url_decode(src_buf, src_size, decoded.lock(), decoded_size);
 
 	decoded.unlock(decoded_size);
 
 	return decoded;
+}
+
+string base64url_decode(const string_view& src)
+{
+	return base64url_decode(src.data(), src.length());
 }
 
 B_END_NAMESPACE
