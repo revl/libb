@@ -89,10 +89,16 @@ B_BEGIN_NAMESPACE
 // Portable thread-safe reference count class.
 struct ref_count
 {
+	// Returns the current value of the counter.
 	operator int() const;
 
+	// Resets the counter with a new value.
 	void operator =(int new_value);
+
+	// Increments the counter by one.
 	void operator ++();
+
+	// Decrements the counter and returns false if it becomes zero.
 	bool operator --();
 
 	B_REFCOUNT_TYPE value;
