@@ -26,7 +26,8 @@
 
 B_BEGIN_NAMESPACE
 
-// Base class with reference count support.
+// Base class with reference count support. Designed to be used
+// with the ref<> template.
 class object
 {
 public:
@@ -46,6 +47,8 @@ protected:
 	object();
 
 	// Initializes the reference count with zero.
+	// A newly created object has no references,
+	// even if it is a copy of an existing object.
 	object(const object&);
 
 public:
