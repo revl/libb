@@ -25,7 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
-// Customizable error exception class.
+// Ad hoc exception class.
 class custom_exception : public runtime_exception
 {
 public:
@@ -35,9 +35,8 @@ public:
 	// Initializes this object with a preformatted error message.
 	custom_exception(const string& msg);
 
-	// Initializes the error message to be contained by this
-	// object using a format string and a variable number
-	// of arguments.
+	// Initializes the error message using a format string
+	// and a variable number of arguments.
 	custom_exception(const char* fmt, ...) B_PRINTF_STYLE(2, 3);
 
 	// Returns the detailed description of this error.
