@@ -1,5 +1,0 @@
-/**
-@class b::SystemException SystemException.h <b/SystemException.h>
-
-Base class for all exceptions resulting from system call failures.
-*/

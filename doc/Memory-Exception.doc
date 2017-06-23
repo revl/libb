@@ -1,7 +1,0 @@
-/**
-@class b::Memory::Exception
-
-Insufficient memory condition. An exception of this type
-is thrown as a result of any memory allocation failure
-in the library.
-*/
