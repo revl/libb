@@ -23,7 +23,7 @@ doc: timestamp
 
 if DOXYCONFIG
 timestamp: $(DOXYCONFIG) $(top_srcdir)/include/b/*.h \
-	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
+	$(srcdir)/Doxyfile
 	rm -rf html
 	'$(DOXYCONFIG)' '$(srcdir)/Doxyfile' $(PACKAGE) | \
 		VERSION='$(VERSION)' \
@@ -33,7 +33,7 @@ timestamp: $(DOXYCONFIG) $(top_srcdir)/include/b/*.h \
 	touch timestamp
 else
 timestamp: $(top_srcdir)/include/b/*.h \
-	$(top_srcdir)/doc/*.doc $(srcdir)/Doxyfile
+	$(srcdir)/Doxyfile
 	rm -rf html
 	VERSION='$(VERSION)' \
 	top_srcdir='$(top_srcdir)' \
@@ -66,14 +66,6 @@ endif
 EXTRA_DIST = \
 	Doxyfile \
 	html_footer \
-	main.css \
-	CustomException.doc \
-	Exception.doc \
-	Memory.doc \
-	Memory-Exception.doc \
-	Object.doc \
-	RefCount.doc \
-	RuntimeException.doc \
-	SystemException.doc
+	main.css
 
 MAINTAINERCLEANFILES = Makefile.in
