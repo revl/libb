@@ -37,14 +37,6 @@ HAVE_DOT=$withval, HAVE_DOT=no)
 
 AC_SUBST(HAVE_DOT)
 
-AC_ARG_WITH(doxyconfig, [  --with-doxyconfig=PROG  ]dnl
-[override the default Doxygen configuration variables],
-[test "$withval" != yes -a "$withval" != no && DOXYCONFIG=$withval])
-
-AC_SUBST(DOXYCONFIG)
-
-AM_CONDITIONAL(DOXYCONFIG, [test -x "$DOXYCONFIG"])
-
 docdir=$datadir/doc
 
 AC_ARG_WITH(docdir, [  --with-docdir=DIR       ]dnl
@@ -62,9 +54,6 @@ dnl Checks for programs.
 AC_PROG_CXX
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
-AC_PATH_PROG(DOXYGEN, doxygen)
-
-AM_CONDITIONAL(DOXYGEN, [test -x "$DOXYGEN"])
 
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/include -I\$(top_builddir)/include"
 

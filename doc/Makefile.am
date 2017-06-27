@@ -18,53 +18,29 @@
 
 .PHONY: doc
 
-if DOXYGEN
 doc: timestamp
 
-if DOXYCONFIG
-timestamp: $(DOXYCONFIG) $(top_srcdir)/include/b/*.h \
-	$(srcdir)/Doxyfile
-	rm -rf html
-	'$(DOXYCONFIG)' '$(srcdir)/Doxyfile' $(PACKAGE) | \
-		VERSION='$(VERSION)' \
-		top_srcdir='$(top_srcdir)' \
-		HAVE_DOT='$(HAVE_DOT)' \
-		$(DOXYGEN) -
-	touch timestamp
-else
 timestamp: $(top_srcdir)/include/b/*.h \
-	$(srcdir)/Doxyfile
-	rm -rf html
-	VERSION='$(VERSION)' \
-	top_srcdir='$(top_srcdir)' \
-	HAVE_DOT='$(HAVE_DOT)' \
-	$(DOXYGEN) '$(srcdir)/Doxyfile'
+	$(top_srcdir)/README \
+	$(srcdir)/mkdoc.pl
+	'$(srcdir)/mkdoc.pl' '$(top_srcdir)'
 	touch timestamp
-endif
 
 install-data-local: install-timestamp
 
 install-timestamp: timestamp
-	if test -d html; then \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)/html; \
-		$(INSTALL_DATA) html/* $(DESTDIR)$(pkgdocdir)/html; \
-	fi
+	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)
+	$(INSTALL_DATA) html/* $(DESTDIR)$(pkgdocdir)/
 	touch install-timestamp
 
 uninstall-local:
-	rm -rf $(DESTDIR)$(pkgdocdir)/html install-timestamp
-	rmdir $(DESTDIR)$(pkgdocdir) || true
+	rm -rf $(DESTDIR)$(pkgdocdir) install-timestamp
 
 clean-local:
 	rm -rf html timestamp install-timestamp
-else
-doc:
-	@echo Doxygen was not found by the configure script >&2
-	@exit 1
-endif
 
 EXTRA_DIST = \
-	Doxyfile \
+	mkdoc.pl \
 	html_footer \
 	main.css
 
