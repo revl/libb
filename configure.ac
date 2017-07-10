@@ -31,12 +31,6 @@ AC_ARG_WITH([stl], [  --with-stl              ]dnl
 [include support for STL (default=no)],
 [AC_DEFINE([USE_STL], 1, [Define to 1 for enabling STL compatibility.])])
 
-AC_ARG_WITH(graphviz, [  --with-graphviz         ]dnl
-[use graph visualization toolkit (default=no)],
-HAVE_DOT=$withval, HAVE_DOT=no)
-
-AC_SUBST(HAVE_DOT)
-
 docdir=$datadir/doc
 
 AC_ARG_WITH(docdir, [  --with-docdir=DIR       ]dnl
