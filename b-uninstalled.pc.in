@@ -1,0 +1,10 @@
+prefix=@UNINST_PREFIX@
+exec_prefix=@UNINST_PREFIX@
+libdir=@UNINST_PREFIX@/src
+includedir=@UNINST_PREFIX@/include
+
+Name: @PACKAGE_NAME@
+Description: C++ Utility Library
+Version: @PACKAGE_VERSION@
+Libs: @UNINST_LIBS@
+Cflags: @UNINST_FLAGS@

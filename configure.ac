@@ -48,6 +48,8 @@ dnl Checks for programs.
 AC_PROG_CXX
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
 
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/include -I\$(top_builddir)/include"
 
@@ -143,13 +145,11 @@ include/b/Makefile
 src/Makefile
 tests/Makefile
 b-config
-uninstalled-config
+b-uninstalled.pc
 doc/Makefile
 config/Makefile
 m4/Makefile],
-[chmod +x uninstalled-config
-
-if test "$includedir" != /usr/include -a \
+[if test "$includedir" != /usr/include -a \
 	"$includedir" != /usr/local/include; then
 	CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
 fi

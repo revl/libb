@@ -5,6 +5,7 @@ Makefile.in
 aclocal.m4
 autom4te.cache
 b-config
+b-uninstalled.pc
 b*.conf
 config.h
 config.h.in
@@ -27,7 +28,6 @@ m4/lt*.m4
 src/*.la
 src/*.lo
 stamp-h1
-uninstalled-config
 cscope.out
 tags
 .gdb_history
