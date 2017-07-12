@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-AC_INIT([b], [1.0.1])
+AC_INIT([b],[1.0.1])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/string.cc])
@@ -47,7 +47,7 @@ test -z "$CXXFLAGS" && CXXFLAGS=""
 dnl Checks for programs.
 AC_PROG_CXX
 AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
+LT_INIT
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
 
@@ -122,7 +122,7 @@ AC_SUBST(UNINST_FLAGS)
 AC_SUBST(UNINST_LIBS)
 
 dnl Do compilation tests using CXX
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -139,7 +139,7 @@ dnl Checks for library functions.
 AC_FUNC_MEMCMP
 AC_CHECK_FUNCS(strerror)
 
-AC_OUTPUT([Makefile
+AC_CONFIG_FILES([Makefile
 include/Makefile
 include/b/Makefile
 src/Makefile
@@ -148,8 +148,8 @@ b-config
 b-uninstalled.pc
 doc/Makefile
 config/Makefile
-m4/Makefile],
-[if test "$includedir" != /usr/include -a \
+m4/Makefile])
+AC_CONFIG_COMMANDS([default],[if test "$includedir" != /usr/include -a \
 	"$includedir" != /usr/local/include; then
 	CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
 fi
@@ -165,8 +165,7 @@ echo "version=\"$VERSION\"" > $configfile
 echo "prefix=\"$prefix\"" >> $configfile
 echo "exec_prefix=\"$exec_prefix\"" >> $configfile
 echo "flags=\"$CONFIG_FLAGS\"" >> $configfile
-echo "libs=\"$CONFIG_LIBS\"" >> $configfile],
-[configsuffix="$configsuffix"
+echo "libs=\"$CONFIG_LIBS\"" >> $configfile],[configsuffix="$configsuffix"
 PACKAGE="$PACKAGE"
 VERSION="$VERSION"
 prefix="$prefix"
@@ -175,3 +174,4 @@ includedir="$includedir"
 libdir="$libdir"
 CONFIG_FLAGS="$CONFIG_FLAGS"
 CONFIG_LIBS="$CONFIG_LIBS"])
+AC_OUTPUT
