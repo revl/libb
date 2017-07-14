@@ -50,6 +50,9 @@ public:
 		throw ();
 #endif /* defined(B_USE_STL) */
 
+	virtual ~system_exception()
+		throw ();
+
 private:
 	const string exception_context;
 	const int system_error_code;

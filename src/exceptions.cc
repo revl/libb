@@ -46,7 +46,7 @@ string system_exception::message() const
 	}
 }
 
-#ifdef B_USE_STL
+#if defined(B_USE_STL)
 const char* system_exception::what() const
 	throw ()
 {
@@ -54,7 +54,12 @@ const char* system_exception::what() const
 
 	return message_buffer.data();
 }
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
+
+system_exception::~system_exception()
+	throw ()
+{
+}
 
 custom_exception::custom_exception(const char* fmt, ...)
 {
@@ -70,12 +75,17 @@ string custom_exception::message() const
 	return error_message;
 }
 
-#ifdef B_USE_STL
+#if defined(B_USE_STL)
 const char* custom_exception::what() const
 	throw ()
 {
 	return error_message.data();
 }
-#endif // B_USE_STL
+#endif /* defined(B_USE_STL) */
+
+custom_exception::~custom_exception()
+	throw ()
+{
+}
 
 B_END_NAMESPACE

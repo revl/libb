@@ -48,8 +48,7 @@ public:
 #endif /* defined(B_USE_STL) */
 
 	virtual ~custom_exception()
-	{
-	}
+		throw ();
 
 private:
 	string error_message;
