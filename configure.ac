@@ -46,8 +46,7 @@ test -z "$CXXFLAGS" && CXXFLAGS=""
 
 dnl Checks for programs.
 AC_PROG_CXX
-AC_DISABLE_STATIC
-LT_INIT
+LT_INIT([disable-shared])
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
 
