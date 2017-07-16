@@ -28,7 +28,9 @@
 B_BEGIN_NAMESPACE
 
 // The superclass of exceptions resulting from errors that may
-// occur during the normal program flow.
+// occur during normal program execution. These errors are usually
+// caused by external circumstances, such as: invalid input, lack
+// of permissions, running out of disk space, and so on.
 class runtime_exception : public exception
 {
 public:
