@@ -75,7 +75,6 @@ AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 
 if test "$enable_debug" = yes; then
 	configsuffix="d"
-	CONFIG_PARAMS=" --debug"
 	CONFIG_FLAGS="-DB_DEBUG"
 
 	if test "$DIGITALCXX" = yes; then
@@ -94,7 +93,6 @@ AM_CONDITIONAL(THREADS, [test "$enable_threads" = yes])
 
 if test "$enable_threads" = yes; then
 	configsuffix="${configsuffix}_r"
-	CONFIG_PARAMS=" --multithreaded$CONFIG_PARAMS"
 
 	AX_PTHREAD(,[AC_MSG_ERROR(
 		[no pthreads support; consider --disable-threads])])
@@ -104,7 +102,6 @@ if test "$enable_threads" = yes; then
 fi
 
 AC_SUBST(configsuffix)
-AC_SUBST(CONFIG_PARAMS)
 
 UNINST_FLAGS="$CONFIG_FLAGS -DB_UNINSTALLED"
 CXXFLAGS="$CXXFLAGS $UNINST_FLAGS"
