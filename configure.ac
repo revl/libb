@@ -34,9 +34,9 @@ AS_IF([test "x$with_stl" != "xno"],
 
 docdir=$datadir/doc
 
-AC_ARG_WITH(docdir, [  --with-docdir=DIR       ]dnl
-[install documentation in DIR (default=DATADIR/doc)],
-[test "$withval" != yes -a "$withval" != no && docdir=$withval])
+AC_ARG_WITH(docdir, AS_HELP_STRING([--with-docdir=DIR],
+	[install documentation in DIR (default=DATADIR/doc)]),
+	[test "$withval" != yes -a "$withval" != no && docdir=$withval])
 
 AC_SUBST(docdir)
 
@@ -68,8 +68,8 @@ elif test "$CXX" = icpc && icpc -V < /dev/null 2>&1 | grep -iq intel; then
 	CXXFLAGS="$CXXFLAGS -w2"
 fi
 
-AC_ARG_ENABLE(debug, [  --enable-debug          ]dnl
-[enable debug info and runtime checks (default=no)])
+AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug],
+	[enable debug info and runtime checks (default=no)]))
 
 AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 
@@ -86,8 +86,8 @@ else
 	CONFIG_FLAGS="-O3"
 fi
 
-AC_ARG_ENABLE(threads, [  --enable-threads        ]dnl
-[build multithreaded library (default=no)])
+AC_ARG_ENABLE(threads, AS_HELP_STRING([--enable-threads],
+	[build multithreaded library (default=no)]))
 
 AM_CONDITIONAL(THREADS, [test "$enable_threads" = yes])
 
