@@ -7,4 +7,5 @@ Name: @PACKAGE_NAME@
 Description: C++ Utility Library
 Version: @PACKAGE_VERSION@
 Libs: @UNINST_LIBS@
+Libs.private: @PRIVATE_CONFIG_LIBS@
 Cflags: @UNINST_FLAGS@

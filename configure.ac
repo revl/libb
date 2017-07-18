@@ -98,7 +98,7 @@ if test "$enable_threads" = yes; then
 		[no pthreads support; consider --disable-threads])])
 
 	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
-	CONFIG_LIBS=$PTHREAD_LIBS
+	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS
 fi
 
 AC_SUBST(configsuffix)
@@ -111,9 +111,10 @@ UNINST_FLAGS="$UNINST_FLAGS -I$UNINST_PREFIX/include"
 dummy="`cd $srcdir && pwd`"
 test $UNINST_PREFIX = $dummy || UNINST_FLAGS="$UNINST_FLAGS -I$dummy/include"
 
-CONFIG_LIBS="-l$PACKAGE$configsuffix $CONFIG_LIBS"
+CONFIG_LIBS="-l$PACKAGE$configsuffix"
 UNINST_LIBS="-L$UNINST_PREFIX/src $CONFIG_LIBS"
 
+AC_SUBST(PRIVATE_CONFIG_LIBS)
 AC_SUBST(UNINST_PREFIX)
 AC_SUBST(UNINST_FLAGS)
 AC_SUBST(UNINST_LIBS)
@@ -162,7 +163,8 @@ echo "version=\"$VERSION\"" > $configfile
 echo "prefix=\"$prefix\"" >> $configfile
 echo "exec_prefix=\"$exec_prefix\"" >> $configfile
 echo "flags=\"$CONFIG_FLAGS\"" >> $configfile
-echo "libs=\"$CONFIG_LIBS\"" >> $configfile],[configsuffix="$configsuffix"
+echo "libs=\"$CONFIG_LIBS\"" >> $configfile
+echo "privatelibs=\"$PRIVATE_CONFIG_LIBS\"" >> $configfile],[configsuffix="$configsuffix"
 PACKAGE="$PACKAGE"
 VERSION="$VERSION"
 prefix="$prefix"
@@ -170,5 +172,6 @@ exec_prefix="$exec_prefix"
 includedir="$includedir"
 libdir="$libdir"
 CONFIG_FLAGS="$CONFIG_FLAGS"
-CONFIG_LIBS="$CONFIG_LIBS"])
+CONFIG_LIBS="$CONFIG_LIBS"
+PRIVATE_CONFIG_LIBS="$PRIVATE_CONFIG_LIBS"])
 AC_OUTPUT
