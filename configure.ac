@@ -114,6 +114,18 @@ test $UNINST_PREFIX = $dummy || UNINST_FLAGS="$UNINST_FLAGS -I$dummy/include"
 CONFIG_LIBS="-l$PACKAGE$configsuffix"
 UNINST_LIBS="-L$UNINST_PREFIX/src $CONFIG_LIBS"
 
+if test "$includedir" != /usr/include -a \
+	"$includedir" != /usr/local/include; then
+	CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
+fi
+
+if test "$libdir" != /usr/lib -a \
+	"$libdir" != /usr/local/lib; then
+	CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
+fi
+
+AC_SUBST(CONFIG_FLAGS)
+AC_SUBST(CONFIG_LIBS)
 AC_SUBST(PRIVATE_CONFIG_LIBS)
 AC_SUBST(UNINST_PREFIX)
 AC_SUBST(UNINST_FLAGS)
@@ -147,24 +159,7 @@ b-uninstalled.pc
 doc/Makefile
 config/Makefile
 m4/Makefile])
-AC_CONFIG_COMMANDS([default],[if test "$includedir" != /usr/include -a \
-	"$includedir" != /usr/local/include; then
-	CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
-fi
-
-if test "$libdir" != /usr/lib -a \
-	"$libdir" != /usr/local/lib; then
-	CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
-fi
-
-configfile="$PACKAGE$configsuffix.conf"
-echo creating $configfile
-echo "version=\"$VERSION\"" > $configfile
-echo "prefix=\"$prefix\"" >> $configfile
-echo "exec_prefix=\"$exec_prefix\"" >> $configfile
-echo "flags=\"$CONFIG_FLAGS\"" >> $configfile
-echo "libs=\"$CONFIG_LIBS\"" >> $configfile
-echo "privatelibs=\"$PRIVATE_CONFIG_LIBS\"" >> $configfile],[configsuffix="$configsuffix"
+AC_CONFIG_COMMANDS([default],[],[configsuffix="$configsuffix"
 PACKAGE="$PACKAGE"
 VERSION="$VERSION"
 prefix="$prefix"
