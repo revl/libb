@@ -154,7 +154,7 @@ include/Makefile
 include/b/Makefile
 src/Makefile
 tests/Makefile
-b-config
+b.pc
 b-uninstalled.pc
 doc/Makefile
 config/Makefile
