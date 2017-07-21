@@ -105,6 +105,7 @@ AC_SUBST(configsuffix)
 
 UNINST_FLAGS="$CONFIG_FLAGS -DB_UNINSTALLED"
 CXXFLAGS="$CXXFLAGS $UNINST_FLAGS"
+CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
 
 UNINST_PREFIX="`pwd`"
 UNINST_FLAGS="$UNINST_FLAGS -I$UNINST_PREFIX/include"
@@ -113,16 +114,7 @@ test $UNINST_PREFIX = $dummy || UNINST_FLAGS="$UNINST_FLAGS -I$dummy/include"
 
 CONFIG_LIBS="-l$PACKAGE$configsuffix"
 UNINST_LIBS="-L$UNINST_PREFIX/src $CONFIG_LIBS"
-
-if test "$includedir" != /usr/include -a \
-	"$includedir" != /usr/local/include; then
-	CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
-fi
-
-if test "$libdir" != /usr/lib -a \
-	"$libdir" != /usr/local/lib; then
-	CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
-fi
+CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
 
 AC_SUBST(CONFIG_FLAGS)
 AC_SUBST(CONFIG_LIBS)
