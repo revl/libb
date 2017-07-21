@@ -159,14 +159,4 @@ b-uninstalled.pc
 doc/Makefile
 config/Makefile
 m4/Makefile])
-AC_CONFIG_COMMANDS([default],[],[configsuffix="$configsuffix"
-PACKAGE="$PACKAGE"
-VERSION="$VERSION"
-prefix="$prefix"
-exec_prefix="$exec_prefix"
-includedir="$includedir"
-libdir="$libdir"
-CONFIG_FLAGS="$CONFIG_FLAGS"
-CONFIG_LIBS="$CONFIG_LIBS"
-PRIVATE_CONFIG_LIBS="$PRIVATE_CONFIG_LIBS"])
 AC_OUTPUT
