@@ -31,15 +31,9 @@ plaindoc_DATA = README
 
 install-exec-local:
 	@$(NORMAL_INSTALL)
-	@$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@$(INSTALL_SCRIPT) $(PACKAGE)-config $(DESTDIR)$(bindir)/
-	@$(INSTALL_DATA) $(PACKAGE)$(configsuffix).conf $(DESTDIR)$(bindir)/
 
 uninstall-local:
 	@$(NORMAL_UNINSTALL)
-	@rm -f $(DESTDIR)$(bindir)/$(PACKAGE)$(configsuffix).conf
-	@set $(DESTDIR)$(bindir)/$(PACKAGE)*.conf; \
-		test -f $$1 || rm -f $(DESTDIR)$(bindir)/$(PACKAGE)-config
 
 maintainer-clean-local:
 	rm -rf autom4te.cache
