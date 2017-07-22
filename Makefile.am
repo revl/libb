@@ -40,6 +40,6 @@ maintainer-clean-local:
 
 EXTRA_DIST = autogen.sh
 
-DISTCLEANFILES = $(PACKAGE)$(configsuffix).conf
+pkgconfig_DATA = b.pc
 
 MAINTAINERCLEANFILES = Makefile.in
