@@ -69,7 +69,8 @@ namespace
 				*--dest = *source;
 				break;
 			default:
-				b::construct_copies(dest -= len, source, len);
+				b::construct_many_from_many(dest -= len,
+					source, len);
 			}
 		}
 

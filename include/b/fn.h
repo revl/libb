@@ -294,7 +294,7 @@ inline void construct_many_from_one(T* dest, const T& master_copy, size_t count)
 // Calls the copy constructor of the class 'T' (initialization
 // with objects from the same-sized array).
 template <class T>
-inline void construct_copies(T* dest, const T* source, size_t count)
+inline void construct_many_from_many(T* dest, const T* source, size_t count)
 {
 	while (count-- > 0)
 		new (dest++) T(*source++);
@@ -359,7 +359,7 @@ inline void construct_many_from_one(int* dest,
 }
 
 template <>
-inline void construct_copies(int* dest, const int* source, size_t count)
+inline void construct_many_from_many(int* dest, const int* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
@@ -405,7 +405,8 @@ inline void construct_many_from_one(long* dest,
 }
 
 template <>
-inline void construct_copies(long* dest, const long* source, size_t count)
+inline void construct_many_from_many(long* dest,
+	const long* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
@@ -456,7 +457,8 @@ inline void construct_many_from_one(char* dest,
 }
 
 template <>
-inline void construct_copies(char* dest, const char* source, size_t count)
+inline void construct_many_from_many(char* dest,
+	const char* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
@@ -500,7 +502,8 @@ inline void construct_default(wchar_t* dest, size_t count)
 }
 
 template <>
-inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
+inline void construct_many_from_many(wchar_t* dest,
+	const wchar_t* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
