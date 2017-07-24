@@ -482,7 +482,7 @@ void array<T>::assign(size_t count, const T& element)
 			if (count > size())
 			{
 				assign_value(elements, size(), element);
-				construct_identical_copies(elements + size(),
+				construct_many_from_one(elements + size(),
 					element, count - size());
 			}
 			else
@@ -493,7 +493,7 @@ void array<T>::assign(size_t count, const T& element)
 		else
 		{
 			discard_and_alloc(extra_capacity(count));
-			construct_identical_copies(elements, element, count);
+			construct_many_from_one(elements, element, count);
 		}
 
 		metadata()->size = count;
@@ -608,7 +608,7 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 					assign_value(elements + index,
 						size() - index, element);
 
-					construct_identical_copies(
+					construct_many_from_one(
 						elements + size(), element,
 						tail_index - size());
 
@@ -638,7 +638,7 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 				tail_index), tail_index);
 
 		construct_copies(new_buffer_elements, elements, index);
-		construct_identical_copies(new_buffer_elements + index,
+		construct_many_from_one(new_buffer_elements + index,
 			element, count);
 
 		replace_buffer(new_buffer_elements);
@@ -722,7 +722,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 				new_size), new_size);
 
 			construct_copies(new_buffer_elements, elements, index);
-			construct_identical_copies(new_buffer_elements + index,
+			construct_many_from_one(new_buffer_elements + index,
 				element, count);
 			construct_copies(new_buffer_elements + index + count,
 				tail, tail_size);
@@ -743,7 +743,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 			}
 			else
 			{
-				construct_identical_copies(tail + tail_size,
+				construct_many_from_one(tail + tail_size,
 					element, count - tail_size);
 
 				construct_copies(tail + count, tail, tail_size);
@@ -783,7 +783,7 @@ void array<T>::append(size_t count, const T& element)
 		if (is_shared() || size() + count > capacity())
 			alloc_and_copy(extra_capacity(size() + count));
 
-		construct_identical_copies(elements + size(), element, count);
+		construct_many_from_one(elements + size(), element, count);
 		metadata()->size += count;
 	}
 }
