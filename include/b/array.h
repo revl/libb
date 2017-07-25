@@ -320,7 +320,7 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 			T* new_buffer_elements =
 				alloc_buffer(new_capacity, new_size);
 
-			construct_many_from_many(new_buffer_elements,
+			construct_copies(new_buffer_elements,
 				elements, new_size);
 
 			replace_buffer(new_buffer_elements);
@@ -452,8 +452,9 @@ void array<T>::assign(const T* source, size_t count)
 			if (count > size())
 			{
 				assign_pairwise(elements, source, size());
-				construct_many_from_many(elements + size(),
-					source + size(), count - size());
+				construct_copies(elements + size(),
+					source + size(),
+					count - size());
 			}
 			else
 			{
@@ -463,7 +464,7 @@ void array<T>::assign(const T* source, size_t count)
 		else
 		{
 			discard_and_alloc(extra_capacity(count));
-			construct_many_from_many(elements, source, count);
+			construct_copies(elements, source, count);
 		}
 
 		metadata()->size = count;
@@ -543,8 +544,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 				{
 					assign_pairwise(elements + index,
 						source, size() - index);
-					construct_many_from_many(
-						elements + size(),
+					construct_copies(elements + size(),
 						source + size() - index,
 						tail_index - size());
 
@@ -570,8 +570,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
 
-			construct_many_from_many(
-				new_buffer_elements + tail_index,
+			construct_copies(new_buffer_elements + tail_index,
 				elements + tail_index,
 				unaffected_size - tail_index);
 		}
@@ -579,9 +578,8 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				tail_index), tail_index);
 
-		construct_many_from_many(new_buffer_elements, elements, index);
-		construct_many_from_many(new_buffer_elements + index,
-			source, count);
+		construct_copies(new_buffer_elements, elements, index);
+		construct_copies(new_buffer_elements + index, source, count);
 
 		replace_buffer(new_buffer_elements);
 	}
@@ -631,8 +629,7 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
 
-			construct_many_from_many(
-				new_buffer_elements + tail_index,
+			construct_copies(new_buffer_elements + tail_index,
 				elements + tail_index,
 				unaffected_size - tail_index);
 		}
@@ -640,7 +637,7 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				tail_index), tail_index);
 
-		construct_many_from_many(new_buffer_elements, elements, index);
+		construct_copies(new_buffer_elements, elements, index);
 		construct_many_from_one(new_buffer_elements + index,
 			element, count);
 
@@ -673,12 +670,10 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			construct_many_from_many(new_buffer_elements,
-				elements, index);
-			construct_many_from_many(new_buffer_elements + index,
+			construct_copies(new_buffer_elements, elements, index);
+			construct_copies(new_buffer_elements + index,
 				source, count);
-			construct_many_from_many(
-				new_buffer_elements + index + count,
+			construct_copies(new_buffer_elements + index + count,
 				tail, tail_size);
 
 			replace_buffer(new_buffer_elements);
@@ -687,7 +682,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 		{
 			if (count < tail_size)
 			{
-				construct_many_from_many(tail + tail_size,
+				construct_copies(tail + tail_size,
 					tail + tail_size - count, count);
 
 				assign_pairwise_backwards(tail + count,
@@ -697,11 +692,10 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 			}
 			else
 			{
-				construct_many_from_many(tail + tail_size,
+				construct_copies(tail + tail_size,
 					source + tail_size, count - tail_size);
 
-				construct_many_from_many(tail + count,
-					tail, tail_size);
+				construct_copies(tail + count, tail, tail_size);
 
 				assign_pairwise(tail, source, tail_size);
 			}
@@ -727,12 +721,10 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			construct_many_from_many(new_buffer_elements,
-				elements, index);
+			construct_copies(new_buffer_elements, elements, index);
 			construct_many_from_one(new_buffer_elements + index,
 				element, count);
-			construct_many_from_many(
-				new_buffer_elements + index + count,
+			construct_copies(new_buffer_elements + index + count,
 				tail, tail_size);
 
 			replace_buffer(new_buffer_elements);
@@ -741,7 +733,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 		{
 			if (count < tail_size)
 			{
-				construct_many_from_many(tail + tail_size,
+				construct_copies(tail + tail_size,
 					tail + tail_size - count, count);
 
 				assign_pairwise_backwards(tail + count,
@@ -754,8 +746,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 				construct_many_from_one(tail + tail_size,
 					element, count - tail_size);
 
-				construct_many_from_many(tail + count,
-					tail, tail_size);
+				construct_copies(tail + count, tail, tail_size);
 
 				assign_value(tail, tail_size, element);
 			}
@@ -779,7 +770,7 @@ void array<T>::append(const T* source, size_t count)
 		if (is_shared() || size() + count > capacity())
 			alloc_and_copy(extra_capacity(size() + count));
 
-		construct_many_from_many(elements + size(), source, count);
+		construct_copies(elements + size(), source, count);
 		metadata()->size += count;
 	}
 }
@@ -848,10 +839,9 @@ void array<T>::remove(size_t index, size_t count)
 			T* new_buffer_elements = alloc_buffer(extra_capacity(
 				new_size), new_size);
 
-			construct_many_from_many(new_buffer_elements,
-				elements, index);
+			construct_copies(new_buffer_elements, elements, index);
 
-			construct_many_from_many(new_buffer_elements + index,
+			construct_copies(new_buffer_elements + index,
 				elements + index + count, new_size - index);
 
 			replace_buffer(new_buffer_elements);
