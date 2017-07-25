@@ -282,10 +282,11 @@ inline void construct_default(T* objects, size_t count)
 		new (objects++) T;
 }
 
-// Calls the copy constructor of the class 'T' (initialization of
-// a number of objects with a single value).
+// Calls the copy constructor of the class 'T' (sequence
+// initialization with a single value).
 template <class T>
-inline void construct_many_from_one(T* dest, const T& master_copy, size_t count)
+inline void construct_identical_copies(T* dest,
+	const T& master_copy, size_t count)
 {
 	while (count-- > 0)
 		new (dest++) T(master_copy);
@@ -351,7 +352,7 @@ inline void construct_default(int* dest, size_t count)
 }
 
 template <>
-inline void construct_many_from_one(int* dest,
+inline void construct_identical_copies(int* dest,
 	const int& master_copy, size_t count)
 {
 	while (count-- > 0)
@@ -397,7 +398,7 @@ inline void construct_default(long* dest, size_t count)
 }
 
 template <>
-inline void construct_many_from_one(long* dest,
+inline void construct_identical_copies(long* dest,
 	const long& master_copy, size_t count)
 {
 	while (count-- > 0)
@@ -449,7 +450,7 @@ inline void construct_default(char* dest, size_t count)
 }
 
 template <>
-inline void construct_many_from_one(char* dest,
+inline void construct_identical_copies(char* dest,
 	const char& master_copy, size_t count)
 {
 	memory::fill(dest, count, master_copy);

@@ -76,7 +76,7 @@ namespace
 		void output_chars(char_t filler, size_t len)
 		{
 			if (len > 0)
-				b::construct_many_from_one(dest -= len,
+				b::construct_identical_copies(dest -= len,
 					filler, len);
 		}
 
