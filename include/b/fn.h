@@ -276,7 +276,7 @@ inline void char_to_wchar(wchar_t* result, const char* source, size_t length)
 
 // Calls the default constructor of the class 'T'.
 template <class T>
-inline void construct_default(T* objects, size_t count)
+inline void construct(T* objects, size_t count)
 {
 	while (count-- > 0)
 		new (objects++) T;
@@ -346,7 +346,7 @@ inline int compare(const int& n1, const int& n2)
 }
 
 template <>
-inline void construct_default(int* dest, size_t count)
+inline void construct(int* dest, size_t count)
 {
 	memory::zero(dest, count * sizeof(*dest));
 }
@@ -392,7 +392,7 @@ inline int compare(const long& l1, const long& l2)
 }
 
 template <>
-inline void construct_default(long* dest, size_t count)
+inline void construct(long* dest, size_t count)
 {
 	memory::zero(dest, count * sizeof(long));
 }
@@ -444,7 +444,7 @@ inline int compare_arrays(const char* array1, const char* array2, size_t count)
 }
 
 template <>
-inline void construct_default(char* dest, size_t count)
+inline void construct(char* dest, size_t count)
 {
 	memory::zero(dest, count * sizeof(char));
 }
@@ -495,7 +495,7 @@ inline int compare(const wchar_t& c1, const wchar_t& c2)
 }
 
 template <>
-inline void construct_default(wchar_t* dest, size_t count)
+inline void construct(wchar_t* dest, size_t count)
 {
 	memory::zero(dest, count * sizeof(*dest));
 }
