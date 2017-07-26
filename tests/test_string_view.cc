@@ -52,11 +52,24 @@ B_TEST_CASE(starts_with)
 {
 	b::string_view sv("012", 3);
 
+	B_CHECK(sv.starts_with(B_STRING_VIEW("")));
 	B_CHECK(sv.starts_with(B_STRING_VIEW("01")));
 	B_CHECK(sv.starts_with(B_STRING_VIEW("012")));
 
 	B_CHECK(!sv.starts_with(B_STRING_VIEW("02")));
 	B_CHECK(!sv.starts_with(B_STRING_VIEW("0123")));
+}
+
+B_TEST_CASE(ends_with)
+{
+	b::string_view sv("012", 3);
+
+	B_CHECK(sv.ends_with(B_STRING_VIEW("")));
+	B_CHECK(sv.ends_with(B_STRING_VIEW("12")));
+	B_CHECK(sv.ends_with(B_STRING_VIEW("012")));
+
+	B_CHECK(!sv.ends_with(B_STRING_VIEW("02")));
+	B_CHECK(!sv.ends_with(B_STRING_VIEW("0123")));
 }
 
 B_TEST_CASE(find)
