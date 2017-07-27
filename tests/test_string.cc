@@ -60,9 +60,6 @@ B_TEST_CASE(basic_checks)
 	b::string str2("345", 3);
 
 	B_CHECK(str1 == "012");
-	B_CHECK(str1.starts_with(B_STRING_VIEW("01")));
-	B_CHECK(!str1.starts_with(B_STRING_VIEW("02")));
-	B_CHECK(!str1.starts_with(B_STRING_VIEW("0123")));
 
 	// Append str2 to str1.
 	str1.append(str2);
@@ -131,6 +128,22 @@ B_TEST_CASE(comparison)
 	B_CHECK(abc1 != abc2);
 
 	B_CHECK(abc1 != B_STRING_VIEW("abc"));
+}
+
+B_TEST_CASE(starts_with)
+{
+	b::string str("012", 3);
+
+	B_CHECK(str.starts_with(B_STRING_VIEW("")));
+	B_CHECK(str.starts_with(B_STRING_VIEW("01")));
+	B_CHECK(str.starts_with(B_STRING_VIEW("012")));
+
+	B_CHECK(!str.starts_with(B_STRING_VIEW("02")));
+	B_CHECK(!str.starts_with(B_STRING_VIEW("0123")));
+
+	b::string with_null("012\0", 4);
+
+	B_CHECK(with_null.starts_with(with_null));
 }
 
 B_TEST_CASE(string_formatting)
