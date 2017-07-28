@@ -146,6 +146,22 @@ B_TEST_CASE(starts_with)
 	B_CHECK(with_null.starts_with(with_null));
 }
 
+B_TEST_CASE(ends_with)
+{
+	b::string str("123", 3);
+
+	B_CHECK(str.ends_with(B_STRING_VIEW("")));
+	B_CHECK(str.ends_with(B_STRING_VIEW("23")));
+	B_CHECK(str.ends_with(B_STRING_VIEW("123")));
+
+	B_CHECK(!str.ends_with(B_STRING_VIEW("13")));
+	B_CHECK(!str.ends_with(B_STRING_VIEW("0123")));
+
+	b::string with_null("012\0", 4);
+
+	B_CHECK(with_null.ends_with(with_null));
+}
+
 B_TEST_CASE(string_formatting)
 {
 	b::string str1;

@@ -466,6 +466,13 @@ bool string::starts_with(const string_view& prefix) const
 		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
 }
 
+bool string::ends_with(const string_view& suffix) const
+{
+	return length() >= suffix.length()  &&
+		compare_arrays(data() + length() - suffix.length(),
+			suffix.data(), suffix.length()) == 0;
+}
+
 bool string::matches_pattern(const char_t* pattern) const
 {
 	return match_pattern(*this, pattern);

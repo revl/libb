@@ -236,6 +236,9 @@ public:
 	// Checks if this string starts with the specified prefix.
 	bool starts_with(const string_view& prefix) const;
 
+	// Checks if this string ends with the specified suffix.
+	bool ends_with(const string_view& suffix) const;
+
 	// Checks if this string matches the specified glob-style pattern.
 	bool matches_pattern(const char_t* pattern) const;
 
