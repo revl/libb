@@ -789,7 +789,7 @@ void string_formatting::process_conversion()
 		if (!flags.precision_defined)
 		{
 			flags.precision_defined = true;
-			precision = sizeof(void*) * 2;
+			precision = (unsigned) sizeof(void*) * 2;
 		}
 
 		process_x_conversion<size_t, void*>(ucase_hex);
