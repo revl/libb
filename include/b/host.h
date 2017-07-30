@@ -130,6 +130,7 @@
 
 #ifdef B_USE_STL
 #include <exception>
+#include <string>
 #endif /* defined(B_USE_STL) */
 
 #define B_PATH_SEPARATOR '/'

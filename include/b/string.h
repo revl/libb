@@ -50,6 +50,11 @@ public:
 	// Creates a string of 'count' copies of 'ch'.
 	string(size_t count, char_t ch);
 
+#if defined(B_USE_STL)
+	// Creates a b::string from an std::string.
+	explicit string(const std::basic_string<char_t>& source);
+#endif /* defined(B_USE_STL) */
+
 // String Length
 public:
 	// Returns the size (in characters) of the allocated buffer.

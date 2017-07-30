@@ -53,6 +53,13 @@ string::string(const char_t* source, size_t count, size_t times)
 	}
 }
 
+#if defined(B_USE_STL)
+string::string(const std::basic_string<char_t>& source) : chars(empty_string())
+{
+	assign(source.data(), source.length());
+}
+#endif /* defined(B_USE_STL) */
+
 void string::discard_and_alloc(size_t new_capacity)
 {
 	B_ASSERT(!is_locked());
