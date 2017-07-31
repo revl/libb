@@ -51,7 +51,8 @@ B_TEST_CASE(uniform_distribution)
 	b::pseudorandom prng;
 
 	for (size_t i = 0; i < B_COUNTOF(counters) * 100000; ++i)
-		++counters[prng.next(B_COUNTOF(counters))];
+		++counters[prng.next(
+			(b::pseudorandom::value_type) B_COUNTOF(counters))];
 
 	for (size_t i = 0; i < B_COUNTOF(counters); ++i)
 	{
