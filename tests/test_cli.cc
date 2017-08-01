@@ -85,14 +85,14 @@ B_TEST_CASE(version_option)
 	// The '--version' option without 'version_info' must generate
 	// an exception.
 	B_REQUIRE_EXCEPTION(cl_parser.parse(
-		B_COUNTOF(version_option), version_option),
+		(int) B_COUNTOF(version_option), version_option),
 		"test_cli: unknown option '--version'\n*");
 
 	ss = new b::string_stream;
 
 	B_STATIC_CONST_STRING(app_version, "test_cli version 1.2");
 
-	cl_parser.parse(B_COUNTOF(version_option), version_option,
+	cl_parser.parse((int) B_COUNTOF(version_option), version_option,
 		(version_info = app_version,
 		help_output_stream = ss));
 
@@ -276,7 +276,7 @@ B_TEST_CASE(options)
 		"query text"
 	};
 
-	int cmd = cl_parser.parse(B_COUNTOF(query_cmd), query_cmd);
+	int cmd = cl_parser.parse((int) B_COUNTOF(query_cmd), query_cmd);
 
 	B_CHECK(cmd == 0);
 
@@ -310,7 +310,7 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(B_COUNTOF(unknown_cmd), unknown_cmd),
+		cl_parser.parse((int) B_COUNTOF(unknown_cmd), unknown_cmd),
 		"test_cli: unknown command 'nosuchcmd'\n*");
 
 	static const char* const missing_arg[] =
@@ -320,7 +320,7 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(B_COUNTOF(missing_arg), missing_arg),
+		cl_parser.parse((int) B_COUNTOF(missing_arg), missing_arg),
 		"test_cli: too few positional arguments\n*");
 
 	static const char* const unknown_opt[] =
@@ -332,7 +332,7 @@ B_TEST_CASE(exceptions)
 	};
 
 	B_REQUIRE_EXCEPTION(
-		cl_parser.parse(B_COUNTOF(unknown_opt), unknown_opt),
+		cl_parser.parse((int) B_COUNTOF(unknown_opt), unknown_opt),
 		"test_cli: unknown option '-f'\n*");
 }
 
@@ -351,7 +351,7 @@ B_TEST_CASE(free_standing_double_dash)
 		"-f"
 	};
 
-	B_REQUIRE(cl_parser.parse(B_COUNTOF(query_cmd), query_cmd) == 0);
+	B_REQUIRE(cl_parser.parse((int) B_COUNTOF(query_cmd), query_cmd) == 0);
 
 	int arg_id;
 	const char* opt_value;
@@ -391,7 +391,7 @@ B_TEST_CASE(arg_order)
 		"A3"
 	};
 
-	B_REQUIRE(cl_parser.parse(B_COUNTOF(query_cmd), query_cmd) == 0);
+	B_REQUIRE(cl_parser.parse((int) B_COUNTOF(query_cmd), query_cmd) == 0);
 
 	b::string arg_order;
 

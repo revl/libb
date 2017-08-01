@@ -210,8 +210,8 @@ static b::string format(T value, const char* conversion,
 	return result;
 }
 
-static b::string expect(unsigned leading_spaces, const char* prefix,
-	unsigned zeros, unsigned long value, unsigned base = 10,
+static b::string expect(size_t leading_spaces, const char* prefix,
+	size_t zeros, unsigned long value, unsigned base = 10,
 	unsigned trailing_spaces = 0)
 {
 	return b::string::formatted("[%s%s%s%s%s]",
