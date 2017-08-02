@@ -114,4 +114,29 @@ B_TEST_CASE(array_copying)
 	B_CHECK(element_counter == 0);
 }
 
+#define NUMBER_OF_ELEMENTS 100
+
+B_TEST_CASE(random_removal)
+{
+	b::array<int> numbers;
+
+	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
+		numbers.append(i);
+
+	b::pseudorandom prg(10);
+
+	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
+	{
+		b::pseudorandom::value_type random_index =
+			prg.next((b::pseudorandom::value_type) numbers.size());
+
+		numbers.remove(random_index);
+
+		for (size_t j = 1; j < numbers.size(); ++j)
+			B_CHECK(numbers[j - 1] < numbers[j]);
+	}
+
+	B_REQUIRE(numbers.is_empty());
+}
+
 b::array<b::array<test_element> > test2d;
