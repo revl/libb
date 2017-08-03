@@ -818,6 +818,8 @@ array<T> array<T>::operator +(const array<T>& source) const
 template <class T>
 void array<T>::remove(size_t index, size_t count)
 {
+	B_ASSERT(index <= size());
+
 	if (index + count > size())
 		count = size() - index;
 
