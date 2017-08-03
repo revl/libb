@@ -446,6 +446,10 @@ void array<T>::assign(const array<T>& source)
 template <class T>
 void array<T>::assign(const T* source, size_t count)
 {
+	// This and the source array must not overlap.
+	B_ASSERT(source >= elements + capacity() ||
+		source + count < elements);
+
 	if (count > 0)
 	{
 		if (!is_shared() && count <= capacity())
@@ -765,6 +769,10 @@ void array<T>::append(const array<T>& source)
 template <class T>
 void array<T>::append(const T* source, size_t count)
 {
+	// This and the source array must not overlap.
+	B_ASSERT(source >= elements + capacity() ||
+		source + count < elements);
+
 	if (count > 0)
 	{
 		if (is_shared() || size() + count > capacity())
