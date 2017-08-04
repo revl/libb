@@ -415,8 +415,8 @@ void string::remove(size_t start, size_t count)
 
 		if (!is_shared())
 		{
-			assign_pairwise(chars + start, chars + start + count,
-				new_length - start + 1);
+			assign_overlapping(chars + start,
+				chars + start + count, new_length - start + 1);
 
 			metadata()->length = new_length;
 		}

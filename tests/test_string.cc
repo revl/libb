@@ -241,3 +241,28 @@ B_TEST_CASE(wide_chars)
 
 	B_CHECK(unicode.matches_pattern(L"*code"));
 }
+
+B_TEST_CASE(random_removal)
+{
+	static const int str_len = 100U;
+
+	b::wstring str;
+
+	for (int i = 0; i < str_len; ++i)
+		str.append((wchar_t) i);
+
+	b::pseudorandom prg(10);
+
+	for (int i = 0; i < str_len; ++i)
+	{
+		b::pseudorandom::value_type random_index =
+			prg.next((b::pseudorandom::value_type) str.length());
+
+		str.remove(random_index);
+
+		for (size_t j = 1; j < str.length(); ++j)
+			B_CHECK(str[j - 1] < str[j]);
+	}
+
+	B_REQUIRE(str.is_empty());
+}
