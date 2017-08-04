@@ -326,6 +326,16 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 		*dest++ = *source++;
 }
 
+// Assign elements of one array to elements of another array.
+// The arrays are allowed to overlap as long as 'dest' precedes
+// 'source' (dest < source).
+template <class T>
+inline void assign_overlapping(T* dest, const T* source, size_t count)
+{
+	while (count-- > 0)
+		*dest++ = *source++;
+}
+
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
 template <class T>
@@ -377,6 +387,12 @@ inline void assign_pairwise(int* dest, const int* source, size_t count)
 }
 
 template <>
+inline void assign_overlapping(int* dest, const int* source, size_t count)
+{
+	memory::move(dest, source, count * sizeof(*dest));
+}
+
+template <>
 inline void assign_pairwise_backwards(int* dest,
 	const int* source, size_t count)
 {
@@ -420,6 +436,12 @@ template <>
 inline void assign_pairwise(long* dest, const long* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void assign_overlapping(long* dest, const long* source, size_t count)
+{
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 template <>
@@ -480,6 +502,12 @@ inline void assign_pairwise(char* dest, const char* source, size_t count)
 }
 
 template <>
+inline void assign_overlapping(char* dest, const char* source, size_t count)
+{
+	memory::move(dest, source, count * sizeof(*dest));
+}
+
+template <>
 inline void assign_pairwise_backwards(char* dest,
 	const char* source, size_t count)
 {
@@ -522,6 +550,13 @@ template <>
 inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void assign_overlapping(wchar_t* dest,
+	const wchar_t* source, size_t count)
+{
+	memory::move(dest, source, count * sizeof(*dest));
 }
 
 template <>
