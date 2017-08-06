@@ -244,7 +244,7 @@ B_TEST_CASE(wide_chars)
 
 B_TEST_CASE(random_removal)
 {
-	static const int str_len = 100U;
+	static const int str_len = 100;
 
 	b::wstring str;
 
