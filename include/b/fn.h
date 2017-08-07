@@ -131,12 +131,39 @@ inline void shuffle(T* objects, pseudorandom::value_type count)
 	while (i > 0);
 }
 
-// Compares two objects. Returns zero, if objects are equal;
-// -1, if the first object is less, and 1, if the second is less.
+// Compares two objects. Returns zero if objects are equal,
+// -1 if the left-hand object is less than the right-hand,
+// and 1 otherwise.
 template <class T>
 inline int compare(const T& object1, const T& object2)
 {
 	return object1 < object2 ? -1 : object2 < object1;
+}
+
+template <>
+inline int compare(const int& n1, const int& n2)
+{
+	return n1 - n2;
+}
+
+template <>
+inline int compare(const long& l1, const long& l2)
+{
+	const long diff = l1 - l2;
+
+	return diff < 0 ? -1 : diff > 0;
+}
+
+template <>
+inline int compare(const char& c1, const char& c2)
+{
+	return int(c1) - int(c2);
+}
+
+template <>
+inline int compare(const wchar_t& c1, const wchar_t& c2)
+{
+	return int(c1) - int(c2);
 }
 
 // Compares two object sequences of the same length.
@@ -282,6 +309,12 @@ inline void construct(T* objects, size_t count)
 		new (objects++) T;
 }
 
+template <>
+inline void construct(int* dest, size_t count)
+{
+	memory::zero(dest, count * sizeof(*dest));
+}
+
 // Calls the copy constructor of the class 'T' (sequence
 // initialization with a single value).
 template <class T>
@@ -350,18 +383,6 @@ inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 // int
 
 template <>
-inline int compare(const int& n1, const int& n2)
-{
-	return n1 - n2;
-}
-
-template <>
-inline void construct(int* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(*dest));
-}
-
-template <>
 inline void construct_identical_copies(int* dest,
 	const int& master_copy, size_t count)
 {
@@ -400,12 +421,6 @@ inline void assign_pairwise_backwards(int* dest,
 }
 
 // long
-
-template <>
-inline int compare(const long& l1, const long& l2)
-{
-	return int(l1 - l2);
-}
 
 template <>
 inline void construct(long* dest, size_t count)
@@ -452,12 +467,6 @@ inline void assign_pairwise_backwards(long* dest,
 }
 
 // char
-
-template <>
-inline int compare(const char& c1, const char& c2)
-{
-	return int(c1) - int(c2);
-}
 
 template <>
 inline int compare_arrays(const char* array1, const char* array2, size_t count)
@@ -515,12 +524,6 @@ inline void assign_pairwise_backwards(char* dest,
 }
 
 // wchar_t
-
-template <>
-inline int compare(const wchar_t& c1, const wchar_t& c2)
-{
-	return int(c1) - int(c2);
-}
 
 template <>
 inline void construct(wchar_t* dest, size_t count)
