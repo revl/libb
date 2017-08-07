@@ -179,6 +179,12 @@ inline int compare_arrays(const T* array1, const T* array2, size_t count)
 	return 0;
 }
 
+template <>
+inline int compare_arrays(const char* array1, const char* array2, size_t count)
+{
+	return memory::compare(array1, array2, count);
+}
+
 // Operations on C strings
 
 // Computes the length of a null-terminated string.
@@ -467,12 +473,6 @@ inline void assign_pairwise_backwards(long* dest,
 }
 
 // char
-
-template <>
-inline int compare_arrays(const char* array1, const char* array2, size_t count)
-{
-	return memory::compare(array1, array2, count);
-}
 
 template <>
 inline void construct(char* dest, size_t count)
