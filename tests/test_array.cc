@@ -139,4 +139,35 @@ B_TEST_CASE(random_removal)
 	B_REQUIRE(numbers.is_empty());
 }
 
+static void run_insertion_test(size_t tail_size)
+{
+	b::array<size_t> numbers;
+
+	numbers.discard_and_alloc(100);
+
+	size_t i;
+
+	for (i = 0U; i < 10U; ++i)
+		numbers.append(i);
+
+	for (i = 20U; i < 20U + tail_size; ++i)
+		numbers.append(i);
+
+	static const size_t values[10] =
+	{
+		10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+	};
+
+	numbers.insert(10U, values, 10);
+
+	for (i = 0U; i < numbers.size(); ++i)
+		B_CHECK(numbers[i] == i);
+}
+
+B_TEST_CASE(insertion)
+{
+	run_insertion_test(20U);
+	run_insertion_test(5U);
+}
+
 b::array<b::array<test_element> > test2d;
