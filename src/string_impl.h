@@ -278,8 +278,7 @@ void string::insert(size_t pos, const char_t* source, size_t count)
 				extra_capacity(new_length), new_length);
 
 			assign_pairwise(new_buffer_chars, chars, pos);
-			assign_pairwise(new_buffer_chars + pos,
-				source, count);
+			assign_pairwise(new_buffer_chars + pos, source, count);
 			assign_pairwise(new_buffer_chars + pos + count,
 				tail, tail_length + 1);
 
@@ -287,27 +286,9 @@ void string::insert(size_t pos, const char_t* source, size_t count)
 		}
 		else
 		{
-			if (count < tail_length)
-			{
-				assign_pairwise(tail + tail_length,
-					tail + tail_length - count, count);
+			assign_overlapping(tail + count, tail, tail_length);
 
-				assign_pairwise_backwards(tail + count,
-					tail, tail_length - count);
-
-				assign_pairwise(tail, source, count);
-			}
-			else
-			{
-				assign_pairwise(tail + tail_length,
-					source + tail_length,
-					count - tail_length);
-
-				assign_pairwise(tail + count,
-					tail, tail_length);
-
-				assign_pairwise(tail, source, tail_length);
-			}
+			assign_pairwise(tail, source, count);
 
 			metadata()->length = new_length;
 		}
