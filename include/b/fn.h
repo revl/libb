@@ -316,7 +316,31 @@ inline void construct(T* objects, size_t count)
 }
 
 template <>
+inline void construct(short* dest, size_t count)
+{
+	memory::zero(dest, count * sizeof(*dest));
+}
+
+template <>
 inline void construct(int* dest, size_t count)
+{
+	memory::zero(dest, count * sizeof(*dest));
+}
+
+template <>
+inline void construct(long* dest, size_t count)
+{
+	memory::zero(dest, count * sizeof(long));
+}
+
+template <>
+inline void construct(char* dest, size_t count)
+{
+	memory::zero(dest, count * sizeof(char));
+}
+
+template <>
+inline void construct(wchar_t* dest, size_t count)
 {
 	memory::zero(dest, count * sizeof(*dest));
 }
@@ -346,6 +370,31 @@ inline void destruct(T* objects, size_t count)
 {
 	while (count-- > 0)
 		(objects++)->~T();
+}
+
+template <>
+inline void destruct(short*, size_t)
+{
+}
+
+template <>
+inline void destruct(int*, size_t)
+{
+}
+
+template <>
+inline void destruct(long*, size_t)
+{
+}
+
+template <>
+inline void destruct(char*, size_t)
+{
+}
+
+template <>
+inline void destruct(wchar_t*, size_t)
+{
 }
 
 // Calls T assignment operator (assignment of a single value
@@ -403,11 +452,6 @@ inline void construct_copies(int* dest, const int* source, size_t count)
 }
 
 template <>
-inline void destruct(int*, size_t)
-{
-}
-
-template <>
 inline void assign_pairwise(int* dest, const int* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
@@ -429,12 +473,6 @@ inline void assign_pairwise_backwards(int* dest,
 // long
 
 template <>
-inline void construct(long* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(long));
-}
-
-template <>
 inline void construct_identical_copies(long* dest,
 	const long& master_copy, size_t count)
 {
@@ -446,11 +484,6 @@ template <>
 inline void construct_copies(long* dest, const long* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void destruct(long*, size_t)
-{
 }
 
 template <>
@@ -475,12 +508,6 @@ inline void assign_pairwise_backwards(long* dest,
 // char
 
 template <>
-inline void construct(char* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(char));
-}
-
-template <>
 inline void construct_identical_copies(char* dest,
 	const char& master_copy, size_t count)
 {
@@ -491,11 +518,6 @@ template <>
 inline void construct_copies(char* dest, const char* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void destruct(char*, size_t)
-{
 }
 
 template <>
@@ -526,20 +548,9 @@ inline void assign_pairwise_backwards(char* dest,
 // wchar_t
 
 template <>
-inline void construct(wchar_t* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(*dest));
-}
-
-template <>
 inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void destruct(wchar_t*, size_t)
-{
 }
 
 template <>
