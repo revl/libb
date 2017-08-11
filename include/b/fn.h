@@ -355,6 +355,29 @@ inline void construct_identical_copies(T* dest,
 		new (dest++) T(master_copy);
 }
 
+template <>
+inline void construct_identical_copies(int* dest,
+	const int& master_copy, size_t count)
+{
+	while (count-- > 0)
+		*dest++ = master_copy;
+}
+
+template <>
+inline void construct_identical_copies(long* dest,
+	const long& master_copy, size_t count)
+{
+	while (count-- > 0)
+		*dest++ = master_copy;
+}
+
+template <>
+inline void construct_identical_copies(char* dest,
+	const char& master_copy, size_t count)
+{
+	memory::fill(dest, count, master_copy);
+}
+
 // Calls the copy constructor of the class 'T' (initialization
 // with objects from the same-sized array).
 template <class T>
@@ -528,14 +551,6 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 // int
 
 template <>
-inline void construct_identical_copies(int* dest,
-	const int& master_copy, size_t count)
-{
-	while (count-- > 0)
-		*dest++ = master_copy;
-}
-
-template <>
 inline void construct_copies(int* dest, const int* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
@@ -544,27 +559,12 @@ inline void construct_copies(int* dest, const int* source, size_t count)
 // long
 
 template <>
-inline void construct_identical_copies(long* dest,
-	const long& master_copy, size_t count)
-{
-	while (count-- > 0)
-		*dest++ = master_copy;
-}
-
-template <>
 inline void construct_copies(long* dest, const long* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 // char
-
-template <>
-inline void construct_identical_copies(char* dest,
-	const char& master_copy, size_t count)
-{
-	memory::fill(dest, count, master_copy);
-}
 
 template <>
 inline void construct_copies(char* dest, const char* source, size_t count)
