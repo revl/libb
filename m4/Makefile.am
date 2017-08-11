@@ -18,6 +18,6 @@
 
 EXTRA_DIST = \
 	ac_cxx_have_stl.m4 \
-	acx_pthread.m4
+	ax_pthread.m4
 
 MAINTAINERCLEANFILES = Makefile.in libtool.m4 lt*.m4

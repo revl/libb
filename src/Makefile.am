@@ -40,7 +40,6 @@ sources = \
 	object.cc \
 	pathname.cc \
 	string.cc \
-	string_impl.h \
 	string_stream.cc
 
 libbd_r_la_SOURCES = $(sources)
@@ -54,5 +53,10 @@ libbd_r_la_LDFLAGS = $(ldflags)
 libb_r_la_LDFLAGS = $(ldflags)
 libbd_la_LDFLAGS = $(ldflags)
 libb_la_LDFLAGS = $(ldflags)
+
+EXTRA_DIST = \
+	string_formatting.h \
+	string_impl.h \
+	string_view_impl.h
 
 MAINTAINERCLEANFILES = Makefile.in

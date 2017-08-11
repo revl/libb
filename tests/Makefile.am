@@ -102,4 +102,6 @@ test_string_stream_SOURCES = test_string_stream.cc
 
 test_string_view_SOURCES = test_string_view.cc
 
+EXTRA_DIST = unit_test.h
+
 MAINTAINERCLEANFILES = Makefile.in

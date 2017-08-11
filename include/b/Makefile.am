@@ -21,6 +21,7 @@ pkgincludedir = $(includedir)/b
 pkginclude_HEADERS = \
 	arg_list.h \
 	array.h \
+	binary_tree.h \
 	cli.h \
 	custom_exception.h \
 	doubly_linked_list.h \
@@ -33,16 +34,20 @@ pkginclude_HEADERS = \
 	levenshtein_distance.h \
 	linked_list.h \
 	linked_list_container.h \
+	map.h \
 	memory.h \
 	node_access_via_cast.h \
 	object.h \
 	opaque.h \
+	pathname.h \
 	pseudorandom.h \
 	ref.h \
 	ref_count.h \
 	runtime_exception.h \
 	set.h \
 	string.h \
+	string_stream.h \
+	string_view.h \
 	system_exception.h
 
 all: config.h
