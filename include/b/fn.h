@@ -387,6 +387,30 @@ inline void construct_copies(T* dest, const T* source, size_t count)
 		new (dest++) T(*source++);
 }
 
+template <>
+inline void construct_copies(int* dest, const int* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void construct_copies(long* dest, const long* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void construct_copies(char* dest, const char* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
 // Calls the destructors of the 'T' class.
 template <class T>
 inline void destruct(T* objects, size_t count)
@@ -544,40 +568,6 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 	const wchar_t* source, size_t count)
 {
 	memory::move(dest, source, count * sizeof(*dest));
-}
-
-// Template specializations
-
-// int
-
-template <>
-inline void construct_copies(int* dest, const int* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-// long
-
-template <>
-inline void construct_copies(long* dest, const long* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-// char
-
-template <>
-inline void construct_copies(char* dest, const char* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-// wchar_t
-
-template <>
-inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
 }
 
 // Base64url_encode() encodes binary data using the base64url variant
