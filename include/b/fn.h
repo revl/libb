@@ -427,6 +427,30 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 		*dest++ = *source++;
 }
 
+template <>
+inline void assign_pairwise(int* dest, const int* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void assign_pairwise(long* dest, const long* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void assign_pairwise(char* dest, const char* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
+template <>
+inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
+{
+	memory::copy(dest, source, count * sizeof(*dest));
+}
+
 // Assign elements of one array to elements of another array.
 // The arrays are allowed to overlap as long as 'dest' precedes
 // 'source' (dest < source).
@@ -465,12 +489,6 @@ inline void construct_copies(int* dest, const int* source, size_t count)
 }
 
 template <>
-inline void assign_pairwise(int* dest, const int* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
 inline void assign_overlapping(int* dest, const int* source, size_t count)
 {
 	memory::move(dest, source, count * sizeof(*dest));
@@ -495,12 +513,6 @@ inline void construct_identical_copies(long* dest,
 
 template <>
 inline void construct_copies(long* dest, const long* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise(long* dest, const long* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
@@ -534,12 +546,6 @@ inline void construct_copies(char* dest, const char* source, size_t count)
 }
 
 template <>
-inline void assign_pairwise(char* dest, const char* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
 inline void assign_overlapping(char* dest, const char* source, size_t count)
 {
 	memory::move(dest, source, count * sizeof(*dest));
@@ -556,12 +562,6 @@ inline void assign_pairwise_backwards(char* dest,
 
 template <>
 inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
 }
