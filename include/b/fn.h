@@ -406,6 +406,19 @@ inline void assign_value(T* dest, size_t count, const T& value)
 		*dest++ = value;
 }
 
+template <>
+inline void assign_value(char* dest, size_t count, const char& value)
+{
+	memory::fill(dest, count, value);
+}
+
+template <>
+inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
+{
+	while (count-- > 0)
+		*dest++ = value;
+}
+
 // Calls T assignment operator (element-based array assignment).
 template <class T>
 inline void assign_pairwise(T* dest, const T* source, size_t count)
@@ -521,12 +534,6 @@ inline void construct_copies(char* dest, const char* source, size_t count)
 }
 
 template <>
-inline void assign_value(char* dest, size_t count, const char& value)
-{
-	memory::fill(dest, count, value);
-}
-
-template <>
 inline void assign_pairwise(char* dest, const char* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
@@ -551,13 +558,6 @@ template <>
 inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
 {
 	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
-{
-	while (count-- > 0)
-		*dest++ = value;
 }
 
 template <>
