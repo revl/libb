@@ -570,6 +570,57 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 	memory::move(dest, source, count * sizeof(*dest));
 }
 
+// Moves elements of an array to the right (assuming that there is
+// sufficient memory) and inserts the specified range of source elements
+// into the freed space.
+template <class T>
+void displace(T* dst, size_t dst_size, const T* src, size_t src_size)
+{
+	if (src_size < dst_size)
+	{
+		construct_copies(dst + dst_size,
+			dst + dst_size - src_size, src_size);
+
+		assign_pairwise_backwards(dst + src_size,
+			dst, dst_size - src_size);
+
+		assign_pairwise(dst, src, src_size);
+	}
+	else
+	{
+		construct_copies(dst + dst_size,
+			src + dst_size, src_size - dst_size);
+
+		construct_copies(dst + src_size, dst, dst_size);
+
+		assign_pairwise(dst, src, dst_size);
+	}
+}
+
+template <class T>
+void displace(T* dst, size_t dst_size, const T& value, size_t count)
+{
+	if (count < dst_size)
+	{
+		construct_copies(dst + dst_size,
+			dst + dst_size - count, count);
+
+		assign_pairwise_backwards(dst + count,
+			dst, dst_size - count);
+
+		assign_value(dst, count, value);
+	}
+	else
+	{
+		construct_identical_copies(dst + dst_size,
+			value, count - dst_size);
+
+		construct_copies(dst + count, dst, dst_size);
+
+		assign_value(dst, dst_size, value);
+	}
+}
+
 // Base64url_encode() encodes binary data using the base64url variant
 // of the Base64 family of encoding schemes.
 //

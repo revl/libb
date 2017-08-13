@@ -684,25 +684,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 		}
 		else
 		{
-			if (count < tail_size)
-			{
-				construct_copies(tail + tail_size,
-					tail + tail_size - count, count);
-
-				assign_pairwise_backwards(tail + count,
-					tail, tail_size - count);
-
-				assign_pairwise(tail, source, count);
-			}
-			else
-			{
-				construct_copies(tail + tail_size,
-					source + tail_size, count - tail_size);
-
-				construct_copies(tail + count, tail, tail_size);
-
-				assign_pairwise(tail, source, tail_size);
-			}
+			displace(tail, tail_size, source, count);
 
 			metadata()->size = new_size;
 		}
@@ -735,25 +717,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 		}
 		else
 		{
-			if (count < tail_size)
-			{
-				construct_copies(tail + tail_size,
-					tail + tail_size - count, count);
-
-				assign_pairwise_backwards(tail + count,
-					tail, tail_size - count);
-
-				assign_value(tail, count, element);
-			}
-			else
-			{
-				construct_identical_copies(tail + tail_size,
-					element, count - tail_size);
-
-				construct_copies(tail + count, tail, tail_size);
-
-				assign_value(tail, tail_size, element);
-			}
+			displace(tail, tail_size, element, count);
 
 			metadata()->size = new_size;
 		}
