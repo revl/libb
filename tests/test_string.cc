@@ -287,7 +287,7 @@ static void run_insertion_test(size_t tail_size)
 	str.insert(10U, values, 10U);
 
 	for (char i = (char) 0; i < (char) str.length(); ++i)
-		B_CHECK(str[i] == (char) i);
+		B_CHECK(str[(size_t) i] == i);
 }
 
 B_TEST_CASE(insertion)
