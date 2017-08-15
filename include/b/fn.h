@@ -607,6 +607,26 @@ void displace(T* dst, size_t dst_size, const T* src, size_t src_size)
 	}
 }
 
+#define B_SPECIALIZATION(T) \
+	template <> \
+	inline void displace(T* dst, size_t dst_size, \
+			const T* src, size_t src_size) \
+	{ \
+		assign_overlapping(dst + src_size, dst, dst_size); \
+		assign_pairwise(dst, src, src_size); \
+	}
+
+B_SPECIALIZATION(char)
+B_SPECIALIZATION(int)
+B_SPECIALIZATION(unsigned)
+B_SPECIALIZATION(long)
+B_SPECIALIZATION(unsigned long)
+
+#undef B_SPECIALIZATION
+
+// Moves elements of an array to the right (assuming that there is
+// sufficient space available) and inserts the number of identical
+// values into the freed space.
 template <class T>
 void displace(T* dst, size_t dst_size, const T& value, size_t count)
 {
