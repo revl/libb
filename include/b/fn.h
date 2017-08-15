@@ -499,13 +499,16 @@ inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 }
 
 // Assign elements of one array to elements of another array.
-// The arrays are allowed to overlap as long as 'dest' precedes
-// 'source' (dest < source).
+// The arrays are allowed to overlap.
 template <class T>
 inline void assign_overlapping(T* dest, const T* source, size_t count)
 {
-	while (count-- > 0)
-		*dest++ = *source++;
+	if (dest <= source)
+		while (count-- > 0)
+			*dest++ = *source++;
+	else
+		while (count-- > 0)
+			dest[count] = source[count];
 }
 
 template <>
