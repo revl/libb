@@ -524,6 +524,13 @@ inline void assign_overlapping(long* dest, const long* source, size_t count)
 }
 
 template <>
+inline void assign_overlapping(unsigned long* dest,
+		const unsigned long* source, size_t count)
+{
+	memory::move(dest, source, count * sizeof(*dest));
+}
+
+template <>
 inline void assign_overlapping(char* dest, const char* source, size_t count)
 {
 	memory::move(dest, source, count * sizeof(*dest));
