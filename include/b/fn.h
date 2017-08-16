@@ -584,7 +584,7 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 // sufficient memory) and inserts the specified range of source elements
 // into the freed space.
 template <class T>
-void displace(T* dst, size_t dst_size, const T* src, size_t src_size)
+void insert_into_array(T* dst, size_t dst_size, const T* src, size_t src_size)
 {
 	if (src_size < dst_size)
 	{
@@ -609,7 +609,7 @@ void displace(T* dst, size_t dst_size, const T* src, size_t src_size)
 
 #define B_SPECIALIZATION(T) \
 	template <> \
-	inline void displace(T* dst, size_t dst_size, \
+	inline void insert_into_array(T* dst, size_t dst_size, \
 			const T* src, size_t src_size) \
 	{ \
 		assign_overlapping(dst + src_size, dst, dst_size); \
@@ -628,7 +628,7 @@ B_SPECIALIZATION(unsigned long)
 // sufficient space available) and inserts the number of identical
 // values into the freed space.
 template <class T>
-void displace(T* dst, size_t dst_size, const T& value, size_t count)
+void insert_into_array(T* dst, size_t dst_size, const T& value, size_t count)
 {
 	if (count < dst_size)
 	{

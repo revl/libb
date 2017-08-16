@@ -286,7 +286,7 @@ void string::insert(size_t pos, const char_t* source, size_t count)
 		}
 		else
 		{
-			displace(tail, tail_length, source, count);
+			insert_into_array(tail, tail_length, source, count);
 
 			metadata()->length = new_length;
 		}
@@ -317,7 +317,7 @@ void string::insert(size_t pos, char_t ch, size_t count)
 		}
 		else
 		{
-			displace(tail, tail_length, ch, count);
+			insert_into_array(tail, tail_length, ch, count);
 
 			metadata()->length = new_length;
 		}
