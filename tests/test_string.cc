@@ -295,3 +295,16 @@ B_TEST_CASE(insertion)
 	run_insertion_test(20U);
 	run_insertion_test(5U);
 }
+
+#if defined(B_USE_STL)
+B_TEST_CASE(interoperability)
+{
+	std::string std_string(abc.to_std_string());
+
+	B_CHECK(std_string == abc.data());
+
+	b::string abc_copy(std_string);
+
+	B_CHECK(abc_copy == abc);
+}
+#endif /* defined(B_USE_STL) */

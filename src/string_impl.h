@@ -58,6 +58,11 @@ string::string(const std::basic_string<char_t>& source) : chars(empty_string())
 {
 	assign(source.data(), source.length());
 }
+
+std::basic_string<char_t> string::to_std_string() const
+{
+	return std::basic_string<char_t>(data(), length());
+}
 #endif /* defined(B_USE_STL) */
 
 void string::discard_and_alloc(size_t new_capacity)
