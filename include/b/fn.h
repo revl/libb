@@ -462,8 +462,7 @@ inline void assign_value(char* dest, size_t count, const char& value)
 template <>
 inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 {
-	while (count-- > 0)
-		*dest++ = value;
+	wmemset(dest, value, count);
 }
 
 // Calls T assignment operator (element-based array assignment).
