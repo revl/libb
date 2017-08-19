@@ -618,8 +618,7 @@ void string::trim_left(const string_view& samples)
 		if (!is_shared())
 		{
 			metadata()->length = new_length;
-			assign_pairwise_backwards(chars, new_first,
-				new_length + 1);
+			assign_overlapping(chars, new_first, new_length + 1);
 		}
 		else
 		{
