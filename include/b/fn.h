@@ -679,6 +679,23 @@ void move_right_and_insert(T* dst, size_t dst_size,
 	}
 }
 
+#define B_SPECIALIZATION(T) \
+	template <> \
+	inline void move_right_and_insert(T* dst, size_t dst_size, \
+			const T& value, size_t count) \
+	{ \
+		memory::move(dst + count, dst, dst_size * sizeof(*dst)); \
+		assign_value(dst, count, value); \
+	}
+
+B_SPECIALIZATION(char)
+B_SPECIALIZATION(int)
+B_SPECIALIZATION(unsigned)
+B_SPECIALIZATION(long)
+B_SPECIALIZATION(unsigned long)
+
+#undef B_SPECIALIZATION
+
 // Base64url_encode() encodes binary data using the base64url variant
 // of the Base64 family of encoding schemes.
 //
