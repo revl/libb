@@ -801,7 +801,7 @@ void array<T>::remove(size_t index, size_t count)
 
 		if (!is_shared())
 		{
-			assign_overlapping(elements + index,
+			move_left(elements + index,
 				elements + index + count, new_size - index);
 
 			destruct(elements + new_size, count);

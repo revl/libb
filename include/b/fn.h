@@ -497,6 +497,33 @@ inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 	memory::copy(dest, source, count * sizeof(*dest));
 }
 
+// This is an internal function that is used from the array and
+// string methods that shrink those containers. The function
+// copies a range of elements over another, likely overlapping,
+// range of elements of the same type located to the left of the
+// source range.
+template <class T>
+inline void move_left(T* to, const T* from, size_t count)
+{
+	while (count-- > 0)
+		*to++ = *from++;
+}
+
+#define B_SPECIALIZATION(T) \
+	template <> \
+	inline void move_left(T* to, const T* from, size_t count) \
+	{ \
+		memory::move(to, from, count * sizeof(*to)); \
+	}
+
+B_SPECIALIZATION(char)
+B_SPECIALIZATION(int)
+B_SPECIALIZATION(unsigned)
+B_SPECIALIZATION(long)
+B_SPECIALIZATION(unsigned long)
+
+#undef B_SPECIALIZATION
+
 // Assign elements of one array to elements of another array.
 // The arrays are allowed to overlap.
 template <class T>

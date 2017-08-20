@@ -380,7 +380,7 @@ void string::remove(size_t start, size_t count)
 
 		if (!is_shared())
 		{
-			assign_overlapping(chars + start,
+			move_left(chars + start,
 				chars + start + count, new_length - start + 1);
 
 			metadata()->length = new_length;
@@ -618,7 +618,7 @@ void string::trim_left(const string_view& samples)
 		if (!is_shared())
 		{
 			metadata()->length = new_length;
-			assign_overlapping(chars, new_first, new_length + 1);
+			move_left(chars, new_first, new_length + 1);
 		}
 		else
 		{
