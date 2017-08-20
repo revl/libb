@@ -638,8 +638,8 @@ void insert_into_array(T* dst, size_t dst_size, const T* src, size_t src_size)
 	inline void insert_into_array(T* dst, size_t dst_size, \
 			const T* src, size_t src_size) \
 	{ \
-		assign_overlapping(dst + src_size, dst, dst_size); \
-		assign_pairwise(dst, src, src_size); \
+		memory::move(dst + src_size, dst, dst_size * sizeof(*dst)); \
+		memory::copy(dst, src, src_size * sizeof(*dst)); \
 	}
 
 B_SPECIALIZATION(char)
