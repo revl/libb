@@ -610,7 +610,8 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 // sufficient memory) and inserts the specified range of source elements
 // into the freed space.
 template <class T>
-void insert_into_array(T* dst, size_t dst_size, const T* src, size_t src_size)
+void move_right_and_insert(T* dst, size_t dst_size,
+		const T* src, size_t src_size)
 {
 	if (src_size < dst_size)
 	{
@@ -635,7 +636,7 @@ void insert_into_array(T* dst, size_t dst_size, const T* src, size_t src_size)
 
 #define B_SPECIALIZATION(T) \
 	template <> \
-	inline void insert_into_array(T* dst, size_t dst_size, \
+	inline void move_right_and_insert(T* dst, size_t dst_size, \
 			const T* src, size_t src_size) \
 	{ \
 		memory::move(dst + src_size, dst, dst_size * sizeof(*dst)); \
@@ -654,7 +655,8 @@ B_SPECIALIZATION(unsigned long)
 // sufficient space available) and inserts the number of identical
 // values into the freed space.
 template <class T>
-void insert_into_array(T* dst, size_t dst_size, const T& value, size_t count)
+void move_right_and_insert(T* dst, size_t dst_size,
+		const T& value, size_t count)
 {
 	if (count < dst_size)
 	{

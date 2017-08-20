@@ -684,7 +684,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 		}
 		else
 		{
-			insert_into_array(tail, tail_size, source, count);
+			move_right_and_insert(tail, tail_size, source, count);
 
 			metadata()->size = new_size;
 		}
@@ -717,7 +717,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 		}
 		else
 		{
-			insert_into_array(tail, tail_size, element, count);
+			move_right_and_insert(tail, tail_size, element, count);
 
 			metadata()->size = new_size;
 		}
