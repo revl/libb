@@ -524,51 +524,6 @@ B_SPECIALIZATION(unsigned long)
 
 #undef B_SPECIALIZATION
 
-// Assign elements of one array to elements of another array.
-// The arrays are allowed to overlap.
-template <class T>
-inline void assign_overlapping(T* dest, const T* source, size_t count)
-{
-	if (dest <= source)
-		while (count-- > 0)
-			*dest++ = *source++;
-	else
-		while (count-- > 0)
-			dest[count] = source[count];
-}
-
-template <>
-inline void assign_overlapping(int* dest, const int* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_overlapping(long* dest, const long* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_overlapping(unsigned long* dest,
-		const unsigned long* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_overlapping(char* dest, const char* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_overlapping(wchar_t* dest,
-	const wchar_t* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
 template <class T>
