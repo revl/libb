@@ -61,6 +61,9 @@ public:
 	// specified byte value.
 	static void fill(void* block, size_t length, char filler);
 
+	// Fills 'length' wide characters with the specified value.
+	static void fill_wchar_t(wchar_t* wcs, size_t length, wchar_t value);
+
 	// Fills a block of memory with zeros.
 	static void zero(void* block, size_t length);
 
@@ -93,6 +96,11 @@ inline void memory::free(void* block)
 inline void memory::fill(void* block, size_t length, char filler)
 {
 	::memset(block, filler, length);
+}
+
+inline void memory::fill_wchar_t(wchar_t* wcs, size_t length, wchar_t value)
+{
+	::wmemset(wcs, value, length);
 }
 
 inline void memory::zero(void* block, size_t length)

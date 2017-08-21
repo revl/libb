@@ -462,7 +462,7 @@ inline void assign_value(char* dest, size_t count, const char& value)
 template <>
 inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 {
-	wmemset(dest, value, count);
+	memory::fill_wchar_t(dest, count, value);
 }
 
 // Calls T assignment operator (element-based array assignment).
