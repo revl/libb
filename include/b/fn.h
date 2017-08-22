@@ -315,35 +315,12 @@ inline void construct(T* objects, size_t count)
 		new (objects++) T;
 }
 
-template <>
-inline void construct(short* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(*dest));
-}
-
-template <>
-inline void construct(int* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(*dest));
-}
-
-template <>
-inline void construct(long* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(long));
-}
-
-template <>
-inline void construct(char* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(char));
-}
-
-template <>
-inline void construct(wchar_t* dest, size_t count)
-{
-	memory::zero(dest, count * sizeof(*dest));
-}
+#define B_CONSTRUCT_SPECIALIZATION(T) \
+	template <> \
+	inline void construct(T* dest, size_t count) \
+	{ \
+		memory::zero(dest, count * sizeof(*dest)); \
+	}
 
 // Calls the copy constructor of the class 'T' (sequence
 // initialization with a single value).
@@ -650,6 +627,19 @@ B_SPECIALIZATION(long)
 B_SPECIALIZATION(unsigned long)
 
 #undef B_SPECIALIZATION
+
+#define B_SPECIALIZATIONS_FOR_POD(T) \
+	B_CONSTRUCT_SPECIALIZATION(T)
+
+B_SPECIALIZATIONS_FOR_POD(char)
+B_SPECIALIZATIONS_FOR_POD(unsigned char)
+B_SPECIALIZATIONS_FOR_POD(wchar_t)
+B_SPECIALIZATIONS_FOR_POD(short)
+B_SPECIALIZATIONS_FOR_POD(unsigned short)
+B_SPECIALIZATIONS_FOR_POD(int)
+B_SPECIALIZATIONS_FOR_POD(unsigned)
+B_SPECIALIZATIONS_FOR_POD(long)
+B_SPECIALIZATIONS_FOR_POD(unsigned long)
 
 // Base64url_encode() encodes binary data using the base64url variant
 // of the Base64 family of encoding schemes.
