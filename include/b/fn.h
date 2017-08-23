@@ -486,20 +486,12 @@ inline void move_left(T* to, const T* from, size_t count)
 		*to++ = *from++;
 }
 
-#define B_SPECIALIZATION(T) \
+#define B_MOVE_LEFT_SPECIALIZATION(T) \
 	template <> \
 	inline void move_left(T* to, const T* from, size_t count) \
 	{ \
 		memory::move(to, from, count * sizeof(*to)); \
 	}
-
-B_SPECIALIZATION(char)
-B_SPECIALIZATION(int)
-B_SPECIALIZATION(unsigned)
-B_SPECIALIZATION(long)
-B_SPECIALIZATION(unsigned long)
-
-#undef B_SPECIALIZATION
 
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
@@ -629,7 +621,8 @@ B_SPECIALIZATION(unsigned long)
 #undef B_SPECIALIZATION
 
 #define B_SPECIALIZATIONS_FOR_POD(T) \
-	B_CONSTRUCT_SPECIALIZATION(T)
+	B_CONSTRUCT_SPECIALIZATION(T) \
+	B_MOVE_LEFT_SPECIALIZATION(T)
 
 B_SPECIALIZATIONS_FOR_POD(char)
 B_SPECIALIZATIONS_FOR_POD(unsigned char)
