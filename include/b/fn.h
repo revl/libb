@@ -558,7 +558,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 	}
 }
 
-#define B_SPECIALIZATION(T) \
+#define B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
 	template <> \
 	inline void move_right_and_insert(T* dst, size_t dst_size, \
 			const T* src, size_t src_size) \
@@ -566,14 +566,6 @@ void move_right_and_insert(T* dst, size_t dst_size,
 		memory::move(dst + src_size, dst, dst_size * sizeof(*dst)); \
 		memory::copy(dst, src, src_size * sizeof(*dst)); \
 	}
-
-B_SPECIALIZATION(char)
-B_SPECIALIZATION(int)
-B_SPECIALIZATION(unsigned)
-B_SPECIALIZATION(long)
-B_SPECIALIZATION(unsigned long)
-
-#undef B_SPECIALIZATION
 
 // Moves elements of an array to the right (assuming that there is
 // sufficient space available) and inserts the number of identical
@@ -603,7 +595,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 	}
 }
 
-#define B_SPECIALIZATION(T) \
+#define B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T) \
 	template <> \
 	inline void move_right_and_insert(T* dst, size_t dst_size, \
 			const T& value, size_t count) \
@@ -612,17 +604,11 @@ void move_right_and_insert(T* dst, size_t dst_size,
 		assign_value(dst, count, value); \
 	}
 
-B_SPECIALIZATION(char)
-B_SPECIALIZATION(int)
-B_SPECIALIZATION(unsigned)
-B_SPECIALIZATION(long)
-B_SPECIALIZATION(unsigned long)
-
-#undef B_SPECIALIZATION
-
 #define B_SPECIALIZATIONS_FOR_POD(T) \
 	B_CONSTRUCT_SPECIALIZATION(T) \
-	B_MOVE_LEFT_SPECIALIZATION(T)
+	B_MOVE_LEFT_SPECIALIZATION(T) \
+	B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
+	B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T)
 
 B_SPECIALIZATIONS_FOR_POD(char)
 B_SPECIALIZATIONS_FOR_POD(unsigned char)
