@@ -474,25 +474,6 @@ inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
 	memory::copy(dest, source, count * sizeof(*dest));
 }
 
-// This is an internal function that is used from the array and
-// string methods that shrink those containers. The function
-// copies a range of elements over another, likely overlapping,
-// range of elements of the same type located to the left of the
-// source range.
-template <class T>
-inline void move_left(T* to, const T* from, size_t count)
-{
-	while (count-- > 0)
-		*to++ = *from++;
-}
-
-#define B_MOVE_LEFT_SPECIALIZATION(T) \
-	template <> \
-	inline void move_left(T* to, const T* from, size_t count) \
-	{ \
-		memory::move(to, from, count * sizeof(*to)); \
-	}
-
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
 template <class T>
@@ -529,6 +510,25 @@ inline void assign_pairwise_backwards(wchar_t* dest,
 {
 	memory::move(dest, source, count * sizeof(*dest));
 }
+
+// This is an internal function that is used from the array and
+// string methods that shrink those containers. The function
+// copies a range of elements over another, likely overlapping,
+// range of elements of the same type located to the left of the
+// source range.
+template <class T>
+inline void move_left(T* to, const T* from, size_t count)
+{
+	while (count-- > 0)
+		*to++ = *from++;
+}
+
+#define B_MOVE_LEFT_SPECIALIZATION(T) \
+	template <> \
+	inline void move_left(T* to, const T* from, size_t count) \
+	{ \
+		memory::move(to, from, count * sizeof(*to)); \
+	}
 
 // Moves elements of an array to the right (assuming that there is
 // sufficient memory) and inserts the specified range of source elements
