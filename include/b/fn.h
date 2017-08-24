@@ -364,29 +364,12 @@ inline void construct_copies(T* dest, const T* source, size_t count)
 		new (dest++) T(*source++);
 }
 
-template <>
-inline void construct_copies(int* dest, const int* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void construct_copies(long* dest, const long* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void construct_copies(char* dest, const char* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void construct_copies(wchar_t* dest, const wchar_t* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
+#define B_CONSTRUCT_COPIES_SPECIALIZATION(T) \
+	template <> \
+	inline void construct_copies(T* dest, const T* source, size_t count) \
+	{ \
+		memory::copy(dest, source, count * sizeof(*dest)); \
+	}
 
 // Calls the destructors of the 'T' class.
 template <class T>
@@ -606,6 +589,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 
 #define B_SPECIALIZATIONS_FOR_POD(T) \
 	B_CONSTRUCT_SPECIALIZATION(T) \
+	B_CONSTRUCT_COPIES_SPECIALIZATION(T) \
 	B_MOVE_LEFT_SPECIALIZATION(T) \
 	B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
 	B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T)
