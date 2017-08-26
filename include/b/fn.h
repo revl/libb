@@ -379,30 +379,11 @@ inline void destruct(T* objects, size_t count)
 		(objects++)->~T();
 }
 
-template <>
-inline void destruct(short*, size_t)
-{
-}
-
-template <>
-inline void destruct(int*, size_t)
-{
-}
-
-template <>
-inline void destruct(long*, size_t)
-{
-}
-
-template <>
-inline void destruct(char*, size_t)
-{
-}
-
-template <>
-inline void destruct(wchar_t*, size_t)
-{
-}
+#define B_DESTRUCT_SPECIALIZATION(T) \
+	template <> \
+	inline void destruct(T*, size_t) \
+	{ \
+	}
 
 // Calls T assignment operator (assignment of a single value
 // to each element of the array pointed to by 'dest').
@@ -590,6 +571,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 #define B_SPECIALIZATIONS_FOR_POD(T) \
 	B_CONSTRUCT_SPECIALIZATION(T) \
 	B_CONSTRUCT_COPIES_SPECIALIZATION(T) \
+	B_DESTRUCT_SPECIALIZATION(T) \
 	B_MOVE_LEFT_SPECIALIZATION(T) \
 	B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
 	B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T)
