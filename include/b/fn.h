@@ -414,29 +414,12 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 		*dest++ = *source++;
 }
 
-template <>
-inline void assign_pairwise(int* dest, const int* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise(long* dest, const long* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise(char* dest, const char* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise(wchar_t* dest, const wchar_t* source, size_t count)
-{
-	memory::copy(dest, source, count * sizeof(*dest));
-}
+#define B_ASSIGN_PAIRWISE_SPECIALIZATION(T) \
+	template <> \
+	inline void assign_pairwise(T* dest, const T* source, size_t count) \
+	{ \
+		memory::copy(dest, source, count * sizeof(*dest)); \
+	}
 
 // Repeated calls of the assignment operator (element-based
 // overlapping array assignment).
@@ -572,6 +555,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 	B_CONSTRUCT_SPECIALIZATION(T) \
 	B_CONSTRUCT_COPIES_SPECIALIZATION(T) \
 	B_DESTRUCT_SPECIALIZATION(T) \
+	B_ASSIGN_PAIRWISE_SPECIALIZATION(T) \
 	B_MOVE_LEFT_SPECIALIZATION(T) \
 	B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
 	B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T)
