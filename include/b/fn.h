@@ -430,33 +430,13 @@ inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 		dest[count] = source[count];
 }
 
-template <>
-inline void assign_pairwise_backwards(int* dest,
-	const int* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise_backwards(long* dest,
-	const long* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise_backwards(char* dest,
-	const char* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
-
-template <>
-inline void assign_pairwise_backwards(wchar_t* dest,
-	const wchar_t* source, size_t count)
-{
-	memory::move(dest, source, count * sizeof(*dest));
-}
+#define B_ASSIGN_PAIRWISE_BACKWARDS_SPEC9N(T) \
+	template <> \
+	inline void assign_pairwise_backwards(T* dest, \
+		const T* source, size_t count) \
+	{ \
+		memory::move(dest, source, count * sizeof(*dest)); \
+	}
 
 // This is an internal function that is used from the array and
 // string methods that shrink those containers. The function
@@ -556,6 +536,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 	B_CONSTRUCT_COPIES_SPECIALIZATION(T) \
 	B_DESTRUCT_SPECIALIZATION(T) \
 	B_ASSIGN_PAIRWISE_SPECIALIZATION(T) \
+	B_ASSIGN_PAIRWISE_BACKWARDS_SPEC9N(T) \
 	B_MOVE_LEFT_SPECIALIZATION(T) \
 	B_MOVE_RIGHT_AND_INSERT_RANGE_SPEC9N(T) \
 	B_MOVE_RIGHT_AND_INSERT_VALUES_SPEC9N(T)
