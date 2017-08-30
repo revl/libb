@@ -7,11 +7,11 @@ package HTML::Element;
 
 sub new
 {
-	my ($class, $container, $tag, %attributes) = @_;
+	my ($class, $buffer_ref, $tag, %attributes) = @_;
 
 	my $self = bless
 	{
-		buffer_ref => $container->{buffer_ref},
+		buffer_ref => $buffer_ref,
 		stack => []
 	}, $class;
 
@@ -61,7 +61,7 @@ sub open_tag
 {
 	my ($self, $tag, %attributes) = @_;
 
-	return HTML::Element->new($self, $tag, %attributes)
+	return HTML::Element->new($self->{buffer_ref}, $tag, %attributes)
 }
 
 sub close_tag
@@ -91,15 +91,7 @@ sub new
 
 	my $buffer = "<!DOCTYPE html>\n";
 
-	my $self = bless
-	{
-		buffer_ref => \$buffer,
-		stack => []
-	}, $class;
-
-	$self->push_tag('html', lang => "en");
-
-	return $self
+	return $class->SUPER::new(\$buffer, 'html', lang => "en")
 }
 
 sub print_page
