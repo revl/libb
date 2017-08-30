@@ -3,38 +3,33 @@
 use strict;
 use warnings;
 
-package Page;
+package HTML::Element;
 
 sub new
 {
-	my ($class) = @_;
+	my ($class, $container, $tag, %attributes) = @_;
 
-	my $self = bless {}, $class;
+	my $self = bless
+	{
+		buffer_ref => $container->{buffer_ref},
+		stack => []
+	}, $class;
 
-	$self->discard_data();
+	$self->push_tag($tag, %attributes);
 
 	return $self
 }
 
-sub discard_data
-{
-	my ($self) = @_;
-
-	my $buffer = '';
-
-	@$self{qw(buffer)} = (\$buffer)
-}
-
 sub contents
 {
-	return ${$_[0]->{buffer}}
+	return ${$_[0]->{buffer_ref}}
 }
 
 sub write
 {
 	my ($self, $data) = @_;
 
-	${$self->{buffer}} .= $data
+	${$self->{buffer_ref}} .= $data
 }
 
 sub write_markup
@@ -46,20 +41,7 @@ sub write_markup
 	$self->write($markup)
 }
 
-sub send
-{
-	my ($self, $stream) = @_;
-
-	$stream = *STDOUT unless $stream;
-
-	binmode $stream;
-
-	binmode $stream, ':utf8';
-
-	print $stream ${$self->{buffer}}
-}
-
-sub start_tag
+sub push_tag
 {
 	my ($self, $tag, %attributes) = @_;
 
@@ -72,21 +54,68 @@ sub start_tag
 
 	$self->write('>');
 
-	return bless {buffer => $self->{buffer}, tag => $tag, outer => $self},
-		'HTMLElement'
+	push @{$self->{stack}}, $tag
 }
 
-package HTMLElement;
+sub open_tag
+{
+	my ($self, $tag, %attributes) = @_;
 
-our @ISA = qw(Page);
+	return HTML::Element->new($self, $tag, %attributes)
+}
+
+sub close_tag
+{
+	my ($self) = @_;
+
+	while (my $tag = pop @{$self->{stack}})
+	{
+		$self->write("</$tag\n>")
+	}
+}
 
 sub DESTROY
 {
 	my ($self) = @_;
 
-	$self->write("</$self->{tag}\n>")
+	$self->close_tag()
 }
 
+package HTML::Page;
+
+our @ISA = qw(HTML::Element);
+
+sub new
+{
+	my ($class) = @_;
+
+	my $buffer = "<!DOCTYPE html>\n";
+
+	my $self = bless
+	{
+		buffer_ref => \$buffer,
+		stack => []
+	}, $class;
+
+	$self->push_tag('html', lang => "en");
+
+	return $self
+}
+
+sub print_page
+{
+	my ($self, $stream) = @_;
+
+	$self->close_tag();
+
+	$stream = *STDOUT unless $stream;
+
+	binmode $stream;
+	binmode $stream, ':utf8';
+
+	print $stream ${$self->{buffer_ref}};
+	print $stream "\n"
+}
 
 package main;
 
@@ -97,38 +126,29 @@ my $readme_pathname = "$top_srcdir/README";
 
 open README, '<', $readme_pathname or die "Cannot open $readme_pathname\: $!";
 
+my $index_page = HTML::Page->new();
+
+$index_page->open_tag('head')->open_tag('title')->write('The B Library');
+
+$index_page->push_tag('body');
+$index_page->push_tag('pre');
+
+while (<README>)
+{
+	s/</&lt;/g;
+	s/>/&gt;/g;
+
+	$index_page->write($_)
+}
+
+close README;
+
 mkdir 'html';
 
 my $index_pathname = 'html/index.html';
 
 open INDEX, '>', $index_pathname or die "Cannot open $index_pathname\: $!";
 
-print INDEX <<HTML;
-<!DOCTYPE html>
-<html
-lang="en"
-><head
-><title
->The B Library</title
-></head
-><body
-><pre>
-HTML
+$index_page->print_page(*INDEX);
 
-while (<README>)
-{
-	s/</&lt;/g;
-	s/>/&gt;/g;
-	print INDEX $_
-}
-
-print INDEX <<HTML;
-</pre
-></body
-></html
->
-HTML
-
-close INDEX;
-
-close README
+close INDEX
