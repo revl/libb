@@ -89,11 +89,15 @@ our @ISA = qw(HTML::Element);
 
 sub new
 {
-	my ($class) = @_;
+	my ($class, $title) = @_;
 
 	my $buffer = "<!DOCTYPE html>\n";
 
-	return $class->SUPER::new(\$buffer, 'html', lang => "en")
+	my $self = $class->SUPER::new(\$buffer, 'html', lang => "en");
+
+	$self->open_tag('head')->open_tag('title')->write($title);
+
+	return $self
 }
 
 sub print_page
@@ -122,9 +126,7 @@ my $readme_pathname = "$top_srcdir/README";
 
 open README, '<', $readme_pathname or die "Cannot open $readme_pathname\: $!";
 
-my $index_page = HTML::Page->new();
-
-$index_page->open_tag('head')->open_tag('title')->write('The B Library');
+my $index_page = HTML::Page->new('The B Library');
 
 $index_page->push_tag('body');
 $index_page->push_tag('pre');
