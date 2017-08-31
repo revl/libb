@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-package HTML::Element;
+package HTML::Element; # {{{
 
 sub new
 {
@@ -81,7 +81,9 @@ sub DESTROY
 	$self->close_tag()
 }
 
-package HTML::Page;
+# }}}
+
+package HTML::Page; # {{{
 
 our @ISA = qw(HTML::Element);
 
@@ -108,6 +110,8 @@ sub print_page
 	print $stream ${$self->{buffer_ref}};
 	print $stream "\n"
 }
+
+# }}}
 
 package main;
 
@@ -144,3 +148,5 @@ open INDEX, '>', $index_pathname or die "Cannot open $index_pathname\: $!";
 $index_page->print_page(*INDEX);
 
 close INDEX
+
+# vim600:foldmethod=marker
