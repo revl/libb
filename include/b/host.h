@@ -26,11 +26,6 @@
 #define B_DEBUG
 #endif
 
-// _MT indicates that a multithreaded version is to be built.
-#if defined(_MT) && !defined(B_MT)
-#define B_MT
-#endif
-
 #ifdef B_NO_NAMESPACE
 
 #undef b
