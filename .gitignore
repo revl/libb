@@ -1,3 +1,8 @@
+*.d
+*.o
+*.la
+*.lo
+*.log
 .deps
 .libs
 Makefile
@@ -25,8 +30,6 @@ doc/timestamp
 libtool
 m4/libtool.m4
 m4/lt*.m4
-src/*.la
-src/*.lo
 stamp-h1
 cscope.out
 tags
