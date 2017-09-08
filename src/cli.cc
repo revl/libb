@@ -65,15 +65,23 @@ enum arg_type
 
 B_BEGIN_NAMESPACE
 
+#define PROGRAM_NAME_ARG 'p'
+#define VERSION_INFO_ARG 'v'
+#define PROGRAM_DESCRIPTION_ARG 'd'
+#define HELP_TEXT_WIDTH_ARG 'w'
+#define CMD_DESCR_INDENT_ARG 'i' + 'c'
+#define ARG_DESCR_INDENT_ARG 'i' + 'a'
+#define HELP_OUTPUT_STREAM_ARG 'o'
+
 namespace cli_args
 {
-	arg_name<string, program_name_tag> program_name;
-	arg_name<string, version_info_tag> version_info;
-	arg_name<string, program_description_tag> program_description;
-	arg_name<int, help_text_width_tag> help_text_width;
-	arg_name<int, cmd_descr_indent_tag> cmd_descr_indent;
-	arg_name<int, arg_descr_indent_tag> arg_descr_indent;
-	arg_name<ref<output_stream>, help_output_stream_tag> help_output_stream;
+	arg_name<string, PROGRAM_NAME_ARG> program_name;
+	arg_name<string, VERSION_INFO_ARG> version_info;
+	arg_name<string, PROGRAM_DESCRIPTION_ARG> program_description;
+	arg_name<int, HELP_TEXT_WIDTH_ARG> help_text_width;
+	arg_name<int, CMD_DESCR_INDENT_ARG> cmd_descr_indent;
+	arg_name<int, ARG_DESCR_INDENT_ARG> arg_descr_indent;
+	arg_name<ref<output_stream>, HELP_OUTPUT_STREAM_ARG> help_output_stream;
 }
 
 // TODO Use string_view instead of string in this class
@@ -1250,35 +1258,35 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 	for (; arg != NULL; arg = arg->prev_arg)
 		switch (arg->tag)
 		{
-		case cli_args::program_name_tag:
+		case PROGRAM_NAME_ARG:
 			program_name = cli_args::program_name.value(arg);
 			break;
 
-		case cli_args::version_info_tag:
+		case VERSION_INFO_ARG:
 			version_info = cli_args::version_info.value(arg);
 			break;
 
-		case cli_args::program_description_tag:
+		case PROGRAM_DESCRIPTION_ARG:
 			program_description =
 				cli_args::program_description.value(arg);
 			break;
 
-		case cli_args::help_text_width_tag:
+		case HELP_TEXT_WIDTH_ARG:
 			impl_ref->max_help_text_width =
 				cli_args::help_text_width.value(arg);
 			break;
 
-		case cli_args::cmd_descr_indent_tag:
+		case CMD_DESCR_INDENT_ARG:
 			impl_ref->cmd_descr_indent =
 				cli_args::cmd_descr_indent.value(arg);
 			break;
 
-		case cli_args::arg_descr_indent_tag:
+		case ARG_DESCR_INDENT_ARG:
 			impl_ref->opt_descr_indent =
 				cli_args::arg_descr_indent.value(arg);
 			break;
 
-		case cli_args::help_output_stream_tag:
+		case HELP_OUTPUT_STREAM_ARG:
 			impl_ref->help_output_stream =
 				cli_args::help_output_stream.value(arg);
 		}
