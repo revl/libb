@@ -39,6 +39,7 @@ sources = \
 	memory.cc \
 	object.cc \
 	pathname.cc \
+	red_black_tree.cc \
 	string.cc \
 	string_stream.cc
 

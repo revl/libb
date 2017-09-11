@@ -34,6 +34,7 @@ TESTS = \
 	test_opaque \
 	test_pathname \
 	test_pseudorandom \
+	test_red_black_tree \
 	test_set \
 	test_string \
 	test_string_formatting \
@@ -56,6 +57,7 @@ check_PROGRAMS = \
 	test_opaque \
 	test_pathname \
 	test_pseudorandom \
+	test_red_black_tree \
 	test_set \
 	test_string \
 	test_string_formatting \
@@ -91,6 +93,8 @@ test_opaque_SOURCES = test_opaque.cc
 test_pathname_SOURCES = test_pathname.cc
 
 test_pseudorandom_SOURCES = test_pseudorandom.cc
+
+test_red_black_tree_SOURCES = test_red_black_tree.cc
 
 test_set_SOURCES = test_set.cc
 

@@ -41,6 +41,7 @@ pkginclude_HEADERS = \
 	opaque.h \
 	pathname.h \
 	pseudorandom.h \
+	red_black_tree.h \
 	ref.h \
 	ref_count.h \
 	runtime_exception.h \
