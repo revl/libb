@@ -68,6 +68,13 @@
 #define B_REFCOUNT_INC(counter) __ATOMIC_INCREMENT_LONG(&counter)
 #define B_REFCOUNT_DEC(counter) return __ATOMIC_DECREMENT_LONG(&counter) != 1
 
+#elif defined(__APPLE__)
+
+#include <libkern/OSAtomic.h>
+#define B_REFCOUNT_TYPE int32_t
+#define B_REFCOUNT_INC(counter) OSAtomicIncrement32Barrier(&counter)
+#define B_REFCOUNT_DEC(counter) return OSAtomicDecrement32Barrier(&counter) != 0
+
 #else
 #error arithmetic on atomic data has to be implemented for this platform
 #endif
