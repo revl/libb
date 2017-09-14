@@ -29,6 +29,15 @@
 #define B_REFCOUNT_INC(counter) ++counter
 #define B_REFCOUNT_DEC(counter) return --counter != 0
 
+#elif defined(B_HAVE_STD_ATOMIC)
+
+#include <atomic>
+#define B_REFCOUNT_TYPE std::atomic<int>
+#define B_REFCOUNT_SET(counter, value) counter = value
+#define B_REFCOUNT_INC(counter) ++counter
+#define B_REFCOUNT_DEC(counter) return --counter != 0
+#define B_REFCOUNT_STATIC_INIT(i) {ATOMIC_VAR_INIT(i)}
+
 #elif defined(__GNUG__) && defined(__i386__)
 
 #define B_REFCOUNT_TYPE volatile int
