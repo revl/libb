@@ -4,6 +4,21 @@ AC_DEFUN([AX_ATOMIC],
 [AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 
+AC_CACHE_CHECK([for std::atomic<> in <atomic>],
+	[ax_cv_std_atomic],
+	[AC_TRY_COMPILE([#include <atomic>],
+	[
+		std::atomic<int> val = 0;
+		++val;
+		--val;
+	],
+	[ax_cv_std_atomic='yes'],
+	[ax_cv_std_atomic='no'])])
+
+AS_IF([test x"$ax_cv_std_atomic" = x'yes'],
+	[AC_DEFINE([HAVE_STD_ATOMIC], [1],
+	[Define to 1 if you have the <atomic> header file.])])
+
 AC_CACHE_CHECK([for the __gnu_cxx:: atomic ops in ext/atomicity.h],
 	[ax_cv_ext_atomicity_namespace],
 	[AC_TRY_COMPILE([#include <ext/atomicity.h>],
