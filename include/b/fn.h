@@ -170,7 +170,7 @@ inline int compare(const wchar_t& c1, const wchar_t& c2)
 template <class T>
 inline int compare_arrays(const T* array1, const T* array2, size_t count)
 {
-	register int cmp_res;
+	int cmp_res;
 
 	while (count-- > 0)
 		if ((cmp_res = compare(*array1++, *array2++)) != 0)

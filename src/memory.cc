@@ -26,7 +26,7 @@ void* memory::alloc(size_t size)
 {
 	B_STATIC_CONST_STRING(method_name, "b::memory::alloc()");
 
-	register void* block;
+	void* block;
 
 	if ((block = malloc(size)) == NULL)
 		throw system_exception(method_name, ENOMEM);
