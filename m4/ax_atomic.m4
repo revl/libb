@@ -19,6 +19,22 @@ AS_IF([test x"$ax_cv_std_atomic" = x'yes'],
 	[AC_DEFINE([HAVE_STD_ATOMIC], [1],
 	[Define to 1 if you have the <atomic> header file.])])
 
+AC_CACHE_CHECK([for __sync built-ins for atomic access],
+	[ax_cv_sync_fetch],
+	[AC_TRY_COMPILE([],
+	[
+		int val = 0;
+
+		__sync_add_and_fetch(&val, 1);
+		__sync_add_and_fetch(&val, -1);
+	],
+	[ax_cv_sync_fetch='yes'],
+	[ax_cv_sync_fetch='no'])])
+
+AS_IF([test x"$ax_cv_sync_fetch" = x'yes'],
+	[AC_DEFINE([HAVE_ATOMIC_SYNC], [1],
+	[Define to 1 if you have __sync built-ins for atomic access.])])
+
 AC_CACHE_CHECK([for the __gnu_cxx:: atomic ops in ext/atomicity.h],
 	[ax_cv_ext_atomicity_namespace],
 	[AC_TRY_COMPILE([#include <ext/atomicity.h>],
