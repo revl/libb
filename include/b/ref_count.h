@@ -56,6 +56,10 @@
 #include <machine/builtins.h>
 #define B_ATOMIC_TYPE __int32
 
+#elif defined(B_HAVE_ATOMIC_SYNC)
+
+#define B_ATOMIC_TYPE int
+
 #elif defined(__APPLE__)
 
 #include <libkern/OSAtomic.h>
@@ -121,6 +125,8 @@ inline void ref_count::operator ++()
 	atomic_inc(&value);
 #elif defined(__DECCXX_VER) && defined(__ALPHA)
 	__ATOMIC_INCREMENT_LONG(&value);
+#elif defined(B_HAVE_ATOMIC_SYNC)
+	__sync_add_and_fetch(&value, 1);
 #elif defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -143,6 +149,8 @@ inline bool ref_count::operator --()
 	return !atomic_dec_and_test(&value);
 #elif defined(__DECCXX_VER) && defined(__ALPHA)
 	return __ATOMIC_DECREMENT_LONG(&value) != 1;
+#elif defined(B_HAVE_ATOMIC_SYNC)
+	return __sync_add_and_fetch(&value, -1) != 0;
 #elif defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
