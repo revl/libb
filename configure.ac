@@ -54,52 +54,46 @@ PKG_INSTALLDIR
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/include -I\$(top_builddir)/include"
 
 dnl When compiling with GNU C++, display more warnings.
-if test "$GXX" = yes; then
-	CXXFLAGS="$CXXFLAGS -ansi -pedantic -Wall \
+AS_IF([test "$GXX" = yes],
+	[CXXFLAGS="$CXXFLAGS -ansi -pedantic -Wall \
 -Woverloaded-virtual -Wsign-promo -W -Wshadow -Wpointer-arith -Wcast-qual \
--Wwrite-strings -Wconversion -Wsign-compare -Wredundant-decls -Winline"
+-Wwrite-strings -Wconversion -Wsign-compare -Wredundant-decls -Winline"],
 dnl Display all levels of the Digital (Compaq) C++ warnings.
-elif test "$CXX" = cxx &&
-	cxx -V < /dev/null 2>&1 | grep -Eiq 'digital|compaq'; then
-	DIGITALCXX="yes"
-	CXXFLAGS="$CXXFLAGS -w0 -msg_display_tag -std strict_ansi"
+[test "$CXX" = cxx &&
+	cxx -V < /dev/null 2>&1 | grep -Eiq 'digital|compaq'],
+	[DIGITALCXX="yes"
+	CXXFLAGS="$CXXFLAGS -w0 -msg_display_tag -std strict_ansi"],
 dnl Enable all warnings and remarks of the Intel C++ compiler.
-elif test "$CXX" = icpc && icpc -V < /dev/null 2>&1 | grep -iq intel; then
-	CXXFLAGS="$CXXFLAGS -w2"
-fi
+[test "$CXX" = icpc && icpc -V < /dev/null 2>&1 | grep -iq intel],
+	[CXXFLAGS="$CXXFLAGS -w2"])
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug],
 	[enable debug info and runtime checks (default=no)]))
 
 AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 
-if test "$enable_debug" = yes; then
-	configsuffix="d"
-	CONFIG_FLAGS="-DB_DEBUG"
-
-	if test "$DIGITALCXX" = yes; then
-		CONFIG_FLAGS="$CONFIG_FLAGS -gall"
-	elif test "$ac_cv_prog_cxx_g" = yes; then
-		CONFIG_FLAGS="$CONFIG_FLAGS -g"
-	fi
-else
-	CONFIG_FLAGS="-O3"
-fi
+AS_IF([test "$enable_debug" != yes],
+	[CONFIG_FLAGS="-O3"],
+[test "$DIGITALCXX" = yes],
+	[configsuffix="d"
+	CONFIG_FLAGS="-DB_DEBUG -gall"],
+[test "$ac_cv_prog_cxx_g" = yes],
+	[configsuffix="d"
+	CONFIG_FLAGS="-DB_DEBUG -g"])
 
 AC_ARG_ENABLE(threads, AS_HELP_STRING([--enable-threads],
 	[build multithreaded library (default=no)]))
 
 AM_CONDITIONAL(THREADS, [test "$enable_threads" = yes])
 
-if test "$enable_threads" = yes; then
-	configsuffix="${configsuffix}_r"
+AS_IF([test "$enable_threads" = yes],
+	[configsuffix="${configsuffix}_r"
 
 	AX_PTHREAD(,[AC_MSG_ERROR(
 		[no pthreads support; consider --disable-threads])])
 
 	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
-	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS
-fi
+	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS])
 
 AC_SUBST(configsuffix)
 
@@ -133,9 +127,7 @@ AC_CHECK_HEADERS(errno.h fcntl.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 
-if test "$enable_threads" = yes; then
-	AX_ATOMIC()
-fi
+AS_IF([test "$enable_threads" = yes], [AX_ATOMIC()])
 
 dnl Checks for library functions.
 AC_FUNC_MEMCMP
