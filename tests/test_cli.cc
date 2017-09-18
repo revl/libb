@@ -25,7 +25,7 @@
 #include <b/string_stream.h>
 #include <b/array.h>
 
-B_STATIC_CONST_STRING(app_summary, "Test the b::cli class.");
+B_STRING_LITERAL(app_summary, "Test the b::cli class.");
 
 static const char* const help_option[] =
 {
@@ -52,7 +52,7 @@ B_TEST_CASE(app_description)
 	ss = new b::string_stream;
 
 	// With program description.
-	B_STATIC_CONST_STRING(app_description,
+	B_STRING_LITERAL(app_description,
 		"Here goes a description of things the app does. "
 		"The description can be as long as needed to "
 		"convey the purpose of this application. However, "
@@ -90,7 +90,7 @@ B_TEST_CASE(version_option)
 
 	ss = new b::string_stream;
 
-	B_STATIC_CONST_STRING(app_version, "test_cli version 1.2");
+	B_STRING_LITERAL(app_version, "test_cli version 1.2");
 
 	cl_parser.parse((int) B_COUNTOF(version_option), version_option,
 		(version_info = app_version,
@@ -114,7 +114,7 @@ B_TEST_CASE(default_app_name)
 
 	ss = new b::string_stream;
 
-	B_STATIC_CONST_STRING(app_name, "console_app");
+	B_STRING_LITERAL(app_name, "console_app");
 
 	cl_parser.parse(2, help_option,
 		(program_name = app_name,
@@ -129,7 +129,7 @@ B_TEST_CASE(help_text_width)
 
 	b::cli cl_parser(app_summary);
 
-	B_STATIC_CONST_STRING(word_and_space, "letters ");
+	B_STRING_LITERAL(word_and_space, "letters ");
 
 	b::string long_text = word_and_space.repeat(40);
 
@@ -167,8 +167,8 @@ B_TEST_CASE(cmd_descr_indent)
 
 	b::cli cl_parser(app_summary);
 
-	B_STATIC_CONST_STRING(ls_cmd_name, "ls|list");
-	B_STATIC_CONST_STRING(ls_cmd_synopsis, "List directory contents.");
+	B_STRING_LITERAL(ls_cmd_name, "ls|list");
+	B_STRING_LITERAL(ls_cmd_synopsis, "List directory contents.");
 
 	cl_parser.register_command(0, ls_cmd_name,
 		ls_cmd_synopsis, b::string());
@@ -198,8 +198,8 @@ enum
 	output_file_opt
 };
 
-B_STATIC_CONST_STRING(query_cmd_name, "query");
-B_STATIC_CONST_STRING(query_cmd_synopsis, "Query the server.");
+B_STRING_LITERAL(query_cmd_name, "query");
+B_STRING_LITERAL(query_cmd_synopsis, "Query the server.");
 
 static b::cli create_test_cli()
 {
@@ -208,14 +208,14 @@ static b::cli create_test_cli()
 	cl_parser.register_command(0, query_cmd_name,
 		query_cmd_synopsis, b::string());
 
-	B_STATIC_CONST_STRING(query_arg_name, "QUERY");
+	B_STRING_LITERAL(query_arg_name, "QUERY");
 
 	cl_parser.register_one_or_more_positional(query_arg, query_arg_name);
 
 	cl_parser.register_association(0, query_arg);
 
-	B_STATIC_CONST_STRING(tabular_opt_name, "t|tabular-report");
-	B_STATIC_CONST_STRING(tabular_opt_synopsis,
+	B_STRING_LITERAL(tabular_opt_name, "t|tabular-report");
+	B_STRING_LITERAL(tabular_opt_synopsis,
 		"Use tabular output format.");
 
 	cl_parser.register_option(tabular_report_opt,
@@ -223,9 +223,9 @@ static b::cli create_test_cli()
 
 	cl_parser.register_association(0, tabular_report_opt);
 
-	B_STATIC_CONST_STRING(output_opt_name, "o|output-file");
-	B_STATIC_CONST_STRING(output_opt_param, "FILE");
-	B_STATIC_CONST_STRING(output_opt_synopsis,
+	B_STRING_LITERAL(output_opt_name, "o|output-file");
+	B_STRING_LITERAL(output_opt_param, "FILE");
+	B_STRING_LITERAL(output_opt_synopsis,
 		"Redirect output to the specified file.");
 
 	cl_parser.register_option_with_parameter(output_file_opt,
@@ -480,7 +480,7 @@ static b::string parse_and_collect_args(b::cli cl_parser,
 	return arg_order;
 }
 
-B_STATIC_CONST_STRING(dummy_arg_name, "ARG");
+B_STRING_LITERAL(dummy_arg_name, "ARG");
 
 static const char* const query_cmd_positional_args[] =
 {

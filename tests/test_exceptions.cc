@@ -24,7 +24,7 @@
 
 B_TEST_CASE(exception_message)
 {
-	B_STATIC_CONST_STRING(test_message, "This is a test");
+	B_STRING_LITERAL(test_message, "This is a test");
 
 	try
 	{

@@ -78,7 +78,7 @@ static parameters init(const b::arg_list* arg)
 	return result;
 }
 
-B_STATIC_CONST_STRING(string_value, "string value");
+B_STRING_LITERAL(string_value, "string value");
 
 B_TEST_CASE(arg_list)
 {

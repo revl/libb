@@ -186,8 +186,8 @@ static b::string int_to_str(unsigned long n, unsigned base = 10)
 	return b::string(ptr, (size_t) (buffer_end - ptr));
 }
 
-B_STATIC_CONST_STRING(space, " ");
-B_STATIC_CONST_STRING(zero, "0");
+B_STRING_LITERAL(space, " ");
+B_STRING_LITERAL(zero, "0");
 
 template <class T>
 static b::string format(T value, const char* conversion,

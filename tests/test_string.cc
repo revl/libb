@@ -22,10 +22,10 @@
 
 #include "unit_test.h"
 
-B_STATIC_CONST_STRING(left, "lLC");
-B_STATIC_CONST_STRING(right, "CRr");
-B_STATIC_CONST_STRING(abc, "abc");
-B_STATIC_CONST_STRING(cba, "cba");
+B_STRING_LITERAL(left, "lLC");
+B_STRING_LITERAL(right, "CRr");
+B_STRING_LITERAL(abc, "abc");
+B_STRING_LITERAL(cba, "cba");
 
 B_TEST_CASE(replace)
 {
@@ -121,9 +121,9 @@ B_TEST_CASE(basic_checks)
 
 B_TEST_CASE(comparison)
 {
-	B_STATIC_CONST_STRING(abc1, "abc\000123");
+	B_STRING_LITERAL(abc1, "abc\000123");
 
-	B_STATIC_CONST_STRING(abc2, "abc\000def");
+	B_STRING_LITERAL(abc2, "abc\000def");
 
 	B_CHECK(abc1 != abc2);
 
@@ -178,7 +178,7 @@ B_TEST_CASE(string_formatting)
 
 B_TEST_CASE(static_string)
 {
-	B_STATIC_CONST_STRING(hello, "hello");
+	B_STRING_LITERAL(hello, "hello");
 
 	B_CHECK(hello.length() == 5);
 	B_CHECK(hello.capacity() == 5);
@@ -197,7 +197,7 @@ B_TEST_CASE(split)
 {
 	B_CHECK(!abc.split('\t', NULL, NULL));
 
-	B_STATIC_CONST_STRING(tab_separated, "one\ttwo\tthree");
+	B_STRING_LITERAL(tab_separated, "one\ttwo\tthree");
 
 	B_REQUIRE(tab_separated.split('\t', NULL, NULL));
 
@@ -235,7 +235,7 @@ B_TEST_CASE(truncate)
 
 B_TEST_CASE(wide_chars)
 {
-	B_STATIC_CONST_WSTRING(unicode, "Unicode");
+	B_WSTRING_LITERAL(unicode, "Unicode");
 
 	B_CHECK(unicode == L"Unicode");
 

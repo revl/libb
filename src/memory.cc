@@ -24,7 +24,7 @@ B_BEGIN_NAMESPACE
 
 void* memory::alloc(size_t size)
 {
-	B_STATIC_CONST_STRING(method_name, "b::memory::alloc()");
+	B_STRING_LITERAL(method_name, "b::memory::alloc()");
 
 	void* block;
 

@@ -111,14 +111,14 @@ B_TEST_CASE(shuffle)
 		B_CHECK(numbers[i] == i);
 }
 
-B_STATIC_CONST_STRING(dot_dir, ".");
+B_STRING_LITERAL(dot_dir, ".");
 
-B_STATIC_CONST_STRING(test_dir, "b_test_dir");
+B_STRING_LITERAL(test_dir, "b_test_dir");
 
-B_STATIC_CONST_STRING(intermediate, "b_test_dir" B_PATH_SEPARATOR_SZ
+B_STRING_LITERAL(intermediate, "b_test_dir" B_PATH_SEPARATOR_SZ
 	"missing_parent");
 
-B_STATIC_CONST_STRING(new_dir, "b_test_dir" B_PATH_SEPARATOR_SZ
+B_STRING_LITERAL(new_dir, "b_test_dir" B_PATH_SEPARATOR_SZ
 	"missing_parent" B_PATH_SEPARATOR_SZ "new_dir");
 
 B_TEST_CASE(create_directory)

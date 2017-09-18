@@ -30,7 +30,7 @@ system_exception::system_exception(const string& context_or_subject,
 {
 }
 
-B_STATIC_CONST_STRING(oom_message, "Insufficient memory to "
+B_STRING_LITERAL(oom_message, "Insufficient memory to "
 	"allocate a buffer for a system error message.");
 
 string system_exception::message() const

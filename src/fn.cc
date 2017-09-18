@@ -438,7 +438,7 @@ namespace
 
 	string invalid_input_exception::message() const
 	{
-		B_STATIC_CONST_STRING(invalid_input,
+		B_STRING_LITERAL(invalid_input,
 			"Invalid input passed to base64url_decode()");
 
 		return invalid_input;

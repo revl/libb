@@ -56,7 +56,7 @@ namespace
 		// cannot be deleted.
 	}
 
-	B_STATIC_CONST_STRING(stdin_stream_name, "stdin");
+	B_STRING_LITERAL(stdin_stream_name, "stdin");
 
 	size_t std_input::read(void* buffer, size_t buffer_size)
 	{
@@ -117,7 +117,7 @@ ref<input_stream> standard_input_stream()
 
 ref<output_stream> standard_output_stream()
 {
-	B_STATIC_CONST_STRING(stdout_stream_name, "stdout");
+	B_STRING_LITERAL(stdout_stream_name, "stdout");
 
 	// Cannot be 'const' because of the reference counter.
 	static std_output so(stdout, stdout_stream_name);
@@ -127,7 +127,7 @@ ref<output_stream> standard_output_stream()
 
 ref<output_stream> standard_error_stream()
 {
-	B_STATIC_CONST_STRING(stderr_stream_name, "stderr");
+	B_STRING_LITERAL(stderr_stream_name, "stderr");
 
 	// Cannot be 'const' because of the reference counter.
 	static std_output se(stderr, stderr_stream_name);

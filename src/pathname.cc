@@ -22,9 +22,9 @@
 
 B_BEGIN_NAMESPACE
 
-B_STATIC_CONST_STRING(slash, B_PATH_SEPARATOR_SZ);
-B_STATIC_CONST_STRING(dot, ".");
-B_STATIC_CONST_STRING(double_dot, "..");
+B_STRING_LITERAL(slash, B_PATH_SEPARATOR_SZ);
+B_STRING_LITERAL(dot, ".");
+B_STRING_LITERAL(double_dot, "..");
 
 string pathname::str() const
 {

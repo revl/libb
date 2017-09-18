@@ -791,7 +791,7 @@ B_END_NAMESPACE
 
 #undef B_STRING_INLINE
 
-#define B_STATIC_CONST_STRING_IMPL(char_type, string_type, name, value) \
+#define B_STRING_LITERAL_IMPL(char_type, string_type, name, value) \
 	static struct \
 	{ \
 		b::ref_count refs; \
@@ -810,11 +810,11 @@ B_END_NAMESPACE
 	static const b::string_type& name = \
 		(*(const b::string_type*) &name##_buffer_chars)
 
-#define B_STATIC_CONST_STRING(name, value) \
-	B_STATIC_CONST_STRING_IMPL(char, string, name, value)
+#define B_STRING_LITERAL(name, value) \
+	B_STRING_LITERAL_IMPL(char, string, name, value)
 
-#define B_STATIC_CONST_WSTRING(name, value) \
-	B_STATIC_CONST_STRING_IMPL(wchar_t, wstring, name, L##value)
+#define B_WSTRING_LITERAL(name, value) \
+	B_STRING_LITERAL_IMPL(wchar_t, wstring, name, L##value)
 
 #define B_STRING_H
 

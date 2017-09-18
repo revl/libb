@@ -22,9 +22,9 @@
 
 #include "unit_test.h"
 
-B_STATIC_CONST_STRING(static_const_string, "static_const_string");
+B_STRING_LITERAL(static_const_string, "static_const_string");
 
-B_STATIC_CONST_STRING(padded, "abcxxxcba");
+B_STRING_LITERAL(padded, "abcxxxcba");
 
 B_TEST_CASE(basic_checks)
 {
@@ -128,7 +128,7 @@ B_TEST_CASE(split)
 
 	B_CHECK(!abc.split('\t', NULL, NULL));
 
-	B_STATIC_CONST_STRING(tab_separated, "one\ttwo\tthree");
+	B_STRING_LITERAL(tab_separated, "one\ttwo\tthree");
 
 	B_REQUIRE(tab_separated.split('\t', NULL, NULL));
 

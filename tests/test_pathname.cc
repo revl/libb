@@ -33,7 +33,7 @@ B_TEST_CASE(empty_pathname)
 
 B_TEST_CASE(pathname_normalization)
 {
-	B_STATIC_CONST_STRING(with_double_dot, "d1/d2/../f.n.sh");
+	B_STRING_LITERAL(with_double_dot, "d1/d2/../f.n.sh");
 
 	b::pathname normalized_path(with_double_dot);
 
@@ -55,37 +55,37 @@ B_TEST_CASE(pathname_normalization)
 
 B_TEST_CASE(filename_with_empty_suffix)
 {
-	B_STATIC_CONST_STRING(no_suffix, "README");
+	B_STRING_LITERAL(no_suffix, "README");
 
 	B_CHECK(b::pathname(no_suffix).components().last().suffix().is_empty());
 
-	B_STATIC_CONST_STRING(ends_with_dot, "period.");
+	B_STRING_LITERAL(ends_with_dot, "period.");
 
 	B_CHECK(b::pathname(ends_with_dot).components().last().suffix() == ".");
 }
 
 B_TEST_CASE(pathname_can_represent_file)
 {
-	B_STATIC_CONST_STRING(file_or_dir, "dir/subdir_or_file");
+	B_STRING_LITERAL(file_or_dir, "dir/subdir_or_file");
 
 	B_CHECK(b::pathname(file_or_dir).can_represent_file());
 
-	B_STATIC_CONST_STRING(ending_with_slash, "dir/subdir/");
+	B_STRING_LITERAL(ending_with_slash, "dir/subdir/");
 
 	B_CHECK(!b::pathname(ending_with_slash).can_represent_file());
 
-	B_STATIC_CONST_STRING(ending_with_dot, "dir/.");
+	B_STRING_LITERAL(ending_with_dot, "dir/.");
 
 	B_CHECK(!b::pathname(ending_with_dot).can_represent_file());
 
-	B_STATIC_CONST_STRING(ending_with_double_dot, "dir/..");
+	B_STRING_LITERAL(ending_with_double_dot, "dir/..");
 
 	B_CHECK(!b::pathname(ending_with_double_dot).can_represent_file());
 }
 
 B_TEST_CASE(absolute_pathnames)
 {
-	B_STATIC_CONST_STRING(absolute_path, "/absolute/path");
+	B_STRING_LITERAL(absolute_path, "/absolute/path");
 
 	b::pathname path(absolute_path);
 
@@ -108,7 +108,7 @@ B_TEST_CASE(absolute_pathnames)
 
 B_TEST_CASE(up_levels)
 {
-	B_STATIC_CONST_STRING(relative_path, "relative/path");
+	B_STRING_LITERAL(relative_path, "relative/path");
 
 	b::pathname path(relative_path);
 
@@ -148,7 +148,7 @@ static b::string inc(b::pathname& path, const char* increment)
 
 B_TEST_CASE(pathname_increments)
 {
-	B_STATIC_CONST_STRING(initial_path, "dir/subdir");
+	B_STRING_LITERAL(initial_path, "dir/subdir");
 
 	b::pathname path(initial_path);
 

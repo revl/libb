@@ -147,7 +147,7 @@ struct option_info : public option_or_command_info
 
 	static string with_dashes(const string& opt_name)
 	{
-		B_STATIC_CONST_STRING(dashes, "--");
+		B_STRING_LITERAL(dashes, "--");
 
 		return opt_name.length() == 1 ? '-' + opt_name :
 			dashes + opt_name;
@@ -391,9 +391,9 @@ public:
 	int opt_descr_indent;
 };
 
-B_STATIC_CONST_STRING(help, "help");
-B_STATIC_CONST_STRING(dash_dash_help, "--help");
-B_STATIC_CONST_STRING(version, "version");
+B_STRING_LITERAL(help, "help");
+B_STRING_LITERAL(dash_dash_help, "--help");
+B_STRING_LITERAL(version, "version");
 
 cli::impl::impl(const string& program_summary) :
 	command_or_commandless_cli(program_summary, string()),
@@ -407,7 +407,7 @@ cli::impl::impl(const string& program_summary) :
 	long_opt_name_to_opt_info.insert(version, &version_option_info);
 	long_opt_name_to_opt_info.insert(help, &help_option_info);
 
-	B_STATIC_CONST_STRING(default_category, "Available commands");
+	B_STRING_LITERAL(default_category, "Available commands");
 
 	cat_id_to_cat_info.insert(DEFAULT_CATEGORY_ID,
 		new category_info(default_category));
@@ -540,7 +540,7 @@ void cli::impl::print_command_list(bool version_info_defined) const
 	cat_id_to_cat_info_map::const_iterator category =
 		cat_id_to_cat_info.begin();
 
-	B_STATIC_CONST_STRING(dash_space, "- ");
+	B_STRING_LITERAL(dash_space, "- ");
 
 	do
 	{
@@ -619,13 +619,13 @@ void cli::impl::print_help(const positional_argument_list& commands,
 		return;
 	}
 
-	B_STATIC_CONST_STRING(help_command_synopsis,
+	B_STRING_LITERAL(help_command_synopsis,
 		"Describe the usage of this program or its commands.");
 
 	command_info help_command(HELP_CMD_ID, help,
 		help_command_synopsis, string());
 
-	B_STATIC_CONST_STRING(help_command_arg, "COMMAND");
+	B_STRING_LITERAL(help_command_arg, "COMMAND");
 
 	option_info command_arg(COMMAND_OPT_ID, help_command_arg,
 		string(), zero_or_more_positional, string());
@@ -721,7 +721,7 @@ void cli::impl::print_help_on_command(const command_or_commandless_cli* ci,
 
 	if (!ci->accepted_options.is_empty())
 	{
-		B_STATIC_CONST_STRING(valid_options, "\nValid options:\n");
+		B_STRING_LITERAL(valid_options, "\nValid options:\n");
 		help_output_stream->write(valid_options.data(),
 			valid_options.length());
 
