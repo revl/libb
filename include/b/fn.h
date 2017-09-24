@@ -421,8 +421,11 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 		memory::copy(dest, source, count * sizeof(*dest)); \
 	}
 
-// Repeated calls of the assignment operator (element-based
-// overlapping array assignment).
+// Copies elements of an array over elements of another array of
+// the same size. Assignment is performed pairwise starting with
+// the last elements of the array and goes towards the first ones.
+// Therefore, the function works correctly if the tail of the 'source'
+// array overlaps the head of the 'dest' array.
 template <class T>
 inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 {
