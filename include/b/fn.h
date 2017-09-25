@@ -406,7 +406,10 @@ inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 	memory::fill_wchar_t(dest, count, value);
 }
 
-// Calls T assignment operator (element-based array assignment).
+// Copies elements of an array over elements of another
+// array of the same size. Arrays must not overlap.
+// Use assign_pairwise_backwards() or move_left() for
+// overlapping arrays.
 template <class T>
 inline void assign_pairwise(T* dest, const T* source, size_t count)
 {
