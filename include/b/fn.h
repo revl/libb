@@ -115,14 +115,14 @@ inline void swap(T& object1, T& object2)
 	object2 = dummy;
 }
 
-// Shuffles the sequence of objects using the pseudorandom number generator.
+// Shuffles the sequence of objects using the supplied pseudorandom
+// number generator.
 template <class T>
-inline void shuffle(T* objects, pseudorandom::value_type count)
+inline void shuffle(T* objects, pseudorandom::value_type count,
+		pseudorandom& prng)
 {
 	if (count <= 1)
 		return;
-
-	pseudorandom prng;
 
 	pseudorandom::value_type i = count;
 

@@ -97,7 +97,10 @@ B_TEST_CASE(shuffle)
 
 	bool ordered = true;
 
-	b::shuffle(numbers, (b::pseudorandom::value_type) B_COUNTOF(numbers));
+	b::pseudorandom prng;
+
+	b::shuffle(numbers, (b::pseudorandom::value_type) B_COUNTOF(numbers),
+		prng);
 
 	for (unsigned i = 0; i < B_COUNTOF(numbers); ++i)
 		if (numbers[i] != i)
