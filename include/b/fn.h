@@ -110,25 +110,29 @@ inline T align(T value, size_t alignment)
 template <class T>
 inline void swap(T& object1, T& object2)
 {
-	T dummy(object1);
-	object1 = object2;
-	object2 = dummy;
+	if (&object1 != &object2)
+	{
+		T tmp(object1);
+		object1 = object2;
+		object2 = tmp;
+	}
 }
 
-// Shuffles the sequence of objects using the supplied pseudorandom
-// number generator.
+// Shuffles the sequence of objects using Sattolo's algorithm.
+// The supplied pseudorandom number generator defines the
+// permutation to be produced.
 template <class T>
 inline void shuffle(T* objects, pseudorandom::value_type count,
 		pseudorandom& prng)
 {
-	if (count <= 1)
-		return;
+	if (count > 1)
+	{
+		pseudorandom::value_type i = count;
 
-	pseudorandom::value_type i = count;
-
-	do
-		swap(objects[--i], objects[prng.next(count)]);
-	while (i > 0);
+		do
+			swap(objects[i - 1], objects[prng.next(i)]);
+		while (--i > 0);
+	}
 }
 
 // Compares two objects. Returns zero if objects are equal,
