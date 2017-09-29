@@ -137,6 +137,7 @@ AC_CHECK_HEADERS(errno.h fcntl.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
+AX_COMPILE_CHECK_SIZEOF([size_t], [#include <stddef.h>])
 
 AS_IF([test "$enable_threads" = yes], [AX_ATOMIC()])
 
