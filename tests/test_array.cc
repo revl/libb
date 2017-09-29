@@ -127,8 +127,7 @@ B_TEST_CASE(random_removal)
 
 	for (int i = 0; i < array_size; ++i)
 	{
-		b::pseudorandom::value_type random_index =
-			prg.next((b::pseudorandom::value_type) numbers.size());
+		size_t random_index = prg.next(numbers.size());
 
 		numbers.remove(random_index);
 

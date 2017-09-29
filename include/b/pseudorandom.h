@@ -30,67 +30,64 @@ B_BEGIN_NAMESPACE
 class pseudorandom
 {
 public:
-	typedef unsigned value_type;
-
 	// Initializes this instance with the system time.
 	pseudorandom();
 
 	// Initializes this instance with the <seed> value.
-	pseudorandom(value_type seed);
+	pseudorandom(size_t seed);
 
 	// Sets the seed of this generator to the <seed> value.
-	void set_seed(value_type seed);
+	void set_seed(size_t seed);
 
 	// Sets the seed of this generator to the system time.
 	void randomize();
 
 	// Returns the maximum value the next() method can return.
 	// This implementation always returns 0x7FFFFFFF.
-	static value_type max();
+	static size_t max();
 
 	// Returns a pseudorandom number in the range from zero
 	// to max() (inclusively).
-	value_type next();
+	size_t next();
 
 	// Returns a pseudorandom number in the range from zero
 	// up to (but not including) 'limit'.
-	value_type next(value_type limit);
+	size_t next(size_t limit);
 
 private:
-	value_type seed;
+	size_t seed;
 };
 
 inline pseudorandom::pseudorandom() :
-	seed(((pseudorandom::value_type) ::time(NULL)) & 0x7FFFFFFFU)
+	seed(((size_t) ::time(NULL)) & 0x7FFFFFFFU)
 {
 }
 
-inline pseudorandom::pseudorandom(value_type initial_seed) : seed(initial_seed)
+inline pseudorandom::pseudorandom(size_t initial_seed) : seed(initial_seed)
 {
 }
 
-inline void pseudorandom::set_seed(value_type new_seed)
+inline void pseudorandom::set_seed(size_t new_seed)
 {
 	seed = new_seed;
 }
 
 inline void pseudorandom::randomize()
 {
-	seed = ((value_type) ::time(NULL)) & 0x7FFFFFFFU;
+	seed = ((size_t) ::time(NULL)) & 0x7FFFFFFFU;
 }
 
-inline pseudorandom::value_type pseudorandom::max()
+inline size_t pseudorandom::max()
 {
 	return 0x7FFFFFFFU;
 }
 
-inline pseudorandom::value_type pseudorandom::next()
+inline size_t pseudorandom::next()
 {
 	return (seed = seed * 1103515245U + 12345U) & 0x7FFFFFFFU;
 }
 
-inline pseudorandom::value_type pseudorandom::next(
-	pseudorandom::value_type limit)
+inline size_t pseudorandom::next(size_t limit)
 {
 	B_ASSERT(limit > 0);
 

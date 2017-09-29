@@ -156,8 +156,7 @@ B_TEST_CASE(random_elements)
 
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
 	{
-		b::pseudorandom::value_type random_index =
-			prg.next((b::pseudorandom::value_type) numbers.size());
+		size_t random_index = prg.next(numbers.size());
 
 		bst.insert(new element(numbers[random_index]));
 
@@ -201,8 +200,7 @@ B_TEST_CASE(random_elements)
 			B_REQUIRE(i == 0);
 		}
 
-		b::pseudorandom::value_type random_index =
-			prg.next((b::pseudorandom::value_type) numbers.size());
+		size_t random_index = prg.next(numbers.size());
 		int number = numbers[random_index];
 
 		int cmp_result;

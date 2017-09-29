@@ -122,12 +122,11 @@ inline void swap(T& object1, T& object2)
 // The supplied pseudorandom number generator defines the
 // permutation to be produced.
 template <class T>
-inline void shuffle(T* objects, pseudorandom::value_type count,
-		pseudorandom& prng)
+inline void shuffle(T* objects, size_t count, pseudorandom& prng)
 {
 	if (count > 1)
 	{
-		pseudorandom::value_type i = count;
+		size_t i = count;
 
 		do
 			swap(objects[i - 1], objects[prng.next(i)]);
