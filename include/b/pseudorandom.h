@@ -23,10 +23,18 @@
 
 #include "host.h"
 
+#if B_SIZEOF_SIZE_T == 8
+#define B_RAND_MAX 0x7FFFFFFFFFFFFFFFUL
+#elif B_SIZEOF_SIZE_T == 4
+#define B_RAND_MAX 0x7FFFFFFFUL
+#else
+#error pseudorandom requires either 64-bit or 32-bit size_t
+#endif
+
 B_BEGIN_NAMESPACE
 
 // A linear congruential generator that uses the same parameters
-// as the glibc version of rand(3).
+// for the 32-bit version as the glibc version of rand(3).
 class pseudorandom
 {
 public:
@@ -43,7 +51,7 @@ public:
 	void randomize();
 
 	// Returns the maximum value the next() method can return.
-	// This implementation always returns 0x7FFFFFFF.
+	// This implementation returns the constant B_RAND_MAX.
 	static size_t max();
 
 	// Returns a pseudorandom number in the range from zero
@@ -58,9 +66,9 @@ private:
 	size_t seed;
 };
 
-inline pseudorandom::pseudorandom() :
-	seed(((size_t) ::time(NULL)) & 0x7FFFFFFFU)
+inline pseudorandom::pseudorandom()
 {
+	randomize();
 }
 
 inline pseudorandom::pseudorandom(size_t initial_seed) : seed(initial_seed)
@@ -74,17 +82,22 @@ inline void pseudorandom::set_seed(size_t new_seed)
 
 inline void pseudorandom::randomize()
 {
-	seed = ((size_t) ::time(NULL)) & 0x7FFFFFFFU;
+	seed = ((size_t) ::time(NULL)) & B_RAND_MAX;
 }
 
 inline size_t pseudorandom::max()
 {
-	return 0x7FFFFFFFU;
+	return B_RAND_MAX;
 }
 
 inline size_t pseudorandom::next()
 {
-	return (seed = seed * 1103515245U + 12345U) & 0x7FFFFFFFU;
+#if B_SIZEOF_SIZE_T == 8
+	seed = seed * 2862933555777941757UL + 3037000493U;
+#else
+	seed = seed * 1103515245UL + 12345U;
+#endif
+	return seed & B_RAND_MAX;
 }
 
 inline size_t pseudorandom::next(size_t limit)
