@@ -856,6 +856,8 @@ const T* array<T>::end() const
 template <class T>
 void array<T>::shuffle(pseudorandom& prng)
 {
+	isolate();
+
 	shuffle_array(elements, size(), prng);
 }
 
