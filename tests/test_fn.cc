@@ -99,7 +99,7 @@ B_TEST_CASE(shuffle)
 
 	b::pseudorandom prng;
 
-	b::shuffle(numbers, B_COUNTOF(numbers), prng);
+	b::shuffle_array(numbers, B_COUNTOF(numbers), prng);
 
 	for (unsigned i = 0; i < B_COUNTOF(numbers); ++i)
 		if (numbers[i] != i)

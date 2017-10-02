@@ -190,6 +190,12 @@ public:
 	// Returns a pointer past the last element in the array.
 	const T* end() const;
 
+// Utility methods
+public:
+	// Shuffle the array using the specified pseudorandom
+	// number generator.
+	void shuffle(pseudorandom& prng);
+
 // Implementation
 private:
 	struct array_metadata
@@ -845,6 +851,12 @@ template <class T>
 const T* array<T>::end() const
 {
 	return elements + size();
+}
+
+template <class T>
+void array<T>::shuffle(pseudorandom& prng)
+{
+	shuffle_array(elements, size(), prng);
 }
 
 template <class T>
