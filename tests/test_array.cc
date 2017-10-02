@@ -20,6 +20,8 @@
 
 #include <b/array.h>
 
+#include <b/heap.h>
+
 #include "unit_test.h"
 
 B_TEST_CASE(shared_data)
@@ -167,6 +169,33 @@ B_TEST_CASE(insertion)
 {
 	run_insertion_test(20U);
 	run_insertion_test(5U);
+}
+
+B_TEST_CASE(shuffle)
+{
+	b::array<unsigned> numbers(100, 0);
+
+	for (unsigned i = 0; i < numbers.size(); ++i)
+		numbers[i] = i;
+
+	b::pseudorandom prng;
+
+	numbers.shuffle(prng);
+
+	bool ordered = true;
+
+	for (unsigned i = 0; i < numbers.size(); ++i)
+		if (numbers[i] != i)
+			ordered = false;
+
+	B_CHECK(!ordered);
+
+	b::heap<unsigned>::sort(numbers.lock(), numbers.size());
+
+	for (unsigned i = 0; i < numbers.size(); ++i)
+		B_CHECK(numbers[i] == i);
+
+	numbers.unlock();
 }
 
 b::array<b::array<test_element> > test2d;
