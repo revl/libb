@@ -162,9 +162,6 @@ public:
 	// Assigns the contents of one string object to another.
 	string& operator =(const string& source);
 
-	// Replaces the contents of this string with a character.
-	string& operator =(char_t ch);
-
 // Replacement
 public:
 	// Replaces a part of this string with a character sequence.
@@ -546,12 +543,6 @@ inline char_t& string::last()
 inline string& string::operator =(const string& source)
 {
 	assign(source);
-	return *this;
-}
-
-inline string& string::operator =(char_t ch)
-{
-	assign(1, ch);
 	return *this;
 }
 
