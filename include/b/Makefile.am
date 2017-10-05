@@ -40,6 +40,7 @@ pkginclude_HEADERS = \
 	object.h \
 	opaque.h \
 	pathname.h \
+	priority_queue.h \
 	pseudorandom.h \
 	red_black_tree.h \
 	ref.h \

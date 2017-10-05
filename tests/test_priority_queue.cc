@@ -18,26 +18,36 @@
  *
  */
 
-#include <b/heap.h>
+#include <b/priority_queue.h>
 
 #include "unit_test.h"
 
-B_TEST_CASE(heapsort)
+B_TEST_CASE(push_pop)
 {
-	b::pseudorandom rand(123);
+	b::priority_queue<int> pq;
 
-	size_t data[1000];
+	pq.push(20);
+	pq.push(10);
 
-	for (size_t i = 0; i < B_COUNTOF(data); ++i)
-		data[i] = rand.next();
+	B_CHECK(pq.pop() == 20);
 
-	b::heap<size_t>::sort(data, B_COUNTOF(data));
+	pq.push(30);
 
-	size_t prev_value = data[0];
+	B_CHECK(pq.pop() == 30);
 
-	for (size_t i = 1; i < B_COUNTOF(data); ++i)
-	{
-		B_CHECK(prev_value <= data[i]);
-		prev_value = data[i];
-	}
+	pq.push(60);
+	pq.push(50);
+
+	B_CHECK(pq.size() == 3);
+
+	pq.push(40);
+	pq.push(70);
+
+	B_CHECK(pq.pop() == 70);
+	B_CHECK(pq.pop() == 60);
+	B_CHECK(pq.pop() == 50);
+	B_CHECK(pq.pop() == 40);
+	B_CHECK(pq.pop() == 10);
+
+	B_CHECK(pq.is_empty());
 }

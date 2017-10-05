@@ -33,6 +33,7 @@ TESTS = \
 	test_object \
 	test_opaque \
 	test_pathname \
+	test_priority_queue \
 	test_pseudorandom \
 	test_red_black_tree \
 	test_set \
@@ -56,6 +57,7 @@ check_PROGRAMS = \
 	test_object \
 	test_opaque \
 	test_pathname \
+	test_priority_queue \
 	test_pseudorandom \
 	test_red_black_tree \
 	test_set \
@@ -91,6 +93,8 @@ test_object_SOURCES = test_object.cc
 test_opaque_SOURCES = test_opaque.cc
 
 test_pathname_SOURCES = test_pathname.cc
+
+test_priority_queue_SOURCES = test_priority_queue.cc
 
 test_pseudorandom_SOURCES = test_pseudorandom.cc
 

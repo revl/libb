@@ -21,7 +21,7 @@
 #ifndef B_HEAP_H
 #define B_HEAP_H
 
-#include "array.h"
+#include "fn.h"
 
 B_BEGIN_NAMESPACE
 
@@ -29,19 +29,6 @@ template <class T>
 class heap
 {
 public:
-	// Adds a value to this heap.
-	void push(const T& element);
-
-	// Removes the element with the greatest value from the heap
-	// and returns it.
-	T pop();
-
-	// Returns the number of elements in this heap.
-	size_t size() const;
-
-	// Returns true if the heap is empty.
-	bool is_empty() const;
-
 	// Adds a value to a heap. The last element of the 'data'
 	// array (the one with the index size-1) must contain the
 	// value to be inserted and the rest of the elements must
@@ -57,45 +44,7 @@ public:
 	// Sorts the array pointed to by 'data' using heapsort.
 	// Complexity: O(n * log(n))
 	static void sort(T* data, size_t size);
-
-protected:
-	array<T> data;
 };
-
-template <class T>
-void heap<T>::push(const T& element)
-{
-	data.append(element);
-	push(data.lock(), data.size());
-	data.unlock();
-}
-
-template <class T>
-T heap<T>::pop()
-{
-	size_t data_size = data.size();
-
-	pop(data.lock(), data_size);
-	data.unlock();
-
-	T result(data[--data_size]);
-
-	data.remove(data_size);
-
-	return result;
-}
-
-template <class T>
-size_t heap<T>::size() const
-{
-	return data.size();
-}
-
-template <class T>
-bool heap<T>::is_empty() const
-{
-	return data.is_empty();
-}
 
 template <class T>
 void heap<T>::push(T* data, size_t size)
