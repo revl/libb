@@ -25,42 +25,22 @@
 
 B_BEGIN_NAMESPACE
 
+// Adds a value to a binary heap. The last element of the
+// 'data' array (the one with the index size-1) must contain
+// the value to be inserted and the rest of the elements must
+// contain a properly formed heap.
 template <class T>
-class heap
-{
-public:
-	// Adds a value to a heap. The last element of the 'data'
-	// array (the one with the index size-1) must contain the
-	// value to be inserted and the rest of the elements must
-	// contain a properly formed heap.
-	static void push(T* data, size_t size);
-
-	// Given a valid heap in the 'data' array, moves the
-	// element with the greatest value to the end of the array
-	// and then restores the heap property among the remaining
-	// elements.
-	static void pop(T* data, size_t size);
-
-	// Sorts the array pointed to by 'data' using heapsort.
-	// Complexity: O(n * log(n))
-	static void sort(T* data, size_t size);
-};
-
-template <class T>
-void heap<T>::push(T* data, size_t size)
+void push_into_heap(T* data, size_t size)
 {
 	B_ASSERT(size > 0);
 
-	/*
-	 * Algorithm:
-	 *
-	 *   child = size - 1
-	 *
-	 *   while child > 0 and A[parent = child / 2] < A[child]
-	 *       A[parent] <=> A[child]
-	 *       child = parent
-	 *
-	 */
+	// Algorithm:
+	//
+	//   child = size - 1
+	//
+	//   while child > 0 and A[parent = child / 2] < A[child]
+	//       A[parent] <=> A[child]
+	//       child = parent
 
 	size_t parent;
 
@@ -76,23 +56,24 @@ void heap<T>::push(T* data, size_t size)
 	}
 }
 
+// Given a valid heap in the 'data' array, moves the
+// element with the greatest value to the end of the array
+// and then restores the heap property among the remaining
+// elements.
 template <class T>
-void heap<T>::pop(T* data, size_t size)
+void pop_from_heap(T* data, size_t size)
 {
 	B_ASSERT(size > 0);
 
-	/*
-	 * Algorithm:
-	 *
-	 *   A[size - 1] <=> A[0]
-	 *
-	 *   i = 0
-	 *
-	 *   while i has child(ren) and A[i] < A[j = maximum child of i]
-	 *       A[i] <=> A[j]
-	 *       i = j
-	 *
-	 */
+	// Algorithm:
+	//
+	//   A[size - 1] <=> A[0]
+	//
+	//   i = 0
+	//
+	//   while i has child(ren) and A[i] < A[j = maximum child of i]
+	//       A[i] <=> A[j]
+	//       i = j
 
 	if (size > 1)
 	{
@@ -138,18 +119,20 @@ void heap<T>::pop(T* data, size_t size)
 	}
 }
 
+// Sorts the array pointed to by 'data' using heapsort.
+// Complexity: O(n * log(n))
 template <class T>
-void heap<T>::sort(T* data, size_t size)
+void heapsort(T* data, size_t size)
 {
 	if (size > 1)
 	{
 		size_t heap_size = 1;
 
 		while (heap_size < size)
-			push(data, ++heap_size);
+			push_into_heap(data, ++heap_size);
 
 		while (heap_size > 1)
-			pop(data, heap_size--);
+			pop_from_heap(data, heap_size--);
 	}
 }
 

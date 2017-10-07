@@ -51,7 +51,7 @@ template <class T>
 void priority_queue<T>::push(const T& element)
 {
 	data.append(element);
-	heap<T>::push(data.lock(), data.size());
+	push_into_heap(data.lock(), data.size());
 	data.unlock();
 }
 
@@ -60,7 +60,7 @@ T priority_queue<T>::pop()
 {
 	size_t data_size = data.size();
 
-	heap<T>::pop(data.lock(), data_size);
+	pop_from_heap(data.lock(), data_size);
 	data.unlock();
 
 	T result(data[--data_size]);

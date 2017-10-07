@@ -190,7 +190,7 @@ B_TEST_CASE(shuffle)
 
 	B_CHECK(!ordered);
 
-	b::heap<unsigned>::sort(numbers.lock(), numbers.size());
+	b::heapsort(numbers.lock(), numbers.size());
 
 	for (unsigned i = 0; i < numbers.size(); ++i)
 		B_CHECK(numbers[i] == i);

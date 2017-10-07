@@ -31,7 +31,7 @@ B_TEST_CASE(heapsort)
 	for (size_t i = 0; i < B_COUNTOF(data); ++i)
 		data[i] = rand.next();
 
-	b::heap<size_t>::sort(data, B_COUNTOF(data));
+	b::heapsort(data, B_COUNTOF(data));
 
 	size_t prev_value = data[0];
 
