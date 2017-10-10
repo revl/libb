@@ -64,6 +64,7 @@
 
 #include <libkern/OSAtomic.h>
 #define B_ATOMIC_TYPE int32_t
+#define B_USE_ATOMIC_INC_DEC_BARRIER
 
 #else
 #error arithmetic on atomic data has to be implemented for this platform
@@ -127,7 +128,7 @@ inline void ref_count::operator ++()
 	__ATOMIC_INCREMENT_LONG(&value);
 #elif defined(B_HAVE_ATOMIC_SYNC)
 	__sync_add_and_fetch(&value, 1);
-#elif defined(__APPLE__)
+#elif defined(B_USE_ATOMIC_INC_DEC_BARRIER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	OSAtomicIncrement32Barrier(&value);
@@ -151,7 +152,7 @@ inline bool ref_count::operator --()
 	return __ATOMIC_DECREMENT_LONG(&value) != 1;
 #elif defined(B_HAVE_ATOMIC_SYNC)
 	return __sync_add_and_fetch(&value, -1) != 0;
-#elif defined(__APPLE__)
+#elif defined(B_USE_ATOMIC_INC_DEC_BARRIER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	return OSAtomicDecrement32Barrier(&value) != 0;
