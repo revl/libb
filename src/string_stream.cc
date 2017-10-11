@@ -73,15 +73,14 @@ size_t string_stream::size() const
 
 size_t string_stream::write(const void* buffer, size_t buffer_size)
 {
-	if ((size_t) pos <= buf_str.length())
+	if (pos <= buf_str.length())
 	{
-		buf_str.replace((size_t) pos,
-			(const char*) buffer, buffer_size);
+		buf_str.replace(pos, (const char*) buffer, buffer_size);
 		pos += buffer_size;
 	}
 	else
 	{
-		buf_str.append((size_t) pos - buf_str.length(), ' ');
+		buf_str.append(pos - buf_str.length(), ' ');
 		buf_str.append((const char*) buffer, buffer_size);
 		pos = buf_str.length();
 	}

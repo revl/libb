@@ -109,10 +109,10 @@
 #include <new>
 #include <string.h>
 
-#define B_OFFSETOF(s, m) ((char*) &((s*) 0x1000)->m - (char*) 0x1000)
+#define B_OFFSETOF(s, m) ((char*) (void*) &((s*) 0x1000)->m - (char*) 0x1000)
 
 #define B_OUTERSTRUCT(s, m, a) const_cast<s*>((const s*) \
-	((const char*) (a) - B_OFFSETOF(s, m)))
+	((const char*) (const void*) (a) - B_OFFSETOF(s, m)))
 
 #define B_COUNTOF(array) (sizeof(array) / sizeof(*(array)))
 

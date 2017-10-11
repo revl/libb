@@ -218,7 +218,7 @@ static b::string expect(size_t leading_spaces, const char* prefix,
 		space.repeat(leading_spaces).data(),
 		prefix,
 		zero.repeat(zeros).data(),
-		int_to_str((unsigned long) value, base).data(),
+		int_to_str(value, base).data(),
 		space.repeat(trailing_spaces).data());
 }
 

@@ -22,6 +22,14 @@
 
 B_BEGIN_NAMESPACE
 
+void object::release() const
+{
+	B_ASSERT(this != NULL);
+
+	if (!--refs)
+		delete_this();
+}
+
 void object::delete_this() const
 {
 	delete const_cast<object*>(this);

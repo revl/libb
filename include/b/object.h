@@ -101,14 +101,6 @@ inline void object::add_ref() const
 	++refs;
 }
 
-inline void object::release() const
-{
-	B_ASSERT(this != NULL);
-
-	if (!--refs)
-		delete_this();
-}
-
 inline object& object::operator =(object&)
 {
 	return *this;

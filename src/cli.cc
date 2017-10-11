@@ -1196,11 +1196,9 @@ void cli::register_association(int cmd_id, int arg_id)
 	B_ASSERT(impl_ref->opt_id_to_opt_info.find(arg_id) != NULL &&
 		"No such option ID");
 
-	command_info* ci = static_cast<command_info*>(
-		impl_ref->cmd_id_to_cmd_info.find(cmd_id));
+	command_info* ci = impl_ref->cmd_id_to_cmd_info.find(cmd_id);
 
-	option_info* oi = static_cast<option_info*>(
-		impl_ref->opt_id_to_opt_info.find(arg_id));
+	option_info* oi = impl_ref->opt_id_to_opt_info.find(arg_id);
 
 	switch (oi->type)
 	{

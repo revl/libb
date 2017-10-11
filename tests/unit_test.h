@@ -37,7 +37,7 @@ public:
 		test_case::test_case_list.append(this);
 	}
 
-	virtual void run() = 0;
+	virtual void run() const = 0;
 
 	const char* const test_name;
 	int failed_checks;
@@ -74,9 +74,9 @@ B_END_NAMESPACE
 		test_##class_name(const char* name) : b::test_case(name) \
 		{ \
 		} \
-		virtual void run(); \
+		virtual void run() const; \
 	} static test_##class_name##_instance(#class_name); \
-	void test_##class_name::run()
+	void test_##class_name::run() const
 
 #define B_CHECK(condition) \
 	do \
