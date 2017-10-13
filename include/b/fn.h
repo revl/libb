@@ -393,8 +393,12 @@ inline void destruct(T* objects, size_t count)
 template <class T>
 inline void assign_value(T* dest, size_t count, const T& value)
 {
+#if defined(B_USE_STL)
+	std::fill(dest, dest + count, value);
+#else
 	while (count-- > 0)
 		*dest++ = value;
+#endif /* !defined(B_USE_STL) */
 }
 
 template <>
@@ -416,8 +420,12 @@ inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 template <class T>
 inline void assign_pairwise(T* dest, const T* source, size_t count)
 {
+#if defined(B_USE_STL)
+	std::copy(source, source + count, dest);
+#else
 	while (count-- > 0)
 		*dest++ = *source++;
+#endif /* !defined(B_USE_STL) */
 }
 
 #define B_ASSIGN_PAIRWISE_SPECIALIZATION(T) \
@@ -435,8 +443,12 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 template <class T>
 inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 {
+#if defined(B_USE_STL)
+	std::copy_backward(source, source + count, dest);
+#else
 	while (count-- > 0)
 		dest[count] = source[count];
+#endif /* !defined(B_USE_STL) */
 }
 
 #define B_ASSIGN_PAIRWISE_BACKWARDS_SPEC9N(T) \
@@ -455,8 +467,12 @@ inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 template <class T>
 inline void move_left(T* to, const T* from, size_t count)
 {
+#if defined(B_USE_STL)
+	std::copy(from, from + count, to);
+#else
 	while (count-- > 0)
 		*to++ = *from++;
+#endif /* !defined(B_USE_STL) */
 }
 
 #define B_MOVE_LEFT_SPECIALIZATION(T) \
