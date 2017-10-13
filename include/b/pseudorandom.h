@@ -66,6 +66,11 @@ private:
 	size_t seed;
 };
 
+inline void pseudorandom::randomize()
+{
+	seed = ((size_t) ::time(NULL)) & B_RAND_MAX;
+}
+
 inline pseudorandom::pseudorandom()
 {
 	randomize();
@@ -78,11 +83,6 @@ inline pseudorandom::pseudorandom(size_t initial_seed) : seed(initial_seed)
 inline void pseudorandom::set_seed(size_t new_seed)
 {
 	seed = new_seed;
-}
-
-inline void pseudorandom::randomize()
-{
-	seed = ((size_t) ::time(NULL)) & B_RAND_MAX;
 }
 
 inline size_t pseudorandom::max()
