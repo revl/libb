@@ -101,7 +101,7 @@ AS_IF([test "$enable_threads" = yes],
 	[configsuffix="${configsuffix}_r"
 
 	AX_PTHREAD(,[AC_MSG_ERROR(
-		[no pthreads support; consider --disable-threads])])
+		[no pthread support; consider --disable-threads])])
 
 	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
 	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS])
