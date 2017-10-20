@@ -295,16 +295,16 @@ bool match_pattern(const wstring_view& input, const wstring_view& pattern);
 int compare_versions(const char* version1, const char* version2);
 
 // Converts sequence of wide characters to sequence of multibyte characters.
-inline void wchar_to_char(char* result, const wchar_t* source, size_t length)
+inline size_t wchar_to_char(char* result, const wchar_t* source, size_t length)
 {
-	::wcstombs(result, source, length);
+	return ::wcstombs(result, source, length);
 }
 
 // Converts a sequence of multibyte characters to a sequence of wide
 // characters.
-inline void char_to_wchar(wchar_t* result, const char* source, size_t length)
+inline size_t char_to_wchar(wchar_t* result, const char* source, size_t length)
 {
-	::mbstowcs(result, source, length);
+	return ::mbstowcs(result, source, length);
 }
 
 // Template functions for construction, destruction,
