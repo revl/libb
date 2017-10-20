@@ -96,3 +96,43 @@ namespace
 #include "string_formatting.h"
 #undef B_L_PREFIX
 #undef char_t
+
+B_BEGIN_NAMESPACE
+
+string string::from_wstring(const wstring& wstr)
+{
+	string mbstr;
+
+	size_t cap = extra_capacity(::wcstombs(NULL, wstr.data(), 0) + 1);
+
+	mbstr.discard_and_alloc(cap);
+
+	size_t result_len = ::wcstombs(mbstr.lock(), wstr.data(), cap);
+
+	if (result_len == (size_t) -1)
+		throw conversion_exception();
+
+	mbstr.unlock(result_len);
+
+	return mbstr;
+}
+
+wstring string::to_wstring() const
+{
+	wstring wstr;
+
+	size_t cap = extra_capacity(::mbstowcs(NULL, data(), 0) + 1);
+
+	wstr.discard_and_alloc(cap);
+
+	size_t result_len = ::mbstowcs(wstr.lock(), data(), cap);
+
+	if (result_len == (size_t) -1)
+		throw conversion_exception();
+
+	wstr.unlock(result_len);
+
+	return wstr;
+}
+
+B_END_NAMESPACE
