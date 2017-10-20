@@ -22,6 +22,22 @@
 
 #include <stdint.h>
 
+namespace
+{
+	class conversion_exception : public b::runtime_exception
+	{
+		virtual b::string message() const;
+	};
+
+	b::string conversion_exception::message() const
+	{
+		B_STRING_LITERAL(error_message,
+			"multibyte to/from wchar conversion error");
+
+		return error_message;
+	}
+}
+
 #if defined(va_copy)
 #define B_VA_COPY(dest_list, src_list) va_copy(dest_list, src_list)
 #define B_VA_COPY_END(list) va_end(list)

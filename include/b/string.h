@@ -50,6 +50,14 @@ public:
 	// Creates a string of 'count' copies of 'ch'.
 	string(size_t count, char_t ch);
 
+#ifndef string
+	// Creates a multibyte string from a wide character string.
+	static string from_wstring(const wstring& wstr);
+
+	// Creates a wide character string from 'this' multibyte string.
+	wstring to_wstring() const;
+#endif
+
 // Interoperability
 public:
 #if defined(B_USE_STL)

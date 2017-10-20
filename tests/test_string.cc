@@ -295,6 +295,13 @@ B_TEST_CASE(insertion)
 	run_insertion_test(5U);
 }
 
+B_TEST_CASE(to_wchar_and_back)
+{
+	B_STRING_LITERAL(utf8, "test");
+
+	B_CHECK(b::string::from_wstring(utf8.to_wstring()) == utf8);
+}
+
 #if defined(B_USE_STL)
 B_TEST_CASE(interoperability)
 {
