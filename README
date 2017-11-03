@@ -11,7 +11,7 @@ The library provides the following functionality:
 
 #include <b/array.h>                    b::array<T>
 
-    Array template type. Uses the copy-on-write technique for memory
+    Array template type. Uses a copy-on-write technique for memory
     management.
 
 
@@ -75,7 +75,7 @@ The library provides the following functionality:
                                         b::wstring
 
     Generic string type, both byte character and wide character
-    versions.  Uses the copy-on-write technique.
+    versions.  Uses a copy-on-write technique.
 
 
 #include <b/string_view.h>              b::string_view
