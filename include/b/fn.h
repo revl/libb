@@ -68,6 +68,8 @@ namespace args
 // declared in the 'args' namespace above.
 void create_directory(const string& path, const arg_list* arg = NULL);
 
+// Removes a directory. If the directory does not exist or if it is not
+// empty, the function throws a system_exception.
 void remove_directory(const string& directory);
 
 // Global function templates
