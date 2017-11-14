@@ -86,30 +86,45 @@ string pathname::str() const
 
 void pathname::append(const pathname& rhs)
 {
-	switch (rhs.levels_up)
+	// Append "/absolute/pathname".
+	if (rhs.levels_up == UINT_MAX)
 	{
-	case UINT_MAX:
 		*this = rhs;
-		break;
+		return;
+	}
 
-	default:
-		if (rhs.levels_up <= pathname_components.size())
-			pathname_components.remove(pathname_components.size() -
-				rhs.levels_up,
-				rhs.levels_up);
-		else
-		{
-			if (levels_up != UINT_MAX)
-				levels_up += rhs.levels_up -
-					(unsigned) pathname_components.size();
+	can_be_filename = rhs.can_be_filename;
 
-			pathname_components.empty();
-		}
-
-	case 0:
+	// Append "relative/pathname".
+	if (rhs.levels_up == 0)
+	{
 		pathname_components.append(rhs.pathname_components);
+		return;
+	}
 
-		can_be_filename = rhs.can_be_filename;
+	// Append so many "levels up" that they completely wipe out
+	// pathname components in 'this'.
+	if (pathname_components.size() <= rhs.levels_up)
+	{
+		if (levels_up != UINT_MAX)
+			levels_up += rhs.levels_up -
+				(unsigned) pathname_components.size();
+
+		pathname_components = rhs.pathname_components;
+		return;
+	}
+
+	pathname_components.overwrite(
+		pathname_components.size() - rhs.levels_up,
+		rhs.pathname_components);
+
+	if (rhs.levels_up > rhs.pathname_components.size())
+	{
+		size_t remainder = (size_t) rhs.levels_up -
+			rhs.pathname_components.size();
+
+		pathname_components.remove(
+			pathname_components.size() - remainder, remainder);
 	}
 }
 
