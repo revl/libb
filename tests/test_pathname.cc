@@ -139,28 +139,42 @@ B_TEST_CASE(up_levels)
 	B_CHECK(path.number_of_levels_up() == 4);
 }
 
-static b::string inc(b::pathname& path, const char* increment)
-{
-	path.append(b::string_view(increment, b::calc_length(increment)));
+B_STRING_LITERAL(initial_path, "dir/subdir");
 
-	return path.str();
+static void check_append(const char* chdir, const char* expected)
+{
+	b::string_view chdir_sv(chdir, b::calc_length(chdir));
+
+	{
+		static b::pathname path(initial_path);
+
+		// Parse 'chdir' and append it to 'path'.
+		path.append(chdir_sv);
+
+		B_CHECK(path.str() == expected);
+	}
+
+	{
+		static b::pathname path(initial_path);
+
+		// Append pre-parsed 'chdir'.
+		path.append(b::pathname(chdir_sv));
+
+		B_CHECK(path.str() == expected);
+	}
 }
 
 B_TEST_CASE(pathname_increments)
 {
-	B_STRING_LITERAL(initial_path, "dir/subdir");
-
-	b::pathname path(initial_path);
-
-	B_CHECK(inc(path, "..") == "dir");
-	B_CHECK(inc(path, "subdir") == initial_path);
-	B_CHECK(inc(path, "../..") == ".");
-	B_CHECK(inc(path, "../..") == "../..");
-	B_CHECK(inc(path, "/") == "/");
-	B_CHECK(inc(path, "root") == "/root");
-	B_CHECK(inc(path, "///usr") == "/usr");
-	B_CHECK(inc(path, "../var///lib") == "/var/lib");
-	B_CHECK(inc(path, "../../../../../srv/") == "/srv");
+	check_append("..", "dir");
+	check_append("subdir", initial_path.data());
+	check_append("../..", ".");
+	check_append("../..", "../..");
+	check_append("/", "/");
+	check_append("root", "/root");
+	check_append("///usr", "/usr");
+	check_append("../var///lib", "/var/lib");
+	check_append("../../../../../srv/", "/srv");
 }
 
 B_TEST_CASE(pattern_match)
