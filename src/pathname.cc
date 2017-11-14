@@ -99,8 +99,9 @@ void pathname::append(const pathname& rhs)
 				rhs.levels_up);
 		else
 		{
-			levels_up += rhs.levels_up -
-				(unsigned) pathname_components.size();
+			if (levels_up != UINT_MAX)
+				levels_up += rhs.levels_up -
+					(unsigned) pathname_components.size();
 
 			pathname_components.empty();
 		}
