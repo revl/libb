@@ -127,6 +127,11 @@ B_TEST_CASE(comparison)
 
 	B_CHECK(abc1 != abc2);
 
+	// Note that the length of the right-hand argument is not
+	// known in advance, so comparison is performed up to the
+	// first null character.
+	B_CHECK(abc1 == "abc");
+
 	B_CHECK(abc1 != B_STRING_VIEW("abc"));
 }
 
