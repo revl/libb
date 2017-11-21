@@ -73,23 +73,7 @@
 #define B_PRINTF_STYLE(fmt_index, arg_index)
 #endif /* defined(__GNUG__) */
 
-#ifdef B_UNINSTALLED
 #include <b/config.h>
-#else
-#ifdef B_MT
-#ifdef B_DEBUG
-#include <b/configd_r.h>
-#else
-#include <b/config_r.h>
-#endif /* defined(B_DEBUG) */
-#else
-#ifdef B_DEBUG
-#include <b/configd.h>
-#else
-#include <b/config.h>
-#endif /* defined(B_DEBUG) */
-#endif /* defined(B_MT) */
-#endif /* defined(B_UNINSTALLED) */
 
 #include <errno.h>
 

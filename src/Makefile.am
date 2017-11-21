@@ -16,21 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-if THREADS
-if DEBUG
-lib_LTLIBRARIES = libbd_r.la
-else
-lib_LTLIBRARIES = libb_r.la
-endif
-else
-if DEBUG
-lib_LTLIBRARIES = libbd.la
-else
 lib_LTLIBRARIES = libb.la
-endif
-endif
 
-sources = \
+libb_la_SOURCES = \
 	binary_search_tree.cc \
 	cli.cc \
 	exceptions.cc \
@@ -43,17 +31,7 @@ sources = \
 	string.cc \
 	string_stream.cc
 
-libbd_r_la_SOURCES = $(sources)
-libb_r_la_SOURCES = $(sources)
-libbd_la_SOURCES = $(sources)
-libb_la_SOURCES = $(sources)
-
-ldflags = -version-info @library_version_info@ -release @VERSION@
-
-libbd_r_la_LDFLAGS = $(ldflags)
-libb_r_la_LDFLAGS = $(ldflags)
-libbd_la_LDFLAGS = $(ldflags)
-libb_la_LDFLAGS = $(ldflags)
+libb_la_LDFLAGS = -version-info @library_version_info@ -release @VERSION@
 
 EXTRA_DIST = \
 	string_formatting.h \

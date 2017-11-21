@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-LDADD = -L../src -l$(PACKAGE)$(configsuffix)
+LDADD = -L../src -l$(PACKAGE)
 
 TESTS = \
 	test_arg_list \

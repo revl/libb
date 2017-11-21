@@ -86,11 +86,9 @@ AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 AS_IF([test "$enable_debug" != yes],
 	[CONFIG_FLAGS="-O3"],
 [test "$DIGITALCXX" = yes],
-	[configsuffix="d"
-	CONFIG_FLAGS="-DB_DEBUG -gall"],
+	[CONFIG_FLAGS="-DB_DEBUG -gall"],
 [test "$ac_cv_prog_cxx_g" = yes],
-	[configsuffix="d"
-	CONFIG_FLAGS="-DB_DEBUG -g"])
+	[CONFIG_FLAGS="-DB_DEBUG -g"])
 
 AC_ARG_ENABLE(threads, AS_HELP_STRING([--enable-threads],
 	[build multithreaded library (default=no)]))
@@ -98,15 +96,11 @@ AC_ARG_ENABLE(threads, AS_HELP_STRING([--enable-threads],
 AM_CONDITIONAL(THREADS, [test "$enable_threads" = yes])
 
 AS_IF([test "$enable_threads" = yes],
-	[configsuffix="${configsuffix}_r"
-
-	AX_PTHREAD(,[AC_MSG_ERROR(
+	[AX_PTHREAD(,[AC_MSG_ERROR(
 		[no pthread support; consider --disable-threads])])
 
 	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
 	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS])
-
-AC_SUBST(configsuffix)
 
 UNINST_FLAGS="$CONFIG_FLAGS -DB_UNINSTALLED"
 CXXFLAGS="$CXXFLAGS $UNINST_FLAGS"
@@ -117,7 +111,7 @@ UNINST_FLAGS="$UNINST_FLAGS -I$UNINST_PREFIX/include"
 dummy="`cd $srcdir && pwd`"
 test $UNINST_PREFIX = $dummy || UNINST_FLAGS="$UNINST_FLAGS -I$dummy/include"
 
-CONFIG_LIBS="-l$PACKAGE$configsuffix"
+CONFIG_LIBS="-l$PACKAGE"
 UNINST_LIBS="-L$UNINST_PREFIX/src $CONFIG_LIBS"
 CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
 
