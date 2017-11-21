@@ -18,30 +18,6 @@
 
 LDADD = -L../src -l$(PACKAGE)
 
-TESTS = \
-	test_arg_list \
-	test_array \
-	test_binary_search_tree \
-	test_cli \
-	test_exceptions \
-	test_fn \
-	test_heap \
-	test_levenshtein_distance \
-	test_lists \
-	test_map \
-	test_memory \
-	test_object \
-	test_opaque \
-	test_pathname \
-	test_priority_queue \
-	test_pseudorandom \
-	test_red_black_tree \
-	test_set \
-	test_string \
-	test_string_formatting \
-	test_string_stream \
-	test_string_view
-
 check_PROGRAMS = \
 	test_arg_list \
 	test_array \
@@ -109,6 +85,8 @@ test_string_formatting_SOURCES = test_string_formatting.cc
 test_string_stream_SOURCES = test_string_stream.cc
 
 test_string_view_SOURCES = test_string_view.cc
+
+TESTS = $(check_PROGRAMS)
 
 EXTRA_DIST = unit_test.h
 
