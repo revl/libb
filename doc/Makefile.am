@@ -42,5 +42,3 @@ clean-local:
 EXTRA_DIST = \
 	mkdoc.pl \
 	html_footer
-
-MAINTAINERCLEANFILES = Makefile.in

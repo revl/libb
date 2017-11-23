@@ -24,7 +24,7 @@ AUTOMAKE_OPTIONS = foreign
 doc:
 	@cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
 
-SUBDIRS = . config m4 include src tests doc
+SUBDIRS = . m4 include src tests doc
 
 plaindocdir = $(pkgdocdir)
 plaindoc_DATA = README
@@ -41,5 +41,3 @@ maintainer-clean-local:
 EXTRA_DIST = autogen.sh
 
 pkgconfig_DATA = b.pc
-
-MAINTAINERCLEANFILES = Makefile.in

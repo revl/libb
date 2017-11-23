@@ -89,5 +89,3 @@ test_string_view_SOURCES = test_string_view.cc
 TESTS = $(check_PROGRAMS)
 
 EXTRA_DIST = unit_test.h
-
-MAINTAINERCLEANFILES = Makefile.in

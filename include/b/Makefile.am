@@ -73,5 +73,3 @@ uninstall-local:
 	rmdir $(DESTDIR)$(pkgincludedir) || true
 
 CLEANFILES = config.h
-
-MAINTAINERCLEANFILES = Makefile.in

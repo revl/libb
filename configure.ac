@@ -147,6 +147,5 @@ tests/Makefile
 b.pc
 b-uninstalled.pc
 doc/Makefile
-config/Makefile
 m4/Makefile])
 AC_OUTPUT

@@ -37,5 +37,3 @@ EXTRA_DIST = \
 	string_formatting.h \
 	string_impl.h \
 	string_view_impl.h
-
-MAINTAINERCLEANFILES = Makefile.in

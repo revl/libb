@@ -17,5 +17,3 @@
 #
 
 SUBDIRS = b
-
-MAINTAINERCLEANFILES = Makefile.in
