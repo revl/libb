@@ -35,9 +35,6 @@ install-exec-local:
 uninstall-local:
 	@$(NORMAL_UNINSTALL)
 
-maintainer-clean-local:
-	rm -rf autom4te.cache
-
 EXTRA_DIST = autogen.sh
 
 pkgconfig_DATA = b.pc
