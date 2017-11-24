@@ -21,20 +21,40 @@ AUTOMAKE_OPTIONS = foreign
 
 .PHONY: doc
 
-doc:
-	@cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
+doc: doc/timestamp
 
-SUBDIRS = . m4 include src tests doc
+doc/timestamp: $(top_srcdir)/include/b/*.h \
+	$(top_srcdir)/README \
+	$(top_srcdir)/doc/mkdoc.pl
+	$(MKDIR_P) doc/html
+	'$(top_srcdir)/doc/mkdoc.pl' '$(top_srcdir)' doc/html
+	touch doc/timestamp
 
 plaindocdir = $(pkgdocdir)
 plaindoc_DATA = README
+
+install-data-local: doc/install-timestamp
+
+doc/install-timestamp: doc/timestamp
+	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)
+	$(INSTALL_DATA) doc/html/* $(DESTDIR)$(pkgdocdir)/
+	touch doc/install-timestamp
 
 install-exec-local:
 	@$(NORMAL_INSTALL)
 
 uninstall-local:
+	rm -rf $(DESTDIR)$(pkgdocdir) doc/install-timestamp
 	@$(NORMAL_UNINSTALL)
 
-EXTRA_DIST = autogen.sh
+clean-local:
+	rm -rf doc/html doc/timestamp doc/install-timestamp
+
+SUBDIRS = . m4 include src tests
+
+EXTRA_DIST = \
+	doc/mkdoc.pl \
+	doc/html_footer \
+	autogen.sh
 
 pkgconfig_DATA = b.pc

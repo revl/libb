@@ -46,6 +46,7 @@ AC_SUBST(pkgdocdir)
 test -z "$CXXFLAGS" && CXXFLAGS=""
 
 dnl Checks for programs.
+AC_PROG_MKDIR_P
 AC_PROG_CXX
 LT_INIT([disable-shared])
 PKG_PROG_PKG_CONFIG
@@ -146,6 +147,5 @@ src/Makefile
 tests/Makefile
 b.pc
 b-uninstalled.pc
-doc/Makefile
 m4/Makefile])
 AC_OUTPUT

@@ -137,8 +137,9 @@ sub print_page
 
 package main;
 
-my $top_srcdir = $ARGV[0] or die "Usage: $0 \$top_srcdir\n";
+die "Usage: $0 \$top_srcdir doc/html\n" if @ARGV != 2;
 
+my ($top_srcdir, $output_dir) = @ARGV;
 
 my $readme_pathname = "$top_srcdir/README";
 
@@ -159,11 +160,9 @@ while (<README>)
 
 close README;
 
-mkdir 'html';
+my $index_pathname = "$output_dir/index.html";
 
-my $index_pathname = 'html/index.html';
-
-open INDEX, '>', $index_pathname or die "Cannot open $index_pathname\: $!";
+open INDEX, '>', $index_pathname or die "$index_pathname\: $!";
 
 $index_page->print_page(*INDEX);
 
