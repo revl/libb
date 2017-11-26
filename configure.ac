@@ -91,17 +91,12 @@ AS_IF([test "$enable_debug" != yes],
 [test "$ac_cv_prog_cxx_g" = yes],
 	[CONFIG_FLAGS="-DB_DEBUG -g"])
 
-AC_ARG_ENABLE(threads, AS_HELP_STRING([--enable-threads],
-	[build multithreaded library (default=no)]))
+ACX_PTHREAD(,[AC_MSG_ERROR([this package requires pthreads support])])
 
-AM_CONDITIONAL(THREADS, [test "$enable_threads" = yes])
+CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
+PRIVATE_CONFIG_LIBS="$PTHREAD_LIBS"
 
-AS_IF([test "$enable_threads" = yes],
-	[AX_PTHREAD(,[AC_MSG_ERROR(
-		[no pthread support; consider --disable-threads])])
-
-	CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
-	PRIVATE_CONFIG_LIBS=$PTHREAD_LIBS])
+AX_ATOMIC()
 
 UNINST_FLAGS="$CONFIG_FLAGS -DB_UNINSTALLED"
 CXXFLAGS="$CXXFLAGS $UNINST_FLAGS"
@@ -133,8 +128,6 @@ AC_CHECK_HEADERS(errno.h fcntl.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AX_COMPILE_CHECK_SIZEOF([size_t], [#include <stddef.h>])
-
-AS_IF([test "$enable_threads" = yes], [AX_ATOMIC()])
 
 dnl Checks for library functions.
 AC_FUNC_MEMCMP

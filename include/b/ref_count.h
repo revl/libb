@@ -23,11 +23,7 @@
 
 #include "host.h"
 
-#if !defined(B_MT)
-
-#define B_ATOMIC_TYPE int
-
-#elif defined(B_HAVE_STD_ATOMIC)
+#if defined(B_HAVE_STD_ATOMIC)
 
 #include <atomic>
 #define B_ATOMIC_TYPE std::atomic<int>
