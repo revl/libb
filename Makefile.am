@@ -50,11 +50,13 @@ uninstall-local:
 clean-local:
 	rm -rf doc/html doc/timestamp doc/install-timestamp
 
-SUBDIRS = . m4 include src tests
+SUBDIRS = . include src tests
 
 EXTRA_DIST = \
 	doc/mkdoc.pl \
 	doc/html_footer \
+	m4/ac_cxx_have_stl.m4 \
+	m4/ax_pthread.m4 \
 	autogen.sh
 
 pkgconfig_DATA = b.pc

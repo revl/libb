@@ -146,6 +146,5 @@ include/b/Makefile
 src/Makefile
 tests/Makefile
 b.pc
-b-uninstalled.pc
-m4/Makefile])
+b-uninstalled.pc])
 AC_OUTPUT
