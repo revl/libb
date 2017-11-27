@@ -21,6 +21,7 @@ LDADD = ../src/lib$(PACKAGE).la
 check_PROGRAMS = \
 	test_arg_list \
 	test_array \
+	test_atomic \
 	test_binary_search_tree \
 	test_cli \
 	test_exceptions \
@@ -45,6 +46,8 @@ check_PROGRAMS = \
 test_arg_list_SOURCES = test_arg_list.cc
 
 test_array_SOURCES = test_array.cc
+
+test_atomic_SOURCES = test_atomic.cc
 
 test_binary_search_tree_SOURCES = test_binary_search_tree.cc
 
