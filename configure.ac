@@ -93,7 +93,7 @@ AS_IF([test "$enable_debug" != yes],
 
 ACX_PTHREAD(,[AC_MSG_ERROR([this package requires pthreads support])])
 
-CONFIG_FLAGS="$CONFIG_FLAGS -DB_MT $PTHREAD_CFLAGS"
+CONFIG_FLAGS="$CONFIG_FLAGS $PTHREAD_CFLAGS"
 PRIVATE_CONFIG_LIBS="$PTHREAD_LIBS"
 
 AX_ATOMIC()
