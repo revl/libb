@@ -18,6 +18,8 @@
 
 lib_LTLIBRARIES = libb.la
 
+libb_la_LDFLAGS = -version-info @library_version_info@
+
 libb_la_SOURCES = \
 	binary_search_tree.cc \
 	cli.cc \
@@ -30,8 +32,6 @@ libb_la_SOURCES = \
 	red_black_tree.cc \
 	string.cc \
 	string_stream.cc
-
-libb_la_LDFLAGS = -version-info @library_version_info@ -release @VERSION@
 
 EXTRA_DIST = \
 	string_formatting.h \
