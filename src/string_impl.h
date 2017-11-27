@@ -638,7 +638,7 @@ char_t* string::empty_string()
 {
 	static const buffer empty_string_buffer =
 	{
-		/* refs         */ B_REFCOUNT_STATIC_INIT(2),
+		/* refs         */ 2,
 		/* capacity     */ 0,
 		/* length       */ 0,
 		/* first_char   */ {0}

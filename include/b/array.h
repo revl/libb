@@ -21,7 +21,7 @@
 #ifndef B_ARRAY_H
 #define B_ARRAY_H
 
-#include "ref_count.h"
+#include "host.h"
 #include "fn.h"
 
 B_BEGIN_NAMESPACE
@@ -200,7 +200,7 @@ public:
 private:
 	struct array_metadata
 	{
-		ref_count refs;
+		int refs;
 		size_t capacity;
 		size_t size;
 	};
@@ -872,7 +872,7 @@ T* array<T>::empty_array()
 {
 	static const array_metadata empty_array_metadata =
 	{
-		/* refs         */ B_REFCOUNT_STATIC_INIT(2),
+		/* refs         */ 2,
 		/* capacity     */ 0,
 		/* size         */ 0
 	};

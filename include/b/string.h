@@ -348,7 +348,7 @@ public:
 private:
 	struct buffer
 	{
-		ref_count refs;
+		int refs;
 		size_t capacity;
 		size_t length;
 		char_t first_char[1];
@@ -740,7 +740,7 @@ B_END_NAMESPACE
 
 #else /* !defined(B_STRING_DECL) && !defined(B_STRING_INLINE) */
 
-#include "ref_count.h"
+#include "host.h"
 
 #define B_STRING_DECL
 
@@ -793,14 +793,14 @@ B_END_NAMESPACE
 #define B_STRING_LITERAL_IMPL(char_type, string_type, name, value) \
 	static struct \
 	{ \
-		b::ref_count refs; \
+		int refs; \
 		size_t capacity; \
 		size_t length; \
 		char_type chars[sizeof(value)]; \
 	} \
 	const name##_buffer = \
 	{ \
-		B_REFCOUNT_STATIC_INIT(-1), \
+		-1, \
 		sizeof(value) / sizeof(char_type) - 1, \
 		sizeof(value) / sizeof(char_type) - 1, \
 		value \

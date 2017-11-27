@@ -21,7 +21,7 @@
 #ifndef B_OBJECT_H
 #define B_OBJECT_H
 
-#include "ref_count.h"
+#include "host.h"
 #include "memory.h"
 
 B_BEGIN_NAMESPACE
@@ -77,7 +77,7 @@ protected:
 	}
 
 	// The reference count object.
-	mutable ref_count refs;
+	mutable int refs;
 };
 
 inline void* object::operator new(size_t size)
