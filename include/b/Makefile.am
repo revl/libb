@@ -21,6 +21,7 @@ pkgincludedir = $(includedir)/b
 pkginclude_HEADERS = \
 	arg_list.h \
 	array.h \
+	atomic.h \
 	binary_tree.h \
 	cli.h \
 	custom_exception.h \
@@ -44,7 +45,6 @@ pkginclude_HEADERS = \
 	pseudorandom.h \
 	red_black_tree.h \
 	ref.h \
-	ref_count.h \
 	runtime_exception.h \
 	set.h \
 	string.h \

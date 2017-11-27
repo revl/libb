@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_REF_COUNT_H
-#define B_REF_COUNT_H
+#ifndef B_ATOMIC_H
+#define B_ATOMIC_H
 
 #include "host.h"
 
@@ -67,17 +67,17 @@
 #endif
 
 #if defined(B_HAVE_STD_ATOMIC)
-#define B_REFCOUNT_STATIC_INIT(i) {ATOMIC_VAR_INIT(i)}
+#define B_ATOMIC_STATIC_INIT(i) {ATOMIC_VAR_INIT(i)}
 #elif defined(B_HAVE_ASM_ATOMIC_H)
-#define B_REFCOUNT_STATIC_INIT(i) {ATOMIC_INIT(i)}
+#define B_ATOMIC_STATIC_INIT(i) {ATOMIC_INIT(i)}
 #else
-#define B_REFCOUNT_STATIC_INIT(i) {i}
+#define B_ATOMIC_STATIC_INIT(i) {i}
 #endif
 
 B_BEGIN_NAMESPACE
 
 // Portable thread-safe reference count class.
-struct ref_count
+struct atomic
 {
 	// Returns the current value of the counter.
 	operator int() const;
@@ -94,7 +94,7 @@ struct ref_count
 	B_ATOMIC_TYPE value;
 };
 
-inline ref_count::operator int() const
+inline atomic::operator int() const
 {
 #if defined(B_HAVE_ASM_ATOMIC_H)
 	return atomic_read(&value)
@@ -103,7 +103,7 @@ inline ref_count::operator int() const
 #endif
 }
 
-inline void ref_count::operator =(int new_value)
+inline void atomic::operator =(int new_value)
 {
 #if defined(B_HAVE_ASM_ATOMIC_H)
 	atomic_set(&value, new_value);
@@ -112,7 +112,7 @@ inline void ref_count::operator =(int new_value)
 #endif
 }
 
-inline void ref_count::operator ++()
+inline void atomic::operator ++()
 {
 #if defined(__GNUG__) && defined(__i386__)
 	__asm__ __volatile__("lock; incl %0" :"=m" (value) :"m" (value));
@@ -134,7 +134,7 @@ inline void ref_count::operator ++()
 #endif
 }
 
-inline bool ref_count::operator --()
+inline bool atomic::operator --()
 {
 #if defined(__GNUG__) && defined(__i386__)
 	bool zero; __asm__ __volatile__("lock; decl %0; setne %1" \
@@ -160,4 +160,4 @@ inline bool ref_count::operator --()
 
 B_END_NAMESPACE
 
-#endif /* !defined(B_REF_COUNT_H) */
+#endif /* !defined(B_ATOMIC_H) */
