@@ -118,20 +118,12 @@ AC_SUBST(UNINST_PREFIX)
 AC_SUBST(UNINST_FLAGS)
 AC_SUBST(UNINST_LIBS)
 
-dnl Do compilation tests using CXX
+dnl Do compilation tests using C++
 AC_LANG([C++])
-
-dnl Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h fcntl.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AX_COMPILE_CHECK_SIZEOF([size_t], [#include <stddef.h>])
-
-dnl Checks for library functions.
-AC_FUNC_MEMCMP
-AC_CHECK_FUNCS(strerror)
 
 AC_CONFIG_FILES([Makefile
 include/Makefile
