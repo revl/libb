@@ -50,17 +50,6 @@ AC_PROG_MKDIR_P
 AC_PROG_CXX
 LT_INIT([disable-shared])
 PKG_PROG_PKG_CONFIG
-AC_DEFUN([PKG_INSTALLDIR],
-	[m4_pushdef([pkg_default], [m4_default([$1], ['${libdir}/pkgconfig'])])
-	m4_pushdef([pkg_description],
-		[pkg-config installation directory @<:@]pkg_default[@:>@])
-	AC_ARG_WITH([pkgconfigdir],
-		[AS_HELP_STRING([--with-pkgconfigdir], pkg_description)],,
-		[with_pkgconfigdir=]pkg_default)
-	AC_SUBST([pkgconfigdir], [$with_pkgconfigdir])
-	m4_popdef([pkg_default])
-	m4_popdef([pkg_description])
-	]) dnl PKG_INSTALLDIR
 PKG_INSTALLDIR
 
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/include -I\$(top_builddir)/include"
