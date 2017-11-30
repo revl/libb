@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: @PACKAGE_NAME@
-Description: C++ Utility Library
+Description: C++ library of container and utility classes
 Version: @PACKAGE_VERSION@
 Libs: @CONFIG_LIBS@
 Libs.private: @PRIVATE_CONFIG_LIBS@
