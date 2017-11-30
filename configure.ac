@@ -56,6 +56,8 @@ AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 
 AS_IF([test "$enable_debug" != yes],
 	[CONFIG_FLAGS="-O3"],
+[test "$GXX" = yes],
+	[CONFIG_FLAGS="-DB_DEBUG -ggdb"],
 [test "$DIGITALCXX" = yes],
 	[CONFIG_FLAGS="-DB_DEBUG -gall"],
 [test "$ac_cv_prog_cxx_g" = yes],
