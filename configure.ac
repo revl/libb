@@ -19,34 +19,15 @@
 AC_INIT([b], [1.0.1])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIRS([m4])
-AC_CONFIG_SRCDIR([src/string.cc])
+AC_CONFIG_SRCDIR([src/binary_search_tree.cc])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign])
 
 library_version_info=3:0:0
 AC_SUBST(library_version_info)
 
-AC_CONFIG_HEADERS(config.h)
-
-AC_ARG_WITH([stl], AS_HELP_STRING([--without-stl], [disable STL support]))
-
-AS_IF([test "x$with_stl" != "xno"],
-	[AC_DEFINE([USE_STL], 1, [Define to 1 to enable STL support.])])
-
-docdir=$datadir/doc
-
-AC_ARG_WITH(docdir, AS_HELP_STRING([--with-docdir=DIR],
-	[install documentation in DIR (default=DATADIR/doc)]),
-	[test "$withval" != yes -a "$withval" != no && docdir=$withval])
-
-AC_SUBST(docdir)
-
-pkgdocdir=$docdir/$PACKAGE-$VERSION
-AC_SUBST(pkgdocdir)
-
 test -z "$CXXFLAGS" && CXXFLAGS=""
 
-dnl Checks for programs.
-AC_PROG_MKDIR_P
 AC_PROG_CXX
 LT_INIT([disable-shared])
 PKG_PROG_PKG_CONFIG
@@ -106,6 +87,24 @@ AC_LANG([C++])
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AX_COMPILE_CHECK_SIZEOF([size_t], [#include <stddef.h>])
+
+AC_PROG_MKDIR_P
+
+AC_ARG_WITH([stl], AS_HELP_STRING([--without-stl], [disable STL support]))
+
+AS_IF([test "x$with_stl" != "xno"],
+	[AC_DEFINE([USE_STL], 1, [Define to 1 to enable STL support.])])
+
+docdir=$datadir/doc
+
+AC_ARG_WITH(docdir, AS_HELP_STRING([--with-docdir=DIR],
+	[install documentation in DIR (default=DATADIR/doc)]),
+	[test "$withval" != yes -a "$withval" != no && docdir=$withval])
+
+AC_SUBST(docdir)
+
+pkgdocdir=$docdir/$PACKAGE-$VERSION
+AC_SUBST(pkgdocdir)
 
 AC_SUBST(CONFIG_FLAGS)
 AC_SUBST(CONFIG_LIBS)
