@@ -55,17 +55,18 @@ AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug],
 AM_CONDITIONAL(DEBUG, [test "$enable_debug" = yes])
 
 AS_IF([test "$enable_debug" != yes],
-	[CONFIG_FLAGS="-O3"],
-[test "$GXX" = yes],
-	[CONFIG_FLAGS="-DB_DEBUG -ggdb"],
+	[CXXFLAGS="$CXXFLAGS -O3"],
+[AC_DEFINE([DEBUG], 1, [Define to 1 to enable various runtime checks.])
+AS_IF([test "$GXX" = yes],
+	[CXXFLAGS="$CXXFLAGS -ggdb"],
 [test "$DIGITALCXX" = yes],
-	[CONFIG_FLAGS="-DB_DEBUG -gall"],
+	[CXXFLAGS="$CXXFLAGS -gall"],
 [test "$ac_cv_prog_cxx_g" = yes],
-	[CONFIG_FLAGS="-DB_DEBUG -g"])
+	[CXXFLAGS="$CXXFLAGS -g"])])
 
 ACX_PTHREAD(,[AC_MSG_ERROR([this package requires pthreads support])])
 
-CONFIG_FLAGS="$CONFIG_FLAGS $PTHREAD_CFLAGS"
+CONFIG_FLAGS="$PTHREAD_CFLAGS"
 PRIVATE_CONFIG_LIBS="$PTHREAD_LIBS"
 
 AX_ATOMIC()

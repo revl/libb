@@ -21,11 +21,6 @@
 #ifndef B_HOST_H
 #define B_HOST_H
 
-// Both DEBUG and _DEBUG macros enable various runtime checks.
-#if (defined(DEBUG) || defined(_DEBUG)) && !defined(B_DEBUG)
-#define B_DEBUG
-#endif
-
 #ifdef B_NO_NAMESPACE
 
 #undef b
