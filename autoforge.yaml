@@ -1,0 +1,103 @@
+name: b
+description: C++ library of container and utility classes
+type: lib
+version: 0.1.0
+version-info: 1:0:0
+header: |
+    B: Common C++ library
+    Copyright (C) 2002-2007, 2016, 2017 Damon Revoe
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+snippets:
+    configure.ac: |
+        ACX_PTHREAD(,[AC_MSG_ERROR([this package requires pthreads support])])
+
+        CONFIG_FLAGS="$PTHREAD_CFLAGS"
+        PRIVATE_CONFIG_LIBS="$PTHREAD_LIBS"
+
+        AX_ATOMIC()
+
+        UNINST_FLAGS="$CONFIG_FLAGS -DB_UNINSTALLED"
+        CXXFLAGS="$CXXFLAGS $UNINST_FLAGS"
+        CONFIG_FLAGS="$CONFIG_FLAGS -I$includedir"
+
+        UNINST_PREFIX="`pwd`"
+        UNINST_FLAGS="$UNINST_FLAGS -I$UNINST_PREFIX/include"
+        dummy="`cd $srcdir && pwd`"
+        test $UNINST_PREFIX = $dummy || UNINST_FLAGS="$UNINST_FLAGS -I$dummy/include"
+
+        CONFIG_LIBS="-l$PACKAGE"
+        UNINST_LIBS="-L$UNINST_PREFIX/src $CONFIG_LIBS"
+        CONFIG_LIBS="-L$libdir $CONFIG_LIBS"
+
+        dnl Do compilation tests using C++
+        AC_LANG([C++])
+
+        dnl Checks for typedefs, structures, and compiler characteristics.
+        AC_TYPE_SIZE_T
+        AX_COMPILE_CHECK_SIZEOF([size_t], [#include <stddef.h>])
+
+        AC_PROG_MKDIR_P
+
+        AC_ARG_WITH([stl], AS_HELP_STRING([--without-stl], [disable STL support]))
+
+        AS_IF([test "x$with_stl" != "xno"],
+        	[AC_DEFINE([USE_STL], 1, [Define to 1 to enable STL support.])])
+
+        docdir=$datadir/doc
+
+        AC_ARG_WITH(docdir, AS_HELP_STRING([--with-docdir=DIR],
+        	[install documentation in DIR (default=DATADIR/doc)]),
+        	[test "$withval" != yes -a "$withval" != no && docdir=$withval])
+
+        AC_SUBST(docdir)
+
+        pkgdocdir=$docdir/$PACKAGE-$VERSION
+        AC_SUBST(pkgdocdir)
+    Makefile.am: |
+        .PHONY: doc
+
+        doc: doc/timestamp
+
+        doc/timestamp: $(top_srcdir)/include/b/*.h \
+        	$(top_srcdir)/README \
+        	$(top_srcdir)/doc/mkdoc.pl
+        	$(MKDIR_P) doc/html
+        	'$(top_srcdir)/doc/mkdoc.pl' '$(top_srcdir)' doc/html
+        	touch doc/timestamp
+
+        plaindocdir = $(pkgdocdir)
+        plaindoc_DATA = README
+
+        install-data-local: doc/install-timestamp
+
+        doc/install-timestamp: doc/timestamp
+        	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)
+        	$(INSTALL_DATA) doc/html/* $(DESTDIR)$(pkgdocdir)/
+        	touch doc/install-timestamp
+
+        install-exec-local:
+        	@$(NORMAL_INSTALL)
+
+        uninstall-local:
+        	rm -rf $(DESTDIR)$(pkgdocdir) doc/install-timestamp
+        	@$(NORMAL_UNINSTALL)
+
+        clean-local:
+        	rm -rf doc/html doc/timestamp doc/install-timestamp
+
+        EXTRA_DIST += \
+        	doc/mkdoc.pl \
+        	doc/html_footer
