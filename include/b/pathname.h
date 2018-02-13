@@ -108,6 +108,10 @@ public:
 	// directory hierarchy.
 	void go_up(unsigned levels);
 
+	// Return a relative pathname that, if appended to the
+	// pathname that this object represents, would yield 'target'.
+	pathname relative(const pathname& target) const;
+
 private:
 	component_array pathname_components;
 
