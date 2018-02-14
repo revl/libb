@@ -141,7 +141,8 @@ B_TEST_CASE(up_levels)
 
 B_STRING_LITERAL(initial_path, "dir/subdir");
 
-static void check_append(const char* chdir, const char* expected)
+static void check_append(const char* chdir, const char* expected,
+		bool result_can_represent_file)
 {
 	b::string_view chdir_sv(chdir, b::calc_length(chdir));
 
@@ -152,6 +153,7 @@ static void check_append(const char* chdir, const char* expected)
 		path.append(chdir_sv);
 
 		B_CHECK(path.str() == expected);
+		B_CHECK(path.can_represent_file() == result_can_represent_file);
 	}
 
 	{
@@ -161,20 +163,21 @@ static void check_append(const char* chdir, const char* expected)
 		path.append(b::pathname(chdir_sv));
 
 		B_CHECK(path.str() == expected);
+		B_CHECK(path.can_represent_file() == result_can_represent_file);
 	}
 }
 
 B_TEST_CASE(pathname_increments)
 {
-	check_append("..", "dir");
-	check_append("subdir", initial_path.data());
-	check_append("../..", ".");
-	check_append("../..", "../..");
-	check_append("/", "/");
-	check_append("root", "/root");
-	check_append("///usr", "/usr");
-	check_append("../var///lib", "/var/lib");
-	check_append("../../../../../srv/", "/srv");
+	check_append("..", "dir", false);
+	check_append("subdir", initial_path.data(), true);
+	check_append("../..", ".", false);
+	check_append("../..", "../..", false);
+	check_append("/", "/", false);
+	check_append("root", "/root", true);
+	check_append("///usr", "/usr", true);
+	check_append("../var///lib", "/var/lib", true);
+	check_append("../../../../../srv/", "/srv", false);
 }
 
 B_TEST_CASE(pattern_match)
