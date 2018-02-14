@@ -200,6 +200,8 @@ inline void pathname::go_up_one_level()
 	else
 		if (levels_up != UINT_MAX)
 			++levels_up;
+
+	can_be_filename = false;
 }
 
 inline void pathname::go_up(unsigned levels)
@@ -216,6 +218,8 @@ inline void pathname::go_up(unsigned levels)
 		if (levels_up != UINT_MAX)
 			levels_up += levels;
 	}
+
+	can_be_filename = false;
 }
 
 inline void pathname::append_component(const char* name,

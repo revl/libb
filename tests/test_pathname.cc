@@ -90,8 +90,11 @@ B_TEST_CASE(absolute_pathnames)
 	b::pathname path(absolute_path);
 
 	B_CHECK(path.is_absolute());
+	B_CHECK(path.can_represent_file());
 
 	path.go_up_one_level();
+
+	B_CHECK(!path.can_represent_file());
 
 	B_CHECK(path.is_absolute());
 
@@ -112,7 +115,11 @@ B_TEST_CASE(up_levels)
 
 	b::pathname path(relative_path);
 
+	B_CHECK(path.can_represent_file());
+
 	path.append(B_STRING_VIEW(".."));
+
+	B_CHECK(!path.can_represent_file());
 
 	B_CHECK(path.str() == "relative");
 	B_CHECK(path.number_of_levels_up() == 0);
@@ -129,6 +136,8 @@ B_TEST_CASE(up_levels)
 
 	path.assign(relative_path);
 	path.go_up(3);
+
+	B_CHECK(!path.can_represent_file());
 
 	B_CHECK(path.str() == "..");
 	B_CHECK(path.number_of_levels_up() == 1);
