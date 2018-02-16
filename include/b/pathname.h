@@ -73,43 +73,52 @@ public:
 	// Returns the normalized pathname as a string.
 	string str() const;
 
-	// Returns the array of pathname components.
+	// Returns the array of named pathname components that
+	// this object contains. Double-dot components are not
+	// returned by this method.
 	const component_array& components() const;
 
-	// Returns true if the pathname starts with a slash.
+	// Returns true if this pathname starts with a slash.
 	bool is_absolute() const;
 
-	// Returns the number of double-dot components this
-	// pathname starts with. This method applies only to
-	// relative (non-absolute) pathnames.
+	// Returns the number of double-dot components that this
+	// pathname starts with. This method can only be applied
+	// to relative (non-absolute) pathnames.
 	unsigned number_of_levels_up() const;
 
 	// Returns true if this pathname can represent a file.
 	// A pathname cannot possibly be a filename if it ends
-	// with a slash, '.', or '..'.
+	// with a slash, ".", or "..".
 	bool can_represent_file() const;
 
-	// Copy the contents of 'rhs' into this object.
+	// Copies the contents of 'rhs' into this object.
 	void assign(const pathname& rhs);
 
-	// Reinitialize this object with components from 'path'.
+	// Reinitializes this object with components from 'path'.
 	void assign(const string_view& path);
 
-	// Add components from 'rhs' to the current path.
+	// Adds components from 'rhs' to the current path.
 	void append(const pathname& rhs);
 
-	// Add components from 'path' to the current path.
+	// Adds components from 'path' to the current path.
 	void append(const string_view& path);
 
-	// Go one level up in the directory hierarchy.
+	// Removes the rightmost named component of the pathname
+	// or, if there are no such components left, increments
+	// the number of "levels up" that this object represents.
 	void go_up_one_level();
 
-	// Go the specified number of levels up in the
-	// directory hierarchy.
+	// Has the effect of calling go_up_one_level() the specified
+	// number of times.
 	void go_up(unsigned levels);
 
-	// Return a relative pathname that, if appended to the
-	// pathname that this object represents, would yield 'target'.
+	// Returns a relative pathname that, if appended to 'this'
+	// pathname, would yield 'target'.
+	// Throws a 'runtime_exception' if 'this' pathname is
+	// absolute and 'target' is not, or vice versa, in which
+	// case knowing the current working directory would be
+	// necessary to establish the relation between 'this' and
+	// 'target'.
 	pathname relative(const pathname& target) const;
 
 private:
