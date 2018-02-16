@@ -163,12 +163,6 @@ inline pathname::pathname() :
 {
 }
 
-inline pathname::pathname(const string_view& path) :
-	levels_up(0), can_be_filename(false)
-{
-	append(path);
-}
-
 inline const pathname::component_array& pathname::components() const
 {
 	return pathname_components;

@@ -26,6 +26,12 @@ B_STRING_LITERAL(slash, B_PATH_SEPARATOR_SZ);
 B_STRING_LITERAL(dot, ".");
 B_STRING_LITERAL(double_dot, "..");
 
+pathname::pathname(const string_view& path) :
+	levels_up(0), can_be_filename(false)
+{
+	append(path);
+}
+
 string pathname::str() const
 {
 	size_t n = pathname_components.size();
