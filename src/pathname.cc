@@ -20,6 +20,8 @@
 
 #include <b/pathname.h>
 
+#include <b/custom_exception.h>
+
 B_BEGIN_NAMESPACE
 
 B_STRING_LITERAL(slash, B_PATH_SEPARATOR_SZ);
@@ -239,6 +241,34 @@ slash:
 	}
 
 	goto next_component;
+}
+
+pathname pathname::relative(const pathname& target) const
+{
+	if (is_absolute())
+	{
+		if (target.is_absolute())
+		{
+			return pathname();
+		}
+	}
+	else
+	{
+		if (!target.is_absolute())
+		{
+			if (levels_up > target.levels_up)
+				throw custom_exception("Cannot make '%s' "
+					"relative to '%s' due to "
+					"backtracking in the latter.",
+					target.str().data(), str().data());
+
+			return pathname();
+		}
+	}
+
+	// One of the pathnames is absolute and the other is not.
+	throw custom_exception("Need to know CWD to make '%s' "
+		"relative to '%s'.", target.str().data(), str().data());
 }
 
 B_END_NAMESPACE
