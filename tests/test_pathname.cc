@@ -195,3 +195,33 @@ B_TEST_CASE(pattern_match)
 
 	B_CHECK(pn.components().last().name().matches_pattern("*.cc"));
 }
+
+B_TEST_CASE(relative_errors)
+{
+	const b::pathname abs(B_STRING_VIEW("/abs"));
+	const b::pathname rel(B_STRING_VIEW("rel"));
+
+	B_REQUIRE_EXCEPTION(abs.relative(rel),
+		"Need to know CWD to make 'rel' relative to '/abs'.");
+
+	B_REQUIRE_EXCEPTION(rel.relative(abs),
+		"Need to know CWD to make '/abs' relative to 'rel'.");
+
+	const b::pathname one_level_up(B_STRING_VIEW(".."));
+
+	B_REQUIRE_EXCEPTION(one_level_up.relative(rel),
+		"Cannot make 'rel' relative to '..' due to "
+		"backtracking in the latter.");
+
+	const b::pathname current_dir(B_STRING_VIEW("."));
+
+	B_REQUIRE_EXCEPTION(one_level_up.relative(current_dir),
+		"Cannot make '.' relative to '..' due to "
+		"backtracking in the latter.");
+
+	const b::pathname two_levels_up(B_STRING_VIEW("../.."));
+
+	B_REQUIRE_EXCEPTION(two_levels_up.relative(one_level_up),
+		"Cannot make '..' relative to '../..' due to "
+		"backtracking in the latter.");
+}
