@@ -196,6 +196,28 @@ B_TEST_CASE(pattern_match)
 	B_CHECK(pn.components().last().name().matches_pattern("*.cc"));
 }
 
+static void check_relative(const char* base_pathname,
+		const char* target_pathname,
+		const char* expected_result,
+		bool result_can_represent_file)
+{
+	b::pathname base(b::string_view(base_pathname,
+		b::calc_length(base_pathname)));
+
+	b::pathname target(b::string_view(target_pathname,
+		b::calc_length(target_pathname)));
+
+	b::pathname relative = base.relative(target);
+
+	B_CHECK(relative.str() == expected_result);
+	B_CHECK(relative.can_represent_file() == result_can_represent_file);
+}
+
+B_TEST_CASE(relative)
+{
+	check_relative("../../a", "../../../b", "../../b", true);
+}
+
 B_TEST_CASE(relative_errors)
 {
 	const b::pathname abs(B_STRING_VIEW("/abs"));
