@@ -116,14 +116,24 @@ B_TEST_CASE(array_copying)
 	B_CHECK(element_counter == 0);
 }
 
+template <class T>
+b::array<T> sequence_of_numbers(T array_size)
+{
+	b::array<T> numbers;
+
+	numbers.discard_and_alloc((size_t) array_size);
+
+	for (T i = 0; i < array_size; ++i)
+		numbers.append(i);
+
+	return numbers;
+}
+
 B_TEST_CASE(random_removal)
 {
 	static const int array_size = 100;
 
-	b::array<int> numbers;
-
-	for (int i = 0; i < array_size; ++i)
-		numbers.append(i);
+	b::array<int> numbers = sequence_of_numbers<int>(array_size);
 
 	b::pseudorandom prg(10);
 
@@ -173,10 +183,7 @@ B_TEST_CASE(insertion)
 
 B_TEST_CASE(shuffle)
 {
-	b::array<unsigned> numbers(100, 0);
-
-	for (unsigned i = 0; i < numbers.size(); ++i)
-		numbers[i] = i;
+	b::array<unsigned> numbers = sequence_of_numbers<unsigned>(100);
 
 	b::pseudorandom prng;
 
