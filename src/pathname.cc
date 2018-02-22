@@ -94,7 +94,7 @@ string pathname::str() const
 
 void pathname::append(const pathname& rhs)
 {
-	// Append "/absolute/pathname".
+	// Handle the case of "/absolute/pathname".
 	if (rhs.levels_up == UINT_MAX)
 	{
 		*this = rhs;
@@ -103,15 +103,17 @@ void pathname::append(const pathname& rhs)
 
 	can_be_filename = rhs.can_be_filename;
 
-	// Append "relative/pathname".
+	// Handle the case of "relative/pathname".
 	if (rhs.levels_up == 0)
 	{
 		pathname_components.append(rhs.pathname_components);
 		return;
 	}
 
-	// Append so many "levels up" that they completely wipe out
-	// pathname components in 'this'.
+	// There is some backtracking in 'rhs' at this point.
+
+	// Check if 'rhs' completely wipes out all named
+	// components in 'this'.
 	if (pathname_components.size() <= rhs.levels_up)
 	{
 		if (levels_up != UINT_MAX)
