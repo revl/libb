@@ -21,10 +21,13 @@
 #ifndef B_ARRAY_H
 #define B_ARRAY_H
 
-#include "host.h"
+#include "array_slice.h"
 #include "fn.h"
 
 B_BEGIN_NAMESPACE
+
+template <class T>
+class array_slice;
 
 // Linear array template class.
 template <class T>
@@ -108,6 +111,10 @@ public:
 
 	// Returns a modifiable reference to the last array element.
 	T& last();
+
+	// Returns a slice of this array with element indices in
+	// the specified range.
+	array_slice<T> slice(size_t from, size_t slice_len) const;
 
 // Assignment
 public:
@@ -432,6 +439,14 @@ T& array<T>::last()
 
 	isolate();
 	return elements[size() - 1];
+}
+
+template <class T>
+array_slice<T> array<T>::slice(size_t from, size_t slice_len) const
+{
+	B_ASSERT(from + slice_len <= size());
+
+	return array_slice<T>(elements + from, slice_len);
 }
 
 template <class T>
