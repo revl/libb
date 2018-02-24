@@ -29,11 +29,15 @@ B_BEGIN_NAMESPACE
 template <class T>
 class array;
 
-// Pointer to a linear array of elements. This template class
-// does not implement any kind of memory management. The calling
-// code must ensure that the lifetimes of the referred elements
-// and of the buffer that contains them exceed the lifetime
-// of the array slice.
+// Non-modifiable array of immutable elements. Because 'array_slice' is
+// most often used to point to elements of the 'array' template, which
+// employs memory management based on reference counting, it is possible
+// that the internal buffer of such an array is shared between more than
+// one 'array' object.  For this reason, 'array_slice' provides only
+// 'const' access to its elements.  And because 'array_slice' does not
+// implement any kind of memory management of its own, the calling code
+// must ensure that the lifetime of the referred elements exceed the
+// lifetime of the 'array_slice' object.
 template <class T>
 class array_slice
 {
@@ -76,29 +80,13 @@ public:
 	// with the specified index.
 	const T& operator [](size_t index) const;
 
-	// Returns a modifiable reference to the element
-	// with the specified index.
-	T& at(size_t index);
-
-	// Returns a modifiable reference to the element
-	// with the specified index.
-	T& operator [](size_t index);
-
 	// Returns a constant reference to the first element
 	// of this array slice.
 	const T& first() const;
 
-	// Returns a modifiable reference to the first element
-	// of this array slice.
-	T& first();
-
 	// Returns a constant reference to the last element
 	// of this array slice.
 	const T& last() const;
-
-	// Returns a modifiable reference to the last element
-	// of this array slice.
-	T& last();
 
 	// Returns a subslice of this slice.
 	array_slice slice(size_t start, size_t len) const;
@@ -174,22 +162,6 @@ const T& array_slice<T>::operator [](size_t index) const
 }
 
 template <class T>
-T& array_slice<T>::at(size_t index)
-{
-	B_ASSERT(index < length());
-
-	return elements[index];
-}
-
-template <class T>
-T& array_slice<T>::operator [](size_t index)
-{
-	B_ASSERT(index < length());
-
-	return elements[index];
-}
-
-template <class T>
 const T& array_slice<T>::first() const
 {
 	B_ASSERT(!is_empty());
@@ -198,23 +170,7 @@ const T& array_slice<T>::first() const
 }
 
 template <class T>
-T& array_slice<T>::first()
-{
-	B_ASSERT(!is_empty());
-
-	return *elements;
-}
-
-template <class T>
 const T& array_slice<T>::last() const
-{
-	B_ASSERT(!is_empty());
-
-	return elements[length() - 1];
-}
-
-template <class T>
-T& array_slice<T>::last()
 {
 	B_ASSERT(!is_empty());
 
