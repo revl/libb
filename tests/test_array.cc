@@ -206,3 +206,19 @@ B_TEST_CASE(shuffle)
 }
 
 b::array<b::array<test_element> > test2d;
+
+B_TEST_CASE(slice)
+{
+	b::array<unsigned> numbers = sequence_of_numbers<unsigned>(100);
+
+	b::array_slice<unsigned> slice = numbers.slice(10, 20);
+
+	B_REQUIRE(slice.length() == 20);
+
+	unsigned n = 10;
+	size_t i = 0;
+
+	do
+		B_CHECK(slice[i++] == n++);
+	while (i <= 20);
+}
