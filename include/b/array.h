@@ -91,13 +91,15 @@ public:
 	// Returns a constant reference to an element.
 	const T& at(size_t index) const;
 
-	// Operator version of 'at(index)'.
+	// Returns a constant reference to an element (operator version
+	// of the respective at() method).
 	const T& operator [](size_t index) const;
 
 	// Returns a modifiable reference to an element.
 	T& at(size_t index);
 
-	// Operator version of 'at(index)'.
+	// Returns a modifiable reference to an element (operator version
+	// of the respective at() method).
 	T& operator [](size_t index);
 
 	// Returns a constant reference to the first array element.
@@ -166,10 +168,12 @@ public:
 	// Appends a single element to this array.
 	void append(const T& element);
 
-	// Operator version of 'append(source)'.
+	// Extends this array with copies of elements from 'source'
+	// (operator version of the respective append() method).
 	array<T>& operator +=(const array<T>& source);
 
-	// Operator version of 'append(element)'.
+	// Appends a single element to this array (operator version
+	// of the respective append() method).
 	array<T>& operator +=(const T& element);
 
 	// Concatenates this array with 'source' and returns the
