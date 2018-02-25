@@ -203,10 +203,12 @@ public:
 	// Appends a single character to this string.
 	void append(char_t ch);
 
-	// Operator version of append(source).
+	// Appends the contents of 'source' at the end of this
+	// string (operator version of append(source)).
 	string& operator +=(const string& source);
 
-	// Operator version of append(char_t).
+	// Appends a single character to this string
+	// (operator version of append(char_t)).
 	string& operator +=(char_t ch);
 
 	// Constructs a new string from the concatenation of
@@ -221,7 +223,9 @@ public:
 	// returns the result.
 	string repeat(size_t times) const;
 
-	// Operator version of repeat(times).
+	// Concatenates 'times' copies of this string and
+	// returns the result (operator version of
+	// repeat(times)).
 	string operator *(size_t times) const;
 
 // Deletion
