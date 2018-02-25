@@ -26,9 +26,9 @@
 
 B_TEST_CASE(shared_data)
 {
-	static const size_t initial_size = 100;
+	static const size_t initial_length = 100;
 
-	b::array<int> a1(1, initial_size);
+	b::array<int> a1(1, initial_length);
 
 	b::array<int> a2(a1);
 
@@ -54,20 +54,20 @@ B_TEST_CASE(array_realloc)
 	a.alloc_and_copy(3);
 
 	B_CHECK(a.data() != original_buffer);
-	B_CHECK(a.size() == 2);
+	B_CHECK(a.length() == 2);
 	B_CHECK(a.capacity() == 3);
 }
 
 B_TEST_CASE(shrink_to_fit)
 {
-	static const size_t initial_size = 100;
+	static const size_t initial_length = 100;
 
-	b::array<int> a1(initial_size, 1);
+	b::array<int> a1(initial_length, 1);
 
 	size_t initial_capacity = a1.capacity();
 
-	// Capacity must be greater than the initial size.
-	B_CHECK(initial_capacity > initial_size);
+	// Capacity must be greater than the initial length.
+	B_CHECK(initial_capacity > initial_length);
 
 	b::array<int> a2(a1);
 
@@ -109,7 +109,7 @@ B_TEST_CASE(array_copying)
 		test2 = test1;
 
 		// Number of elements must not change in a copy.
-		B_CHECK(test2.size() == 1);
+		B_CHECK(test2.length() == 1);
 	}
 
 	// All elements must be destructed.
@@ -139,11 +139,11 @@ B_TEST_CASE(random_removal)
 
 	for (int i = 0; i < array_size; ++i)
 	{
-		size_t random_index = prg.next(numbers.size());
+		size_t random_index = prg.next(numbers.length());
 
 		numbers.remove(random_index);
 
-		for (size_t j = 1; j < numbers.size(); ++j)
+		for (size_t j = 1; j < numbers.length(); ++j)
 			B_CHECK(numbers[j - 1] < numbers[j]);
 	}
 
@@ -171,7 +171,7 @@ static void run_insertion_test(size_t tail_size)
 
 	numbers.insert(10U, values, 10);
 
-	for (i = 0U; i < numbers.size(); ++i)
+	for (i = 0U; i < numbers.length(); ++i)
 		B_CHECK(numbers[i] == i);
 }
 
@@ -191,15 +191,15 @@ B_TEST_CASE(shuffle)
 
 	bool ordered = true;
 
-	for (unsigned i = 0; i < numbers.size(); ++i)
+	for (unsigned i = 0; i < numbers.length(); ++i)
 		if (numbers[i] != i)
 			ordered = false;
 
 	B_CHECK(!ordered);
 
-	b::heapsort(numbers.lock(), numbers.size());
+	b::heapsort(numbers.lock(), numbers.length());
 
-	for (unsigned i = 0; i < numbers.size(); ++i)
+	for (unsigned i = 0; i < numbers.length(); ++i)
 		B_CHECK(numbers[i] == i);
 
 	numbers.unlock();

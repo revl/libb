@@ -294,7 +294,7 @@ B_TEST_CASE(options)
 				"query text") == 0);
 	}
 
-	B_REQUIRE(args.size() == 2);
+	B_REQUIRE(args.length() == 2);
 	B_REQUIRE(args[0] == tabular_report_opt);
 	B_REQUIRE(args[1] == query_arg);
 }
@@ -362,7 +362,7 @@ B_TEST_CASE(freestanding_double_dash)
 		if (arg_id == query_arg)
 			pos_arg_values.append(opt_value);
 
-	B_REQUIRE(pos_arg_values.size() == 3U);
+	B_REQUIRE(pos_arg_values.length() == 3U);
 
 	const char* const* expected_positional = query_cmd + 4;
 
@@ -395,7 +395,7 @@ B_TEST_CASE(freestanding_single_dash)
 		if (arg_id == query_arg)
 			pos_arg_values.append(opt_value);
 
-	B_REQUIRE(pos_arg_values.size() == 3U);
+	B_REQUIRE(pos_arg_values.length() == 3U);
 
 	const char* const* expected_positional = query_cmd + 2;
 

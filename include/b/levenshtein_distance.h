@@ -48,8 +48,8 @@ size_t levenshtein_distance::operator ()(Iter string1,
 			string1, length1);
 
 	// Ensure the buffer is big enough
-	if (row.size() <= length2)
-		row.append(length2 + 1 - row.size(), 0);
+	if (row.length() <= length2)
+		row.append(length2 + 1 - row.length(), 0);
 
 	// Pointer to the current character of the second string
 	Iter current_char;

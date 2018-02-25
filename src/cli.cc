@@ -167,7 +167,7 @@ string option_info::option_name_variants() const
 {
 	string result(with_dashes(name_variants.first()));
 
-	if (name_variants.size() > 1)
+	if (name_variants.length() > 1)
 	{
 		result.append(" [", 2);
 
@@ -247,7 +247,7 @@ struct command_info :
 
 	string command_name_variants() const
 	{
-		if (name_variants.size() == 1)
+		if (name_variants.length() == 1)
 			return name_variants.first();
 
 		name_variant_list::const_iterator name = name_variants.begin();
@@ -831,7 +831,7 @@ void cli::impl::register_arg(arg_type type, int arg_id,
 		required_sequence_arg = opt_info;
 	}
 
-	B_ASSERT(opt_info->name_variants.size() == 1 &&
+	B_ASSERT(opt_info->name_variants.length() == 1 &&
 		"Positional arguments do not allow name variants");
 }
 
@@ -930,20 +930,20 @@ void cli::impl::append_positional_argument_values(
 		const positional_argument_list& argument_values,
 		const command_or_commandless_cli* ci)
 {
-	size_t number_of_values_required = ci->required_args.size() +
-		ci->trailing_required_args.size();
+	size_t number_of_values_required = ci->required_args.length() +
+		ci->trailing_required_args.length();
 
 	if (ci->required_sequence_arg != NULL)
 		++number_of_values_required;
 	else
 		if (ci->optional_sequence_arg == NULL &&
-				argument_values.size() >
+				argument_values.length() >
 					number_of_values_required +
-						ci->optional_args.size())
+						ci->optional_args.length())
 			cmd_error(command_name,
 				"too many positional arguments");
 
-	if (argument_values.size() < number_of_values_required)
+	if (argument_values.length() < number_of_values_required)
 		cmd_error(command_name, "too few positional arguments");
 
 	positional_argument_list::const_iterator av_iter =
@@ -955,7 +955,7 @@ void cli::impl::append_positional_argument_values(
 		append_option_value(*arg_iter++, *av_iter++);
 
 	positional_argument_list::const_iterator trailing_av_iter =
-		argument_values.end() - ci->trailing_required_args.size();
+		argument_values.end() - ci->trailing_required_args.length();
 
 	if (ci->required_sequence_arg != NULL)
 		while (av_iter != trailing_av_iter)

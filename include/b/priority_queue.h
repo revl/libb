@@ -38,7 +38,7 @@ public:
 	T pop();
 
 	// Returns the number of elements in this priority queue.
-	size_t size() const;
+	size_t length() const;
 
 	// Returns true if the priority queue is empty.
 	bool is_empty() const;
@@ -51,14 +51,14 @@ template <class T>
 void priority_queue<T>::push(const T& element)
 {
 	data.append(element);
-	push_into_heap(data.lock(), data.size());
+	push_into_heap(data.lock(), data.length());
 	data.unlock();
 }
 
 template <class T>
 T priority_queue<T>::pop()
 {
-	size_t data_size = data.size();
+	size_t data_size = data.length();
 
 	pop_from_heap(data.lock(), data_size);
 	data.unlock();
@@ -71,9 +71,9 @@ T priority_queue<T>::pop()
 }
 
 template <class T>
-size_t priority_queue<T>::size() const
+size_t priority_queue<T>::length() const
 {
-	return data.size();
+	return data.length();
 }
 
 template <class T>

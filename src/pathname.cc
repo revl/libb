@@ -36,7 +36,7 @@ pathname::pathname(const string_view& path) :
 
 string pathname::str() const
 {
-	size_t n = pathname_components.size();
+	size_t n = pathname_components.length();
 
 	if (n == 0)
 	{
@@ -114,27 +114,27 @@ void pathname::append(const pathname& rhs)
 
 	// Check if 'rhs' completely wipes out all named
 	// components in 'this'.
-	if (pathname_components.size() <= rhs.levels_up)
+	if (pathname_components.length() <= rhs.levels_up)
 	{
 		if (levels_up != UINT_MAX)
 			levels_up += rhs.levels_up -
-				(unsigned) pathname_components.size();
+				(unsigned) pathname_components.length();
 
 		pathname_components = rhs.pathname_components;
 		return;
 	}
 
 	pathname_components.overwrite(
-		pathname_components.size() - rhs.levels_up,
+		pathname_components.length() - rhs.levels_up,
 		rhs.pathname_components);
 
-	if (rhs.levels_up > rhs.pathname_components.size())
+	if (rhs.levels_up > rhs.pathname_components.length())
 	{
 		size_t remainder = (size_t) rhs.levels_up -
-			rhs.pathname_components.size();
+			rhs.pathname_components.length();
 
 		pathname_components.remove(
-			pathname_components.size() - remainder, remainder);
+			pathname_components.length() - remainder, remainder);
 	}
 }
 

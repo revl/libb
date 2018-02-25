@@ -156,7 +156,7 @@ B_TEST_CASE(random_elements)
 
 	for (int i = 0; i < NUMBER_OF_ELEMENTS; ++i)
 	{
-		size_t random_index = prg.next(numbers.size());
+		size_t random_index = prg.next(numbers.length());
 
 		bst.insert(new element(numbers[random_index]));
 
@@ -183,7 +183,7 @@ B_TEST_CASE(random_elements)
 
 			do
 			{
-				B_REQUIRE(i < numbers.size());
+				B_REQUIRE(i < numbers.length());
 
 				B_CHECK(numbers[i++] == value_for_node(node));
 			}
@@ -200,7 +200,7 @@ B_TEST_CASE(random_elements)
 			B_REQUIRE(i == 0);
 		}
 
-		size_t random_index = prg.next(numbers.size());
+		size_t random_index = prg.next(numbers.length());
 		int number = numbers[random_index];
 
 		int cmp_result;

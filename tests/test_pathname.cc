@@ -42,7 +42,7 @@ B_TEST_CASE(pathname_normalization)
 	const b::pathname::component_array& components =
 		normalized_path.components();
 
-	B_REQUIRE(components.size() == 2);
+	B_REQUIRE(components.length() == 2);
 
 	B_CHECK(components.first().name() == "d1");
 

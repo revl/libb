@@ -38,7 +38,7 @@ B_TEST_CASE(push_pop)
 	pq.push(60);
 	pq.push(50);
 
-	B_CHECK(pq.size() == 3);
+	B_CHECK(pq.length() == 3);
 
 	pq.push(40);
 	pq.push(70);

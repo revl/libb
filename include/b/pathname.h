@@ -199,7 +199,7 @@ inline void pathname::assign(const string_view& path)
 inline void pathname::go_up_one_level()
 {
 	if (!pathname_components.is_empty())
-		pathname_components.remove(pathname_components.size() - 1);
+		pathname_components.remove(pathname_components.length() - 1);
 	else
 		if (levels_up != UINT_MAX)
 			++levels_up;
@@ -209,12 +209,12 @@ inline void pathname::go_up_one_level()
 
 inline void pathname::go_up(unsigned levels)
 {
-	if (pathname_components.size() >= levels)
+	if (pathname_components.length() >= levels)
 		pathname_components.remove(
-			pathname_components.size() - levels, levels);
+			pathname_components.length() - levels, levels);
 	else
 	{
-		levels -= (unsigned) pathname_components.size();
+		levels -= (unsigned) pathname_components.length();
 
 		pathname_components.empty();
 

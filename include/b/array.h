@@ -54,7 +54,7 @@ public:
 	size_t capacity() const;
 
 	// Returns the number of elements in the array.
-	size_t size() const;
+	size_t length() const;
 
 	// Checks if the array is empty.
 	bool is_empty() const;
@@ -209,7 +209,7 @@ private:
 	{
 		int refs;
 		size_t capacity;
-		size_t size;
+		size_t length;
 	};
 
 	struct buffer : public array_metadata
@@ -229,7 +229,7 @@ private:
 
 	static T* empty_array();
 
-	static T* alloc_buffer(size_t capacity, size_t size);
+	static T* alloc_buffer(size_t capacity, size_t length);
 
 	static buffer* metadata(const T* elements);
 	buffer* metadata() const;
@@ -277,15 +277,15 @@ size_t array<T>::capacity() const
 }
 
 template <class T>
-size_t array<T>::size() const
+size_t array<T>::length() const
 {
-	return metadata()->size;
+	return metadata()->length;
 }
 
 template <class T>
 bool array<T>::is_empty() const
 {
-	return size() == 0;
+	return length() == 0;
 }
 
 template <class T>
@@ -311,8 +311,8 @@ void array<T>::discard_and_alloc(size_t new_capacity)
 		// It makes no sense to allocate memory block
 		// of the same size. However, all elements are
 		// destructed to simulate usual behavior.
-		destruct(elements, size());
-		metadata()->size = 0;
+		destruct(elements, length());
+		metadata()->length = 0;
 	}
 }
 
@@ -327,8 +327,8 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 	{
 		if (new_capacity > 0)
 		{
-			size_t new_size =
-				size() < new_capacity ? size() : new_capacity;
+			size_t new_size = length() < new_capacity ?
+				length() : new_capacity;
 
 			T* new_buffer_elements =
 				alloc_buffer(new_capacity, new_size);
@@ -346,7 +346,7 @@ void array<T>::alloc_and_copy(size_t new_capacity)
 template <class T>
 void array<T>::trim_to_size()
 {
-	alloc_and_copy(size());
+	alloc_and_copy(length());
 }
 
 template <class T>
@@ -376,7 +376,7 @@ void array<T>::unlock()
 template <class T>
 const T& array<T>::at(size_t index) const
 {
-	B_ASSERT(index < size());
+	B_ASSERT(index < length());
 
 	return elements[index];
 }
@@ -384,7 +384,7 @@ const T& array<T>::at(size_t index) const
 template <class T>
 const T& array<T>::operator [](size_t index) const
 {
-	B_ASSERT(index < size());
+	B_ASSERT(index < length());
 
 	return elements[index];
 }
@@ -392,7 +392,7 @@ const T& array<T>::operator [](size_t index) const
 template <class T>
 T& array<T>::at(size_t index)
 {
-	B_ASSERT(index < size());
+	B_ASSERT(index < length());
 
 	isolate();
 	return elements[index];
@@ -401,7 +401,7 @@ T& array<T>::at(size_t index)
 template <class T>
 T& array<T>::operator [](size_t index)
 {
-	B_ASSERT(index < size());
+	B_ASSERT(index < length());
 
 	isolate();
 	return elements[index];
@@ -429,7 +429,7 @@ const T& array<T>::last() const
 {
 	B_ASSERT(!is_empty());
 
-	return elements[size() - 1];
+	return elements[length() - 1];
 }
 
 template <class T>
@@ -438,13 +438,13 @@ T& array<T>::last()
 	B_ASSERT(!is_empty());
 
 	isolate();
-	return elements[size() - 1];
+	return elements[length() - 1];
 }
 
 template <class T>
 array_slice<T> array<T>::slice(size_t from, size_t slice_len) const
 {
-	B_ASSERT(from + slice_len <= size());
+	B_ASSERT(from + slice_len <= length());
 
 	return array_slice<T>(elements + from, slice_len);
 }
@@ -461,7 +461,7 @@ void array<T>::assign(const array<T>& source)
 	}
 	else
 		if (elements != source.elements)
-			assign(source.data(), source.size());
+			assign(source.data(), source.length());
 }
 
 template <class T>
@@ -474,17 +474,17 @@ void array<T>::assign(const T* source, size_t count)
 	if (count > 0)
 	{
 		if (!is_shared() && count <= capacity())
-			if (count > size())
+			if (count > length())
 			{
-				assign_pairwise(elements, source, size());
-				construct_copies(elements + size(),
-					source + size(),
-					count - size());
+				assign_pairwise(elements, source, length());
+				construct_copies(elements + length(),
+					source + length(),
+					count - length());
 			}
 			else
 			{
 				assign_pairwise(elements, source, count);
-				destruct(elements + count, size() - count);
+				destruct(elements + count, length() - count);
 			}
 		else
 		{
@@ -492,7 +492,7 @@ void array<T>::assign(const T* source, size_t count)
 			construct_copies(elements, source, count);
 		}
 
-		metadata()->size = count;
+		metadata()->length = count;
 	}
 	else
 		empty();
@@ -504,16 +504,16 @@ void array<T>::assign(size_t count, const T& element)
 	if (count > 0)
 	{
 		if (!is_shared() && count <= capacity())
-			if (count > size())
+			if (count > length())
 			{
-				assign_value(elements, size(), element);
-				construct_identical_copies(elements + size(),
-					element, count - size());
+				assign_value(elements, length(), element);
+				construct_identical_copies(elements + length(),
+					element, count - length());
 			}
 			else
 			{
 				assign_value(elements, count, element);
-				destruct(elements + count, size() - count);
+				destruct(elements + count, length() - count);
 			}
 		else
 		{
@@ -521,7 +521,7 @@ void array<T>::assign(size_t count, const T& element)
 			construct_identical_copies(elements, element, count);
 		}
 
-		metadata()->size = count;
+		metadata()->length = count;
 	}
 	else
 		empty();
@@ -537,13 +537,13 @@ array<T>& array<T>::operator =(const array<T>& source)
 template <class T>
 void array<T>::overwrite(size_t index, const array<T>& source)
 {
-	overwrite(index, source.data(), source.size());
+	overwrite(index, source.data(), source.length());
 }
 
 template <class T>
 void array<T>::overwrite(size_t index, const T* source, size_t count)
 {
-	B_ASSERT(index <= size());
+	B_ASSERT(index <= length());
 	// This and the source array must not overlap.
 	B_ASSERT(source >= elements + capacity() ||
 		source + count < elements);
@@ -554,7 +554,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 
 		if (!is_shared())
 		{
-			if (tail_index <= size())
+			if (tail_index <= length())
 			{
 				// This is the most frequent case,
 				// that's why it is processed first.
@@ -568,12 +568,12 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 				if (tail_index <= capacity())
 				{
 					assign_pairwise(elements + index,
-						source, size() - index);
-					construct_copies(elements + size(),
-						source + size() - index,
-						tail_index - size());
+						source, length() - index);
+					construct_copies(elements + length(),
+						source + length() - index,
+						tail_index - length());
 
-					metadata()->size = tail_index;
+					metadata()->length = tail_index;
 
 					return;
 				}
@@ -588,9 +588,9 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 
 		T* new_buffer_elements;
 
-		if (tail_index < size())
+		if (tail_index < length())
 		{
-			const size_t unaffected_size = size();
+			const size_t unaffected_size = length();
 
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
@@ -613,7 +613,7 @@ void array<T>::overwrite(size_t index, const T* source, size_t count)
 template <class T>
 void array<T>::overwrite(size_t index, size_t count, const T& element)
 {
-	B_ASSERT(index <= size());
+	B_ASSERT(index <= length());
 
 	if (count > 0)
 	{
@@ -621,7 +621,7 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 
 		if (!is_shared())
 		{
-			if (tail_index <= size())
+			if (tail_index <= length())
 			{
 				assign_value(elements + index, count, element);
 
@@ -631,13 +631,13 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 				if (tail_index <= capacity())
 				{
 					assign_value(elements + index,
-						size() - index, element);
+						length() - index, element);
 
 					construct_identical_copies(
-						elements + size(), element,
-						tail_index - size());
+						elements + length(), element,
+						tail_index - length());
 
-					metadata()->size = tail_index;
+					metadata()->length = tail_index;
 
 					return;
 				}
@@ -647,9 +647,9 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 
 		T* new_buffer_elements;
 
-		if (tail_index < size())
+		if (tail_index < length())
 		{
-			const size_t unaffected_size = size();
+			const size_t unaffected_size = length();
 
 			new_buffer_elements = alloc_buffer(extra_capacity(
 				unaffected_size), unaffected_size);
@@ -673,13 +673,13 @@ void array<T>::overwrite(size_t index, size_t count, const T& element)
 template <class T>
 void array<T>::insert(size_t index, const array<T>& source)
 {
-	insert(index, source.data(), source.size());
+	insert(index, source.data(), source.length());
 }
 
 template <class T>
 void array<T>::insert(size_t index, const T* source, size_t count)
 {
-	B_ASSERT(index <= size());
+	B_ASSERT(index <= length());
 	// This and the source array must not overlap.
 	B_ASSERT(source >= elements + capacity() ||
 		source + count < elements);
@@ -687,8 +687,8 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 	if (count > 0)
 	{
 		T* tail = elements + index;
-		size_t tail_size = size() - index;
-		size_t new_size = size() + count;
+		size_t tail_size = length() - index;
+		size_t new_size = length() + count;
 
 		if (new_size > capacity() || is_shared())
 		{
@@ -707,7 +707,7 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 		{
 			move_right_and_insert(tail, tail_size, source, count);
 
-			metadata()->size = new_size;
+			metadata()->length = new_size;
 		}
 	}
 }
@@ -715,13 +715,13 @@ void array<T>::insert(size_t index, const T* source, size_t count)
 template <class T>
 void array<T>::insert(size_t index, size_t count, const T& element)
 {
-	B_ASSERT(index <= size());
+	B_ASSERT(index <= length());
 
 	if (count > 0)
 	{
 		T* tail = elements + index;
-		size_t tail_size = size() - index;
-		size_t new_size = size() + count;
+		size_t tail_size = length() - index;
+		size_t new_size = length() + count;
 
 		if (new_size > capacity() || is_shared())
 		{
@@ -740,7 +740,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 		{
 			move_right_and_insert(tail, tail_size, element, count);
 
-			metadata()->size = new_size;
+			metadata()->length = new_size;
 		}
 	}
 }
@@ -748,7 +748,7 @@ void array<T>::insert(size_t index, size_t count, const T& element)
 template <class T>
 void array<T>::append(const array<T>& source)
 {
-	append(source.elements, source.size());
+	append(source.elements, source.length());
 }
 
 template <class T>
@@ -760,11 +760,11 @@ void array<T>::append(const T* source, size_t count)
 
 	if (count > 0)
 	{
-		if (is_shared() || size() + count > capacity())
-			alloc_and_copy(extra_capacity(size() + count));
+		if (is_shared() || length() + count > capacity())
+			alloc_and_copy(extra_capacity(length() + count));
 
-		construct_copies(elements + size(), source, count);
-		metadata()->size += count;
+		construct_copies(elements + length(), source, count);
+		metadata()->length += count;
 	}
 }
 
@@ -773,11 +773,11 @@ void array<T>::append(size_t count, const T& element)
 {
 	if (count > 0)
 	{
-		if (is_shared() || size() + count > capacity())
-			alloc_and_copy(extra_capacity(size() + count));
+		if (is_shared() || length() + count > capacity())
+			alloc_and_copy(extra_capacity(length() + count));
 
-		construct_identical_copies(elements + size(), element, count);
-		metadata()->size += count;
+		construct_identical_copies(elements + length(), element, count);
+		metadata()->length += count;
 	}
 }
 
@@ -811,14 +811,14 @@ array<T> array<T>::operator +(const array<T>& source) const
 template <class T>
 void array<T>::remove(size_t index, size_t count)
 {
-	B_ASSERT(index <= size());
+	B_ASSERT(index <= length());
 
-	if (index + count > size())
-		count = size() - index;
+	if (index + count > length())
+		count = length() - index;
 
 	if (count > 0)
 	{
-		size_t new_size = size() - count;
+		size_t new_size = length() - count;
 
 		if (!is_shared())
 		{
@@ -827,7 +827,7 @@ void array<T>::remove(size_t index, size_t count)
 
 			destruct(elements + new_size, count);
 
-			metadata()->size = new_size;
+			metadata()->length = new_size;
 		}
 		else
 		{
@@ -849,8 +849,8 @@ void array<T>::empty()
 {
 	if (!is_shared())
 	{
-		destruct(elements, size());
-		metadata()->size = 0;
+		destruct(elements, length());
+		metadata()->length = 0;
 	}
 	else
 		replace_buffer(empty_array());
@@ -865,7 +865,7 @@ const T* array<T>::begin() const
 template <class T>
 const T* array<T>::end() const
 {
-	return elements + size();
+	return elements + length();
 }
 
 template <class T>
@@ -873,7 +873,7 @@ void array<T>::shuffle(pseudorandom& prng)
 {
 	isolate();
 
-	shuffle_array(elements, size(), prng);
+	shuffle_array(elements, length(), prng);
 }
 
 template <class T>
@@ -889,7 +889,7 @@ T* array<T>::empty_array()
 	{
 		/* refs         */ 2,
 		/* capacity     */ 0,
-		/* size         */ 0
+		/* length       */ 0
 	};
 
 	return &static_cast<buffer&>(
@@ -898,14 +898,14 @@ T* array<T>::empty_array()
 }
 
 template <class T>
-T* array<T>::alloc_buffer(size_t capacity, size_t size)
+T* array<T>::alloc_buffer(size_t capacity, size_t length)
 {
 	buffer* new_buffer = (buffer*) memory::alloc((size_t)
 		&((buffer*) (sizeof(T) * capacity))->first_element);
 
 	new_buffer->refs = 1;
 	new_buffer->capacity = capacity;
-	new_buffer->size = size;
+	new_buffer->length = length;
 
 	return &new_buffer->first_element;
 }
@@ -929,7 +929,7 @@ void array<T>::release()
 
 	if (elements != empty_array() && !--metadata()->refs)
 	{
-		destruct(elements, size());
+		destruct(elements, length());
 		memory::free(metadata());
 	}
 }
@@ -946,7 +946,7 @@ template <class T>
 void array<T>::isolate()
 {
 	if (is_shared())
-		alloc_and_copy(extra_capacity(size()));
+		alloc_and_copy(extra_capacity(length()));
 }
 
 template <class T>
