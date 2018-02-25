@@ -85,7 +85,9 @@ public:
 	// of the 'source' string.
 	void assign(const string_view& source);
 
-	// Operator version of assign(const string_view&).
+	// Makes this string_view object point to the contents
+	// of the 'source' string (operator version of
+	// assign(const string_view&)).
 	string_view& operator =(const string_view& source);
 
 	// Resets this object to point to another character buffer.
@@ -95,7 +97,9 @@ public:
 	// of the 'source' string.
 	void assign(const string& source);
 
-	// Operator version of assign(const string&).
+	// Makes this string_view object point to the contents
+	// of the 'source' string (operator version of
+	// assign(const string&)).
 	string_view& operator =(const string& source);
 
 // Comparison
