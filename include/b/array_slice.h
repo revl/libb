@@ -97,7 +97,9 @@ public:
 	// memory range that the 'source' slice points to.
 	void assign(const array_slice& source);
 
-	// Operator version of assign(const array_slice&).
+	// Makes this array slice point to the same
+	// memory range that the 'source' slice points to
+	// (operator version of assign(const array_slice&)).
 	array_slice& operator =(const array_slice& source);
 
 	// Resets this object to point to a different memory range.
@@ -107,7 +109,9 @@ public:
 	// contents of the 'source' array.
 	void assign(const array<T>& source);
 
-	// Operator version of assign(const array<T>&).
+	// Makes this array_slice object point to the entire
+	// contents of the 'source' array (operator version of
+	// assign(const array<T>&)).
 	array_slice& operator =(const array<T>& source);
 
 // Implementation
