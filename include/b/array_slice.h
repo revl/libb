@@ -84,9 +84,17 @@ public:
 	// of this array slice.
 	const T& first() const;
 
+	// Returns the first 'n' elements of this slice
+	// as a new array_slice object.
+	array_slice<T> first_n(size_t n) const;
+
 	// Returns a constant reference to the last element
 	// of this array slice.
 	const T& last() const;
+
+	// Returns the last 'n' elements of this slice
+	// as a new array_slice object.
+	array_slice<T> last_n(size_t n) const;
 
 	// Returns a subslice of this slice.
 	array_slice slice(size_t start, size_t len) const;
@@ -174,11 +182,27 @@ const T& array_slice<T>::first() const
 }
 
 template <class T>
+array_slice<T> array_slice<T>::first_n(size_t n) const
+{
+	B_ASSERT(n <= length());
+
+	return array_slice<T>(elements, n);
+}
+
+template <class T>
 const T& array_slice<T>::last() const
 {
 	B_ASSERT(!is_empty());
 
 	return elements[length() - 1];
+}
+
+template <class T>
+array_slice<T> array_slice<T>::last_n(size_t n) const
+{
+	B_ASSERT(n <= length());
+
+	return array_slice<T>(elements + length() - n, n);
 }
 
 template <class T>

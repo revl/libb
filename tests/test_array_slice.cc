@@ -48,7 +48,7 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(slice2[9] == 9);
 }
 
-B_TEST_CASE(subslice)
+B_TEST_CASE(subslices)
 {
 	b::array_slice<unsigned> slice(digits, 10);
 
@@ -58,4 +58,16 @@ B_TEST_CASE(subslice)
 	B_CHECK(subslice.data() == digits + 5);
 	B_CHECK(subslice[0] == 5);
 	B_CHECK(subslice[1] == 6);
+
+	b::array_slice<unsigned> first_5 = slice.first_n(5);
+
+	B_CHECK(first_5.length() == 5);
+	B_CHECK(first_5.data() == digits);
+	B_CHECK(first_5[4] == 4);
+
+	b::array_slice<unsigned> last_5 = slice.last_n(5);
+
+	B_CHECK(last_5.length() == 5);
+	B_CHECK(last_5.data() == digits + 5);
+	B_CHECK(last_5[4] == 9);
 }
