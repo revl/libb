@@ -220,5 +220,5 @@ B_TEST_CASE(slice)
 
 	do
 		B_CHECK(slice[i++] == n++);
-	while (i <= 20);
+	while (i < 20);
 }
