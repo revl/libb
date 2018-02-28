@@ -88,6 +88,10 @@ public:
 	// as a new array_slice object.
 	array_slice<T> first_n(size_t n) const;
 
+	// Drops the first 'n' elements of this slice and returns
+	// the remaining elements as a new array_slice object.
+	array_slice<T> without_first_n(size_t n) const;
+
 	// Returns a constant reference to the last element
 	// of this array slice.
 	const T& last() const;
@@ -95,6 +99,10 @@ public:
 	// Returns the last 'n' elements of this slice
 	// as a new array_slice object.
 	array_slice<T> last_n(size_t n) const;
+
+	// Drops the last 'n' elements of this slice and returns
+	// the remaining elements as a new array_slice object.
+	array_slice<T> without_last_n(size_t n) const;
 
 	// Returns a subslice of this slice.
 	array_slice slice(size_t start, size_t len) const;
@@ -190,6 +198,14 @@ array_slice<T> array_slice<T>::first_n(size_t n) const
 }
 
 template <class T>
+array_slice<T> array_slice<T>::without_first_n(size_t n) const
+{
+	B_ASSERT(n <= length());
+
+	return array_slice<T>(elements + n, length() - n);
+}
+
+template <class T>
 const T& array_slice<T>::last() const
 {
 	B_ASSERT(!is_empty());
@@ -203,6 +219,14 @@ array_slice<T> array_slice<T>::last_n(size_t n) const
 	B_ASSERT(n <= length());
 
 	return array_slice<T>(elements + length() - n, n);
+}
+
+template <class T>
+array_slice<T> array_slice<T>::without_last_n(size_t n) const
+{
+	B_ASSERT(n <= length());
+
+	return array_slice<T>(elements, length() - n);
 }
 
 template <class T>
