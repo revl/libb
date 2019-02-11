@@ -18,36 +18,21 @@
  *
  */
 
-#include <b/priority_queue.h>
+#include <b/memory.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-B_TEST_CASE(push_pop)
+B_TEST_CASE(size_alignment)
 {
-	b::priority_queue<int> pq;
+	B_CHECK(b::memory::align((size_t) 6, 4) == (size_t) 8);
+	B_CHECK(b::memory::align((size_t) 7, 1) == (size_t) 7);
+	B_CHECK(b::memory::align((size_t) 8, 4) == (size_t) 8);
+	B_CHECK(b::memory::align((size_t) 9, 8) == (size_t) 16);
+}
 
-	pq.push(20);
-	pq.push(10);
-
-	B_CHECK(pq.pop() == 20);
-
-	pq.push(30);
-
-	B_CHECK(pq.pop() == 30);
-
-	pq.push(60);
-	pq.push(50);
-
-	B_CHECK(pq.length() == 3);
-
-	pq.push(40);
-	pq.push(70);
-
-	B_CHECK(pq.pop() == 70);
-	B_CHECK(pq.pop() == 60);
-	B_CHECK(pq.pop() == 50);
-	B_CHECK(pq.pop() == 40);
-	B_CHECK(pq.pop() == 10);
-
-	B_CHECK(pq.is_empty());
+B_TEST_CASE(pointer_alignment)
+{
+	B_CHECK(b::memory::align((void*) 9, 8) == (void*) 16);
+	B_CHECK(b::memory::align((void*) 0, 16) == (void*) 0);
+	B_CHECK(b::memory::align((void*) 1, 32) == (void*) 32);
 }

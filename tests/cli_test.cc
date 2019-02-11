@@ -20,7 +20,7 @@
 
 #include <b/cli.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 #include <b/string_stream.h>
 #include <b/array.h>

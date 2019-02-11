@@ -54,7 +54,7 @@ int handle::value() const
 	return impl_ref->value;
 }
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_TEST_CASE(opaque_pointer)
 {

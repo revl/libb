@@ -18,51 +18,26 @@
  *
  */
 
-#include <b/map.h>
+#include <b/heap.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-template class b::map<int, int>;
-
-B_TEST_CASE(construction)
+B_TEST_CASE(heapsort)
 {
-	typedef b::map<int, int> int_map;
+	b::pseudorandom rand(123);
 
-	int_map m;
+	size_t data[1000];
 
-	B_CHECK(m.is_empty());
-	B_CHECK(m.size() == 0);
+	for (size_t i = 0; i < B_COUNTOF(data); ++i)
+		data[i] = rand.next();
 
-	bool new_element;
+	b::heapsort(data, B_COUNTOF(data));
 
-	b::kv_pair<int, int>* kv = m.insert(6, 6, &new_element);
+	size_t prev_value = data[0];
 
-	B_CHECK(new_element == true);
-	B_CHECK(m.size() == 1);
-	B_CHECK(kv->key == 6);
-	B_CHECK(kv->value == 6);
-
-	int_map::search_result sr = m.search(6);
-
-	B_REQUIRE(sr.match() != NULL);
-	B_CHECK(sr.match()->value == 6);
-
-	int* v = m.find(6);
-
-	B_REQUIRE(v != NULL);
-	B_CHECK(*v == 6);
-
-	kv = m.insert(6, 7, &new_element);
-
-	B_CHECK(new_element == false);
-	B_CHECK(m.size() == 1);
-	B_CHECK(kv->key == 6);
-	B_CHECK(kv->value == 7);
-
-	kv->value = 8;
-	B_CHECK(*m.find(6) == 8);
-
-	B_CHECK(m.remove(6));
-	B_CHECK(!m.remove(6));
-	B_CHECK(!m.remove(10));
+	for (size_t i = 1; i < B_COUNTOF(data); ++i)
+	{
+		B_CHECK(prev_value <= data[i]);
+		prev_value = data[i];
+	}
 }

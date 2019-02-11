@@ -20,7 +20,7 @@
 
 #include <b/string.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 #include <b/custom_exception.h>
 

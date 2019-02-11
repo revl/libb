@@ -22,7 +22,7 @@
 
 #include <b/heap.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_TEST_CASE(shared_data)
 {

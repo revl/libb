@@ -22,7 +22,7 @@
 
 #include <b/heap.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 static bool match_and_check_all(const char* input, const char* pattern,
 	bool expected_match)

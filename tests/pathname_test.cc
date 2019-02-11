@@ -20,7 +20,7 @@
 
 #include <b/pathname.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_TEST_CASE(empty_pathname)
 {

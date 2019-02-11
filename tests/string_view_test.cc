@@ -20,7 +20,7 @@
 
 #include <b/string_view.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_STRING_LITERAL(static_const_string, "static_const_string");
 

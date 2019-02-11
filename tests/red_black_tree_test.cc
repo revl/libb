@@ -18,26 +18,28 @@
  *
  */
 
-#include <b/heap.h>
+#include <b/red_black_tree.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-B_TEST_CASE(heapsort)
+struct element : public b::red_black_tree_node
 {
-	b::pseudorandom rand(123);
-
-	size_t data[1000];
-
-	for (size_t i = 0; i < B_COUNTOF(data); ++i)
-		data[i] = rand.next();
-
-	b::heapsort(data, B_COUNTOF(data));
-
-	size_t prev_value = data[0];
-
-	for (size_t i = 1; i < B_COUNTOF(data); ++i)
+	element(int val) : value(val)
 	{
-		B_CHECK(prev_value <= data[i]);
-		prev_value = data[i];
 	}
+
+	const int value;
+};
+
+static int value_for_node(const b::red_black_tree_node* node)
+{
+	return static_cast<const element*>(node)->value;
+}
+
+B_TEST_CASE(construction)
+{
+	b::red_black_tree<int (*)(const b::red_black_tree_node*)> rbt =
+		value_for_node;
+
+	B_REQUIRE(rbt.number_of_nodes == 0);
 }

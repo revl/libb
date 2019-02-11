@@ -18,34 +18,27 @@
  *
  */
 
-#include <b/string_stream.h>
+#include <b/levenshtein_distance.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-B_TEST_CASE(string_stream)
+#define DIST(s1, s2) ld(s1, sizeof(s1) - 1, s2, sizeof(s2) - 1)
+
+B_TEST_CASE(levenshtein_distance)
 {
-	b::ref<b::input_output_stream> ios = new b::string_stream;
+	b::levenshtein_distance ld;
 
-	ios->write("Hello", 5);
-	ios->write(", ", 2);
-	ios->write("World.", 6);
+	B_CHECK(DIST("QWERTY", "WER") == 3);
 
-	ios->seek(-1, b::seekable::end);
-	ios->write("!", 1);
+	B_CHECK(DIST("[pskdfbvjcv", "osdkfj") == 8);
 
-	ios->seek(0U);
+	B_CHECK(DIST("jksefuyrthber", "uwufuyvghseyfa") == 10);
 
-	char buffer[16];
+	B_CHECK(DIST("ASDF", "ASCDF") == 1);
 
-	b::string result(buffer,
-		ios->read(buffer, sizeof(buffer)));
+	B_CHECK(DIST("1234", "") == 4);
 
-	ios->seek(7U);
+	B_CHECK(DIST("", "1234") == 4);
 
-	b::ref<b::input_stream> is(ios);
-
-	result.assign(buffer,
-		ios->read(buffer, sizeof(buffer)));
-
-	B_CHECK(result == "World!");
+	B_CHECK(DIST("string", "string") == 0);
 }

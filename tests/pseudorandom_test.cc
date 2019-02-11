@@ -20,7 +20,7 @@
 
 #include <b/pseudorandom.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_TEST_CASE(seed_1000)
 {

@@ -23,7 +23,7 @@
 #include <b/array.h>
 #include <b/pseudorandom.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 struct element : public b::binary_tree_node
 {

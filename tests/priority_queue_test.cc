@@ -18,22 +18,36 @@
  *
  */
 
-#include <b/atomic.h>
+#include <b/priority_queue.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-B_TEST_CASE(atomic)
+B_TEST_CASE(push_pop)
 {
-	b::atomic refs = B_ATOMIC_STATIC_INIT(1);
+	b::priority_queue<int> pq;
 
-	++refs;
+	pq.push(20);
+	pq.push(10);
 
-	B_CHECK((int) refs == 2);
+	B_CHECK(pq.pop() == 20);
 
-	B_CHECK(--refs);
-	B_CHECK(!--refs);
+	pq.push(30);
 
-	refs = 1;
+	B_CHECK(pq.pop() == 30);
 
-	B_CHECK(!--refs);
+	pq.push(60);
+	pq.push(50);
+
+	B_CHECK(pq.length() == 3);
+
+	pq.push(40);
+	pq.push(70);
+
+	B_CHECK(pq.pop() == 70);
+	B_CHECK(pq.pop() == 60);
+	B_CHECK(pq.pop() == 50);
+	B_CHECK(pq.pop() == 40);
+	B_CHECK(pq.pop() == 10);
+
+	B_CHECK(pq.is_empty());
 }

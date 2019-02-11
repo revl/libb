@@ -20,7 +20,7 @@
 
 #include <b/array_slice.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 static unsigned digits[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 

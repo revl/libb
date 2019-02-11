@@ -20,7 +20,7 @@
 
 #include <b/string.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 B_STRING_LITERAL(left, "lLC");
 B_STRING_LITERAL(right, "CRr");

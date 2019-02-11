@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef B_UNIT_TEST_H
-#define B_UNIT_TEST_H
+#ifndef B_TEST_CASE_H
+#define B_TEST_CASE_H
 
 #include <b/runtime_exception.h>
 #include <b/linked_list.h>
@@ -165,4 +165,4 @@ int main(int /*argc*/, char* /*argv*/[])
 	return failed_tests;
 }
 
-#endif /* !defined(B_UNIT_TEST_H) */
+#endif /* !defined(B_TEST_CASE_H) */

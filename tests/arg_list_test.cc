@@ -20,7 +20,7 @@
 
 #include <b/arg_list.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 // Test case 1. Define named arguments using an enumeration.
 // Use a switch to recognize argument types.

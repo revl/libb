@@ -18,28 +18,34 @@
  *
  */
 
-#include <b/red_black_tree.h>
+#include <b/string_stream.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-struct element : public b::red_black_tree_node
+B_TEST_CASE(string_stream)
 {
-	element(int val) : value(val)
-	{
-	}
+	b::ref<b::input_output_stream> ios = new b::string_stream;
 
-	const int value;
-};
+	ios->write("Hello", 5);
+	ios->write(", ", 2);
+	ios->write("World.", 6);
 
-static int value_for_node(const b::red_black_tree_node* node)
-{
-	return static_cast<const element*>(node)->value;
-}
+	ios->seek(-1, b::seekable::end);
+	ios->write("!", 1);
 
-B_TEST_CASE(construction)
-{
-	b::red_black_tree<int (*)(const b::red_black_tree_node*)> rbt =
-		value_for_node;
+	ios->seek(0U);
 
-	B_REQUIRE(rbt.number_of_nodes == 0);
+	char buffer[16];
+
+	b::string result(buffer,
+		ios->read(buffer, sizeof(buffer)));
+
+	ios->seek(7U);
+
+	b::ref<b::input_stream> is(ios);
+
+	result.assign(buffer,
+		ios->read(buffer, sizeof(buffer)));
+
+	B_CHECK(result == "World!");
 }

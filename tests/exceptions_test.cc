@@ -18,21 +18,32 @@
  *
  */
 
-#include <b/memory.h>
+#include <b/custom_exception.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
-B_TEST_CASE(size_alignment)
+B_TEST_CASE(exception_message)
 {
-	B_CHECK(b::memory::align((size_t) 6, 4) == (size_t) 8);
-	B_CHECK(b::memory::align((size_t) 7, 1) == (size_t) 7);
-	B_CHECK(b::memory::align((size_t) 8, 4) == (size_t) 8);
-	B_CHECK(b::memory::align((size_t) 9, 8) == (size_t) 16);
+	B_STRING_LITERAL(test_message, "This is a test");
+
+	try
+	{
+		throw b::custom_exception(test_message);
+	}
+	catch (b::runtime_exception& e)
+	{
+		B_CHECK(e.message() == test_message);
+	}
 }
 
-B_TEST_CASE(pointer_alignment)
+B_TEST_CASE(formatted_exception_message)
 {
-	B_CHECK(b::memory::align((void*) 9, 8) == (void*) 16);
-	B_CHECK(b::memory::align((void*) 0, 16) == (void*) 0);
-	B_CHECK(b::memory::align((void*) 1, 32) == (void*) 32);
+	try
+	{
+		throw b::custom_exception("This is a %s", "test");
+	}
+	catch (b::runtime_exception& e)
+	{
+		B_CHECK(e.message() == "This is a test");
+	}
 }

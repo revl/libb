@@ -20,7 +20,7 @@
 
 #include <b/object.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 class base : public b::object
 {

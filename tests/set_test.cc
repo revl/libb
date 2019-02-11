@@ -20,7 +20,7 @@
 
 #include <b/set.h>
 
-#include "unit_test.h"
+#include "test_case.h"
 
 template class b::set<int>;
 
