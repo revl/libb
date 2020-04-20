@@ -117,7 +117,7 @@ B_TEST_CASE(up_levels)
 
 	B_CHECK(path.can_represent_file());
 
-	path.append(B_STRING_VIEW(".."));
+	path.join(B_STRING_VIEW(".."));
 
 	B_CHECK(!path.can_represent_file());
 
@@ -150,7 +150,7 @@ B_TEST_CASE(up_levels)
 
 B_STRING_LITERAL(initial_path, "dir/subdir");
 
-static void check_append(const char* chdir, const char* expected,
+static void check_join(const char* chdir, const char* expected,
 		bool result_can_represent_file)
 {
 	b::string_view chdir_sv(chdir, b::calc_length(chdir));
@@ -158,8 +158,8 @@ static void check_append(const char* chdir, const char* expected,
 	{
 		static b::pathname path(initial_path);
 
-		// Parse 'chdir' and append it to 'path'.
-		path.append(chdir_sv);
+		// Parse 'chdir' and join it to 'path'.
+		path.join(chdir_sv);
 
 		B_CHECK(path.str() == expected);
 		B_CHECK(path.can_represent_file() == result_can_represent_file);
@@ -168,8 +168,8 @@ static void check_append(const char* chdir, const char* expected,
 	{
 		static b::pathname path(initial_path);
 
-		// Append pre-parsed 'chdir'.
-		path.append(b::pathname(chdir_sv));
+		// Join a pre-parsed 'chdir'.
+		path.join(b::pathname(chdir_sv));
 
 		B_CHECK(path.str() == expected);
 		B_CHECK(path.can_represent_file() == result_can_represent_file);
@@ -178,15 +178,15 @@ static void check_append(const char* chdir, const char* expected,
 
 B_TEST_CASE(pathname_increments)
 {
-	check_append("..", "dir", false);
-	check_append("subdir", initial_path.data(), true);
-	check_append("../..", ".", false);
-	check_append("../..", "../..", false);
-	check_append("/", "/", false);
-	check_append("root", "/root", true);
-	check_append("///usr", "/usr", true);
-	check_append("../var///lib", "/var/lib", true);
-	check_append("../../../../../srv/", "/srv", false);
+	check_join("..", "dir", false);
+	check_join("subdir", initial_path.data(), true);
+	check_join("../..", ".", false);
+	check_join("../..", "../..", false);
+	check_join("/", "/", false);
+	check_join("root", "/root", true);
+	check_join("///usr", "/usr", true);
+	check_join("../var///lib", "/var/lib", true);
+	check_join("../../../../../srv/", "/srv", false);
 }
 
 B_TEST_CASE(pattern_match)
@@ -207,15 +207,47 @@ static void check_relative(const char* base_pathname,
 	b::pathname target(b::string_view(target_pathname,
 		b::calc_length(target_pathname)));
 
-	b::pathname relative = base.relative(target);
+	b::pathname relative = target.relative_to(base);
 
+printf("relative: [%s], expected: [%s]\n", relative.str().data(), expected_result);
 	B_CHECK(relative.str() == expected_result);
 	B_CHECK(relative.can_represent_file() == result_can_represent_file);
 }
 
 B_TEST_CASE(relative)
 {
-	check_relative("../../a", "../../../b", "../../b", true);
+	check_relative("../../../a/b", "../../../../c", "../../../c", true);
+	check_relative("../../a/b/c", "../../../d/", "../../../../d", false);
+	check_relative("a/b/.", "./a/b", ".", true);
+	check_relative("./a/b", "a/b/.", ".", false);
+	check_relative("a/b/c/d", "a/b/d", "../../d", true);
+	check_relative("a/b", "a/b/c/d", "c/d", true);
+	check_relative("a/b", "a/b/../c", "../c", true);
+	check_relative("a/b/../c", "a/b", "../b", true);
+	check_relative("a/b/c", "a/c/d", "../../c/d", true);
+	check_relative("a/b", "c/d", "../../c/d", true);
+	check_relative("a/b/c/d", "a/b", "../..", true);
+	check_relative("a/b/c/d", "a/b/", "../..", false);
+	check_relative("a/b/c/d/", "a/b", "../..", true);
+	check_relative("a/b/c/d/", "a/b/", "../..", false);
+	check_relative("../../a/b", "../../a/b/c/d", "c/d", true);
+	check_relative("/a/b", "/a/b", ".", true);
+	check_relative("/a/b/.", "/a/b", ".", true);
+	check_relative("/a/b", "/a/b/.", ".", false);
+	check_relative("/ab/cd", "/ab/cde", "../cde", true);
+	check_relative("/ab/cd", "/ab/c", "../c", true);
+	check_relative("/a/b", "/a/b/c/d", "c/d", true);
+	check_relative("/a/b", "/a/b/../c", "../c", true);
+	check_relative("/a/b/../c", "/a/b", "../b", true);
+	check_relative("/a/b/c", "/a/c/d", "../../c/d", true);
+	check_relative("/a/b", "/c/d", "../../c/d", true);
+	check_relative("/a/b/c/d", "/a/b", "../..", true);
+	check_relative("/a/b/c/d", "/a/b/", "../..", false);
+	check_relative("/a/b/c/d/", "/a/b", "../..", true);
+	check_relative("/a/b/c/d/", "/a/b/", "../..", false);
+	check_relative("/../../a/b", "/../../a/b/c/d", "c/d", true);
+	check_relative(".", "a/b", "a/b", true);
+	check_relative(".", "..", "..", false);
 }
 
 B_TEST_CASE(relative_errors)
@@ -223,27 +255,24 @@ B_TEST_CASE(relative_errors)
 	const b::pathname abs(B_STRING_VIEW("/abs"));
 	const b::pathname rel(B_STRING_VIEW("rel"));
 
-	B_REQUIRE_EXCEPTION(abs.relative(rel),
-		"Need to know CWD to make 'rel' relative to '/abs'.");
+	B_REQUIRE_EXCEPTION(abs.relative_to(rel),
+		"Cannot make '/abs' relative to 'rel'.");
 
-	B_REQUIRE_EXCEPTION(rel.relative(abs),
-		"Need to know CWD to make '/abs' relative to 'rel'.");
+	B_REQUIRE_EXCEPTION(rel.relative_to(abs),
+		"Cannot make 'rel' relative to '/abs'.");
 
 	const b::pathname one_level_up(B_STRING_VIEW(".."));
 
-	B_REQUIRE_EXCEPTION(one_level_up.relative(rel),
-		"Cannot make 'rel' relative to '..' due to "
-		"backtracking in the latter.");
+	B_REQUIRE_EXCEPTION(rel.relative_to(one_level_up),
+		"Cannot make 'rel' relative to '..'.");
 
 	const b::pathname current_dir(B_STRING_VIEW("."));
 
-	B_REQUIRE_EXCEPTION(one_level_up.relative(current_dir),
-		"Cannot make '.' relative to '..' due to "
-		"backtracking in the latter.");
+	B_REQUIRE_EXCEPTION(current_dir.relative_to(one_level_up),
+		"Cannot make '.' relative to '..'.");
 
 	const b::pathname two_levels_up(B_STRING_VIEW("../.."));
 
-	B_REQUIRE_EXCEPTION(two_levels_up.relative(one_level_up),
-		"Cannot make '..' relative to '../..' due to "
-		"backtracking in the latter.");
+	B_REQUIRE_EXCEPTION(one_level_up.relative_to(two_levels_up),
+		"Cannot make '..' relative to '../..'.");
 }

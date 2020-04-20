@@ -31,7 +31,7 @@ B_STRING_LITERAL(double_dot, "..");
 pathname::pathname(const string_view& path) :
 	levels_up(0), can_be_filename(false)
 {
-	append(path);
+	join(path);
 }
 
 string pathname::str() const
@@ -92,10 +92,10 @@ string pathname::str() const
 	return path;
 }
 
-void pathname::append(const pathname& rhs)
+void pathname::join(const pathname& rhs)
 {
 	// Handle the case of "/absolute/pathname".
-	if (rhs.levels_up == UINT_MAX)
+	if (rhs.is_absolute())
 	{
 		*this = rhs;
 		return;
@@ -110,7 +110,7 @@ void pathname::append(const pathname& rhs)
 		return;
 	}
 
-	// There is some backtracking in 'rhs' at this point.
+	// Handle the case of "../relative/to/parent".
 
 	// Check if 'rhs' completely wipes out all named
 	// components in 'this'.
@@ -138,7 +138,7 @@ void pathname::append(const pathname& rhs)
 	}
 }
 
-void pathname::append(const string_view& path)
+void pathname::join(const string_view& path)
 {
 	const char* current_char = path.data();
 	size_t remaining_len = path.length();
@@ -245,32 +245,37 @@ slash:
 	goto next_component;
 }
 
-pathname pathname::relative(const pathname& target) const
+pathname pathname::relative_to(const pathname& basepath) const
 {
-	if (is_absolute())
+	if (basepath.is_absolute() ^ this->is_absolute() ||
+			basepath.levels_up > this->levels_up)
+		throw custom_exception("Cannot make '%s' relative to '%s'.",
+			this->str().data(), basepath.str().data());
+
+	pathname relative(*this);
+
+	const unsigned basepath_components =
+		(unsigned) basepath.pathname_components.length();
+
+	if (basepath.levels_up < this->levels_up)
 	{
-		if (target.is_absolute())
-		{
-			return pathname();
-		}
+		relative.levels_up -= basepath.levels_up;
+		relative.levels_up += basepath_components;
 	}
 	else
 	{
-		if (!target.is_absolute())
-		{
-			if (levels_up > target.levels_up)
-				throw custom_exception("Cannot make '%s' "
-					"relative to '%s' due to "
-					"backtracking in the latter.",
-					target.str().data(), str().data());
+		unsigned equal = 0;
 
-			return pathname();
-		}
+		while (equal < basepath_components &&
+				basepath.pathname_components[equal].name() ==
+					pathname_components[equal].name())
+			++equal;
+
+		relative.levels_up = basepath_components - equal;
+		relative.pathname_components.remove(0, equal);
 	}
 
-	// One of the pathnames is absolute and the other is not.
-	throw custom_exception("Need to know CWD to make '%s' "
-		"relative to '%s'.", target.str().data(), str().data());
+	return relative;
 }
 
 B_END_NAMESPACE

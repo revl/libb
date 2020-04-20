@@ -28,8 +28,12 @@
 
 B_BEGIN_NAMESPACE
 
-// Pathname parsing and normalization with additional
-// modification operations.
+// Pathname parsing, normalization, and manipulation operations.
+//
+// The lifetime of this object must not exceed the lifetime of any
+// string_view object that was used, directly or indirectly (e.g.
+// via the join() method), to construct pathname components of this
+// object.
 class pathname
 {
 public:
@@ -88,7 +92,7 @@ public:
 
 	// Returns true if this pathname can represent a file.
 	// A pathname cannot possibly be a filename if it ends
-	// with a slash, ".", or "..".
+	// with a slash or a component that is "." or "..".
 	bool can_represent_file() const;
 
 	// Copies the contents of 'rhs' into this object.
@@ -98,10 +102,10 @@ public:
 	void assign(const string_view& path);
 
 	// Adds components from 'rhs' to the current path.
-	void append(const pathname& rhs);
+	void join(const pathname& rhs);
 
 	// Adds components from 'path' to the current path.
-	void append(const string_view& path);
+	void join(const string_view& path);
 
 	// Removes the rightmost named component of the pathname
 	// or, if there are no such components left, increments
@@ -112,14 +116,15 @@ public:
 	// number of times.
 	void go_up(unsigned levels);
 
-	// Returns a relative pathname that, if appended to 'this'
-	// pathname, would yield 'target'.
+	// Returns a relative path that, when joined to 'basepath',
+	// would produce an object equal to 'this'.
+	//
 	// Throws a 'runtime_exception' if 'this' pathname is
-	// absolute and 'target' is not, or vice versa, in which
+	// absolute and 'basepath' is not, or vice versa, in which
 	// case knowing the current working directory would be
 	// necessary to establish the relation between 'this' and
-	// 'target'.
-	pathname relative(const pathname& target) const;
+	// 'basepath'.
+	pathname relative_to(const pathname& basepath) const;
 
 private:
 	component_array pathname_components;
@@ -193,7 +198,7 @@ inline void pathname::assign(const string_view& path)
 	pathname_components.empty();
 	levels_up = 0;
 
-	append(path);
+	join(path);
 }
 
 inline void pathname::go_up_one_level()
@@ -226,7 +231,7 @@ inline void pathname::go_up(unsigned levels)
 }
 
 inline void pathname::append_component(const char* name,
-	const char* suffix, const char* end)
+		const char* suffix, const char* end)
 {
 	pathname_components.append(component(name,
 		suffix == NULL ? end : suffix, end));
