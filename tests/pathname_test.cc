@@ -209,7 +209,6 @@ static void check_relative(const char* base_pathname,
 
 	b::pathname relative = target.relative_to(base);
 
-printf("relative: [%s], expected: [%s]\n", relative.str().data(), expected_result);
 	B_CHECK(relative.str() == expected_result);
 	B_CHECK(relative.can_represent_file() == result_can_represent_file);
 }

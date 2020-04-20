@@ -267,6 +267,7 @@ pathname pathname::relative_to(const pathname& basepath) const
 		unsigned equal = 0;
 
 		while (equal < basepath_components &&
+				equal < pathname_components.length() &&
 				basepath.pathname_components[equal].name() ==
 					pathname_components[equal].name())
 			++equal;
