@@ -29,9 +29,6 @@ B_BEGIN_NAMESPACE
 class custom_exception : public runtime_exception
 {
 public:
-	// Constructs a new object with an empty description.
-	custom_exception();
-
 	// Initializes this object with a preformatted error message.
 	custom_exception(const string& msg);
 
@@ -39,7 +36,7 @@ public:
 	// and a variable number of arguments.
 	custom_exception(const char* fmt, ...) B_PRINTF_STYLE(2, 3);
 
-	// Returns the detailed description of this error.
+	// Returns the message that was passed to the constructor.
 	virtual string message() const;
 
 #ifdef B_USE_STL
@@ -53,10 +50,6 @@ public:
 private:
 	string error_message;
 };
-
-inline custom_exception::custom_exception()
-{
-}
 
 inline custom_exception::custom_exception(const string& msg) :
 	error_message(msg)
