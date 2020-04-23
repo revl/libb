@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # B: Common C++ library
-# Copyright (C) 2002-2007, 2016-2019 Damon Revoe
+# Copyright (C) 2002-2007, 2016-2020 Damon Revoe
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
