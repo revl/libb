@@ -117,11 +117,11 @@ B_STRING_LITERAL(dot_dir, ".");
 
 B_STRING_LITERAL(test_dir, "b_test_dir");
 
-B_STRING_LITERAL(intermediate, "b_test_dir" B_PATH_SEPARATOR_SZ
+B_STRING_LITERAL(intermediate, "b_test_dir" B_PATH_SEPARATOR_STR
 	"missing_parent");
 
-B_STRING_LITERAL(new_dir, "b_test_dir" B_PATH_SEPARATOR_SZ
-	"missing_parent" B_PATH_SEPARATOR_SZ "new_dir");
+B_STRING_LITERAL(new_dir, "b_test_dir" B_PATH_SEPARATOR_STR
+	"missing_parent" B_PATH_SEPARATOR_STR "new_dir");
 
 B_TEST_CASE(create_directory)
 {

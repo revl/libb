@@ -108,7 +108,7 @@
 #endif /* defined(B_USE_STL) */
 
 #define B_PATH_SEPARATOR '/'
-#define B_PATH_SEPARATOR_SZ "/"
+#define B_PATH_SEPARATOR_STR "/"
 
 B_BEGIN_NAMESPACE
 

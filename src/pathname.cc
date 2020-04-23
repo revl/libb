@@ -24,7 +24,7 @@
 
 B_BEGIN_NAMESPACE
 
-B_STRING_LITERAL(slash, B_PATH_SEPARATOR_SZ);
+B_STRING_LITERAL(slash, B_PATH_SEPARATOR_STR);
 B_STRING_LITERAL(dot, ".");
 B_STRING_LITERAL(double_dot, "..");
 
@@ -52,7 +52,7 @@ string pathname::str() const
 		string path = double_dot;
 
 		for (unsigned i = levels_up; --i > 0; )
-			path.append(B_PATH_SEPARATOR_SZ "..", 3);
+			path.append(B_PATH_SEPARATOR_STR "..", 3);
 
 		return path;
 	}
@@ -70,7 +70,7 @@ string pathname::str() const
 
 	default:
 		for (unsigned i = levels_up; i > 0; --i)
-			path.append(".." B_PATH_SEPARATOR_SZ, 3);
+			path.append(".." B_PATH_SEPARATOR_STR, 3);
 	}
 
 	const component* comp = pathname_components.data();
