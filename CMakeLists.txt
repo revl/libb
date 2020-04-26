@@ -4,8 +4,6 @@ set(CMAKE_CXX_STANDARD 98)
 
 project(b VERSION 0.1.0 LANGUAGES CXX)
 
-string(APPEND CMAKE_CXX_FLAGS_DEBUG " -DB_DEBUG")
-
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("size_t" B_SIZEOF_SIZE_T LANGUAGE CXX)
 
@@ -26,6 +24,10 @@ add_library(${PROJECT_NAME}
 	src/red_black_tree.cc
 	src/string.cc
 	src/string_stream.cc
+)
+
+target_compile_options(${PROJECT_NAME} PUBLIC
+	$<$<CONFIG:Debug>:-DB_DEBUG>
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
