@@ -4,6 +4,10 @@ set(CMAKE_CXX_STANDARD 98)
 
 project(b VERSION 0.1.0 LANGUAGES CXX)
 
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+
+include(CheckAtomic)
+
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("size_t" B_SIZEOF_SIZE_T LANGUAGE CXX)
 
