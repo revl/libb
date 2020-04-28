@@ -4,3 +4,4 @@ cscope.out
 tags
 .gdb_history
 .vimdir
+/build
