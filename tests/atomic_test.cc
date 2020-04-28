@@ -24,7 +24,7 @@
 
 B_TEST_CASE(atomic)
 {
-	b::atomic refs = B_ATOMIC_STATIC_INIT(1);
+	b::atomic refs = B_ATOMIC_INIT(1);
 
 	++refs;
 

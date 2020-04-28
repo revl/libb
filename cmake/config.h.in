@@ -34,7 +34,7 @@
 #cmakedefine B_HAVE_EXT_ATOMICITY_H
 
 /* Define if you have the <atomic> header file. */
-#cmakedefine B_HAVE_STD_ATOMIC
+#cmakedefine B_HAVE_STD_ATOMIC ${B_HAVE_STD_ATOMIC}
 
 /* The number of bytes in type size_t */
 #define B_SIZEOF_SIZE_T ${B_SIZEOF_SIZE_T}

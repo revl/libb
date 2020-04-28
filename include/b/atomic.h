@@ -23,58 +23,59 @@
 
 #include "host.h"
 
-#if defined(B_HAVE_STD_ATOMIC)
+#if defined(B_HAVE_STD_ATOMIC) && __cplusplus >= 201103L
 
 #include <atomic>
-#define B_ATOMIC_TYPE std::atomic<int>
 
-#elif defined(__GNUG__) && defined(__i386__)
+B_BEGIN_NAMESPACE
 
-#define B_ATOMIC_TYPE volatile int
+typedef std::atomic<int> atomic;
+
+B_END_NAMESPACE
+
+#define B_ATOMIC_INIT(i) ATOMIC_VAR_INIT(i)
+
+#else
+
+B_BEGIN_NAMESPACE
+
+#if defined(__GNUG__) && defined(__i386__)
+
+typedef volatile int platform_atomic_type;
 
 #elif defined(B_HAVE_EXT_ATOMICITY_H)
 
 #include <ext/atomicity.h>
-#define B_ATOMIC_TYPE volatile _Atomic_word
+typedef volatile _Atomic_word platform_atomic_type;
 
 #elif defined(B_HAVE_BITS_ATOMICITY_H)
 
 #include <bits/atomicity.h>
-#define B_ATOMIC_TYPE volatile _Atomic_word
+typedef volatile _Atomic_word platform_atomic_type;
 
 #elif defined(B_HAVE_ASM_ATOMIC_H)
 
 #include <asm/atomic.h>
-#define B_ATOMIC_TYPE atomic_t
+typedef atomic_t platform_atomic_type;
 
 #elif defined(__DECCXX_VER) && defined(__ALPHA)
 
 #include <machine/builtins.h>
-#define B_ATOMIC_TYPE __int32
+typedef __int32 platform_atomic_type;
 
 #elif defined(B_HAVE_ATOMIC_SYNC)
 
-#define B_ATOMIC_TYPE int
+typedef int platform_atomic_type;
 
 #elif defined(__APPLE__)
 
 #include <libkern/OSAtomic.h>
-#define B_ATOMIC_TYPE int32_t
+typedef int32_t platform_atomic_type;
 #define B_USE_ATOMIC_INC_DEC_BARRIER
 
 #else
 #error arithmetic on atomic data has to be implemented for this platform
 #endif
-
-#if defined(B_HAVE_STD_ATOMIC)
-#define B_ATOMIC_STATIC_INIT(i) {ATOMIC_VAR_INIT(i)}
-#elif defined(B_HAVE_ASM_ATOMIC_H)
-#define B_ATOMIC_STATIC_INIT(i) {ATOMIC_INIT(i)}
-#else
-#define B_ATOMIC_STATIC_INIT(i) {i}
-#endif
-
-B_BEGIN_NAMESPACE
 
 // Portable thread-safe reference count class.
 struct atomic
@@ -91,7 +92,7 @@ struct atomic
 	// Decrements the counter and returns false if it becomes zero.
 	bool operator --();
 
-	B_ATOMIC_TYPE value;
+	platform_atomic_type value;
 };
 
 inline atomic::operator int() const
@@ -159,5 +160,13 @@ inline bool atomic::operator --()
 }
 
 B_END_NAMESPACE
+
+#if defined(B_HAVE_ASM_ATOMIC_H)
+#define B_ATOMIC_INIT(i) {ATOMIC_INIT(i)}
+#else
+#define B_ATOMIC_INIT(i) {i}
+#endif
+
+#endif /* !defined(B_HAVE_STD_ATOMIC) */
 
 #endif /* !defined(B_ATOMIC_H) */
