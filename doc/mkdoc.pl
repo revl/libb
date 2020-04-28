@@ -27,11 +27,7 @@ sub new
 {
 	my ($class, $buffer_ref, $tag, %attributes) = @_;
 
-	my $self = bless
-	{
-		buffer_ref => $buffer_ref,
-		stack => []
-	}, $class;
+	my $self = bless {buffer_ref => $buffer_ref, stack => []}, $class;
 
 	$self->push_tag($tag, %attributes);
 
@@ -135,7 +131,7 @@ sub print_page
 
 # }}}
 
-package main;
+package main; # {{{
 
 die "Usage: $0 \$top_srcdir doc/html\n" if @ARGV != 2;
 
@@ -167,5 +163,7 @@ open INDEX, '>', $index_pathname or die "$index_pathname\: $!";
 $index_page->print_page(*INDEX);
 
 close INDEX
+
+# }}}
 
 # vim600:foldmethod=marker
