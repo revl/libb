@@ -22,16 +22,16 @@
 #define B_CONFIG_H
 
 /* Define if you have the <asm/atomic.h> header. */
-#cmakedefine B_HAVE_ASM_ATOMIC_H
+#cmakedefine B_HAVE_ASM_ATOMIC_H ${B_HAVE_ASM_ATOMIC_H}
 
 /* Define if you have __sync built-ins for atomic access. */
 #cmakedefine B_HAVE_ATOMIC_SYNC ${B_HAVE_ATOMIC_SYNC}
 
 /* Define if you have the <bits/atomicity.h> header file. */
-#cmakedefine B_HAVE_BITS_ATOMICITY_H
+#cmakedefine B_HAVE_BITS_ATOMICITY_H ${B_HAVE_BITS_ATOMICITY_H}
 
 /* Define if you have the <ext/atomicity.h> header file. */
-#cmakedefine B_HAVE_EXT_ATOMICITY_H
+#cmakedefine B_HAVE_EXT_ATOMICITY_H ${B_HAVE_EXT_ATOMICITY_H}
 
 /* Define if you have the <atomic> header file. */
 #cmakedefine B_HAVE_STD_ATOMIC ${B_HAVE_STD_ATOMIC}

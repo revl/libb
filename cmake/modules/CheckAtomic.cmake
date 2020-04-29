@@ -53,3 +53,43 @@ int main()
 	return val;
 }
 " B_HAVE_ATOMIC_SYNC)
+
+# Check for the __gnu_cxx:: atomic ops in ext/atomicity.h
+check_cxx_source_compiles("
+#include <ext/atomicity.h>
+
+int main()
+{
+	_Atomic_word val = 0;
+	__gnu_cxx::__atomic_add(&val, 1);
+	__gnu_cxx::__exchange_and_add(&val, -1);
+	return (int) val;
+}
+" B_HAVE_EXT_ATOMICITY_H)
+
+# Check for for the __gnu_cxx:: atomic ops in bits/atomicity.h
+check_cxx_source_compiles("
+#include <bits/atomicity.h>
+
+int main()
+{
+	_Atomic_word val = 0;
+	__gnu_cxx::__atomic_add(&val, 1);
+	__gnu_cxx::__exchange_and_add(&val, -1);
+	return (int) val;
+}
+" B_HAVE_BITS_ATOMICITY_H)
+
+# Check if asm/atomic.h defines atomic functions
+check_cxx_source_compiles("
+#include <asm/atomic.h>
+
+int main()
+{
+	atomic_t val = ATOMIC_INIT(0);
+	atomic_set(&val, atomic_read(&val));
+	atomic_inc(&val);
+	atomic_dec_and_test(&val);
+	return (int) val;
+}
+" B_HAVE_ASM_ATOMIC_H)
