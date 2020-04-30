@@ -39,11 +39,7 @@ B_END_NAMESPACE
 
 B_BEGIN_NAMESPACE
 
-#if defined(__GNUG__) && defined(__i386__)
-
-typedef volatile int platform_atomic_type;
-
-#elif defined(B_HAVE_EXT_ATOMICITY_H)
+#if defined(B_HAVE_EXT_ATOMICITY_H)
 
 #include <ext/atomicity.h>
 typedef volatile _Atomic_word platform_atomic_type;
@@ -115,9 +111,7 @@ inline void atomic::operator =(int new_value)
 
 inline void atomic::operator ++()
 {
-#if defined(__GNUG__) && defined(__i386__)
-	__asm__ __volatile__("lock; incl %0" :"=m" (value) :"m" (value));
-#elif defined(B_HAVE_EXT_ATOMICITY_H) || defined(B_HAVE_BITS_ATOMICITY_H)
+#if defined(B_HAVE_EXT_ATOMICITY_H) || defined(B_HAVE_BITS_ATOMICITY_H)
 	__gnu_cxx::__atomic_add(&value, 1);
 #elif defined(B_HAVE_ASM_ATOMIC_H)
 	atomic_inc(&value);
@@ -137,11 +131,7 @@ inline void atomic::operator ++()
 
 inline bool atomic::operator --()
 {
-#if defined(__GNUG__) && defined(__i386__)
-	bool zero; __asm__ __volatile__("lock; decl %0; setne %1" \
-	:"=m" (value), "=qm" (zero) :"m" (value) : "memory"); \
-	return zero;
-#elif defined(B_HAVE_EXT_ATOMICITY_H) || defined(B_HAVE_BITS_ATOMICITY_H)
+#if defined(B_HAVE_EXT_ATOMICITY_H) || defined(B_HAVE_BITS_ATOMICITY_H)
 	return __gnu_cxx::__exchange_and_add(&value, -1) != 1;
 #elif defined(B_HAVE_ASM_ATOMIC_H)
 	return !atomic_dec_and_test(&value);
