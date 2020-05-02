@@ -45,3 +45,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/config.h"
 	DESTINATION include/${PROJECT_NAME}
 )
+
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+	include(CTest)
+
+	if(BUILD_TESTING)
+		add_subdirectory(tests)
+	endif()
+endif()
