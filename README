@@ -15,6 +15,11 @@ The library provides the following functionality:
     management.
 
 
+#include <b/atomic.h>                   b::atomic
+
+    Portable thread-safe reference counter.
+
+
 #include <b/binary_tree.h>              b::binary_search_tree<Key_op>
 
     Low-level structure that implements a non-balancing binary search tree.
@@ -54,11 +59,6 @@ The library provides the following functionality:
 #include <b/random.h>                   b::random
 
     A linear congruential generator.
-
-
-#include <b/ref_count.h>                b::ref_count
-
-    Portable thread-safe reference counter.
 
 
 #include <b/ref.h>                      b::ref
