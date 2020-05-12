@@ -18,6 +18,8 @@
  *
  */
 
+// A reference counting smart pointer
+
 #ifndef B_REF_H
 #define B_REF_H
 

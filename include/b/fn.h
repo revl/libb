@@ -18,6 +18,8 @@
  *
  */
 
+// A collection of utility functions
+
 #include "string_view.h"
 
 #ifndef B_MISC_H

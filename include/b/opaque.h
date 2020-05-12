@@ -18,6 +18,9 @@
  *
  */
 
+// Declarations for the opaque pointer technique (pointer to the hidden
+// implementation)
+
 #include "object.h"
 #include "ref.h"
 

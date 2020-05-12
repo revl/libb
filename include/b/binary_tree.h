@@ -18,6 +18,8 @@
  *
  */
 
+// Low-level structure that implements a non-balancing binary search tree
+
 #ifndef B_BINARY_TREE_H
 #define B_BINARY_TREE_H
 

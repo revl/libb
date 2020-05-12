@@ -18,6 +18,8 @@
  *
  */
 
+// A structure to string objects together in a unidirectional list
+
 #ifndef B_LINKED_LIST_H
 #define B_LINKED_LIST_H
 
@@ -25,6 +27,8 @@
 
 B_BEGIN_NAMESPACE
 
+// Unidirectional linked list node for implanting
+// inside the linked objects themselves.
 template <class T>
 class linked_list_node
 {

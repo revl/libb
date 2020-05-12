@@ -18,6 +18,8 @@
  *
  */
 
+// A linear congruential random generator
+
 #ifndef B_PSEUDORANDOM_H
 #define B_PSEUDORANDOM_H
 

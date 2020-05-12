@@ -18,6 +18,8 @@
  *
  */
 
+// Unidirectional linked list container
+
 #ifndef B_LINKED_LIST_CONTAINER_H
 #define B_LINKED_LIST_CONTAINER_H
 

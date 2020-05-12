@@ -18,6 +18,8 @@
  *
  */
 
+// Implementation of input_output_stream that uses a string for storage
+
 #ifndef B_STRING_STREAM_H
 #define B_STRING_STREAM_H
 

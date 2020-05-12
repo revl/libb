@@ -18,6 +18,8 @@
  *
  */
 
+// Ad hoc exception class
+
 #ifndef B_CUSTOM_EXCEPTION_H
 #define B_CUSTOM_EXCEPTION_H
 
@@ -25,7 +27,7 @@
 
 B_BEGIN_NAMESPACE
 
-// Ad hoc exception class.
+// An type of runtime_exception with a couple of convenient constructors.
 class custom_exception : public runtime_exception
 {
 public:

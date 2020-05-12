@@ -18,6 +18,8 @@
  *
  */
 
+// Pathname parsing and normalization
+
 #ifndef B_PATHNAME_H
 #define B_PATHNAME_H
 

@@ -18,6 +18,8 @@
  *
  */
 
+// Levenshtein distance computation
+
 #ifndef B_LEVENSHTEIN_DISTANCE_H
 #define B_LEVENSHTEIN_DISTANCE_H
 

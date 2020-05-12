@@ -18,6 +18,8 @@
  *
  */
 
+// Bidirectional linked list container
+
 #ifndef B_DOUBLY_LINKED_LIST_CONTAINER_H
 #define B_DOUBLY_LINKED_LIST_CONTAINER_H
 

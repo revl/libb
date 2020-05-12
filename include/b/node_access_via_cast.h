@@ -18,6 +18,9 @@
  *
  */
 
+// Utility class for accessing "implantable" nodes of various data
+// structures
+
 #ifndef B_NODE_ACCESS_VIA_CAST_H
 #define B_NODE_ACCESS_VIA_CAST_H
 

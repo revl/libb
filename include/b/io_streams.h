@@ -18,6 +18,8 @@
  *
  */
 
+// Declaration of I/O interfaces
+
 #ifndef B_IO_STREAMS_H
 #define B_IO_STREAMS_H
 

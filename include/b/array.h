@@ -18,6 +18,8 @@
  *
  */
 
+// Array template definition
+
 #ifndef B_ARRAY_H
 #define B_ARRAY_H
 
@@ -29,7 +31,8 @@ B_BEGIN_NAMESPACE
 template <class T>
 class array_slice;
 
-// Linear array template class.
+// Array template type. Uses a copy-on-write technique for memory
+// management.
 template <class T>
 class array
 {

@@ -18,6 +18,8 @@
  *
  */
 
+// A base class for runtime exceptions
+
 #include "string.h"
 
 #ifndef B_RUNTIME_EXCEPTION_H

@@ -18,6 +18,8 @@
  *
  */
 
+// Template for an associative array container with unique keys
+
 #ifndef B_MAP_H
 #define B_MAP_H
 
@@ -25,7 +27,7 @@
 
 B_BEGIN_NAMESPACE
 
-// Map element type.
+// Map element type (a key-value pair).
 template <class Key, class T>
 struct kv_pair
 {
@@ -51,6 +53,7 @@ struct map_key_op
 	}
 };
 
+// Associative array container type.
 template <class Key, class T>
 class map : public set_base<kv_pair<Key, T>, map_key_op<Key, T> >
 {

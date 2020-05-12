@@ -18,6 +18,8 @@
  *
  */
 
+// POSIX-compatible command line parser and help screen generator
+
 #ifndef B_COMMAND_LINE_PARSER_H
 #define B_COMMAND_LINE_PARSER_H
 

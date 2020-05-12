@@ -18,6 +18,8 @@
  *
  */
 
+// A template to represent a range of array elements
+
 #ifndef B_ARRAY_SLICE_H
 #define B_ARRAY_SLICE_H
 

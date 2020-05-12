@@ -18,6 +18,8 @@
  *
  */
 
+// Base exception class
+
 #ifndef B_EXCEPTION_H
 #define B_EXCEPTION_H
 

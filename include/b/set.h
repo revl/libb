@@ -18,6 +18,8 @@
  *
  */
 
+// A container for objects addressable by unique keys
+
 #ifndef B_SET_H
 #define B_SET_H
 

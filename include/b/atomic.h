@@ -18,6 +18,8 @@
  *
  */
 
+// Portable thread-safe reference counter
+
 #ifndef B_ATOMIC_H
 #define B_ATOMIC_H
 

@@ -18,6 +18,8 @@
  *
  */
 
+// Declarations of string and wstring classes
+
 #ifndef B_STRING_H
 
 #if defined(B_STRING_DECL)

@@ -18,6 +18,8 @@
  *
  */
 
+// Declarations of string_view and wstring_view classes
+
 #ifndef B_STRING_VIEW_H
 
 #if defined(B_STRING_VIEW_DECL)

@@ -18,6 +18,8 @@
  *
  */
 
+// Priority queue container
+
 #ifndef B_PRIORITY_QUEUE_H
 #define B_PRIORITY_QUEUE_H
 
