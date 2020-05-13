@@ -41,9 +41,9 @@ sub contents
 
 sub write
 {
-	my ($self, $data) = @_;
+	my ($self, $markup) = @_;
 
-	${$self->{buffer_ref}} .= $data
+	${$self->{buffer_ref}} .= $markup
 }
 
 sub write_markup
@@ -88,6 +88,16 @@ sub close_tag
 	}
 }
 
+sub write_text
+{
+	my ($self, $text) = @_;
+
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+
+	${$self->{buffer_ref}} .= $text
+}
+
 sub DESTROY
 {
 	my ($self) = @_;
@@ -95,11 +105,14 @@ sub DESTROY
 	$self->close_tag()
 }
 
-# }}}
+# }}} (package HTML::Element)
 
 package HTML::Page; # {{{
 
 our @ISA = qw(HTML::Element);
+
+use File::Basename;
+use File::Path;
 
 sub new
 {
@@ -129,15 +142,100 @@ sub print_page
 	print $stream "\n"
 }
 
-# }}}
+sub save
+{
+	my ($self, $pathname) = @_;
+
+	mkpath(dirname($pathname));
+
+	open FILE, '>', $pathname or die "$pathname\: $!";
+
+	$self->print_page(*FILE);
+
+	close FILE
+}
+
+# }}} (package HTML::Page)
+
+package CppHeader; # {{{
+
+sub new
+{
+	my ($class, $relative_pathname, $file_contents) = @_;
+
+	unless ($relative_pathname =~ m/.h$/so)
+	{
+		warn "$relative_pathname - skipped: not a header file\n";
+		return undef
+	}
+
+	unless ($file_contents =~ s,^/\*.*Copyright.*?\*/\s+,,so)
+	{
+		warn "$relative_pathname - skipped: no copyright statement\n";
+		return undef
+	}
+
+	my $self = bless
+	{
+		relative_pathname => $relative_pathname,
+		contents => $file_contents
+	}, $class;
+
+	return $self
+}
+
+# }}} (package CppHeader)
 
 package main; # {{{
 
-die "Usage: $0 \$top_srcdir doc/html\n" if @ARGV != 2;
+use File::Basename;
+use File::Find;
+use File::Spec;
 
-my ($top_srcdir, $output_dir) = @ARGV;
+die "Usage: $0 OUTPUT_DIR\n" if @ARGV != 1;
 
-my $readme_pathname = "$top_srcdir/README";
+my ($output_dir) = @ARGV;
+
+my $top_srcdir = dirname($0);
+die if basename($top_srcdir) ne 'doc';
+$top_srcdir = dirname($top_srcdir);
+
+my $include_dir = File::Spec->catdir($top_srcdir, 'include', 'b');
+
+my @headers;
+
+sub load_header
+{
+	return unless -f;
+
+	my $relative_pathname =
+		File::Spec->abs2rel($File::Find::name, $include_dir);
+
+	open my $fh, '<', $File::Find::name or die;
+	local $/ = undef;
+	my $contents = <$fh>;
+	close $fh;
+
+	my $header = CppHeader->new($relative_pathname, $contents);
+
+	push @headers, $header if $header
+}
+
+find({wanted => \&load_header, no_chdir => 1}, $include_dir);
+
+foreach my $cpp_header (@headers)
+{
+	my $pathname = $cpp_header->{relative_pathname};
+	my $header_page = HTML::Page->new('The B Library - ' . $pathname);
+
+	$header_page->push_tag('body');
+	$header_page->push_tag('pre');
+	$header_page->write_text($cpp_header->{contents});
+
+	$header_page->save(File::Spec->catfile($output_dir, "$pathname.html"))
+}
+
+my $readme_pathname = File::Spec->catfile($top_srcdir, 'README.md');
 
 open README, '<', $readme_pathname or die "Cannot open $readme_pathname\: $!";
 
@@ -148,21 +246,12 @@ $index_page->push_tag('pre');
 
 while (<README>)
 {
-	s/</&lt;/g;
-	s/>/&gt;/g;
-
-	$index_page->write($_)
+	$index_page->write_text($_)
 }
 
 close README;
 
-my $index_pathname = "$output_dir/index.html";
-
-open INDEX, '>', $index_pathname or die "$index_pathname\: $!";
-
-$index_page->print_page(*INDEX);
-
-close INDEX
+$index_page->save(File::Spec->catfile($output_dir, 'index.html'));
 
 # }}}
 
