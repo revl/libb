@@ -235,7 +235,7 @@ foreach my $cpp_header (@headers)
 	$header_page->save(File::Spec->catfile($output_dir, "$pathname.html"))
 }
 
-my $readme_pathname = File::Spec->catfile($top_srcdir, 'README.md');
+my $readme_pathname = File::Spec->catfile($top_srcdir, 'README');
 
 open README, '<', $readme_pathname or die "Cannot open $readme_pathname\: $!";
 
