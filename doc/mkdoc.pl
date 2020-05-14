@@ -161,7 +161,7 @@ package CppHeader; # {{{
 
 sub new
 {
-	my ($class, $relative_pathname, $file_contents) = @_;
+	my ($class, $relative_pathname, $contents) = @_;
 
 	unless ($relative_pathname =~ m/.h$/so)
 	{
@@ -169,16 +169,50 @@ sub new
 		return undef
 	}
 
-	unless ($file_contents =~ s,^/\*.*Copyright.*?\*/\s+,,so)
+	unless ($contents =~ s,^/\*.*Copyright.*?\*/\s+,,so)
 	{
 		warn "$relative_pathname - skipped: no copyright statement\n";
 		return undef
 	}
 
+	my $strings = {'&' => 0};
+	my $reverse_strings = ['&'];
+
+	my $subst_string = sub
+	{
+		my ($string) = @_;
+
+		return $strings->{$string} if exists $strings->{$string};
+
+		push @$reverse_strings, $string;
+
+		return $strings->{$string} = $#$reverse_strings
+	};
+
+	$contents =~ s/&/&0;/gso;
+
+	for (qw(" '))
+	{
+		$contents =~
+			s{($_.*?(?<!\\)$_)}{'&' . $subst_string->($1) . ';'}emg
+	}
+
+	# Remove all comments
+	#$contents =~ s/\/\/.*?\n//gso;
+	#$contents =~ s/\/\*.*?\*\///gso;
+
+	# Remove all whitespace
+	#$contents =~ s/^\s*(.*?)\s*?$/$1/gmo;
+	#$contents =~ s/[\t ]+/ /gmo;
+	#$contents =~ s/[\t ]*([#-+=(){}\/*^|!])[\t ]*/$1/gso;
+
+	# Restore all strings
+	$contents =~ s/&(\d+);/$reverse_strings->[$1]/mg;
+
 	my $self = bless
 	{
 		relative_pathname => $relative_pathname,
-		contents => $file_contents
+		contents => $contents
 	}, $class;
 
 	return $self
