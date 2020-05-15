@@ -186,27 +186,24 @@ sub new
 
 		push @$reverse_strings, $string;
 
-		return $strings->{$string} = $#$reverse_strings
+		return '&' . ($strings->{$string} = $#$reverse_strings) . ';'
 	};
 
 	$contents =~ s/&/&0;/gso;
 
+	# Preserve string and character literals
 	for (qw(" '))
 	{
 		$contents =~
-			s{($_.*?(?<!\\)$_)}{'&' . $subst_string->($1) . ';'}emg
+			s{($_.*?(?<!\\)$_)}{$subst_string->($1)}emg
 	}
 
-	# Remove all comments
+	# Preserve block comments
+	$contents =~ s{(/\*.*?\*/)}{$subst_string->($1)}egso;
+
 	#$contents =~ s/\/\/.*?\n//gso;
-	#$contents =~ s/\/\*.*?\*\///gso;
 
-	# Remove all whitespace
-	#$contents =~ s/^\s*(.*?)\s*?$/$1/gmo;
-	#$contents =~ s/[\t ]+/ /gmo;
-	#$contents =~ s/[\t ]*([#-+=(){}\/*^|!])[\t ]*/$1/gso;
-
-	# Restore all strings
+	# Restore all strings and block comments
 	$contents =~ s/&(\d+);/$reverse_strings->[$1]/mg;
 
 	my $self = bless
@@ -236,9 +233,9 @@ $top_srcdir = dirname($top_srcdir);
 
 my $include_dir = File::Spec->catdir($top_srcdir, 'include', 'b');
 
-my @headers;
+my @cpp_headers;
 
-sub load_header
+sub load_cpp_header
 {
 	return unless -f;
 
@@ -250,23 +247,24 @@ sub load_header
 	my $contents = <$fh>;
 	close $fh;
 
-	my $header = CppHeader->new($relative_pathname, $contents);
+	my $cpp_header = CppHeader->new($relative_pathname, $contents);
 
-	push @headers, $header if $header
+	push @cpp_headers, $cpp_header if $cpp_header
 }
 
-find({wanted => \&load_header, no_chdir => 1}, $include_dir);
+find({wanted => \&load_cpp_header, no_chdir => 1}, $include_dir);
 
-foreach my $cpp_header (@headers)
+foreach my $cpp_header (@cpp_headers)
 {
 	my $pathname = $cpp_header->{relative_pathname};
-	my $header_page = HTML::Page->new('The B Library - ' . $pathname);
+	my $cpp_header_page = HTML::Page->new('The B Library - ' . $pathname);
 
-	$header_page->push_tag('body');
-	$header_page->push_tag('pre');
-	$header_page->write_text($cpp_header->{contents});
+	$cpp_header_page->push_tag('body');
+	$cpp_header_page->push_tag('pre');
+	$cpp_header_page->write_text($cpp_header->{contents});
 
-	$header_page->save(File::Spec->catfile($output_dir, "$pathname.html"))
+	$cpp_header_page->save(
+		File::Spec->catfile($output_dir, "$pathname.html"))
 }
 
 my $readme_pathname = File::Spec->catfile($top_srcdir, 'README');
