@@ -163,53 +163,72 @@ sub new
 {
 	my ($class, $relative_pathname, $contents) = @_;
 
-	unless ($relative_pathname =~ m/.h$/so)
+	if ($relative_pathname !~ m/.h$/so)
 	{
 		warn "$relative_pathname - skipped: not a header file\n";
 		return undef
 	}
 
-	unless ($contents =~ s,^/\*.*Copyright.*?\*/\s+,,so)
+	if ($contents !~ s,^/\*.*Copyright.*?\*/\s+,,so)
 	{
 		warn "$relative_pathname - skipped: no copyright statement\n";
 		return undef
 	}
 
-	my $strings = {'&' => 0};
-	my $reverse_strings = ['&'];
+	my @strings = ('&');
 
-	my $subst_string = sub
-	{
-		my ($string) = @_;
-
-		return $strings->{$string} if exists $strings->{$string};
-
-		push @$reverse_strings, $string;
-
-		return '&' . ($strings->{$string} = $#$reverse_strings) . ';'
-	};
-
-	$contents =~ s/&/&0;/gso;
+	$contents =~ s/&/&0./gso;
 
 	# Preserve string and character literals
 	for (qw(" '))
 	{
-		$contents =~
-			s{($_.*?(?<!\\)$_)}{$subst_string->($1)}emg
+		$contents =~ s{($_.*?(?<!\\)$_)}{
+			'&' . (push(@strings, $1) - 1) . '.'}emg
 	}
 
-	# Preserve block comments
-	$contents =~ s{(/\*.*?\*/)}{$subst_string->($1)}egso;
+	# Save block comments together with strings
+	$contents =~ s{(/\*.*?\*/)}{
+		'&' . (push(@strings, $1) - 1) . '.'}egso;
 
-	#$contents =~ s/\/\/.*?\n//gso;
+	my (@doc_comments, @blocks, @classes, @fn);
+
+	$contents =~ s{((?://.*?\n[\t ]*)+)}{
+		'&DOC' . (push(@doc_comments, $1) - 1) . ':'}emg;
+
+	if ($contents !~ m/^&DOC0:/)
+	{
+		warn "$relative_pathname - skipped: no file comment\n";
+		return undef
+	}
+
+	while ($contents =~ s{(\{[^{}]*?\})}{
+		'&BLOCK' . (push(@blocks, $1) - 1) . ';'}egso)
+	{
+	}
+
+	my $template_re = qr/(?:template\s*<[^;]*?>\s*)?/so;
+
+	$contents =~ s{(&DOC\d+:$template_re(?:class|struct)[^;]+?;)}{
+		'&CLASS' . (push(@classes, $1) - 1) . ';'}egso;
+
+	$contents =~ s{(&DOC\d+:$template_re\S[^;]*?;)}{
+		'&FN' . (push(@fn, $1) - 1) . ';'}egso;
+
+	# Restore all documentation comments
+	#$contents =~ s/&DOC(\d+):/$doc_comments[$1]/mg;
 
 	# Restore all strings and block comments
-	$contents =~ s/&(\d+);/$reverse_strings->[$1]/mg;
+	#$contents =~ s/&(\d+)./$strings[$1]/mg;
 
 	my $self = bless
 	{
 		relative_pathname => $relative_pathname,
-		contents => $contents
+		contents => $contents,
+		strings => \@strings,
+		doc_comments => \@doc_comments,
+		blocks => \@blocks,
+		classes => \@classes,
+		fn => \@fn
 	}, $class;
 
 	return $self
@@ -262,6 +281,28 @@ foreach my $cpp_header (@cpp_headers)
 	$cpp_header_page->push_tag('body');
 	$cpp_header_page->push_tag('pre');
 	$cpp_header_page->write_text($cpp_header->{contents});
+
+	$cpp_header_page->write_text("====\n");
+
+	my $i = 0;
+
+	for my $class (@{$cpp_header->{classes}})
+	{
+		$cpp_header_page->write_text("CLASS$i:\n");
+		$cpp_header_page->write_text("$class\n");
+		$cpp_header_page->write_text("----\n");
+	}
+
+	$cpp_header_page->write_text("====\n");
+
+	$i = 0;
+
+	for my $fn (@{$cpp_header->{fn}})
+	{
+		$cpp_header_page->write_text("FN$i:\n");
+		$cpp_header_page->write_text("$fn\n");
+		$cpp_header_page->write_text("----\n");
+	}
 
 	$cpp_header_page->save(
 		File::Spec->catfile($output_dir, "$pathname.html"))
