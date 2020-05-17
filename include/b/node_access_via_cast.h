@@ -18,9 +18,6 @@
  *
  */
 
-// Utility class for accessing "implantable" nodes of various data
-// structures
-
 #ifndef B_NODE_ACCESS_VIA_CAST_H
 #define B_NODE_ACCESS_VIA_CAST_H
 
@@ -28,8 +25,9 @@
 
 B_BEGIN_NAMESPACE
 
-// Class that helps find the node that corresponds to the
-// specified element of an abstract data structure.
+// Utility class for accessing "implantable" nodes of various data
+// structures and finding the node that corresponds to the
+// specified element of the data structure.
 // This class assumes that either the node is a superclass
 // of the element or the element defines a conversion to 'Node&'.
 template <class Node>

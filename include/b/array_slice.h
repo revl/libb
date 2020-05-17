@@ -18,8 +18,6 @@
  *
  */
 
-// A template to represent a range of array elements
-
 #ifndef B_ARRAY_SLICE_H
 #define B_ARRAY_SLICE_H
 
@@ -31,8 +29,8 @@ B_BEGIN_NAMESPACE
 template <class T>
 class array;
 
-// Non-modifiable array of immutable elements. Because 'array_slice' is
-// most often used to point to elements of the 'array' template, which
+// A template to represent a range of array elements. Because 'array_slice'
+// is most often used to point to elements of the 'array' template, which
 // employs memory management based on reference counting, it is possible
 // that the internal buffer of such an array is shared between more than
 // one 'array' object.  For this reason, 'array_slice' provides only

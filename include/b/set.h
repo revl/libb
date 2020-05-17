@@ -18,8 +18,6 @@
  *
  */
 
-// A container for objects addressable by unique keys
-
 #ifndef B_SET_H
 #define B_SET_H
 
@@ -27,6 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
+// A container for objects addressable by unique keys.
 template <class T>
 struct set_element : public binary_tree_node
 {

@@ -18,8 +18,6 @@
  *
  */
 
-// Low-level structure that implements a non-balancing binary search tree
-
 #ifndef B_BINARY_TREE_H
 #define B_BINARY_TREE_H
 
@@ -78,7 +76,7 @@ struct binary_search_tree_base
 	void remove(binary_tree_node* node);
 };
 
-// Binary search tree implementation. This is a low-level structure
+// A non-balancing binary search tree. This is a low-level structure
 // that exposes its internals. It is not meant for routine use.
 // The 'set' and 'map' containers must be used instead.
 template <class Key_op>

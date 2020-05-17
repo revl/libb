@@ -18,8 +18,6 @@
  *
  */
 
-// Levenshtein distance computation
-
 #ifndef B_LEVENSHTEIN_DISTANCE_H
 #define B_LEVENSHTEIN_DISTANCE_H
 
@@ -27,6 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
+// Levenshtein distance computation
 class levenshtein_distance
 {
 public:

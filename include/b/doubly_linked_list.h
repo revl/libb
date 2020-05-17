@@ -18,8 +18,6 @@
  *
  */
 
-// A structure to string objects together in a bidirectional list
-
 #ifndef B_DOUBLY_LINKED_LIST_H
 #define B_DOUBLY_LINKED_LIST_H
 
@@ -27,8 +25,8 @@
 
 B_BEGIN_NAMESPACE
 
-// Bidirectional linked list node for implanting
-// inside the linked objects themselves.
+// A structure to implant into the linked objects themselves
+// to string them together in a bidirectional list.
 template <class T>
 class doubly_linked_list_node : public linked_list_node<T>
 {
@@ -54,6 +52,7 @@ protected:
 	element_type* prev_element;
 };
 
+// Bidirectional linked list.
 template <class Node_access>
 class doubly_linked_list : public linked_list<Node_access>
 {

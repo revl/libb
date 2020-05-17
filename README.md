@@ -3,110 +3,146 @@ classes and functions.
 
 The library provides the following functionality:
 
-    #include <b/arg_list.h>                 b::arg_list
+-   `b::arg_list`
 
-Implementation of an obscure technique for passing a variable-length
-list of named parameters to a function or a method.
+        #include <b/arg_list.h>
 
+    Implementation of a technique to pass a variable-length list of named
+    parameters to a function or a method.
 
-    #include <b/array.h>                    b::array<T>
+-   `b::array<T>`
 
-Array template type. Uses a copy-on-write technique for memory
-management.
+        #include <b/array.h>
 
+    Array template type. Uses a copy-on-write technique for memory
+    management.
 
-    #include <b/atomic.h>                   b::atomic
+-   `b::atomic`
 
-Portable thread-safe reference counter.
+        #include <b/atomic.h>
 
+    Thread-safe reference counter.
 
-    #include <b/binary_tree.h>              b::binary_search_tree<Key_op>
+-   `b::binary_search_tree<Key_op>`
 
-Low-level structure that implements a non-balancing binary search tree.
+        #include <b/binary_tree.h>
 
+    Low-level structure that implements a non-balancing binary search tree.
 
-    #include <b/cli.h>                      b::cli
+-   `b::cli`
 
-POSIX-compatible command line parser and help screen generator.
+        #include <b/cli.h>
 
+    POSIX-compatible command line parser and help screen generator.
 
-    #include <b/heap.h>                     b::heap<T>
+-   `b::heap<T>`
 
-Priority heap implementation.
+        #include <b/heap.h>
 
+    Priority heap implementation.
 
-    #include <b/levenshtein_distance.h>     b::levenshtein_distance
+-   `b::levenshtein_distance`
 
-Edit distance calculation.
+        #include <b/levenshtein_distance.h>
 
+    Edit distance calculation.
 
-    #include <b/map.h>                      b::map<Key, T>
+-   `b::map<Key, T>`
 
-Template implementation of an associative array container type.
+        #include <b/map.h>
 
+    Template implementation of an associative array container type.
 
-    #include <b/object.h>                   b::object
+-   `b::object`
 
-Base class with reference count support.
+        #include <b/object.h>
 
+    Base class with reference count support.
 
-    #include <b/pathname.h>                 b::pathname
+-   `b::pathname`
 
-Pathname parsing and normalization with additional modification
-operations.
+        #include <b/pathname.h>
 
+    Pathname parsing and normalization with additional modification
+    operations.
 
-    #include <b/random.h>                   b::random
+-   `b::random`
 
-A linear congruential generator.
+        #include <b/random.h>
 
+    A linear congruential generator.
 
-    #include <b/ref.h>                      b::ref
+-   `b::ref`
 
-Smart pointer to instances of all classes derived from 'b::object'.
+        #include <b/ref.h>
 
+    Smart pointer to instances of all classes derived from 'b::object'.
 
-    #include <b/set.h>                      b::set<T>
+-   `b::set<T>`
 
-A set of unique objects of type T.
+        #include <b/set.h>
 
+    A set of unique objects of type T.
 
-    #include <b/string.h>                   b::string
-                                            b::wstring
+-   `b::string`
+    `b::wstring`
 
-Generic string type, both byte character and wide character
-versions.  Uses a copy-on-write technique.
+        #include <b/string.h>
 
+    Generic string type, both byte character and wide character
+    versions.  Uses a copy-on-write technique.
 
-    #include <b/string_view.h>              b::string_view
-                                            b::wstring_view
+-   `b::string_view`
+    `b::wstring_view`
 
-A pointer to a string segment. Useful in parameters and for
-temporary strings.
+        #include <b/string_view.h>
 
+    A pointer to a string segment. Useful in parameters and for
+    temporary strings.
 
-    #include <b/io_streams.h>               b::input_stream
-                                            b::output_stream
-                                            b::seekable
-                                            b::seekable_input_stream
-                                            b::seekable_output_stream
-                                            b::input_output_stream
+-   `b::input_stream`
+    `b::output_stream`
+    `b::seekable`
+    `b::seekable_input_stream`
+    `b::seekable_output_stream`
+    `b::input_output_stream`
 
-Various input/output interfaces.
+        #include <b/io_streams.h>
 
+    Various input/output interfaces.
 
-    #include <b/doubly_linked_list.h>       b::doubly_linked_list<Node_access>
-    #include <b/doubly_linked_list_container.h>
-                                            b::doubly_linked_list_container<T>
-    #include <b/linked_list.h>              b::linked_list<Node_access>
-    #include <b/linked_list_container.h>    b::linked_list_container<T>
+-   `b::doubly_linked_list<Node_access>`
 
-Various linked list classes.
+        #include <b/doubly_linked_list.h>
 
+    `b::doubly_linked_list_container<T>`
 
-    #include <b/exception.h>                b::exception
-    #include <b/runtime_exception.h>        b::runtime_exception
-    #include <b/custom_exception.h>         b::custom_exception
-    #include <b/system_exception.h>         b::system_exception
+        #include <b/doubly_linked_list_container.h>
 
-Various exception classes.
+    `b::linked_list<Node_access>`
+
+        #include <b/linked_list.h>
+
+    `b::linked_list_container<T>`
+
+        #include <b/linked_list_container.h>
+
+    Various linked list classes.
+
+-   `b::exception`
+
+        #include <b/exception.h>
+
+    `b::runtime_exception`
+
+        #include <b/runtime_exception.h>
+
+    `b::custom_exception`
+
+        #include <b/custom_exception.h>
+
+    `b::system_exception`
+
+        #include <b/system_exception.h>
+
+    Various exception classes.

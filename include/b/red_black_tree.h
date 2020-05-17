@@ -18,8 +18,6 @@
  *
  */
 
-// Low-level structure that implements a self-balancing binary search tree
-
 #ifndef B_RED_BLACK_TREE_H
 #define B_RED_BLACK_TREE_H
 
@@ -27,6 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
+// Low-level structure that implements a self-balancing binary search tree.
 struct red_black_tree_node : public binary_tree_node
 {
 	enum

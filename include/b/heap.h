@@ -18,7 +18,7 @@
  *
  */
 
-// Priority queue and heapsort implementation
+// Heap-based priority queue and heapsort implementation
 
 #ifndef B_HEAP_H
 #define B_HEAP_H

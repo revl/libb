@@ -25,7 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
-// System error condition. An exception of this class indicates
+// Exception type for system errors. An exception of this class indicates
 // abnormal termination of a system or standard library call.
 class system_exception : public runtime_exception
 {

@@ -18,8 +18,6 @@
  *
  */
 
-// Priority queue container
-
 #ifndef B_PRIORITY_QUEUE_H
 #define B_PRIORITY_QUEUE_H
 
@@ -28,6 +26,7 @@
 
 B_BEGIN_NAMESPACE
 
+// Priority queue container.
 template <class T>
 class priority_queue
 {

@@ -18,7 +18,7 @@
  *
  */
 
-// Declarations of string and wstring classes
+// Declaration of the string and wstring classes.
 
 #ifndef B_STRING_H
 

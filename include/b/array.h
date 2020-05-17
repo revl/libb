@@ -18,8 +18,6 @@
  *
  */
 
-// Array template definition
-
 #ifndef B_ARRAY_H
 #define B_ARRAY_H
 

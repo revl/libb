@@ -18,8 +18,6 @@
  *
  */
 
-// Base class with reference count support
-
 #ifndef B_OBJECT_H
 #define B_OBJECT_H
 

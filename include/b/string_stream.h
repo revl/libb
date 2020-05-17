@@ -18,8 +18,6 @@
  *
  */
 
-// Implementation of input_output_stream that uses a string for storage
-
 #ifndef B_STRING_STREAM_H
 #define B_STRING_STREAM_H
 
@@ -27,7 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
-// Stream that uses a string for storage.
+// An input-output stream that uses a string for storage.
 class string_stream : public input_output_stream
 {
 public:

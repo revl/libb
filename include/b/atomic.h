@@ -18,8 +18,6 @@
  *
  */
 
-// Portable thread-safe reference counter
-
 #ifndef B_ATOMIC_H
 #define B_ATOMIC_H
 
@@ -75,7 +73,7 @@ typedef int32_t platform_atomic_type;
 #error arithmetic on atomic data has to be implemented for this platform
 #endif
 
-// Portable thread-safe reference count class.
+// Portable thread-safe reference counter.
 struct atomic
 {
 	// Returns the current value of the counter.

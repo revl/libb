@@ -18,8 +18,6 @@
  *
  */
 
-// Unidirectional linked list container
-
 #ifndef B_LINKED_LIST_CONTAINER_H
 #define B_LINKED_LIST_CONTAINER_H
 
@@ -28,6 +26,7 @@
 
 B_BEGIN_NAMESPACE
 
+// Unidirectional linked list container
 template <class T>
 class linked_list_container
 {

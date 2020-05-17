@@ -18,8 +18,6 @@
  *
  */
 
-// Bidirectional linked list container
-
 #ifndef B_DOUBLY_LINKED_LIST_CONTAINER_H
 #define B_DOUBLY_LINKED_LIST_CONTAINER_H
 
@@ -28,6 +26,7 @@
 
 B_BEGIN_NAMESPACE
 
+// Bidirectional linked list container.
 template <class T>
 class doubly_linked_list_container
 {

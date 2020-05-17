@@ -18,7 +18,7 @@
  *
  */
 
-// Declarations of string_view and wstring_view classes
+// Declaration of string_view and wstring_view classes.
 
 #ifndef B_STRING_VIEW_H
 
@@ -28,7 +28,7 @@ B_BEGIN_NAMESPACE
 
 class string;
 
-// Pointer to a substring within a self-contained string.
+// Pointer to a substring within another string.
 class string_view
 {
 // Construction

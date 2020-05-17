@@ -18,8 +18,6 @@
  *
  */
 
-// Base exception class
-
 #ifndef B_EXCEPTION_H
 #define B_EXCEPTION_H
 
@@ -27,7 +25,7 @@
 
 B_BEGIN_NAMESPACE
 
-// The base class for all exceptions.
+// The base class for all other exception types in the library.
 class exception
 #if defined(B_USE_STL)
 	: public std::exception

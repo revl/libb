@@ -18,8 +18,8 @@
  *
  */
 
-// Implementation of an obscure technique for passing a variable-length
-// list of named parameters to a function or a method
+// A technique to pass a variable-length list of named parameters to
+// a function or a method
 
 #ifndef B_ARG_LIST_H
 #define B_ARG_LIST_H
