@@ -85,6 +85,7 @@ The library provides the following functionality:
     A set of unique objects of type T.
 
 -   `b::string`
+
     `b::wstring`
 
         #include <b/string.h>
@@ -93,6 +94,7 @@ The library provides the following functionality:
     versions.  Uses a copy-on-write technique.
 
 -   `b::string_view`
+
     `b::wstring_view`
 
         #include <b/string_view.h>
@@ -101,10 +103,15 @@ The library provides the following functionality:
     temporary strings.
 
 -   `b::input_stream`
+
     `b::output_stream`
+
     `b::seekable`
+
     `b::seekable_input_stream`
+
     `b::seekable_output_stream`
+
     `b::input_output_stream`
 
         #include <b/io_streams.h>
