@@ -740,7 +740,7 @@ inline bool operator >=(const char_t* chars, const string& str)
 char_t* find_char(const char_t* input, char_t ch);
 
 // Finds the last occurrence of character 'ch' in 'input'.
-char_t* find_char_backwards(const char_t* input, char_t ch);
+char_t* find_char_reverse(const char_t* input, char_t ch);
 
 B_END_NAMESPACE
 

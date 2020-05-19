@@ -417,7 +417,7 @@ inline void assign_value(wchar_t* dest, size_t count, const wchar_t& value)
 
 // Copies elements of an array over elements of another
 // array of the same size. Arrays must not overlap.
-// Use assign_pairwise_backwards() or move_left() for
+// Use assign_pairwise_reverse() or move_left() for
 // overlapping arrays.
 template <class T>
 inline void assign_pairwise(T* dest, const T* source, size_t count)
@@ -443,7 +443,7 @@ inline void assign_pairwise(T* dest, const T* source, size_t count)
 // Therefore, the function works correctly if the tail of the 'source'
 // array overlaps the head of the 'dest' array.
 template <class T>
-inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
+inline void assign_pairwise_reverse(T* dest, const T* source, size_t count)
 {
 #if defined(B_USE_STL)
 	std::copy_backward(source, source + count, dest);
@@ -455,7 +455,7 @@ inline void assign_pairwise_backwards(T* dest, const T* source, size_t count)
 
 #define B_ASSIGN_PAIRWISE_BACKWARDS_SPEC9N(T) \
 	template <> \
-	inline void assign_pairwise_backwards(T* dest, \
+	inline void assign_pairwise_reverse(T* dest, \
 		const T* source, size_t count) \
 	{ \
 		memory::move(dest, source, count * sizeof(*dest)); \
@@ -496,7 +496,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 		construct_copies(dst + dst_size,
 			dst + dst_size - src_size, src_size);
 
-		assign_pairwise_backwards(dst + src_size,
+		assign_pairwise_reverse(dst + src_size,
 			dst, dst_size - src_size);
 
 		assign_pairwise(dst, src, src_size);
@@ -533,7 +533,7 @@ void move_right_and_insert(T* dst, size_t dst_size,
 		construct_copies(dst + dst_size,
 			dst + dst_size - count, count);
 
-		assign_pairwise_backwards(dst + count,
+		assign_pairwise_reverse(dst + count,
 			dst, dst_size - count);
 
 		assign_value(dst, count, value);

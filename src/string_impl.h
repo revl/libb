@@ -686,7 +686,7 @@ char_t* find_char(const char_t* input, char_t ch)
 	return NULL;
 }
 
-char_t* find_char_backwards(const char_t* input, char_t ch)
+char_t* find_char_reverse(const char_t* input, char_t ch)
 {
 	size_t index = calc_length(input);
 
