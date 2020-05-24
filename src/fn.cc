@@ -332,6 +332,8 @@ size_t base64url_encode(const void* src_buf, size_t src_size,
 	if (result_len > dst_size)
 		return result_len;
 
+	B_ASSERT(dst_buf != NULL && (src_size == 0 || src_buf != NULL));
+
 	const unsigned char* src = (const unsigned char*) src_buf;
 	unsigned char* dst = (unsigned char*) dst_buf;
 
@@ -456,6 +458,8 @@ size_t base64url_decode(const void* src_buf, size_t src_size,
 
 	if (result_len > dst_size)
 		return result_len;
+
+	B_ASSERT(dst_buf != NULL && (src_size == 0 || src_buf != NULL));
 
 	const unsigned char* src = (const unsigned char*) src_buf;
 	unsigned char* dst = (unsigned char*) dst_buf;
