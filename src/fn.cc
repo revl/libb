@@ -260,6 +260,13 @@ static void make_directory_and_parents(const string& path,
 	}
 }
 
+namespace args
+{
+	arg_name<bool, 0> create_parents;
+	arg_name<mode_t, 1> mode;
+	arg_name<mode_t, 2> parent_mode;
+}
+
 void create_directory(const string& path, const arg_list* arg)
 {
 	bool create_parents = false;
