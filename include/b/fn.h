@@ -40,6 +40,16 @@ inline size_t extra_capacity(size_t size)
 	return size + (extra > 4 ? (extra <= 1024 ? extra : 1024) : 4);
 }
 
+// This macro converts a string literal into an integer.
+// Only the first six characters are used and only lower case
+// letters of English alphabet are allowed.
+#define B_TAG(t) int(sizeof(t) <= 1 ? 0 : t[0] - 96 + \
+	27L * (sizeof(t) <= 2 ? 0 : t[1] - 96 + \
+	27L * (sizeof(t) <= 3 ? 0 : t[2] - 96 + \
+	27L * (sizeof(t) <= 4 ? 0 : t[3] - 96 + \
+	27L * (sizeof(t) <= 5 ? 0 : t[4] - 96 + \
+	27L * (sizeof(t) <= 6 ? 0 : t[5] - 96))))))
+
 // Operations on the file system directory structure
 
 // Returns true if the specified directory exists.
