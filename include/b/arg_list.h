@@ -72,8 +72,8 @@ struct arg_val : public arg_list
 	const T value;
 };
 
-// An essential utility class that binds the tag of
-// the argument and its type.
+// Instances of this class represent named argument keywords and
+// assign tags to argument values.
 template <typename T, int Tag>
 struct arg_name
 {
@@ -97,6 +97,39 @@ struct arg_name
 
 		return static_cast<const arg_val<T>*>(arg)->value;
 	}
+};
+
+// An alternative way of defining an argument name.
+template <typename T>
+struct arg_name_obj
+{
+	// Initialize this argument name with a tag.
+	explicit arg_name_obj(int t) : tag(t)
+	{
+	}
+
+	// Creates an 'arg_val' object on the stack.
+	arg_val<T> operator =(const T& v) const
+	{
+		return arg_val<T>(tag, v);
+	}
+
+	// Checks if the provided argument value
+	// has the same tag as this argument name.
+	bool is_name_for(const arg_list* arg) const
+	{
+		return arg->tag == tag;
+	}
+
+	// Returns the value of the specified argument.
+	const T& value(const arg_list* arg) const
+	{
+		B_ASSERT(arg->tag == tag);
+
+		return static_cast<const arg_val<T>*>(arg)->value;
+	}
+
+	const int tag;
 };
 
 B_END_NAMESPACE
