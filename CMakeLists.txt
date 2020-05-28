@@ -6,7 +6,7 @@ project(b VERSION 0.1.0 LANGUAGES CXX)
 
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 include(CheckAtomicIncDec)
 
