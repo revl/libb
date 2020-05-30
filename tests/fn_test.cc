@@ -24,6 +24,33 @@
 
 #include "test_case.h"
 
+b::string tag_to_string(int tag)
+{
+	b::string s;
+
+	while (tag)
+	{
+		s += char(96 + (tag % 27));
+		tag /= 27;
+	}
+
+	return s;
+}
+
+B_TEST_CASE(tag)
+{
+	B_CHECK(B_TAG("") == 0);
+	B_CHECK(B_TAG("a") == 1);
+
+	B_CHECK(tag_to_string(B_TAG("")) == "");
+	B_CHECK(tag_to_string(B_TAG("abc")) == "abc");
+
+	B_CHECK(tag_to_string(B_TAG("aaaaaa")) == "aaaaaa");
+	B_CHECK(tag_to_string(B_TAG("zzzzzz")) == "zzzzzz");
+
+	B_CHECK(tag_to_string(B_TAG("longerthansix")) == "longer");
+}
+
 static bool match_and_check_all(const char* input, const char* pattern,
 	bool expected_match)
 {
