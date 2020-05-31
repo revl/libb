@@ -32,9 +32,7 @@ add_library(${PROJECT_NAME}
 	src/string_stream.cc
 )
 
-target_compile_options(${PROJECT_NAME} PUBLIC
-	$<$<CONFIG:Debug>:-DB_DEBUG>
-)
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:B_DEBUG>)
 
 configure_file(cmake/config.h.in include/${PROJECT_NAME}/config.h)
 
