@@ -62,7 +62,7 @@ namespace
 	{
 		size_t bytes_read = fread(buffer, 1, buffer_size, stdin);
 
-		if (bytes_read < buffer_size && ferror(stdin))
+		if (bytes_read < buffer_size && ferror(stdin) != 0)
 			throw system_exception(stdin_stream_name, errno);
 
 		return bytes_read;

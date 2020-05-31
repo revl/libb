@@ -26,7 +26,7 @@ void object::release() const
 {
 	B_ASSERT(this != NULL);
 
-	if (!--refs)
+	if (--refs == 0)
 		delete_this();
 }
 

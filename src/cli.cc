@@ -1305,13 +1305,13 @@ int cli::parse(int argc, const char* const *argv, const arg_list* arg)
 	return impl_ref->parse_and_validate(argc, argv, version_info);
 }
 
-bool cli::next_arg(int* arg_id, const char** opt_value)
+bool cli::next_arg(int* arg_id, const char** arg_value)
 {
 	if (impl_ref->next_option_value == impl_ref->option_values.end())
 		return false;
 
 	*arg_id = impl_ref->next_option_value->arg_info->id;
-	*opt_value = impl_ref->next_option_value->arg_value;
+	*arg_value = impl_ref->next_option_value->arg_value;
 
 	++impl_ref->next_option_value;
 
