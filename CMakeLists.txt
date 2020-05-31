@@ -50,6 +50,14 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
 	include(CTest)
 
 	if(BUILD_TESTING)
+		option(BUILD_COVERAGE "Enable code coverage report" OFF)
+
+		if(BUILD_COVERAGE)
+			include(CodeCoverage)
+
+			append_coverage_compiler_flags()
+		endif()
+
 		add_subdirectory(tests)
 	endif()
 endif()
