@@ -36,14 +36,14 @@ target_compile_options(${PROJECT_NAME} PUBLIC
 	$<$<CONFIG:Debug>:-DB_DEBUG>
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-	${PROJECT_SOURCE_DIR}/include)
-
 configure_file(cmake/config.h.in include/${PROJECT_NAME}/config.h)
+
 target_include_directories(${PROJECT_NAME} PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/config.h"
 	DESTINATION include/${PROJECT_NAME}
 )
