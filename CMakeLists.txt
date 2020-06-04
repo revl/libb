@@ -34,7 +34,9 @@ add_library(${PROJECT_NAME}
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:B_DEBUG>)
 
-configure_file(cmake/config.h.in include/${PROJECT_NAME}/config.h)
+set(CONFIG_H include/${PROJECT_NAME}/config.h)
+
+configure_file(cmake/config.h.in ${CONFIG_H})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -42,11 +44,50 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<INSTALL_INTERFACE:include>
 )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/config.h"
-	DESTINATION include/${PROJECT_NAME}
-)
-
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+	set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_NAME B)
+
+	include(GNUInstallDirs)
+
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	)
+
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_H}
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+	)
+
+	install(TARGETS ${PROJECT_NAME} EXPORT BTargets)
+
+	install(EXPORT BTargets
+		FILE BTargets.cmake
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/B
+	)
+
+	include(CMakePackageConfigHelpers)
+	write_basic_package_version_file(
+		${CMAKE_CURRENT_BINARY_DIR}/BConfigVersion.cmake
+		VERSION ${PROJECT_VERSION}
+		COMPATIBILITY SameMajorVersion
+	)
+
+	configure_package_config_file(
+		${PROJECT_SOURCE_DIR}/cmake/BConfig.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/BConfig.cmake
+		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/B
+	)
+
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/BConfig.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/BConfigVersion.cmake
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/B
+	)
+
+	export(EXPORT BTargets
+		FILE ${CMAKE_CURRENT_BINARY_DIR}/BTargets.cmake
+	)
+
+	export(PACKAGE B)
+
 	include(CTest)
 
 	if(BUILD_TESTING)
