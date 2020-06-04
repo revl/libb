@@ -120,8 +120,16 @@ public:
 	// Checks if this string_view starts with the specified prefix.
 	bool starts_with(const string_view& prefix) const;
 
+	// If this string_view starts with the specified prefix, this method
+	// removes it and returns true.
+	bool remove_prefix(const string_view& prefix);
+
 	// Checks if this string_view ends with the specified suffix.
 	bool ends_with(const string_view& suffix) const;
+
+	// If this string_view ends with the specified suffix, this method
+	// removes it and returns true.
+	bool remove_suffix(const string_view& suffix);
 
 	// Checks if this string_view matches the specified glob-style
 	// pattern.
@@ -337,11 +345,32 @@ inline bool string_view::starts_with(const string_view& prefix) const
 		compare_arrays(data(), prefix.data(), prefix.length()) == 0;
 }
 
+inline bool string_view::remove_prefix(const string_view& prefix)
+{
+	if (starts_with(prefix))
+	{
+		view += prefix.length();
+		view_length -= prefix.length();
+		return true;
+	}
+	return false;
+}
+
 inline bool string_view::ends_with(const string_view& suffix) const
 {
 	return length() >= suffix.length()  &&
 		compare_arrays(data() + length() - suffix.length(),
 			suffix.data(), suffix.length()) == 0;
+}
+
+inline bool string_view::remove_suffix(const string_view& suffix)
+{
+	if (ends_with(suffix))
+	{
+		view_length -= suffix.length();
+		return true;
+	}
+	return false;
 }
 
 inline bool string_view::matches_pattern(const char_t* pattern) const

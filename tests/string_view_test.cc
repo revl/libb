@@ -48,7 +48,7 @@ B_TEST_CASE(basic_checks)
 	B_CHECK(b::string_view("123a", 3) == b::string_view("123b", 3));
 }
 
-B_TEST_CASE(starts_with)
+B_TEST_CASE(prefix)
 {
 	b::string_view sv("012", 3);
 
@@ -59,12 +59,16 @@ B_TEST_CASE(starts_with)
 	B_CHECK(!sv.starts_with(B_STRING_VIEW("02")));
 	B_CHECK(!sv.starts_with(B_STRING_VIEW("0123")));
 
+	B_CHECK(sv.remove_prefix(B_STRING_VIEW("01")));
+	B_CHECK(!sv.remove_prefix(B_STRING_VIEW("23")));
+	B_CHECK(sv == B_STRING_VIEW("2"));
+
 	b::string_view with_null("012\0", 4);
 
 	B_CHECK(with_null.starts_with(with_null));
 }
 
-B_TEST_CASE(ends_with)
+B_TEST_CASE(suffix)
 {
 	b::string_view sv("123", 3);
 
@@ -74,6 +78,10 @@ B_TEST_CASE(ends_with)
 
 	B_CHECK(!sv.ends_with(B_STRING_VIEW("13")));
 	B_CHECK(!sv.ends_with(B_STRING_VIEW("0123")));
+
+	B_CHECK(sv.remove_suffix(B_STRING_VIEW("23")));
+	B_CHECK(!sv.remove_suffix(B_STRING_VIEW("01")));
+	B_CHECK(sv == B_STRING_VIEW("1"));
 
 	b::string_view with_null("012\0", 4);
 
