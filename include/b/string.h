@@ -205,13 +205,20 @@ public:
 	// Appends a single character to this string.
 	void append(char_t ch);
 
+	// Appends the contents of a string view to this string.
+	void append(const string_view& sv);
+
 	// Appends the contents of 'source' at the end of this
-	// string (operator version of append(source)).
+	// string (operator version of append(string)).
 	string& operator +=(const string& source);
 
 	// Appends a single character to this string
 	// (operator version of append(char_t)).
 	string& operator +=(char_t ch);
+
+	// Appends the contents of a string view to this string
+	// (operator version of append(string_view)).
+	string& operator +=(const string_view& sv);
 
 	// Constructs a new string from the concatenation of
 	// this one and 'source'.
@@ -220,6 +227,10 @@ public:
 	// Constructs a new string from the concatenation of
 	// this one and character 'ch'.
 	string operator +(char_t ch) const;
+
+	// Constructs a new string from the concatenation of
+	// this string and a string view;
+	string operator +(const string_view& sv) const;
 
 	// Concatenates 'times' copies of this string and
 	// returns the result.
@@ -575,6 +586,11 @@ inline void string::append(char_t ch)
 	append(1, ch);
 }
 
+inline void string::append(const string_view& sv)
+{
+	append(sv.data(), sv.length());
+}
+
 inline string& string::operator +=(const string& source)
 {
 	append(source.data(), source.length());
@@ -584,6 +600,12 @@ inline string& string::operator +=(const string& source)
 inline string& string::operator +=(char_t ch)
 {
 	append(1, ch);
+	return *this;
+}
+
+inline string& string::operator +=(const string_view& sv)
+{
+	append(sv.data(), sv.length());
 	return *this;
 }
 

@@ -367,6 +367,12 @@ string string::operator +(char_t ch) const
 	return result += ch;
 }
 
+string string::operator +(const string_view& sv) const
+{
+	string result(*this);
+	return result += sv;
+}
+
 void string::remove(size_t start, size_t count)
 {
 	B_ASSERT(start <= length());

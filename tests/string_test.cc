@@ -307,6 +307,14 @@ B_TEST_CASE(to_wchar_and_back)
 	B_CHECK(b::string::from_wstring(utf8.to_wstring()) == utf8);
 }
 
+B_TEST_CASE(string_view)
+{
+	B_STRING_LITERAL(s, "string");
+	B_STRING_LITERAL(sv, "string_view");
+
+	B_CHECK(s + B_STRING_VIEW("_view") == sv);
+}
+
 #if defined(B_USE_STL)
 B_TEST_CASE(interoperability)
 {
