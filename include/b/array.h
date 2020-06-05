@@ -208,6 +208,9 @@ public:
 	// number generator.
 	void shuffle(pseudorandom& prng);
 
+	template<class R, class D>
+	R join(const D& delim);
+
 // Implementation
 private:
 	struct array_metadata
@@ -879,6 +882,27 @@ void array<T>::shuffle(pseudorandom& prng)
 	isolate();
 
 	shuffle_array(elements, length(), prng);
+}
+
+template <class T>
+template<class R, class D>
+R array<T>::join(const D& delim)
+{
+	R result;
+	const T* el = elements;
+
+	size_t count = length();
+	if (count > 0)
+	{
+		while (--count > 0)
+		{
+			result += *el++;
+			result += delim;
+		}
+		result += *el;
+	}
+
+	return result;
 }
 
 template <class T>

@@ -130,6 +130,10 @@ public:
 	// assign(const array<T>&)).
 	array_slice& operator =(const array<T>& source);
 
+public:
+	template<class R, class D>
+	R join(const D& delim);
+
 // Implementation
 private:
 	const T* elements;
@@ -271,6 +275,27 @@ array_slice<T>& array_slice<T>::operator =(const array<T>& source)
 {
 	assign(source);
 	return *this;
+}
+
+template <class T>
+template<class R, class D>
+R array_slice<T>::join(const D& delim)
+{
+	R result;
+	const T* el = elements;
+
+	size_t count = slice_length;
+	if (count > 0)
+	{
+		while (--count > 0)
+		{
+			result += *el++;
+			result += delim;
+		}
+		result += *el;
+	}
+
+	return result;
 }
 
 B_END_NAMESPACE

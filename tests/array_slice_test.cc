@@ -83,3 +83,18 @@ B_TEST_CASE(subslices)
 	B_CHECK(last_3.data() == digits + 7);
 	B_CHECK(last_3[2] == 9);
 }
+
+B_TEST_CASE(join)
+{
+	B_STRING_LITERAL(one, "one");
+	B_STRING_LITERAL(two, "two");
+	B_STRING_LITERAL(three, "three");
+
+	const b::string one_two_three[] = {one, two, three};
+
+	b::array_slice<b::string> slice(one_two_three, 3);
+
+	b::string result(slice.join<b::string, char>('+'));
+
+	B_CHECK(result == "one+two+three");
+}

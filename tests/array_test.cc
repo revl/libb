@@ -222,3 +222,19 @@ B_TEST_CASE(slice)
 		B_CHECK(slice[i++] == n++);
 	while (i < 20);
 }
+
+B_TEST_CASE(join)
+{
+	B_STRING_LITERAL(one, "one");
+	B_STRING_LITERAL(two, "two");
+	B_STRING_LITERAL(three, "three");
+
+	b::array<b::string> one_two_three;
+	one_two_three.append(one);
+	one_two_three.append(two);
+	one_two_three.append(three);
+
+	b::string result(one_two_three.join<b::string, char>('+'));
+
+	B_CHECK(result == "one+two+three");
+}
