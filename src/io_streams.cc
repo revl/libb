@@ -40,13 +40,49 @@ input_output_stream::~input_output_stream()
 
 namespace
 {
-	class std_input : public input_stream
+	class file_input_stream : public input_stream
 	{
-		virtual void delete_this() const;
+	public:
+		file_input_stream(FILE* s, const string& sn) :
+			stream(s), stream_name(sn)
+		{
+		}
 
+	private:
 		virtual size_t read(void* buffer, size_t buffer_size);
 
 		virtual bool eof();
+
+		FILE* stream;
+		const string stream_name;
+	};
+
+	size_t file_input_stream::read(void* buffer, size_t buffer_size)
+	{
+		size_t bytes_read = fread(buffer, 1, buffer_size, stream);
+
+		if (bytes_read < buffer_size && ferror(stream) != 0)
+			throw system_exception(stream_name, errno);
+
+		return bytes_read;
+	}
+
+	bool file_input_stream::eof()
+	{
+		return feof(stream) != 0;
+	}
+
+	B_STRING_LITERAL(stdin_stream_name, "stdin");
+
+	class std_input : public file_input_stream
+	{
+	public:
+		std_input() : file_input_stream(stdin, stdin_stream_name)
+		{
+		}
+
+	private:
+		virtual void delete_this() const;
 	};
 
 	void std_input::delete_this() const
@@ -56,47 +92,22 @@ namespace
 		// cannot be deleted.
 	}
 
-	B_STRING_LITERAL(stdin_stream_name, "stdin");
-
-	size_t std_input::read(void* buffer, size_t buffer_size)
-	{
-		size_t bytes_read = fread(buffer, 1, buffer_size, stdin);
-
-		if (bytes_read < buffer_size && ferror(stdin) != 0)
-			throw system_exception(stdin_stream_name, errno);
-
-		return bytes_read;
-	}
-
-	bool std_input::eof()
-	{
-		return feof(stdin) != 0;
-	}
-
-	class std_output : public output_stream
+	class file_output_stream : public output_stream
 	{
 	public:
-		std_output(FILE* s, const string& sn) :
+		file_output_stream(FILE* s, const string& sn) :
 			stream(s), stream_name(sn)
 		{
 		}
 
 	private:
-		virtual void delete_this() const;
-
 		virtual size_t write(const void* buffer, size_t buffer_size);
 
 		FILE* stream;
 		const string stream_name;
 	};
 
-	void std_output::delete_this() const
-	{
-		// No-op: all instances of this class are singletons
-		// created in the data segment.
-	}
-
-	size_t std_output::write(const void* buffer, size_t buffer_size)
+	size_t file_output_stream::write(const void* buffer, size_t buffer_size)
 	{
 		size_t bytes_written = fwrite(buffer, 1, buffer_size, stream);
 
@@ -105,6 +116,44 @@ namespace
 
 		return bytes_written;
 	}
+
+	class std_output : public file_output_stream
+	{
+	public:
+		std_output(FILE* s, const string& sn) :
+			file_output_stream(s, sn)
+		{
+		}
+
+	private:
+		virtual void delete_this() const;
+	};
+
+	void std_output::delete_this() const
+	{
+		// No-op: all instances of this class are singletons
+		// created in the data segment.
+	}
+}
+
+ref<input_stream> open_file_for_reading(const string& pathname)
+{
+	FILE* stream = fopen(pathname.data(), "rb");
+
+	if (stream == NULL)
+		throw system_exception(pathname, errno);
+
+	return new file_input_stream(stream, pathname);
+}
+
+ref<output_stream> open_file_for_writing(const string& pathname)
+{
+	FILE* stream = fopen(pathname.data(), "wb");
+
+	if (stream == NULL)
+		throw system_exception(pathname, errno);
+
+	return new file_output_stream(stream, pathname);
 }
 
 ref<input_stream> standard_input_stream()

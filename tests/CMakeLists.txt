@@ -8,6 +8,7 @@ set(UNIT_TESTS
 	exceptions_test
 	fn_test
 	heap_test
+	io_stream_test
 	levenshtein_distance_test
 	lists_test
 	map_test

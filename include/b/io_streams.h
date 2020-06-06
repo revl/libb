@@ -106,6 +106,12 @@ public:
 	virtual ~input_output_stream();
 };
 
+// Returns a stream object to read from the specified file.
+ref<input_stream> open_file_for_reading(const string& pathname);
+
+// Returns a stream object to write to the specified file.
+ref<output_stream> open_file_for_writing(const string& pathname);
+
 // Returns an object that encapsulates the standard input stream.
 ref<input_stream> standard_input_stream();
 
