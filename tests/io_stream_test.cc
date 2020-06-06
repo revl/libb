@@ -37,14 +37,20 @@ B_TEST_CASE(std_stream_ref_count)
 	b::standard_input_stream()->add_ref();
 	b::standard_input_stream()->release();
 	b::standard_input_stream()->release();
+	b::standard_input_stream()->add_ref();
+	b::standard_input_stream()->add_ref();
 
 	b::standard_output_stream()->add_ref();
 	b::standard_output_stream()->release();
 	b::standard_output_stream()->release();
+	b::standard_output_stream()->add_ref();
+	b::standard_output_stream()->add_ref();
 
 	b::standard_error_stream()->add_ref();
 	b::standard_error_stream()->release();
 	b::standard_error_stream()->release();
+	b::standard_error_stream()->add_ref();
+	b::standard_error_stream()->add_ref();
 }
 
 B_TEST_CASE(exceptions)

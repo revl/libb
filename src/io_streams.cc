@@ -81,8 +81,8 @@ namespace
 		{
 		}
 
-	private:
 		virtual void delete_this() const;
+		virtual ~std_input();
 	};
 
 	void std_input::delete_this() const
@@ -90,6 +90,13 @@ namespace
 		// No-op: the only instance of this class is a singleton.
 		// It is created in the data segment and therefore
 		// cannot be deleted.
+	}
+
+	std_input::~std_input()
+	{
+		// Reset the reference counter to avoid triggering
+		// an assertion in ~object().
+		refs = 0;
 	}
 
 	class file_output_stream : public output_stream
@@ -125,14 +132,21 @@ namespace
 		{
 		}
 
-	private:
 		virtual void delete_this() const;
+		virtual ~std_output();
 	};
 
 	void std_output::delete_this() const
 	{
 		// No-op: all instances of this class are singletons
 		// created in the data segment.
+	}
+
+	std_output::~std_output()
+	{
+		// Reset the reference counter to avoid triggering
+		// an assertion in ~object().
+		refs = 0;
 	}
 }
 
