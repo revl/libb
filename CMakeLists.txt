@@ -1,10 +1,16 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_CXX_STANDARD 98)
 
 project(b VERSION 0.1.0 LANGUAGES CXX)
 
-add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(-Wall -Wextra -Werror)
+
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG(-Wpedantic COMPILER_SUPPORTS_WPEDANTIC)
+if(COMPILER_SUPPORTS_WPEDANTIC)
+	add_compile_options(-Wpedantic)
+endif()
 
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
@@ -57,7 +63,10 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
 		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 	)
 
-	install(TARGETS ${PROJECT_NAME} EXPORT BTargets)
+	install(TARGETS ${PROJECT_NAME}
+		EXPORT BTargets
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
 
 	install(EXPORT BTargets
 		FILE BTargets.cmake
