@@ -94,7 +94,5 @@ B_TEST_CASE(join)
 
 	b::array_slice<b::string> slice(one_two_three, 3);
 
-	b::string result(slice.join<b::string, char>('+'));
-
-	B_CHECK(result == "one+two+three");
+	B_CHECK(slice.join('+') == "one+two+three");
 }

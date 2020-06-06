@@ -131,8 +131,8 @@ public:
 	array_slice& operator =(const array<T>& source);
 
 public:
-	template<class R, class D>
-	R join(const D& delim);
+	template<class D>
+	T join(const D& delim);
 
 // Implementation
 private:
@@ -278,10 +278,10 @@ array_slice<T>& array_slice<T>::operator =(const array<T>& source)
 }
 
 template <class T>
-template<class R, class D>
-R array_slice<T>::join(const D& delim)
+template<class D>
+T array_slice<T>::join(const D& delim)
 {
-	R result;
+	T result;
 	const T* el = elements;
 
 	size_t count = slice_length;

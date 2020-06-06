@@ -208,8 +208,8 @@ public:
 	// number generator.
 	void shuffle(pseudorandom& prng);
 
-	template<class R, class D>
-	R join(const D& delim);
+	template<class D>
+	T join(const D& delim);
 
 // Implementation
 private:
@@ -885,10 +885,10 @@ void array<T>::shuffle(pseudorandom& prng)
 }
 
 template <class T>
-template<class R, class D>
-R array<T>::join(const D& delim)
+template<class D>
+T array<T>::join(const D& delim)
 {
-	R result;
+	T result;
 	const T* el = elements;
 
 	size_t count = length();

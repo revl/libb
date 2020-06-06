@@ -234,7 +234,5 @@ B_TEST_CASE(join)
 	one_two_three.append(two);
 	one_two_three.append(three);
 
-	b::string result(one_two_three.join<b::string, char>('+'));
-
-	B_CHECK(result == "one+two+three");
+	B_CHECK(one_two_three.join('+') == "one+two+three");
 }
