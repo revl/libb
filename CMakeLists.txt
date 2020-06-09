@@ -38,6 +38,8 @@ add_library(${PROJECT_NAME}
 	src/string_stream.cc
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "-debug")
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:B_DEBUG>)
 
 set(CONFIG_H include/${PROJECT_NAME}/config.h)
