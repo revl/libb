@@ -38,8 +38,6 @@ add_library(${PROJECT_NAME}
 	src/string_stream.cc
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "-debug")
-
 target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:B_DEBUG>)
 
 set(CONFIG_H include/${PROJECT_NAME}/config.h)
@@ -112,4 +110,10 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
 
 		add_subdirectory(tests)
 	endif()
+
+	include(InstallRequiredSystemLibraries)
+	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+	set(CPACK_PACKAGE_VERSION_MAJOR "${b_VERSION_MAJOR}")
+	set(CPACK_PACKAGE_VERSION_MINOR "${b_VERSION_MINOR}")
+	include(CPack)
 endif()
