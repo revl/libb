@@ -129,6 +129,19 @@ namespace
 
 B_BEGIN_NAMESPACE
 
+string tag_to_string(int tag)
+{
+	string s;
+
+	while (tag)
+	{
+		s += char(96 + (tag % 27));
+		tag /= 27;
+	}
+
+	return s;
+}
+
 bool match_pattern(const char* input, const char* pattern)
 {
 	return match_pattern_impl(

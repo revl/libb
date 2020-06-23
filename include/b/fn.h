@@ -43,12 +43,16 @@ inline size_t extra_capacity(size_t size)
 // This macro converts a string literal into an integer.
 // Only the first six characters are used and only lower case
 // letters of English alphabet are allowed.
-#define B_TAG(t) int(sizeof(t) <= 1 ? 0 : t[0] - 96 + \
-	27L * (sizeof(t) <= 2 ? 0 : t[1] - 96 + \
-	27L * (sizeof(t) <= 3 ? 0 : t[2] - 96 + \
-	27L * (sizeof(t) <= 4 ? 0 : t[3] - 96 + \
-	27L * (sizeof(t) <= 5 ? 0 : t[4] - 96 + \
-	27L * (sizeof(t) <= 6 ? 0 : t[5] - 96))))))
+#define B_TAG(t) int(sizeof(#t) <= 1 ? 0 : #t[0] - 96 + \
+	27L * (sizeof(#t) <= 2 ? 0 : #t[1] - 96 + \
+	27L * (sizeof(#t) <= 3 ? 0 : #t[2] - 96 + \
+	27L * (sizeof(#t) <= 4 ? 0 : #t[3] - 96 + \
+	27L * (sizeof(#t) <= 5 ? 0 : #t[4] - 96 + \
+	27L * (sizeof(#t) <= 6 ? 0 : #t[5] - 96))))))
+
+// Converts a tag value computed by the B_TAG macro to the string
+// that was used to compute that tag value.
+string tag_to_string(int tag);
 
 // Operations on the file system directory structure
 
