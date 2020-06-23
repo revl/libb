@@ -84,11 +84,11 @@ public:
 // Assignment
 public:
 	// Makes this string_view object point to the contents
-	// of the 'source' string.
+	// of the 'source' string view.
 	void assign(const string_view& source);
 
 	// Makes this string_view object point to the contents
-	// of the 'source' string (operator version of
+	// of the 'source' string view (operator version of
 	// assign(const string_view&)).
 	string_view& operator =(const string_view& source);
 
